@@ -1,7 +1,13 @@
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+
+
 export default function Home() {
   return (
-    <div className="flex items-center justify-center h-screen">
-      <h1>A</h1>
-    </div>
+    <main className="flex justify-center items-center h-screen">
+      <Link href='/sign-in'>
+        <Button className="max-w-40 max-h-9 rounded-md">Continue</Button>
+      </Link>
+    </main>
   );
 }
