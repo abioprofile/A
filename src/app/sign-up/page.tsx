@@ -20,8 +20,8 @@ const SignUp = () => {
 
                 <p className='text-[14px] text-center px-5 lg:px-20 font-semibold'>
                     By clicking
-                    <Link href="/sign-up" className='text-[#7140EB] underline mx-1'>Create Account</Link>, you agree to Privacy Notice
-                    <Link href="/privacy-policy" className='text-[#7140EB] underline mx-1'>Privacy Notice</Link>,
+                    <Link href="/sign-up" className='text-[#7140EB] underline ml-1'>Create Account</Link>, you agree to
+                    <Link href="/privacy-policy" className='text-[#7140EB] underline'>Privacy Notice</Link>,
                     <Link href="/terms" className='underline mx-1'>T&Cs</Link>, and to receive offers, news, and updates.
                 </p>
                 <div className='space-y-3 flex flex-col items-center w-full'>
