@@ -25,7 +25,7 @@ const ResetPassword = () => {
         >
             <form
                 onSubmit={handleSubmit}
-                className="flex flex-col items-center space-y-3 md:space-y-10 w-full mt-5"
+                className="flex flex-col items-center space-y-5 md:space-y-10 w-full mt-5"
             >
                 <Input
                     type='password'

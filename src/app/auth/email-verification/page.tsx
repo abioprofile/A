@@ -22,7 +22,7 @@ const EmailVerification = () => {
             imageAlt="Email verification image"
             image="/assets/images/auth/email-verification.png"
         >
-            <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-3 md:space-y-10 w-full mt-5">
+            <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-5 md:space-y-10 w-full mt-5">
                 <Input
                     type='email'
                     name='email'
