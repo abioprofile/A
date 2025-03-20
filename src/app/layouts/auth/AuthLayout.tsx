@@ -22,7 +22,14 @@ const AuthLayout = ({
                     {children}
                 </div>
             </div>
-            <Image src={image} alt={imageAlt} width={500} height={500} className='w-1/2 hidden lg:flex' />
+            <Image
+                src={image}
+                alt={imageAlt}
+                width={500}
+                height={500}
+                className='w-1/2 hidden lg:flex'
+                priority
+            />
         </main>
     )
 }

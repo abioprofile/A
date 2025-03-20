@@ -1,7 +1,7 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import AuthLayout from "../../layouts/AuthLayout"
+import AuthLayout from "../../layouts/auth/AuthLayout"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import Image from "next/image"

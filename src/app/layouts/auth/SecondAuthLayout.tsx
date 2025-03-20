@@ -13,7 +13,14 @@ const SecondAuthLayout = ({
     return (
         <main className='flex flex-col lg:flex-row justify-center h-screen'>
             <div className="relative w-1/2 hidden lg:flex">
-                <Image src={image} alt={imageAlt} width={500} height={500} className='w-full' />
+                <Image
+                    src={image}
+                    alt={imageAlt}
+                    width={500}
+                    height={500}
+                    className='w-full'
+                    priority
+                />
                 {heading === "Reset Password" && (
                     <div className="absolute inset-0 flex items-center justify-center">
                         <Image
@@ -21,12 +28,12 @@ const SecondAuthLayout = ({
                             alt="success icon"
                             width={300}
                             height={300}
-                            className="size-16"
+                            priority
                         />
                     </div>
                 )}
             </div>
-            <div className='flex flex-col justify-center p-5 md:p-10 w-full lg:w-1/2 bg-white h-full'>
+            <div className='flex flex-col-reverse md:flex-col justify-center p-5 md:p-10 w-full lg:w-1/2 bg-white h-full'>
 
                 <div
                     className='lg:p-10 flex flex-col justify-center items-center max-[320px]:space-y-1 space-y-4 md:space-y-10 h-full'
@@ -43,8 +50,7 @@ const SecondAuthLayout = ({
                     </p>
                     {children}
                 </div>
-                <div className="flex justify-end w-full">
-
+                <div className="flex justify-start md:justify-end w-full">
                     <Logo />
                 </div>
             </div>

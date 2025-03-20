@@ -13,7 +13,7 @@ const ForgotPassword = () => {
         toast("OTP sent to you email", {
             description: `Check your email`,
         })
-        router.push("/auth/verification")
+        router.push("/auth/verification?prev=forgot-password")
     }
     return (
         <SecondAuthLayout

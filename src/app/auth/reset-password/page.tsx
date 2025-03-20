@@ -23,9 +23,12 @@ const ResetPassword = () => {
             imageAlt="Reset password image"
             image="/assets/images/auth/password-reset.png"
         >
-            <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-3 md:space-y-10 w-full mt-5">
+            <form
+                onSubmit={handleSubmit}
+                className="flex flex-col items-center space-y-3 md:space-y-10 w-full mt-5"
+            >
                 <Input
-                    type='email'
+                    type='password'
                     name='email'
                     placeholder='New Password'
                 />

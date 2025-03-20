@@ -5,12 +5,12 @@ import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { toast } from "sonner"
 import { useState } from "react"
-// import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 
 const OTPVerification = () => {
-    // const router = useRouter()
+    const router = useRouter()
     const [otp, setOtp] = useState<string>("")
-    // const prevRoute = useSearchParams()?.get("prev")
+    const prevRoute = useSearchParams()?.get("prev")
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -19,11 +19,11 @@ const OTPVerification = () => {
             description: `Your OTP: ${otp}`,
         })
         // Redirect based on previous route
-        // if (prevRoute === "forgot-password") {
-        //     router.push("/auth/reset-password")
-        // } else {
-        //     router.push("/auth/sign-in")
-        // }
+        if (prevRoute === "forgot-password") {
+            router.push("/auth/reset-password")
+        } else {
+            router.push("/auth/sign-in")
+        }
     }
     return (
         <SecondAuthLayout
@@ -74,7 +74,7 @@ const OTPVerification = () => {
                             </InputOTPGroup>
                         </InputOTP>
                     </div>
-                    <Button type="submit">Confirm</Button>
+                    <Button type="submit" className="text-md lg:text-xl font-bold">Confirm</Button>
                 </div>
             </form>
         </SecondAuthLayout>
