@@ -16,7 +16,7 @@ const SignIn = () => {
             description: `You have successfully set your username`,
         })
         // Redirect
-        router.push("/auth/sign-in");
+        router.push("/offer-plans");
     }
     return (
         <AuthLayout
@@ -26,7 +26,7 @@ const SignIn = () => {
             image="/assets/images/auth/username-page.png"
         >
             <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-5 w-full">
-                <div className="flex items-center border border-[#7140EB] shadow-md bg-[#D9D9D9] rounded-full px-6 w-full max-w-[454px]">
+                <div className="flex items-center border border-[#7140EB] shadow-md bg-[#D9D9D9] rounded-full px-8 w-full max-w-[454px]">
                     <span className="text-[#767676] text-sm lg:text-[20px] select-none">
                         A.bio/
                     </span>
