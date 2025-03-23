@@ -38,11 +38,23 @@ const SignIn = () => {
                 <div className='space-y-3 flex flex-col items-center w-full'>
                     <p className='text-[#9F9F9F] font-bold text-sm lg:text-md'>OR</p>
                     <Button variant="outline" className='text-md lg:text-xl font-bold flex items-center gap-2'>
-                        <Image src={'/assets/icons/auth/google.svg'} alt='google icon' width={25} height={25} />
+                        <Image
+                            src={'/assets/icons/auth/google.svg'}
+                            alt='google icon'
+                            width={25}
+                            height={25}
+                            priority
+                        />
                         SignUp with Google
                     </Button>
                     <Button variant="outline" className='text-md lg:text-xl font-bold flex items-center gap-2'>
-                        <Image src={'/assets/icons/auth/apple.svg'} alt='apple icon' width={25} height={25} />
+                        <Image
+                            src={'/assets/icons/auth/apple.svg'}
+                            alt='apple icon'
+                            width={25}
+                            height={25}
+                            priority
+                        />
                         SignUp with Apple
                     </Button>
 

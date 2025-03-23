@@ -4,14 +4,28 @@ import SecondAuthLayout from "@/app/layouts/auth/SecondAuthLayout"
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "@/components/ui/input-otp"
 import { REGEXP_ONLY_DIGITS } from "input-otp"
 import { toast } from "sonner"
-import { useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
+
 const OTPVerification = () => {
+    return (
+        <Suspense>
+            <OTPVerificationContent />
+        </Suspense>
+    )
+}
+
+const OTPVerificationContent = () => {
     const router = useRouter()
     const searchParams = useSearchParams();
     const [otp, setOtp] = useState<string>("")
-    const [token, setToken] = useState<string>("");
+    const [token, setToken] = useState("");
+
+    useEffect(() => {
+        const prev = searchParams.get("prev") || ""
+        setToken(prev);
+    }, [searchParams]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -20,16 +34,9 @@ const OTPVerification = () => {
             description: `Your OTP: ${otp}`,
         })
         // Redirect based on previous route
-        if (token === "forgot-password") {
-            router.push("/auth/reset-password")
-        } else {
-            router.push("/auth/sign-in")
-        }
+        router.push(token === "forgot-password" ? "/auth/reset-password" : "/auth/username");
     }
 
-    useEffect(() => {
-        setToken(searchParams.get("prev") as string ?? "");
-    }, [searchParams]);
     return (
         <SecondAuthLayout
             heading="OTP Verification"
@@ -37,53 +44,27 @@ const OTPVerification = () => {
             imageAlt="Verification image"
             image="/assets/images/auth/otp-verification.png"
         >
-            <form onSubmit={handleSubmit} className="flex flex-col items-center w-full">
-                <div className="w-full flex flex-col items-center space-y-10">
-                    <div className="mx-auto w-fit mt-4">
-                        <InputOTP
-                            value={otp}
-                            onChange={setOtp}
-                            maxLength={5}
-                            className="mx-ato"
-                            pattern={REGEXP_ONLY_DIGITS}
-                        >
-                            <InputOTPGroup>
+            <form onSubmit={handleSubmit} className="flex flex-col items-center w-full mt-4">
+                <div className="w-full flex flex-col space-y-10">
+                    <InputOTP
+                        value={otp}
+                        onChange={setOtp}
+                        maxLength={5}
+                        pattern={REGEXP_ONLY_DIGITS}
+                    >
+                        {Array.from({ length: 5 }).map((_, index) => (
+                            <InputOTPGroup key={index}>
                                 <InputOTPSlot
-                                    index={0}
-                                    className="border border-[#334155] rounded-[8px]"
+                                    index={index}
+                                    className="border border-[#334155] rounded-[8px] !size-12"
                                 />
                             </InputOTPGroup>
-                            <InputOTPGroup>
-                                <InputOTPSlot
-                                    index={1}
-                                    className="border border-[#334155] rounded-[8px]"
-                                />
-                            </InputOTPGroup>
-                            <InputOTPGroup>
-                                <InputOTPSlot
-                                    index={2}
-                                    className="border border-[#334155] rounded-[8px]"
-                                />
-                            </InputOTPGroup>
-                            <InputOTPGroup>
-                                <InputOTPSlot
-                                    index={3}
-                                    className="border border-[#334155] rounded-[8px]"
-                                />
-                            </InputOTPGroup>
-                            <InputOTPGroup>
-                                <InputOTPSlot
-                                    index={4}
-                                    className="border border-[#334155] rounded-[8px]"
-                                />
-                            </InputOTPGroup>
-                        </InputOTP>
-                    </div>
+                        ))}
+                    </InputOTP>
                     <Button type="submit" className="text-md lg:text-xl font-bold">Confirm</Button>
                 </div>
             </form>
         </SecondAuthLayout>
-
     )
 }
 

@@ -13,11 +13,10 @@ const AuthLayout = ({
     return (
         <main className='flex flex-col lg:flex-row justify-center h-screen'>
             <div className='flex flex-col justify-center p-5 md:p-10 w-full lg:w-1/2 bg-white h-full'>
-
                 <Logo className='block' />
 
                 <div className='lg:p-10 flex flex-col justify-center items-center max-[320px]:space-y-1 space-y-4 h-full'>
-                    <h1 className='text-[#7140EB] xs:test-xl text-2xl lg:text-[64px] font-black leading-[100%] tracking-[0]'>{heading}</h1>
+                    <h1 className={`text-[#7140EB] text-center xs:test-xl text-2xl ${heading === "Input your username" && "lg:text-[45px] w-full"} font-black leading-[100%] tracking-[0]`}>{heading}</h1>
                     <p className='text-[#7140EB] xs:text-s text-md lg:text-2xl font-light md:mb-5'>{paragraph}</p>
                     {children}
                 </div>

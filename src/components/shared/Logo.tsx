@@ -12,6 +12,7 @@ const Logo = ({ className, width, height }: { className?: string, width?: number
                 width={width || 50}
                 height={height || 50}
                 className='max-[320px]:size-10 size-14 md:size-16'
+                priority
             />
         </Link>
     )
