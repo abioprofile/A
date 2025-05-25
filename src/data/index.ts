@@ -1,3 +1,6 @@
+import { Platform } from "@/interfaces/platform.interfaces";
+import { LinkItem, ProfileInfo, TemplateConfig } from "@/interfaces/template.interface";
+
 export const sidebarNav = [
     {
         title: "A.Bio",
@@ -23,52 +26,302 @@ export const sidebarNav = [
 export const offers = [
     {
         plan: "Free",
-        description: "Deploy your new project in one-click.",
-        type: "Month",
+        description: "Start free. Upgrade anytime.",
+        type: "Free",
         action: "handleButton1",
         benefits: [
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur "
-
+            "1 Smart Profile Page.",
+            "Access to basic templates.",
+            "Add your bio, profile image & social links",
+            "Basic design themes (limited)",
+            "QR code generator",
+            "Basic analytics (visits & clicks)",
+            "Community Support"
+        ]
+    },
+    {
+        plan: "₦55,000",
+        description: "For those building a personal brand or business at scale.",
+        type: "Premium",
+        action: "handleButton3",
+        benefits: [
+            "1 Smart Profile Page.",
+            "Access to basic templates.",
+            "Add your bio, profile image & social links",
+            "Basic design themes (limited)",
+            "QR code generator",
+            "Basic analytics (visits & clicks)",
+            "Community Support",
+            "Add up to 5 extra external links",
+            "Advanced analytics (CTR, devices, traffic sources).",
+            "Priority customer support.",
+            "One Branded NFC card included (standard design).",
+            "Dedicated Support Manager",
+            "Premium NFC Card Included (Custom design with your logo/ colors).",
+            "Custom Analytics dashboard.",
+            "Full design customization (fonts, backgrounds, themes."
         ]
     },
     {
         plan: "₦35,000",
-        description: "Per month, billed anually...  ",
+        description: "Best if you’re building a real online presence. Everything in Lite and more",
         type: "Standard",
         action: "handleButton2",
         benefits: [
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur "
-
+            "1 Smart Profile Page.",
+            "Access to basic templates.",
+            "Add your bio, profile image & social links",
+            "Basic design themes (limited)",
+            "QR code generator",
+            "Basic analytics (visits & clicks)",
+            "Community Support",
+            "Add up to 5 extra external links",
+            "Advanced analytics (CTR, devices, traffic sources).",
+            "Priority customer support.",
+            "One Branded NFC card included (standard design)."
         ]
 
+    }
+];
+
+export const PLATFORMS: Platform[] = [
+    { id: "youtube", name: "YouTube", icon: "/assets/icons/youtube.svg" },
+    { id: "tiktok", name: "Tiktok", icon: "/assets/icons/tiktok.svg" },
+    { id: "instagram", name: "Instagram", icon: "/assets/icons/instagram.svg" },
+    { id: "snapchat", name: "Snapchat", icon: "/assets/icons/snapchat.svg" },
+    { id: "facebook", name: "Facebook", icon: "/assets/icons/facebook.svg" },
+    { id: "pinterest", name: "Pinterest", icon: "/assets/icons/pinterest.svg" },
+    { id: "whatsapp", name: "WhatsApp", icon: "/assets/icons/whatsapp.svg" },
+    { id: "telegram", name: "Telegram", icon: "/assets/icons/telegram.svg" },
+    { id: "linkedin", name: "LinkedIn", icon: "/assets/icons/linkedin.svg" },
+]
+
+// Sample profile for templates
+const defaultProfile: ProfileInfo = {
+    name: "Alex Johnson",
+    username: "alexj",
+    bio: "Digital creator & content strategist",
+    avatar: "/assets/icons/dashboard/profile.svg",
+}
+
+// Sample links for templates
+const defaultLinks: LinkItem[] = [
+    { text: "Instagram", url: "#" },
+    { text: "Twitter", url: "#" },
+    { text: "My Website", url: "#" },
+    { text: "YouTube", url: "#" },
+]
+
+export const templates: TemplateConfig[] = [
+    {
+        id: "minimal-pink",
+        name: "Minimal Pink",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#ffd1dc",
+            textColor: "#333333",
+            buttonColor: "#ffffff",
+            buttonTextColor: "#333333",
+            accentColor: "#ff6b8b",
+            fontFamily: "'Inter', sans-serif",
+            buttonStyle: "pill",
+            buttonBorder: true,
+            buttonEffect: "flat",
+        },
     },
     {
-        plan: "₦55,000",
-        description: "Per month, billed anually...  ",
-        type: "Premium",
-        action: "handleButton3",
-        benefits: [
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur ",
-            "Lorem ipsum dolor sit amet consectetur "
-
-        ]
-
+        id: "dark-gold-3d",
+        name: "Dark Gold 3D",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#121212",
+            textColor: "#ffffff",
+            buttonColor: "#1a1a1a",
+            buttonTextColor: "#ffd700",
+            accentColor: "#ffd700",
+            fontFamily: "'Playfair Display', serif",
+            buttonStyle: "pill",
+            buttonBorder: false,
+            buttonEffect: "3d",
+            backgroundImage:
+                "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/placeholder.svg?height=600&width=400')",
+            // overlay: true,
+        },
     },
-];
+    {
+        id: "vibrant-collage-glass",
+        name: "Vibrant Collage Glass",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#ffffff",
+            textColor: "#333333",
+            buttonColor: "rgba(255, 255, 255, 0.25)",
+            buttonTextColor: "#333333",
+            accentColor: "#ff4500",
+            fontFamily: "'Poppins', sans-serif",
+            buttonStyle: "pill",
+            buttonBorder: false,
+            buttonEffect: "glass",
+            backgroundImage: "url('/placeholder.svg?height=600&width=400')",
+            // overlay: true,
+        },
+    },
+    {
+        id: "earthy-brown-shadow",
+        name: "Earthy Brown Shadow",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#3a2618",
+            textColor: "#f5e8c0",
+            buttonColor: "#5a3f2a",
+            buttonTextColor: "#f5e8c0",
+            accentColor: "#d4a76a",
+            fontFamily: "'Cormorant Garamond', serif",
+            buttonStyle: "rounded",
+            buttonBorder: false,
+            buttonEffect: "shadow",
+        },
+    },
+    {
+        id: "neon-pink",
+        name: "Neon Pink",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#0f0f0f",
+            textColor: "#ffffff",
+            buttonColor: "transparent",
+            buttonTextColor: "#ff00ff",
+            accentColor: "#00ffff",
+            fontFamily: "'Montserrat', sans-serif",
+            buttonStyle: "pill",
+            buttonBorder: true,
+            buttonEffect: "neon",
+        },
+    },
+    {
+        id: "monochrome-minimal",
+        name: "Monochrome Minimal",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#f5f5f5",
+            textColor: "#333333",
+            buttonColor: "transparent",
+            buttonTextColor: "#333333",
+            accentColor: "#777777",
+            fontFamily: "'Roboto Mono', monospace",
+            buttonStyle: "square",
+            buttonBorder: true,
+            buttonEffect: "minimal",
+        },
+    },
+    {
+        id: "tech-blue-3d",
+        name: "Tech Blue 3D",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#0a192f",
+            textColor: "#64ffda",
+            buttonColor: "#112240",
+            buttonTextColor: "#64ffda",
+            accentColor: "#64ffda",
+            fontFamily: "'Space Mono', monospace",
+            buttonStyle: "square",
+            buttonBorder: false,
+            buttonEffect: "3d",
+        },
+    },
+    {
+        id: "red-border-shadow",
+        name: "Red Border Shadow",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#ffffff",
+            textColor: "#333333",
+            buttonColor: "#ffffff",
+            buttonTextColor: "#e63946",
+            accentColor: "#e63946",
+            fontFamily: "'DM Sans', sans-serif",
+            buttonStyle: "pill",
+            buttonBorder: true,
+            buttonEffect: "shadow",
+        },
+    },
+    {
+        id: "sunshine-3d",
+        name: "Sunshine 3D",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#ffd166",
+            textColor: "#333333",
+            buttonColor: "#ffda85",
+            buttonTextColor: "#333333",
+            accentColor: "#ef476f",
+            fontFamily: "'Quicksand', sans-serif",
+            buttonStyle: "rounded",
+            buttonBorder: false,
+            buttonEffect: "3d",
+        },
+    },
+    {
+        id: "retro-wave",
+        name: "Retro Wave",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#2b1055",
+            textColor: "#ffffff",
+            buttonColor: "#ff2a6d",
+            buttonTextColor: "#ffffff",
+            accentColor: "#05d9e8",
+            fontFamily: "'VT323', monospace",
+            buttonStyle: "square",
+            buttonBorder: false,
+            buttonEffect: "shadow",
+            backgroundImage: "linear-gradient(to bottom, #2b1055, #7597de)",
+        },
+    },
+    {
+        id: "elegant-serif",
+        name: "Elegant Serif",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#f8f5f0",
+            textColor: "#2c3e50",
+            buttonColor: "#f8f5f0",
+            buttonTextColor: "#2c3e50",
+            accentColor: "#8e7f7f",
+            fontFamily: "'Libre Baskerville', serif",
+            buttonStyle: "pill",
+            buttonBorder: true,
+            buttonEffect: "flat",
+        },
+    },
+    {
+        id: "futuristic-glass",
+        name: "Futuristic Glass",
+        profile: defaultProfile,
+        links: defaultLinks,
+        style: {
+            backgroundColor: "#0f0e17",
+            textColor: "#fffffe",
+            buttonColor: "rgba(255, 255, 255, 0.1)",
+            buttonTextColor: "#fffffe",
+            accentColor: "#ff8906",
+            fontFamily: "'Orbitron', sans-serif",
+            buttonStyle: "pill",
+            buttonBorder: false,
+            buttonEffect: "glass",
+            backgroundImage: "linear-gradient(135deg, #0f0e17 0%, #232946 100%)",
+        },
+    },
+]

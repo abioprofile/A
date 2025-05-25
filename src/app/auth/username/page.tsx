@@ -1,10 +1,12 @@
 "use client"
 
-import AuthLayout from "../../layouts/auth/AuthLayout"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 const SignIn = () => {
     const router = useRouter()
@@ -15,40 +17,46 @@ const SignIn = () => {
         toast("Username set", {
             description: `You have successfully set your username`,
         })
-        // Redirect
-        router.push("/offer-plans");
+        router.push("/auth/goal");
     }
     return (
-        <AuthLayout
-            heading="Input your Username"
-            paragraph="Claim your link in bio"
-            imageAlt="Username image"
-            image="/assets/images/auth/username-page.png"
-        >
-            <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-5 w-full">
-                <div className="flex items-center border border-[#7140EB] shadow-md bg-[#D9D9D9] rounded-full px-8 w-full max-w-[454px]">
-                    <span className="text-[#767676] text-sm lg:text-[20px] select-none">
-                        A.bio/
-                    </span>
-                    <input
-                        type="text"
-                        name="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        placeholder=""
-                        className="border-none h-10 lg:h-[59px] shadow-none focus:ring-0 focus:outline-none px-1 bg-transparent flex-1 text-sm lg:text-[20px]"
-                    />
+        <div className="my-auto mx-auto flex-col items-center flex justify-center min-h-screen w-full">
+
+            <div className="lg:w-1/2 p-5 max-w-xl mx-auto flex items-center justify-center">
+                <div className="flex flex-col items-center">
+                    <div className="mb-8 text-center">
+                        <h1 className="text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
+                            Create Username
+                        </h1>
+
+                        <p className="text-[#666464]">Choose a unique username that represents you.</p>
+                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-6 w-full lg:max-w-fit">
+                        <div className="space-y-2">
+                            <Label htmlFor="username" className="font-semibold">Enter Username</Label>
+                            <Input id="username" type="text" value={username} placeholder="Enter unique username" className="h-12" onChange={(e) => setUsername(e.target.value)} />
+                        </div>
+
+                        <Button
+                            type="submit"
+                            className="w-full h-12"
+                        >
+                            Create Username
+                        </Button>
+                    </form>
                 </div>
+            </div>
 
-                <Button
-                    variant="default"
-                    className='text-md lg:text-xl font-bold'
-                >
-                    Continue
-                </Button>
-            </form>
-        </AuthLayout>
-
+            <div className="relative hidden lg:w-1/2 lg:flex">
+                <Image
+                    src={"/assets/images/auth/username.svg"}
+                    alt={"Username Splash Image"}
+                    fill
+                    priority
+                    className="object-cover rounded-[2rem] p-2"
+                />
+            </div>
+        </div>
     )
 }
 

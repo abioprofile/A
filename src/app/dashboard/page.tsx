@@ -1,11 +1,13 @@
+"use client"
+
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+import React, { useState } from 'react'
 
 const DashboardPage = () => {
+    const [activeScreen, setActiveScreen] = useState<string | null>(null)
     return (
         <div className='flex flex-col flex-1 h-[calc(100vh-60px)] items-center w-full bg-[#F8F9FB]'>
             <div className='relative flex flex-col items-center'>
@@ -16,7 +18,7 @@ const DashboardPage = () => {
                     height={100}
                     className='w-full object-cover'
                 />
-                <div className='p-5 absolute top-[10rem] bg-white h-[161px] w-[80%] border border-[#9F9F9F99] flex justify-center rounded-[10px] gap-5'>
+                <div className='p-5 absolute top-[10rem] bg-white h-[161px] w-[90%] border border-[#9F9F9F99] flex justify-center rounded-[10px] gap-5'>
                     <div className='w-full flex gap-5'>
                         <Image
                             src="/assets/icons/dashboard/profile.svg"
@@ -45,15 +47,15 @@ const DashboardPage = () => {
                     <div className='w-full space-y-3 flex flex-col justify-center'>
                         <div className='flex items-center justify-between'>
                             <h1 className='font-bold text-2xl'>A.Bio Link</h1>
-                            <Link href="" className='flex gap-1 items-center text-[#7140EB]'>
-                                <span className='text-lg font-bold'>A.Bio Link</span>
+                            <button onClick={() => setActiveScreen('qrCode')} className='cursor-pointer flex gap-1 items-center text-[#7140EB]'>
+                                <span className='text-lg font-medium'>Qr Code</span>
                                 <Image
                                     src="/assets/icons/dashboard/arrow-right.svg"
                                     alt="Right arrow"
                                     width={20}
                                     height={20}
                                 />
-                            </Link>
+                            </button>
                         </div>
                         <div className='flex gap-5 items-center justify-center'>
                             <div className='relative flex-1'>
@@ -78,10 +80,16 @@ const DashboardPage = () => {
                                     width={16}
                                     height={16}
                                 />
-                                <span>Share Url</span>
+                                <span>Copy Url</span>
                             </Button>
                         </div>
                     </div>
+                </div>
+                {/* outlet here */}
+                <div className='flex gap-10 mt-28 w-[90%]'>
+                    {activeScreen === 'qrCode' ? <div>Qr Code</div> : (
+                        <div>Tabs</div>
+                    )}
                 </div>
             </div>
         </div>
