@@ -1,13 +1,14 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import ContactUs from "@/components/ContactUs";
+import GetStarted from "@/components/GetStarted";
+import Testimonials from "@/components/Testimonials";
 
 
 export default function Home() {
   return (
-    <main className="flex justify-center items-center h-screen">
-      <Link href='/auth/sign-in'>
-        <Button className="max-w-40 max-h-9 rounded-md">Continue</Button>
-      </Link>
+    <main>
+      <Testimonials />
+      <GetStarted />
+      <ContactUs />
     </main>
   );
 }

@@ -4,25 +4,25 @@
 
 @font-face {
 	font-family: "Satoshi";
-	src: url("/public/fonts/Satoshi-Bold.otf") format("truetype");
+	src: url("/fonts/Satoshi-Bold.otf") format("truetype");
 	font-weight: 800;
 	font-display: swap;
 }
 @font-face {
 	font-family: "Satoshi";
-	src: url("/public/fonts/Satoshi-Medium.otf") format("truetype");
+	src: url("/fonts/Satoshi-Medium.otf") format("truetype");
 	font-weight: 500;
 	font-display: swap;
 }
 @font-face {
 	font-family: "Satoshi";
-	src: url("/public/fonts/Satoshi-Regular.otf") format("truetype");
+	src: url("/fonts/Satoshi-Regular.otf") format("truetype");
 	font-weight: 400;
 	font-display: swap;
 }
 @font-face {
 	font-family: "Satoshi";
-	src: url("/public/fonts/Satoshi-Black.otf") format("truetype");
+	src: url("/fonts/Satoshi-Black.otf") format("truetype");
 	font-weight: 900;
 	font-display: swap;
 }
@@ -64,6 +64,7 @@
 }
 
 @theme inline {
+  --font-weight-medium: 500;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

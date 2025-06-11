@@ -1,5 +1,6 @@
 import { Platform } from "@/interfaces/platform.interfaces";
 import { LinkItem, ProfileInfo, TemplateConfig } from "@/interfaces/template.interface";
+import { url } from "inspector";
 
 export const sidebarNav = [
     {
@@ -23,6 +24,52 @@ export const sidebarNav = [
         icon: "/assets/icons/dashboard/settings.svg",
     }
 ]
+
+export const navLinks = [
+    { label: "Template", href: "/template" },
+    { label: "Shop", href: "/shop" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Contact Us", href: "/contact-us" },
+];
+
+export const socialLinks = [
+    { alt: "linkedin", src: "/icons/linkedin.svg", url: "https://www.linkedin.com/company/abio-profile" },
+    { alt: "instagram", src: "/icons/instagram.svg", url: "https://www.instagram.com/abio_profile" },
+    { alt: "tiktok", src: "/icons/tiktok.svg", url: "https://www.tiktok.com/@abio_profile" },
+    { alt: "facebook", src: "/icons/facebook.svg", url: "https://www.facebook.com/abio_profile" },
+];
+
+export const testimonials = [
+    {
+        name: "Rea Thompson",
+        role: "Influencer",
+        quote:
+            "Professional, responsive, and a total game-changer! A.bio has leveled up how I reach my fans and monetize my brand.",
+        image: "/icons/avatar-1.svg",
+    },
+    {
+        name: "Wole Shina",
+        role: "Social Media enthusiast",
+        quote:
+            "My busy schedule needs simple tools. A.bio gives me total control and rich analytics in just a few clicks!",
+        image: "/icons/avatar-2.svg",
+    },
+    {
+        name: "Fehintun Mide",
+        role: "Influencer",
+        quote:
+            "After switching to A.bio, my audience grew, and I could finally track what works best.",
+        image: "/icons/avatar-3.svg",
+    },
+    {
+        name: "Philip Jones",
+        role: "Model",
+        quote:
+            "Professional, responsive, and a total game-changer! A.bio has leveled up how I reach my fans and monetize my brand.",
+        image: "/icons/avatar-4.svg",
+    },
+];
+
 export const offers = [
     {
         plan: "Free",

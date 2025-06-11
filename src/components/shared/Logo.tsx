@@ -20,7 +20,7 @@ const Logo = ({ className, width, height, showText = false }: LogoProps) => {
                 className='max-[320px]:size-10 size-14 md:size-10'
                 priority
             />
-            {showText && <span className="text-lg font-bold">A.Bio</span>}
+            {showText && <span className="text-lg font-extrabold tracking-tight">A.Bio</span>}
         </Link>
     )
 }
