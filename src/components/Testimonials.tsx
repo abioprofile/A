@@ -22,7 +22,7 @@ const Testimonials = () => {
                             <Image src={testimonial.image} alt='avatar image' width={60} height={60} className="rounded-full object-cover" />
                             <div className='-space-y-1'>
                                 <p className='text-md font-bold'>{testimonial.name}</p>
-                                <p className='text-[13px] font-medium text-nowra'>{testimonial.role}</p>
+                                <p className='text-[13px] text-nowrap'>{testimonial.role}</p>
                             </div>
                         </div>
                     </Card>

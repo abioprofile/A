@@ -16,7 +16,7 @@ const GetStarted = () => {
                     }}
                 />
                 <div className='relative max-w-96 z-10'>
-                    <h1 className='text-2xl md:text-4xl font-bold text-[#7140EB] mb-3 tracking-tighter'>Get started with A.bio</h1>
+                    <h1 className='text-2xl md:text-4xl font-bold text-[#7140EB] mb-3'>Get started with A.bio</h1>
                     <p className='text-[16px] font-semibold'>Loved by creators, influencers, artists, musicians, coaches, and entrepreneurs worldwide.</p>
                 </div>
                 <div className='text-right mt-10'>

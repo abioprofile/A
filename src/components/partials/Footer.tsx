@@ -1,18 +1,23 @@
+"use client"
+
 import React from 'react'
 import Logo from '../shared/Logo'
 import Link from 'next/link'
 import { Separator } from '../ui/separator'
 import Image from 'next/image'
 import { navLinks, socialLinks } from '@/data'
+import { usePathname } from 'next/navigation'
 
 const Footer = () => {
+    const pathname = usePathname()
+
     return (
         <footer className='px-5 container mx-auto space-y-5 py-10'>
             <div className='grid grid-cols-1 md:grid-cols-3 gap-5 items-center'>
                 <Logo showText />
                 <div className='flex justify-between font-medium'>
                     {navLinks.map((item) => (
-                        <Link href={item.href} key={item.label} className='block'>
+                        <Link href={item.href} key={item.label} className={`${pathname === item.href ? "text-[#7140EB]" : "text-black"}block`}>
                             {item.label}
                         </Link>
                     ))}
@@ -26,7 +31,7 @@ const Footer = () => {
                 </div>
             </div>
             <Separator />
-            <div className='flex justify-between items-center'>
+            <div className='flex-col md:flex-row justify-between items-center'>
                 <div className='font-medium'>
                     ©{new Date().getFullYear()}  A.bio.Inc
                 </div>

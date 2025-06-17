@@ -1,6 +1,5 @@
 import { Platform } from "@/interfaces/platform.interfaces";
 import { LinkItem, ProfileInfo, TemplateConfig } from "@/interfaces/template.interface";
-import { url } from "inspector";
 
 export const sidebarNav = [
     {
