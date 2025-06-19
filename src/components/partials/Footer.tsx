@@ -17,7 +17,11 @@ const Footer = () => {
                 <Logo showText />
                 <div className='flex justify-between font-medium'>
                     {navLinks.map((item) => (
-                        <Link href={item.href} key={item.label} className={`${pathname === item.href ? "text-[#7140EB]" : "text-black"}block`}>
+                        <Link
+                            href={item.href}
+                            key={item.label}
+                            className={`${pathname === item.href ? "text-[#7140EB]" : ""} font-semibold transition-colors duration-200`}
+                        >
                             {item.label}
                         </Link>
                     ))}
@@ -31,7 +35,7 @@ const Footer = () => {
                 </div>
             </div>
             <Separator />
-            <div className='flex-col md:flex-row justify-between items-center'>
+            <div className='flex flex-col md:flex-row justify-between items-center'>
                 <div className='font-medium'>
                     ©{new Date().getFullYear()}  A.bio.Inc
                 </div>

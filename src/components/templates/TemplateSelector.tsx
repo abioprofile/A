@@ -6,7 +6,7 @@ import { templates } from "@/data"
 import { TemplateCard } from "./TemplateCard"
 import { initializeTemplateStore, useTemplateStore } from "@/stores/template.store"
 
-export function TemplateSelector() {
+const TemplateSelector = () => {
     const router = useRouter()
     const { selectedTemplate, setSelectedTemplate } = useTemplateStore()
 
@@ -37,3 +37,4 @@ export function TemplateSelector() {
         </div>
     )
 }
+export default TemplateSelector

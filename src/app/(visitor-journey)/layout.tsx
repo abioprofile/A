@@ -8,12 +8,12 @@ export default function VisitorLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <main>
+        <div className="min-h-screen flex flex-col">
             <NavBar />
-            <div className="mt-28">
+            <div className="flex-1 overflow-y-auto mt-5 lg:mt-28">
                 {children}
-                <Footer />
             </div>
-        </main>
+            <Footer />
+        </div>
     );
 }

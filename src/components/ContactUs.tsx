@@ -7,7 +7,7 @@ import { Button } from './ui/button'
 
 const ContactUs = () => {
     return (
-        <section className='grid grid-cols-1 md:grid-cols-2 md:items-center gap-10 lg:w-[90%] px-5 md:px-20 mx-auto'>
+        <section className='grid grid-cols-1 md:grid-cols-2 md:items-center gap-10 lg:w-[90%] md:px-20 mx-auto mb-10'>
             <div className='bg-[#E9E0FE] flex flex-col space-y-10 px-10 py-20'>
                 <h1 className='text-[#7140EB] capitalize text-3xl md:text-4xl font-bold tracking-tighter'>Contact Us</h1>
                 <Link href='mailto:abioprofile@gmail.com' className='flex items-center gap-2 hover:underline text-[#7140EB] font-semibold'>

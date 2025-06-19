@@ -26,7 +26,7 @@ export const sidebarNav = [
 
 export const navLinks = [
     { label: "Template", href: "/template" },
-    { label: "Shop", href: "/shop" },
+    { label: "Store", href: "/store" },
     { label: "Pricing", href: "/pricing" },
     { label: "Contact Us", href: "/contact-us" },
 ];

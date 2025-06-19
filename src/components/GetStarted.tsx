@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 const GetStarted = () => {
     return (
-        <section className='relative w-full my-10 md:my-20 px-5'>
+        <section className='relative w-full my-10 md:my-20'>
             <div className='md:px-20 md:w-[80%] md:mx-auto md:max-w-[844px] md:pt-20 md:pb-10 bg-[#E9E0FE] rounded-[30px] p-5'>
                 <div
                     className="hidden absolute top-0 left-0 size-28 rounded-tl-[30px]"
