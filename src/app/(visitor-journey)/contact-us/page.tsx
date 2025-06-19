@@ -7,7 +7,7 @@ import React from 'react'
 
 const ContactPage = () => {
     return (
-        <main className='container mx-auto px-5 mt-5 lg:mt-20'>
+        <main className='container mx-auto px-5 mt-5'>
             <div className='mb-12 max-w-[50rem] mx-auto'>
                 <h1 className='text-3xl lg:text-5xl font-extrabold text-center tracking-tight leading-snug'>Let us know how we can help.</h1>
                 <p className='text-center text-lg font-semibold'>Whether you&apos;re curious about features, plans, or need support — just drop us a message and
