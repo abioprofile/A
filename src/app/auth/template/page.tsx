@@ -1,4 +1,4 @@
-import { TemplateSelector } from "@/components/templates/TemplateSelector"
+import TemplateSelector from "@/components/templates/TemplateSelector"
 
 const TemplateGallery = () => {
 
