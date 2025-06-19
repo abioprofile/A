@@ -15,7 +15,7 @@ const ContactPage = () => {
                 </p>
             </div>
             <div className='grid gris-cols-1 md:grid-cols-2 rounded-[30px]'>
-                <div className='p-16 space-y-5 bg-[#E9E0FE] rounded-[30px] lg:rounded-l-[30px] flex flex-col justify-center'>
+                <div className='p-16 space-y-5 bg-[#E9E0FE] rounded-[30px] lg:rounded-none lg:rounded-l-[30px] flex flex-col justify-center'>
                     <div className='space-y-1'>
                         <h1 className='text-[#7140EB] capitalize text-3xl md:text-4xl font-bold'>Contact</h1>
                         <p className='text-base md:text-lg font-semibold md:max-w-96'>
