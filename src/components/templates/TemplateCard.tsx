@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { TemplateCardProps } from "@/interfaces/template.interface"
 import { LinkButton } from "./TemplateButton"
 import { MapPin } from "lucide-react"
+import Image from "next/image"
 
 
 export function TemplateCard({ template, onClick, isSelected }: TemplateCardProps) {
@@ -18,8 +19,13 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
             )}
             onClick={onClick}
         >
+
             <div className={cn("flex flex-col h-full", style.overlay && "bg-black/20")}>
-                <div className="bg-white p-10 pt-16">
+                <div className="bg-white p-10 pt-16 relative">
+                    <div className="absolute -bottom-[2px] left-10 flex flex-col items-center space-y-1">
+                        <Image src="/icons/link.svg" alt="" width={20} height={20} />
+                        <div className="w-6 h-1 bg-red-500 shadow-[0_2px_2px_rgba(0,0,0,0.3)] rounded-sm" />
+                    </div>
                     <div className="flex items-center gap-4 mb-6">
                         <Avatar className="size-16">
                             <AvatarImage src={profile.avatar || ""} alt={profile.name} />
