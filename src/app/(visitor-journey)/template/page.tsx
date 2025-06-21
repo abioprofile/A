@@ -1,8 +1,11 @@
+"use client"
 import { TemplateCard } from '@/components/templates/TemplateCard'
 import { templates } from '@/data'
+import { useRouter } from 'next/navigation'
 import React from 'react'
 
 const TemplatePage = () => {
+    const router = useRouter()
     return (
         <main className="min-h-screen bg-background">
             <div className="container mx-auto px-5">
@@ -22,6 +25,7 @@ const TemplatePage = () => {
                         <div key={template.id} className="flex flex-col items-center justify-center">
                             <TemplateCard
                                 template={template}
+                                onClick={() => router.push("/auth/sign-in")}
                             />
                         </div>
                     ))}

@@ -144,18 +144,20 @@ export const PLATFORMS: Platform[] = [
 
 // Sample profile for templates
 const defaultProfile: ProfileInfo = {
-    name: "Alex Johnson",
-    username: "alexj",
-    bio: "Digital creator & content strategist",
-    avatar: "/assets/icons/dashboard/profile.svg",
+    name: "David Oshinowo",
+    username: "davidosh",
+    bio: "I am a product designer & Co founder",
+    avatar: "/icons/osh.svg",
+    location: "Lagos, Nigeria"
 }
 
 // Sample links for templates
 const defaultLinks: LinkItem[] = [
     { text: "Instagram", url: "#" },
+    { text: "Behance", url: "#" },
+    { text: "Snapchat", url: "#" },
     { text: "Twitter", url: "#" },
-    { text: "My Website", url: "#" },
-    { text: "YouTube", url: "#" },
+    { text: "My Portfolio", url: "#" },
 ]
 
 export const templates: TemplateConfig[] = [
@@ -165,15 +167,15 @@ export const templates: TemplateConfig[] = [
         profile: defaultProfile,
         links: defaultLinks,
         style: {
-            backgroundColor: "#ffd1dc",
             textColor: "#333333",
             buttonColor: "#ffffff",
             buttonTextColor: "#333333",
             accentColor: "#ff6b8b",
             fontFamily: "'Inter', sans-serif",
             buttonStyle: "pill",
-            buttonBorder: true,
+            buttonBorder: false,
             buttonEffect: "flat",
+            backgroundImage: "url('/images/template-image.svg')",
         },
     },
     {
@@ -191,27 +193,7 @@ export const templates: TemplateConfig[] = [
             buttonStyle: "pill",
             buttonBorder: false,
             buttonEffect: "3d",
-            backgroundImage:
-                "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/placeholder.svg?height=600&width=400')",
-            // overlay: true,
-        },
-    },
-    {
-        id: "vibrant-collage-glass",
-        name: "Vibrant Collage Glass",
-        profile: defaultProfile,
-        links: defaultLinks,
-        style: {
-            backgroundColor: "#ffffff",
-            textColor: "#333333",
-            buttonColor: "rgba(255, 255, 255, 0.25)",
-            buttonTextColor: "#333333",
-            accentColor: "#ff4500",
-            fontFamily: "'Poppins', sans-serif",
-            buttonStyle: "pill",
-            buttonBorder: false,
-            buttonEffect: "glass",
-            backgroundImage: "url('/placeholder.svg?height=600&width=400')",
+            backgroundImage: "url('/images/template-image-2.svg')",
             // overlay: true,
         },
     },
@@ -230,6 +212,7 @@ export const templates: TemplateConfig[] = [
             buttonStyle: "rounded",
             buttonBorder: false,
             buttonEffect: "shadow",
+            backgroundImage: "url('/images/template-image-3.svg')",
         },
     },
     {

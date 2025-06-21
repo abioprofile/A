@@ -9,19 +9,19 @@ import { MapPin } from "lucide-react"
 
 export function TemplateCard({ template, onClick, isSelected }: TemplateCardProps) {
     const { style, profile, links } = template
-
+    // style={{ boxShadow: "0 3px 3px rgba(0, 0, 0, 0.25)" }} //avatar former style
     return (
         <div
             className={cn(
-                "relative overflow-hidden transition-all duration-200 cursor-pointer h-[550px] w-[80%] md:w-full",
+                "relative overflow-hidden transition-all duration-200 cursor-pointer h-[700px] w-[80%] md:w-[85%]",
                 isSelected ? "ring-2 ring-primary" : "hover:ring-2 hover:ring-primary/50",
             )}
             onClick={onClick}
         >
             <div className={cn("flex flex-col h-full", style.overlay && "bg-black/20")}>
-                <div className="bg-white p-6">
+                <div className="bg-white p-10 pt-16">
                     <div className="flex items-center gap-4 mb-6">
-                        <Avatar className="size-16" style={{ boxShadow: "0 3px 3px rgba(0, 0, 0, 0.25)" }}>
+                        <Avatar className="size-16">
                             <AvatarImage src={profile.avatar || ""} alt={profile.name} />
                             <AvatarFallback>{profile.name.charAt(0)}</AvatarFallback>
                         </Avatar>
@@ -38,11 +38,11 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                     </p>
                     <div className="items-center rounded-full border border-[#989898] gap-1 px-1 inline-flex">
                         <MapPin className="size-3" />
-                        <span style={{ fontFamily: style.fontFamily }} className="text-xs text-[#989898]">Lagos, Nigeria</span>
+                        <span style={{ fontFamily: style.fontFamily }} className="text-xs text-[#989898] font-medium">{profile.location}</span>
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-3 h-full px-10 pt-5 space-y-1"
+                <div className="flex flex-col gap-3 h-full px-10 pt-5 md:pt-10 space-y-1"
                     style={{
                         backgroundColor: style.backgroundColor,
                         backgroundImage: style.backgroundImage,

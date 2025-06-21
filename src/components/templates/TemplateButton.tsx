@@ -1,15 +1,61 @@
 import { ButtonStyle } from "@/interfaces/template.interface"
 import { cn } from "@/lib/utils"
+import { JSX } from "react";
+import {
+    FaInstagram,
+    FaFacebook,
+    FaLinkedin,
+    FaYoutube,
+    FaTiktok,
+    FaGithub,
+    FaGitlab,
+    FaDribbble,
+    FaBehance,
+    FaFigma,
+    FaMedium,
+    FaPinterest,
+    FaReddit,
+    FaDiscord,
+    FaSlack,
+    FaStackOverflow,
+    FaGlobe,
+    FaLink,
+} from "react-icons/fa";
+import { FaXTwitter, FaSnapchat } from "react-icons/fa6";
 
 interface LinkButtonProps {
     text: string
     style: ButtonStyle
+    iconName?: string;
+    url?: string;
 }
+
+export const iconMap: Record<string, JSX.Element> = {
+    instagram: <FaInstagram size={21} />,
+    facebook: <FaFacebook size={21} />,
+    twitter: <FaXTwitter size={21} />,
+    linkedin: <FaLinkedin size={21} />,
+    youtube: <FaYoutube size={21} />,
+    tiktok: <FaTiktok size={21} />,
+    snapchat: <FaSnapchat size={21} />,
+    github: <FaGithub size={21} />,
+    gitlab: <FaGitlab size={21} />,
+    dribbble: <FaDribbble size={21} />,
+    behance: <FaBehance size={21} />,
+    figma: <FaFigma size={21} />,
+    medium: <FaMedium size={21} />,
+    pinterest: <FaPinterest size={21} />,
+    reddit: <FaReddit size={21} />,
+    discord: <FaDiscord size={21} />,
+    slack: <FaSlack size={21} />,
+    stackoverflow: <FaStackOverflow size={21} />,
+    website: <FaGlobe size={21} />,
+};
 
 export function LinkButton({ text, style }: LinkButtonProps) {
     // Base classes for all buttons
     const baseClasses = cn(
-        "py-1.5 px-4 w-full transition-all duration-200 font-medium",
+        "py-2 px-4 w-full transition-all duration-200 font-medium",
         style.buttonStyle === "rounded" && "rounded-full",
         style.buttonStyle === "pill" && "rounded-md",
         style.buttonStyle === "square" && "rounded-none",
@@ -98,9 +144,12 @@ export function LinkButton({ text, style }: LinkButtonProps) {
     }
 
     const effectStyles = getEffectStyles()
+    const iconKey = text.toLowerCase().replace(/\s+/g, "");
+    const icon = iconMap[iconKey] || <FaLink />;
 
     return (
-        <button className={cn(baseClasses, effectStyles.className)} style={effectStyles.style}>
+        <button className={cn(baseClasses, effectStyles.className, 'flex items-center justify-start gap-3')} style={effectStyles.style}>
+            {icon}
             {text}
         </button>
     )

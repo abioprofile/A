@@ -8,14 +8,15 @@ export interface ProfileInfo {
     username: string
     bio: string
     avatar: string
+    location: string
 }
 
 export interface ButtonStyle {
-    backgroundColor: string
+    backgroundColor?: string
     textColor: string
     buttonColor: string
     buttonTextColor: string
-    accentColor: string
+    accentColor?: string
     fontFamily: string
     buttonStyle: "rounded" | "pill" | "square" | "outline"
     buttonBorder: boolean
