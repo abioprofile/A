@@ -7,7 +7,7 @@ const CustomNfcCardSection = () => {
         <section className="mb-5 lg:mb-10 container mx-auto px-6 md:px-10 lg:px-0">
             <div className="mx-auto lg:max-w-[70%]">
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
-                    <Image src={"/icons/custom-cards.svg"} alt="custom NFC card icons" width={500} height={500} />
+                    <Image src={"/icons/custom-cards.svg"} alt="custom NFC card icons" width={500} height={500} priority={true} />
 
                     <div className="space-y-6">
                         <div className="space-y-2">

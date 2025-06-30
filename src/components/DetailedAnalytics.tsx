@@ -6,7 +6,7 @@ const DetailedAnalytics = () => {
         <section className="mb-16 lg:mb-20 container mx-auto px-6 md:px-10 lg:px-0">
             <div className="mx-auto lg:max-w-[70%]">
                 <div className="grid lg:grid-cols-2 lg:gap-16 items-center">
-                    <Image src={"/icons/social-analytics.svg"} alt="social analytics icon" width={400} height={400} />
+                    <Image src={"/icons/social-analytics.svg"} alt="social analytics icon" width={400} height={400} priority={true} />
 
                     <div className="space-y-6">
                         <div className="space-y-4">

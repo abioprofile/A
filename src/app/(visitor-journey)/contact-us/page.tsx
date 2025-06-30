@@ -48,6 +48,7 @@ const ContactPage = () => {
                             alt="contact us image"
                             fill
                             className="object-cover rounded-r-[30px"
+                            priority={true}
                         />
                     </div>
                 </div>

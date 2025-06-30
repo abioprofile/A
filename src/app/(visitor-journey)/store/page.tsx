@@ -24,7 +24,7 @@ const ShopPage = () => {
                         >
                             <Image
                                 src={"/icons/search.svg"}
-                                priority
+                                priority={true}
                                 alt='search icon'
                                 width={20}
                                 height={20}
@@ -32,13 +32,13 @@ const ShopPage = () => {
                             />
                         </button>
                     </div>
-                    <Image src={"/icons/cart.svg"} priority alt='cart icon' width={20} height={20} className='cursor-pointer' />
+                    <Image src={"/icons/cart.svg"} priority={true} alt='cart icon' width={20} height={20} className='cursor-pointer' />
                 </div>
             </div>
 
             <div className='grid grid-cols-2 gap-10 lg:gap-40 items-center mb-8'>
                 <div className='space-y-3'>
-                    <Image src={"/icons/store-card-1.svg"} priority alt='search icon' width={550} height={550} className='cursor-pointer' />
+                    <Image src={"/icons/store-card-1.svg"} priority={true} alt='Ap card 5 image' width={550} height={550} className='cursor-pointer' />
                     <div className='space-y-2 flex flex-col items-center lg:px-20'>
                         <h3 className='text-base lg:text-xl font-semibold'>Ap Card 5</h3>
                         <h3 className='text-[#A097B5] text-base lg:text-xl font-semibold'>N35,000</h3>
@@ -46,7 +46,7 @@ const ShopPage = () => {
                 </div>
 
                 <div className='space-y-3'>
-                    <Image src={"/icons/store-card-2.svg"} priority alt='search icon' width={550} height={550} className='cursor-pointer' />
+                    <Image src={"/icons/store-card-2.svg"} priority={true} alt='Ap card 5+ image' width={550} height={550} className='cursor-pointer' />
                     <div className='space-y-2 flex flex-col items-center lg:px-20'>
                         <h3 className='text-base lg:text-xl font-semibold'>Ap Card 5+ Custom</h3>
                         <h3 className='text-[#A097B5] text-base lg:text-xl font-semibold'>N50,000</h3>
