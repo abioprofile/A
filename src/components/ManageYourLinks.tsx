@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 const ManageYourLinks = () => {
     return (
-        <section className="mb-10 lg:mb-20 container px-6 md:px-10 lg:px-0 mx-auto overflow-visible">
+        <section className="mb-20 container px-6 md:px-10 lg:px-0 mx-auto overflow-visible">
             <div className="mx-auto lg:max-w-[70%]">
                 <div className="grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-16 items-center">
                     <div className="relative space-y-3">

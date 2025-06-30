@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const DetailedAnalytics = () => {
     return (
-        <section className="mb-10 container mx-auto px-6 md:px-10 lg:px-0">
+        <section className="mb-20 lg:mb-10 container mx-auto px-6 md:px-10 lg:px-0">
             <div className="mx-auto lg:max-w-[70%]">
                 <div className="grid lg:grid-cols-2 lg:gap-16 items-center">
                     <Image src={"/icons/social-analytics.svg"} alt="social analytics icon" width={400} height={400} />

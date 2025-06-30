@@ -4,7 +4,7 @@ import Image from 'next/image'
 
 const CustomNfcCardSection = () => {
     return (
-        <section className="lg:mb-10 container mx-auto px-6 md:px-10 lg:px-0">
+        <section className="mb-5 lg:mb-10 container mx-auto px-6 md:px-10 lg:px-0">
             <div className="mx-auto lg:max-w-[70%]">
                 <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                     <Image src={"/icons/custom-cards.svg"} alt="custom NFC card icons" width={500} height={500} />
