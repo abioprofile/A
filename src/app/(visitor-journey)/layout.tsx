@@ -10,7 +10,7 @@ export default function VisitorLayout({
     return (
         <div className="min-h-screen flex flex-col">
             <NavBar />
-            <div className="flex-1 overflow-y-auto mt-5 lg:mt-28">
+            <div className="flex-1 pt-20">
                 {children}
             </div>
             <Footer />

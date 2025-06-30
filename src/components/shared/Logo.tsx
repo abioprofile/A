@@ -8,19 +8,20 @@ interface LogoProps {
     width?: number;
     height?: number;
     showText?: boolean;
+    textSize?: string
 }
-const Logo = ({ className, width, height, showText = false }: LogoProps) => {
+const Logo = ({ className, width, height, showText = false, textSize = "text-lg" }: LogoProps) => {
     return (
-        <Link href='/' className={cn('cursor-pointer inline-flex gap-2 w-fit items-center', className)}>
+        <Link href='/' className={cn('cursor-pointer inline-flex gap-1 w-fit items-center', className)}>
             <Image
                 src='/assets/icons/logo.svg'
                 alt='A logo'
                 width={width || 50}
                 height={height || 50}
-                className='max-[320px]:size-10 size-14 md:size-10'
+                className='max-[320px]:size-10 size-9 md:size-10'
                 priority
             />
-            {showText && <span className="text-lg font-extrabold tracking-tight">A.Bio</span>}
+            {showText && <span className={`${textSize} font-extrabold tracking-tight`}>A.Bio</span>}
         </Link>
     )
 }

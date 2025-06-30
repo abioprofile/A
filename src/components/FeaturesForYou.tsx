@@ -3,17 +3,19 @@ import React from 'react'
 
 const FeaturesForYou = () => {
     return (
-        <section className='mb-10 lg:mb-20 container mx-auto'>
-            <div className='bg-[#E9E0FE] rounded-[50px] p-5 lg:p-10 lg:mx-5 z-50 relative'>
-                <h4 className='text-[#7140EB] font-bold text-center lg:mt-10'>MAKE IT EASY</h4>
+        <section className='mb-10 lg:mb-20 px-6 md:px-10 lg:px-0 container mx-auto relative overflow-hidden'>
+            <div className="rounded-full bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] z-0 size-72 opacity-50 absolute -top-5 -left-44 filter blur-2xl" />
+            <div className="rounded-full bg-gradient-to-r from-[#FB8E8E] to-[#7140EB] z-0 size-32 opacity-50 absolute top-[40%] -right-20 filter blur-2xl" />
+            <div className='bg-[#E9E0FE] rounded-[50px] px-5 py-10 lg:p-10 lg:mx-5 z-40 relative'>
+                <h4 className='text-[#7140EB] font-bold text-center lg:mt-10 uppercase'>MAKE IT EASY</h4>
                 <div className='space-y-2 mb-10 lg:mb-16'>
-                    <h3 className='text-center font-bold text-xl lg:text-2xl'>Features designed for you</h3>
-                    <p className='text-center font-medium'>Combine everything in on link: Shop here, showcase your links <br />
+                    <h3 className='text-3xl md:text-4xl font-bold tracking-tighter text-center'>Features <br className='lg:hidden' />designed for you</h3>
+                    <p className='text-[15px] text-center font-medium'>Combine everything in on link: Shop here, showcase your links <br />
                         and flex it all in.
                     </p>
                 </div>
 
-                <div className='grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-20'>
+                <div className='grid grid-cols-1 lg:grid-cols-3 gap-10 lg:gap-20'>
                     <div className='bg-[#F5F1FF] p-10 rounded-[50px] flex flex-col justify-center items-center py-10 space-y-3 aspect-[1/1]'>
                         <div className='p-5 bg-[#B698FF] rounded-full'>
                             <Image src={"/icons/archieve.svg"} alt='' width={50} height={50} className='size-7' />

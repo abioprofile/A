@@ -31,33 +31,33 @@ interface LinkButtonProps {
 }
 
 export const iconMap: Record<string, JSX.Element> = {
-    instagram: <FaInstagram size={21} />,
-    facebook: <FaFacebook size={21} />,
-    twitter: <FaXTwitter size={21} />,
-    linkedin: <FaLinkedin size={21} />,
-    youtube: <FaYoutube size={21} />,
-    tiktok: <FaTiktok size={21} />,
-    snapchat: <FaSnapchat size={21} />,
-    github: <FaGithub size={21} />,
-    gitlab: <FaGitlab size={21} />,
-    dribbble: <FaDribbble size={21} />,
-    behance: <FaBehance size={21} />,
-    figma: <FaFigma size={21} />,
-    medium: <FaMedium size={21} />,
-    pinterest: <FaPinterest size={21} />,
-    reddit: <FaReddit size={21} />,
-    discord: <FaDiscord size={21} />,
-    slack: <FaSlack size={21} />,
-    stackoverflow: <FaStackOverflow size={21} />,
-    website: <FaGlobe size={21} />,
+    instagram: <FaInstagram size={21} className="size-2.5 lg:size-5" />,
+    facebook: <FaFacebook size={21} className="size-2.5 lg:size-5" />,
+    twitter: <FaXTwitter size={21} className="size-2.5 lg:size-5" />,
+    linkedin: <FaLinkedin size={21} className="size-2.5 lg:size-5" />,
+    youtube: <FaYoutube size={21} className="size-2.5 lg:size-5" />,
+    tiktok: <FaTiktok size={21} className="size-2.5 lg:size-5" />,
+    snapchat: <FaSnapchat size={21} className="size-2.5 lg:size-5" />,
+    github: <FaGithub size={21} className="size-2.5 lg:size-5" />,
+    gitlab: <FaGitlab size={21} className="size-2.5 lg:size-5" />,
+    dribbble: <FaDribbble size={21} className="size-2.5 lg:size-5" />,
+    behance: <FaBehance size={21} className="size-2.5 lg:size-5" />,
+    figma: <FaFigma size={21} className="size-2.5 lg:size-5" />,
+    medium: <FaMedium size={21} className="size-2.5 lg:size-5" />,
+    pinterest: <FaPinterest size={21} className="size-2.5 lg:size-5" />,
+    reddit: <FaReddit size={21} className="size-2.5 lg:size-5" />,
+    discord: <FaDiscord size={21} className="size-2.5 lg:size-5" />,
+    slack: <FaSlack size={21} className="size-2.5 lg:size-5" />,
+    stackoverflow: <FaStackOverflow size={21} className="size-2.5 lg:size-5" />,
+    website: <FaGlobe size={21} className="size-2.5 lg:size-5" />,
 };
 
 export function LinkButton({ text, style }: LinkButtonProps) {
     // Base classes for all buttons
     const baseClasses = cn(
-        "py-2 px-4 w-full transition-all duration-200 font-medium",
+        "py-1 lg:py-2 px-4 text-[7px] lg:text-sm w-[80%] mx-auto lg:w-full transition-all duration-200 font-medium",
         style.buttonStyle === "rounded" && "rounded-full",
-        style.buttonStyle === "pill" && "rounded-md",
+        style.buttonStyle === "pill" && "rounded-[3px]",
         style.buttonStyle === "square" && "rounded-none",
         style.buttonStyle === "outline" && "bg-transparent border",
         style.buttonBorder && "border border-current",
@@ -68,7 +68,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
         switch (style.buttonEffect) {
             case "3d":
                 return {
-                    className: "transform hover:-translate-y-1 active:translate-y-0",
+                    // className: "transform hover:-translate-y-1 active:translate-y-0",
                     style: {
                         backgroundColor: style.buttonColor,
                         color: style.buttonTextColor,
@@ -87,7 +87,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
                 }
             case "glass":
                 return {
-                    className: "backdrop-blur-sm hover:backdrop-blur-md",
+                    // className: "backdrop-blur-sm hover:backdrop-blur-md",
                     style: {
                         backgroundColor: style.buttonColor,
                         color: style.buttonTextColor,
@@ -99,7 +99,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
                 }
             case "neon":
                 return {
-                    className: "transition-all duration-300",
+                    // className: "transition-all duration-300",
                     style: {
                         backgroundColor: style.buttonColor,
                         color: style.buttonTextColor,
@@ -111,7 +111,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
                 }
             case "shadow":
                 return {
-                    className: "hover:translate-x-[2px] hover:translate-y-[2px]",
+                    // className: "hover:translate-x-[2px] hover:translate-y-[2px]",
                     style: {
                         backgroundColor: style.buttonColor,
                         color: style.buttonTextColor,
@@ -121,7 +121,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
                 }
             case "minimal":
                 return {
-                    className: "hover:bg-black/5",
+                    // className: "hover:bg-black/5",
                     style: {
                         backgroundColor: style.buttonColor,
                         color: style.buttonTextColor,
@@ -132,7 +132,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
             case "flat":
             default:
                 return {
-                    className: "hover:opacity-90 active:opacity-100",
+                    // className: "hover:opacity-90 active:opacity-100",
                     style: {
                         backgroundColor: style.buttonStyle !== "outline" ? style.buttonColor : "transparent",
                         color: style.buttonTextColor,
@@ -148,7 +148,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
     const icon = iconMap[iconKey] || <FaLink />;
 
     return (
-        <button className={cn(baseClasses, effectStyles.className, 'flex items-center justify-start gap-3')} style={effectStyles.style}>
+        <button className={cn(baseClasses, 'flex items-center justify-start gap-1 lg:gap-2')} style={effectStyles.style}>
             {icon}
             {text}
         </button>

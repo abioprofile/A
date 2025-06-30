@@ -15,7 +15,7 @@ const ShopPage = () => {
                             onBlur={() => setShowSearch(false)}
                             type="text"
                             placeholder="Search..."
-                            className={`pl-3 pr-10 py-1 rounded-[8px] transition-all duration-300 ease-in-out ${showSearch ? "w-[130px] opacity-100" : "w-0 opacity-0"}`}
+                            className={`pl-3 pr-10 py-1 transition-all duration-300 ease-in-out ${showSearch ? "w-[130px] opacity-100" : "w-0 opacity-0"}`}
                         />
 
                         <button
