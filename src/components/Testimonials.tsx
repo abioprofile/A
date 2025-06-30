@@ -6,7 +6,7 @@ import { Button } from './ui/button'
 
 const Testimonials = () => {
     return (
-        <div className='md:px-10 container mx-auto px-6 mb-16'>
+        <div className='md:px-10 container mx-auto px-6 mb-16 lg:mb-20'>
             <div className='space-y-1 text-center mb-10'>
                 <h6 className='uppercase text-[#7140EB] text-xl font-bold tracking-tight'>share it anywhere</h6>
                 <h1 className='text-3xl md:text-4xl font-bold tracking-tighter'>

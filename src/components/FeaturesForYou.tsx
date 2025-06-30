@@ -3,7 +3,7 @@ import React from 'react'
 
 const FeaturesForYou = () => {
     return (
-        <section className='w-full relative overflow-x-clip mb-16'>
+        <section className='w-full relative overflow-x-clip mb-16 lg:mb-20'>
             <div className='mb-10 lg:mb-20 px-6 md:px-10 lg:px-0 container mx-auto'>
                 <div className='bg-[#E9E0FE] rounded-[50px] px-5 py-10 lg:p-10 lg:mx-5 z-40 relative'>
                     <h4 className='text-[#7140EB] font-bold text-center lg:mt-10 uppercase'>MAKE IT EASY</h4>

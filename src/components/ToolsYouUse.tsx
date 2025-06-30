@@ -7,7 +7,7 @@ import Image from "next/image";
 
 const ToolsYouUse = () => {
     return (
-        <section className='relative w-full overflow-x-clip mb-16'>
+        <section className='relative w-full overflow-x-clip mb-16 lg:mb-20'>
             <div className="relative mb-10 lg:mb-20 container px-6 md:px-10 lg:px-0 mx-auto">
                 <Separator className="bg-black hidden lg:block z-10" />
                 <div className="lg:max-w-[70%] mx-auto">
