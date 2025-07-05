@@ -70,26 +70,25 @@ export const testimonials = [
 ];
 
 export const offers = [
+    // {
+    //     plan: "₦55,000",
+    //     description: "Start free. Upgrade anytime.",
+    //     type: "Free",
+    //     action: "handleButton1",
+    //     benefits: [
+    //         "1 Smart Profile Page.",
+    //         "Access to basic templates.",
+    //         "Add your bio, profile image & social links",
+    //         "Basic design themes (limited)",
+    //         "QR code generator",
+    //         "Basic analytics (visits & clicks)",
+    //         "Community Support"
+    //     ]
+    // },
     {
         plan: "Free",
         description: "Start free. Upgrade anytime.",
         type: "Free",
-        action: "handleButton1",
-        benefits: [
-            "1 Smart Profile Page.",
-            "Access to basic templates.",
-            "Add your bio, profile image & social links",
-            "Basic design themes (limited)",
-            "QR code generator",
-            "Basic analytics (visits & clicks)",
-            "Community Support"
-        ]
-    },
-    {
-        plan: "₦55,000",
-        description: "For those building a personal brand or business at scale.",
-        type: "Premium",
-        action: "handleButton3",
         benefits: [
             "1 Smart Profile Page.",
             "Access to basic templates.",
@@ -101,33 +100,32 @@ export const offers = [
             "Add up to 5 extra external links",
             "Advanced analytics (CTR, devices, traffic sources).",
             "Priority customer support.",
-            "One Branded NFC card included (standard design).",
-            "Dedicated Support Manager",
-            "Premium NFC Card Included (Custom design with your logo/ colors).",
+            // "One Branded NFC card included (standard design).",
             "Custom Analytics dashboard.",
+            "Dedicated Support Manager",
+            // "Premium NFC Card Included (Custom design with your logo/ colors).",
             "Full design customization (fonts, backgrounds, themes."
         ]
     },
-    {
-        plan: "₦35,000",
-        description: "Best if you’re building a real online presence. Everything in Lite and more",
-        type: "Standard",
-        action: "handleButton2",
-        benefits: [
-            "1 Smart Profile Page.",
-            "Access to basic templates.",
-            "Add your bio, profile image & social links",
-            "Basic design themes (limited)",
-            "QR code generator",
-            "Basic analytics (visits & clicks)",
-            "Community Support",
-            "Add up to 5 extra external links",
-            "Advanced analytics (CTR, devices, traffic sources).",
-            "Priority customer support.",
-            "One Branded NFC card included (standard design)."
-        ]
-
-    }
+    // {
+    //     plan: "₦35,000",
+    //     description: "Best if you’re building a real online presence. Everything in Lite and more",
+    //     type: "Standard",
+    //     action: "handleButton2",
+    //     benefits: [
+    //         "1 Smart Profile Page.",
+    //         "Access to basic templates.",
+    //         "Add your bio, profile image & social links",
+    //         "Basic design themes (limited)",
+    //         "QR code generator",
+    //         "Basic analytics (visits & clicks)",
+    //         "Community Support",
+    //         "Add up to 5 extra external links",
+    //         "Advanced analytics (CTR, devices, traffic sources).",
+    //         "Priority customer support.",
+    //         "One Branded NFC card included (standard design)."
+    //     ]
+    // }
 ];
 
 export const PLATFORMS: Platform[] = [

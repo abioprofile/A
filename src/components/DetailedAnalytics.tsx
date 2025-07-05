@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "./ui/button";
 import Image from "next/image";
 
@@ -21,8 +22,8 @@ const DetailedAnalytics = () => {
                             </p>
                         </div>
 
-                        <Button className='w-28 font-semibold h-10!'>
-                            Sign Up
+                        <Button asChild className='w-28 font-semibold h-10!'>
+                            <Link href="/auth/sign-up">Sign Up</Link>
                         </Button>
                     </div>
                 </div>

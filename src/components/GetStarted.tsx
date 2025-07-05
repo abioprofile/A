@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
+import Link from 'next/link'
 
 const GetStarted = ({ showBlur }: { showBlur?: boolean }) => {
     return (
@@ -19,8 +20,8 @@ const GetStarted = ({ showBlur }: { showBlur?: boolean }) => {
                         <div className="flex-1 relative">
                             <Input placeholder="your name" className="pl-[77px] pr-[6.5rem] lg:pr-[9rem] font-medium text-sm h-12 placeholder:font-medium placeholder:text-gray-500 placeholder:text-sm!" />
                             <span className="absolute left-3 top-1/2 -translate-y-1/2 font-semibold text-sm">abio.link/</span>
-                            <Button className='absolute right-1 top-1/2 text-sm -translate-y-1/2 w-[6rem] lg:w-34 h-10! lg:h-11! font-medium'>
-                                Get My Bio
+                            <Button asChild className='absolute right-1 top-1/2 text-sm -translate-y-1/2 w-[6rem] lg:w-34 h-10! lg:h-11! font-medium'>
+                                <Link href="#">Get My Bio</Link>
                             </Button>
                         </div>
                     </div>

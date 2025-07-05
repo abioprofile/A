@@ -33,7 +33,7 @@ const Platforms = () => {
                     {PLATFORMS.map((platform) => (
                         <button
                             key={platform.id}
-                            className={`cursor-pointer bg-[#F7F7F7] hover:bg-gray-100 flex flex-col w-24 items-center justify-center p-4 rounded-lg ${selectedPlatforms.some((p) => p.id === platform.id)
+                            className={`cursor-pointer bg-[#F7F7F7] hover:bg-gray-100 flex flex-col w-24 items-center justify-center p-4 ${selectedPlatforms.some((p) => p.id === platform.id)
                                 && "ring-2 ring-purple-500"} transition-colors`}
                             onClick={() => togglePlatform(platform)}
                         >

@@ -27,7 +27,7 @@ const Complete = () => {
                 <h1 className="text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
                     Looking good!
                 </h1>
-                <p className="text-[#666464] font-semibold px-16 text-center">Your ABio is off to a  great start. Continue building to make it even better.</p>
+                <p className="font-semibold px-16 text-center">Your ABio is off to a  great start. Continue building to make it even better.</p>
             </div>
 
             <Card
@@ -41,7 +41,7 @@ const Complete = () => {
                 }}
             >
                 <div className={cn("flex flex-col h-full", selectedTemplate?.style.overlay && "bg-black/20")}>
-                    <div className="bg-white p-6">
+                    <div className="bg-white p-6 pointer-events-none">
                         <div className="flex items-center gap-4 mb-6">
                             <Avatar className="size-16" style={{ boxShadow: "0 3px 3px rgba(0, 0, 0, 0.25)" }}>
                                 <AvatarImage src={selectedTemplate?.profile.avatar || ""} alt={selectedTemplate?.profile.name} />
@@ -79,7 +79,7 @@ const Complete = () => {
                     </div>
                 </div>
             </Card>
-            <Button onClick={() => router.push("/offer-plans")} className='max-w-sm mx-auto mt-auto'>Continue</Button>
+            <Button onClick={() => router.push("/auth/offer-plans")} className='max-w-sm mx-auto mt-auto'>Continue</Button>
         </main>
     )
 }

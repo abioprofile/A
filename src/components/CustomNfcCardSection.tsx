@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button } from './ui/button'
 import Image from 'next/image'
+import Link from 'next/link'
 
 const CustomNfcCardSection = () => {
     return (
@@ -25,8 +26,8 @@ const CustomNfcCardSection = () => {
                             </p>
                             <p className="font-semibold">One card. Endless connections.</p>
                         </div>
-                        <Button className='w-36 font-semibold h-10!'>
-                            Create Yours Now
+                        <Button asChild className='w-36 font-semibold h-10!'>
+                            <Link href="/auth/sign-in">Create Yours Now</Link>
                         </Button>
                     </div>
                 </div>

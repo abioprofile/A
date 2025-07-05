@@ -64,7 +64,7 @@ const LinksScreen = () => {
                 <h1 className="text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
                     Add your Links
                 </h1>
-                <p className="text-[#666464] font-semibold px-16 text-center">Complete  the field below to add your content on you new ABio.</p>
+                <p className="font-semibold px-16 text-center">Complete  the field below to add your content on you new ABio.</p>
             </div>
             <div className="w-[90%] md:max-w-md mx-auto flex flex-col justify-between flex-grow">
                 <div className="space-y-3">

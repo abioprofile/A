@@ -56,7 +56,7 @@ const SelectCategoryPage = () => {
                             key={category.id}
                             onClick={() => handleCategorySelect(category.id)}
                             className={cn(
-                                "h-12 w-fit px-4 rounded-md border border-[#7140EB] whitespace-nowrap",
+                                "h-12 w-fit px-4 rounded-none border border-[#7140EB] whitespace-nowrap",
                             )}
                         >
                             {category.name}

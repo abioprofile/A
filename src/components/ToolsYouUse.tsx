@@ -4,6 +4,7 @@ import { IoLogoWhatsapp } from "react-icons/io";
 import { FaXTwitter } from "react-icons/fa6";
 import { Separator } from "./ui/separator"
 import Image from "next/image";
+import Link from "next/link";
 
 const ToolsYouUse = () => {
     return (
@@ -63,8 +64,8 @@ const ToolsYouUse = () => {
                                     eliminating manual tasks, and accelerating your path to value.
                                 </p>
                             </div>
-                            <Button className='w-36 font-semibold h-10!'>
-                                Get started
+                            <Button asChild className='w-36 font-semibold h-10!'>
+                                <Link href="/auth/sign-up">Get started</Link>
                             </Button>
                         </div>
                     </div>

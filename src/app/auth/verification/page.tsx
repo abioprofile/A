@@ -65,7 +65,7 @@ const OTPVerificationContent = () => {
                             maxLength={5}
                             pattern={REGEXP_ONLY_DIGITS}
                         >
-                            {Array.from({ length: 6 }).map((_, index) => (
+                            {Array.from({ length: 5 }).map((_, index) => (
                                 <InputOTPGroup key={index}>
                                     <InputOTPSlot
                                         index={index}

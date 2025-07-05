@@ -51,11 +51,11 @@ const SelectGoalPage = () => {
                             return (
                                 <div key={goal.id}>
                                     {selectedGoal?.id === goal.id ? (
-                                        <div className="rounded-md p-[2px] bg-gradient-to-r from-[#7140EB] to-[#FB8E8E]">
+                                        <div className="p-[2px] bg-gradient-to-r from-[#7140EB] to-[#FB8E8E]">
                                             <Button
                                                 variant="outline"
                                                 onClick={() => handleGoalSelect(goal)}
-                                                className={"w-full h-16 px-6 rounded-md flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
+                                                className={"w-full h-16 px-6 rounded-none flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
                                             >
                                                 <span className="font-semibold">{goal.id}: {goal.title}</span>
                                                 {selectedGoal?.id === goal.id && <Image
@@ -71,7 +71,7 @@ const SelectGoalPage = () => {
                                         <Button
                                             variant="outline"
                                             onClick={() => handleGoalSelect(goal)}
-                                            className={"w-full h-16 px-6 rounded-md flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
+                                            className={"w-full h-16 px-6 rounded-none flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
                                         >
                                             <span className="font-semibold">{`${goal.id}: ${goal.title}`}</span>
                                         </Button>
