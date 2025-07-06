@@ -71,7 +71,7 @@ const SelectGoalPage = () => {
                                         <Button
                                             variant="outline"
                                             onClick={() => handleGoalSelect(goal)}
-                                            className={"w-full h-16 px-6 rounded-none flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
+                                            className={"w-full h-16 px-6 rounded-none flex items-center justify-between"}
                                         >
                                             <span className="font-semibold">{`${goal.id}: ${goal.title}`}</span>
                                         </Button>

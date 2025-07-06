@@ -69,7 +69,7 @@ const OTPVerificationContent = () => {
                                 <InputOTPGroup key={index}>
                                     <InputOTPSlot
                                         index={index}
-                                        className="border border-[#334155] rounded-[8px] !size-12"
+                                        className="border border-[#334155] rounded-none! !size-12"
                                     />
                                 </InputOTPGroup>
                             ))}

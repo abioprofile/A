@@ -68,7 +68,7 @@ const OffersPage = () => {
                                     </div>
                                 ))}
                             </div>
-                            <Button onClick={handleOfferClick} className={`text-xs w-24 max-w-28 shadow-3xl p-0 max-h-7 font-semibold ${index === 1 ? "bg-white hover:bg-gray-100 text-[#7140EB]" : index === 2 ? "bg-white hover:bg-gray-100 text-[#7140EB]" : "text-white mb-"}`}>Get started</Button>
+                            <Button onClick={handleOfferClick} className={`text-xs w-24 max-w-28 shadow-3xl p-0 max-h-7 font-semibold ${index === 1 ? "bg-white hover:bg-gray-100 text-[#7140EB]" : index === 2 ? "bg-white hover:bg-gray-100 text-[#7140EB]" : "text-white"}`}>Get started</Button>
                         </div>
                     </div>
                 ))}

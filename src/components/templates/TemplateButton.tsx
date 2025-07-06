@@ -31,31 +31,31 @@ interface LinkButtonProps {
 }
 
 export const iconMap: Record<string, JSX.Element> = {
-    instagram: <FaInstagram size={21} className="size-2.5 lg:size-5" />,
-    facebook: <FaFacebook size={21} className="size-2.5 lg:size-5" />,
-    twitter: <FaXTwitter size={21} className="size-2.5 lg:size-5" />,
-    linkedin: <FaLinkedin size={21} className="size-2.5 lg:size-5" />,
-    youtube: <FaYoutube size={21} className="size-2.5 lg:size-5" />,
-    tiktok: <FaTiktok size={21} className="size-2.5 lg:size-5" />,
-    snapchat: <FaSnapchat size={21} className="size-2.5 lg:size-5" />,
-    github: <FaGithub size={21} className="size-2.5 lg:size-5" />,
-    gitlab: <FaGitlab size={21} className="size-2.5 lg:size-5" />,
-    dribbble: <FaDribbble size={21} className="size-2.5 lg:size-5" />,
-    behance: <FaBehance size={21} className="size-2.5 lg:size-5" />,
-    figma: <FaFigma size={21} className="size-2.5 lg:size-5" />,
-    medium: <FaMedium size={21} className="size-2.5 lg:size-5" />,
-    pinterest: <FaPinterest size={21} className="size-2.5 lg:size-5" />,
-    reddit: <FaReddit size={21} className="size-2.5 lg:size-5" />,
-    discord: <FaDiscord size={21} className="size-2.5 lg:size-5" />,
-    slack: <FaSlack size={21} className="size-2.5 lg:size-5" />,
-    stackoverflow: <FaStackOverflow size={21} className="size-2.5 lg:size-5" />,
-    website: <FaGlobe size={21} className="size-2.5 lg:size-5" />,
+    instagram: <FaInstagram size={21} className="size-3 md:size-4 lg:size-5" />,
+    facebook: <FaFacebook size={21} className="size-3 md:size-4 lg:size-5" />,
+    twitter: <FaXTwitter size={21} className="size-3 md:size-4 lg:size-5" />,
+    linkedin: <FaLinkedin size={21} className="size-3 md:size-4 lg:size-5" />,
+    youtube: <FaYoutube size={21} className="size-3 md:size-4 lg:size-5" />,
+    tiktok: <FaTiktok size={21} className="size-3 md:size-4 lg:size-5" />,
+    snapchat: <FaSnapchat size={21} className="size-3 md:size-4 lg:size-5" />,
+    github: <FaGithub size={21} className="size-3 md:size-4 lg:size-5" />,
+    gitlab: <FaGitlab size={21} className="size-3 md:size-4 lg:size-5" />,
+    dribbble: <FaDribbble size={21} className="size-3 md:size-4 lg:size-5" />,
+    behance: <FaBehance size={21} className="size-3 md:size-4 lg:size-5" />,
+    figma: <FaFigma size={21} className="size-3 md:size-4 lg:size-5" />,
+    medium: <FaMedium size={21} className="size-3 md:size-4 lg:size-5" />,
+    pinterest: <FaPinterest size={21} className="size-3 md:size-4 lg:size-5" />,
+    reddit: <FaReddit size={21} className="size-3 md:size-4 lg:size-5" />,
+    discord: <FaDiscord size={21} className="size-3 md:size-4 lg:size-5" />,
+    slack: <FaSlack size={21} className="size-3 md:size-4 lg:size-5" />,
+    stackoverflow: <FaStackOverflow size={21} className="size-3 md:size-4 lg:size-5" />,
+    website: <FaGlobe size={21} className="size-3 md:size-4 lg:size-5" />,
 };
 
 export function LinkButton({ text, style }: LinkButtonProps) {
     // Base classes for all buttons
     const baseClasses = cn(
-        "py-1 lg:py-2 px-4 text-[7px] lg:text-sm w-[80%] mx-auto lg:w-full transition-all duration-200 font-medium",
+        "py-1 lg:py-2 px-4 text-[8px] md:text-xs lg:text-sm w-[85%] mx-auto lg:w-full transition-all duration-200 font-medium",
         style.buttonStyle === "rounded" && "rounded-full",
         style.buttonStyle === "pill" && "rounded-[3px]",
         style.buttonStyle === "square" && "rounded-none",
@@ -148,7 +148,7 @@ export function LinkButton({ text, style }: LinkButtonProps) {
     const icon = iconMap[iconKey] || <FaLink />;
 
     return (
-        <button className={cn(baseClasses, 'flex items-center justify-start gap-1 lg:gap-2')} style={effectStyles.style}>
+        <button className={cn(baseClasses, 'flex items-center justify-start gap-1 md:gap-2')} style={effectStyles.style}>
             {icon}
             {text}
         </button>

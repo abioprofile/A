@@ -24,7 +24,7 @@ const NavBar = () => {
                             <Link
                                 key={link.href}
                                 href={link.href}
-                                className={`${pathname === link.href ? "text-[#7140EB]" : ""} font-semibold transition-colors duration-200`}
+                                className={`${pathname === link.href ? "text-[#7140EB]" : ""} text-base font-semibold transition-colors duration-200`}
                             >
                                 {link.label}
                             </Link>
@@ -33,12 +33,12 @@ const NavBar = () => {
                     <div className="flex justify-between gap-3 items-center">
                         <div className="flex items-center space-x-2 lg:space-x-4">
                             <Link href={"/auth/sign-in"} passHref>
-                                <Button variant="ghost" className="text-xs font-semibold w-fit! lg:px-10 h-7! lg:h-10!">
+                                <Button variant="ghost" className="text-xs lg:text-base font-semibold w-fit! lg:px-10 h-7! lg:h-10!">
                                     Log In
                                 </Button>
                             </Link>
                             <Link href={"/auth/sign-up"} passHref>
-                                <Button className="text-xs font-semibold w-fit! lg:px-10 h-7! lg:h-10!">
+                                <Button className="text-xs lg:text-base font-semibold w-fit! lg:px-10 h-7! lg:h-10!">
                                     Sign Up
                                 </Button>
                             </Link>

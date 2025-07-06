@@ -24,7 +24,7 @@ const TemplateSelector = () => {
     }
 
     return (
-        <div className="bg-[#E2E2E2] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mx-auto w-full p-1">
+        <div className="bg-[#E2E2E2] grid grid-cols-2 lg:grid-cols-3 gap-6 mx-auto w-full p-1 px-5">
             {templates.map((template) => (
                 <div key={template.id} className="flex flex-col items-center justify-center">
                     <TemplateCard

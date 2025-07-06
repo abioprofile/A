@@ -41,7 +41,10 @@ const HeroSection = () => {
 
                             <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0">
                                 <div className="flex-1 relative">
-                                    <Input placeholder="your name" className="pl-[77px] pr-[8.5rem] lg:pr-[9rem] font-medium text-sm h-12 placeholder:font-medium placeholder:text-gray-500" />
+                                    <Input
+                                        placeholder="your name"
+                                        className="pl-[77px] pr-[8.5rem] lg:pr-[9rem] font-medium text-sm h-12 placeholder:font-medium placeholder:text-gray-500"
+                                    />
                                     <span className="absolute left-3 top-1/2 -translate-y-1/2 font-semibold text-sm">abio.link/</span>
                                     <Button className='absolute right-1 top-1/2 text-sm -translate-y-1/2 w-[7.5rem] lg:w-34 h-10! lg:h-11! font-medium'>
                                         Create My Link
