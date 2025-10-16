@@ -1,6 +1,6 @@
 import NavBar from "@/components/partials/NavBar";
 import Footer from "@/components/partials/Footer";
-
+    
 
 export default function VisitorLayout({
     children,
@@ -10,10 +10,10 @@ export default function VisitorLayout({
     return (
         <div className="min-h-screen flex flex-col">
             <NavBar />
-            <div className="flex-1 pt-20">
+            <div className="flex-1 ">
                 {children}
             </div>
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 }

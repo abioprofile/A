@@ -20,20 +20,20 @@ const ResetPassword = () => {
         router.push("/auth/sign-in")
     }
     return (
-        <div className="h-screen w-full flex justify-center items-center p-5">
+        <div className="h-screen w-full bg-[#FEF4EA] flex justify-center items-center p-5">
             <div className="max-w-lg mx-auto">
-                <div className="mb-8 text-center">
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-2 whitespace-nowrap bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
+                <div className="mb-8 text-left">
+                    <h1 className="text-xl lg:text-2xl font-bold mb-2 whitespace-nowrap text-[#331400] bg-clip-text">
                         Reset Password
                     </h1>
 
-                    <p className="text-[#666464] px-10">
+                    <p className="text-[#666464] text-[15px]">
                         Please enter a new password to complete the reset
                         process and secure your account.
                     </p>
                 </div>
-                <form className="space-y-6">
-                    <div className="space-y-2">
+                <form className="space-y-4">
+                    <div className="space-y-2.5">
                         <Label htmlFor="new_password" className="font-semibold">New Password</Label>
                         <Input id="new_password" type="text" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="Enter new password" className="h-12 w-full!" />
                     </div>
@@ -44,7 +44,7 @@ const ResetPassword = () => {
 
                     <Button
                         type="submit"
-                        className="w-full h-12"
+                        className="w-full bg-[#FED45C] text-black font-semibold h-10"
                         onClick={handleSubmit}>
                         Confirm email
                     </Button>

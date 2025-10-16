@@ -1,5 +1,6 @@
 import { Platform } from "@/interfaces/platform.interfaces";
 import { LinkItem, ProfileInfo, TemplateConfig } from "@/interfaces/template.interface";
+import {ImageIcon, PencilLineIcon, MapPinIcon} from "lucide-react";
 
 export const sidebarNav = [
     {
@@ -13,14 +14,14 @@ export const sidebarNav = [
         icon: "/assets/icons/dashboard/appearance.svg",
     },
     {
-        title: "Statistics",
+        title: "Analytics",
         url: "/dashboard/statistics",
         icon: "/assets/icons/dashboard/statistics.svg",
     },
     {
-        title: "Settings",
-        url: "/dashboard/settings",
-        icon: "/assets/icons/dashboard/settings.svg",
+        title: "Store",
+        url: "/dashboard/store",
+        icon: "/assets/icons/dashboard/store.svg",
     }
 ]
 
@@ -214,3 +215,8 @@ export const templates: TemplateConfig[] = [
         },
     },
 ]
+export const dropdownLinks = [
+  { label: "Edit Image", action: "editImage", icon: ImageIcon },
+  { label: "Edit Name and Bio", action: "editBio", icon: PencilLineIcon },
+  { label: "Location", action: "editLocation", icon: MapPinIcon },
+];

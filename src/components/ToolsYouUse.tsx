@@ -8,11 +8,11 @@ import Link from "next/link";
 
 const ToolsYouUse = () => {
     return (
-        <section className='relative w-full overflow-x-clip mb-16 lg:mb-20'>
-            <div className="relative mb-10 lg:mb-20 container px-6 md:px-10 lg:px-0 mx-auto">
+        <section className='relative w-full px-10 xl:px-20 overflow-x-clip mb-16 lg:mb-20'>
+            <div className="relative mb-10 lg:mb-20 container  md:px-10 lg:px-20 ">
                 <Separator className="bg-black hidden lg:block z-10" />
-                <div className="lg:max-w-[70%] mx-auto">
-                    <div className="grid lg:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-16 items-center">
+                <div className=" mx-auto">
+                    <div className="grid lg:grid-cols-[1fr_auto_1fr]  gap-10 items-center">
                         <div className="grid grid-cols-6 gap-4 w-full lg:max-w-md mx-auto lg:mx-0">
                             {[
                                 { icon: FaYoutube, color: "text-red-600" },
@@ -50,16 +50,16 @@ const ToolsYouUse = () => {
                         <Separator orientation="vertical" className="bg-black hidden lg:block" />
 
                         <div className="space-y-6 lg:pt-10">
-                            <div className="space-y-2">
-                                <h4 className="text-[#7140EB] uppercase font-bold">
+                            <div className="space-y-4">
+                                <h4 className="text-[#7140EB] text-[13px] uppercase font-bold">
                                     15,000+ INTEGRATION
                                 </h4>
-                                <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
+                                <h2 className="text-3xl xl:text-5xl font-bold tracking-tight">
                                     Integrate with the
                                     <br />
                                     tools you already use
                                 </h2>
-                                <p className="font-semibold text-[15px]">
+                                <p className="font-thin text-[13px]  xl:text-[15px]">
                                     With Abio, enjoy seamless native integrations with all major platforms automating workflows,
                                     eliminating manual tasks, and accelerating your path to value.
                                 </p>

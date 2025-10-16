@@ -32,17 +32,17 @@ const SelectGoalPage = () => {
         toast("Successful", {
             description: `You have successfully choosen your goal`,
         })
-        router.push("/auth/category")
+        router.push("/auth/platforms")
     }
 
     return (
-        <div className="flex flex-col items-center justify-center h-screen p-5">
+        <div className="flex flex-col bg-[#FEF4EA] items-center justify-center h-screen p-5">
             <div className="w-full max-w-xl">
-                <div className="text-center space-y-5 mb-5">
-                    <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
+                <div className="text-center space-y-4 mb-5">
+                    <h1 className="text-3xl lg:text-3xl font-bold  bg-clip-text">
                         Which best describes your goal for using A.bio
                     </h1>
-                    <p className="text-[#666464]">What brings you to A.bio?</p>
+                    <p className="text-[#000] text-[15px]">What brings you to A.bio?</p>
                 </div>
 
                 <div className="max-w-md mx-auto">
@@ -51,11 +51,11 @@ const SelectGoalPage = () => {
                             return (
                                 <div key={goal.id}>
                                     {selectedGoal?.id === goal.id ? (
-                                        <div className="p-[2px] bg-gradient-to-r from-[#7140EB] to-[#FB8E8E]">
+                                        <div className="p-[2px] bg-[#331400]">
                                             <Button
                                                 variant="outline"
                                                 onClick={() => handleGoalSelect(goal)}
-                                                className={"w-full h-16 px-6 rounded-none flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
+                                                className={"w-full h-10 px-6 rounded-none flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
                                             >
                                                 <span className="font-semibold">{goal.id}: {goal.title}</span>
                                                 {selectedGoal?.id === goal.id && <Image
@@ -83,7 +83,7 @@ const SelectGoalPage = () => {
 
                     <Button
                         className={cn(
-                            "w-full h-12 text-white font-semibold",
+                            "w-full h-10 text-black bg-[#FED45C] font-semibold",
                             !selectedGoal && "bg-[#D9D9D9] cursor-not-allowed",
                         )}
                         disabled={!selectedGoal}

@@ -18,27 +18,27 @@ const ForgotPassword = () => {
         router.push(`/auth/verification?prev=forgot-password&email=${email}`)
     }
     return (
-        <div className="h-screen w-full flex justify-center items-center p-5">
+        <div className="h-screen w-full flex bg-[#FEF4EA] justify-center items-center p-5">
             <div className="max-w-lg mx-auto">
-                <div className="mb-8 text-center">
-                    <h1 className="text-3xl lg:text-4xl font-bold mb-2 whitespace-nowrap bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
-                        Forgot your password?
+                <div className="mb-8 text-left">
+                    <h1 className="text-xl lg:text-3xl font-bold mb-2 whitespace-nowrap text-[#331400] bg-clip-text">
+                        Forgot Password?
                     </h1>
 
-                    <p className="text-[#666464] px-10">
-                        Looks like your  password  slipped your mind. Let&apos;s
+                    <p className="text-[#666464] text-[15px]">
+                        Looks like your  password  slipped your mind. Let’s 
                         get you sorted. Enter your Registered email below.
                     </p>
                 </div>
-                <form className="space-y-6">
-                    <div className="space-y-2">
+                <form className="space-y-4">
+                    <div className="space-y-2.5">
                         <Label htmlFor="email" className="font-semibold">Email Address</Label>
                         <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email address" className="h-12 w-full!" />
                     </div>
 
                     <Button
                         type="submit"
-                        className="w-full h-12"
+                        className="w-full bg-[#FED45C] text-black font-semibold h-12"
                         onClick={handleSubmit}>
                         Confirm email
                     </Button>
