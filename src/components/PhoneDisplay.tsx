@@ -34,7 +34,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({ buttonStyle, fontStyle, sel
   };
 
   return (
-    <div className="relative w-[334px] h-[642px] mx-auto rounded-[36px] border-[6px] border-black overflow-hidden bg-white shadow-lg">
+    <div className="relative w-[330px] h-[600px] mx-auto border-[6px] border-black overflow-hidden bg-white shadow-lg">
       {/* Theme background */}
       <Image
         src={selectedTheme}
@@ -48,7 +48,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({ buttonStyle, fontStyle, sel
         <div className="p-6 flex flex-col h-[25%] items-start bg-white backdrop-blur-md relative">
           <div className="flex gap-2 items-center">
             <Image
-              src={profile?.profileImage || "/icons/profileplaceholder.png"}
+              src={profile?.profileImage || "/icons/profile picture.png"}
               alt="Profile"
               width={60}
               height={60}

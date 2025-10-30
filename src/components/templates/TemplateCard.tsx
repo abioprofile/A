@@ -14,7 +14,7 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
     return (
         <div
             className={cn(
-                "ring-1 ring-gray-500 md:ring-0 relative overflow-hidden transition-all duration-200 cursor-pointer h-[25rem] md:h-[35rem] lg:h-[40rem] w-full lg:w-[90%] xl:w-[85%]",
+                "ring-1 ring-gray-500 md:ring-0 relative overflow-hidden transition-all duration-200 cursor-pointer h-[25rem] md:h-[35rem] lg:h-[40rem] w-full lg:w-[80%] xl:w-[85%]",
                 isSelected ? "ring-2 ring-primary" : "hover:ring-2 hover:ring-primary/50",
             )}
             onClick={onClick}

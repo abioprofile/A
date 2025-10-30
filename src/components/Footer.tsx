@@ -1,134 +1,105 @@
-"use client"
-import React from "react"
-import Image from "next/image"
-import {
-  FaLinkedin,
-  FaInstagram,
-  FaTiktok,
-  FaSnapchatGhost,
-} from "react-icons/fa"
+"use client";
+
+import Link from "next/link";
+import { FaInstagram, FaTiktok, FaPinterest, FaTwitter } from "react-icons/fa";
+import Image from "next/image";
 
 const Footer = () => {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-[#3C1C0B] text-white pt-12 pb-6">
-      <div className="container mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-10">
-        {/* Logo + description */}
-        <div>
-          <div className="flex items-center space-x-2 mb-4">
-            <Image src="/images/logo.png" alt="A.Bio" width={30} height={30} />
-            <h2 className="text-xl font-bold">A.Bio</h2>
+    <footer className="bg-[#331400] text-white py-10">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          {/* Brand Section */}
+          <div className="md:col-span-2">
+            <div className="flex items-center">
+           <Link href="/" className="flex items-center gap-1 group">
+            <Image
+              src="/icons/A.Bio.png"
+              alt="A.Bio Logo"
+              width={28}
+              height={28}
+              priority
+              className="cursor-pointer select-none transition-transform group-hover:scale-105"
+            />
+            <span className="font-bold text-xl md:text-2xl text-white tracking-wide ">
+              bio.site
+            </span>
+          </Link>
+
           </div>
-          <p className="text-sm text-gray-300 leading-relaxed">
-            A.Bio helps you showcase everything you do in one smart link, grow
-            your audience effortlessly, and track results to boost your business
-            all in a simple, professional way.
-          </p>
+          </div>
+
+          {/* Product Links */}
+          <div>
+            <h3 className="font-bold trial text-xl mb-4">Product</h3>
+            <div className="flex flex-col space-y-4 font-thin text-[13px]">
+              <Link href="#">Features</Link>
+              <Link href="#">How it works</Link>
+              <Link href="#">Setup</Link>
+              <Link href="#">FAQ</Link>
+            </div>
+          </div>
+
+          {/* Legal Links */}
+          <div>
+            <h3 className="font-bold trial text-xl mb-4">Legal</h3>
+            <div className="flex flex-col space-y-4 font-thin text-[13px]">
+             
+              <Link href="#">Privacy Policy</Link>
+              
+            </div>
+          </div>
         </div>
 
-        {/* Product */}
-        <div>
-          <h3 className="font-semibold text-lg mb-3">Product</h3>
-          <ul className="space-y-2 text-gray-300">
-            <li>
-              <a href="#" className="hover:text-white">
-                Template
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Store
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Pricing
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Contact Us
-              </a>
-            </li>
-          </ul>
-        </div>
+        {/* Bottom Section */}
+        <div className="border-t border-[#FED45C] pt-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <p className="text-white font-semibold text-sm mb-4 md:mb-0">
+              © {currentYear} abio.site One Link Endless Connections
+            </p>
 
-        {/* Company */}
-        <div>
-          <h3 className="font-semibold text-lg mb-3">Company</h3>
-          <ul className="space-y-2 text-gray-300">
-            <li>
-              <a href="#" className="hover:text-white">
-                About
+            {/* Social Icons */}
+            <div className="flex space-x-4 text-lg">
+              <a
+                href="https://www.instagram.com/abio.site?igsh=MXhjYmtvOWlvbXBpeg%3D%3D&utm_source=qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2  transition-all"
+              >
+                <FaInstagram />
               </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Faq
+              <a
+                href="https://www.tiktok.com/@abio.site?_t=ZS-90XaM2rHhp4&_r=1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2 transition-all"
+              >
+                <FaTiktok />
               </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Careers
+              <a
+                href="https://pin.it/4rk3x7b28"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2 transition-all"
+              >
+                <FaPinterest />
               </a>
-            </li>
-          </ul>
-        </div>
-
-        {/* Legal */}
-        <div>
-          <h3 className="font-semibold text-lg mb-3">Legal</h3>
-          <ul className="space-y-2 text-gray-300">
-            <li>
-              <a href="#" className="hover:text-white">
-                Terms of Service
+              <a
+                href="https://x.com/abioprofile?s=21"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2 transition-all"
+              >
+                <FaTwitter />
               </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Privacy Policy
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Community Guidelines
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-white">
-                Cookie Policy
-              </a>
-            </li>
-          </ul>
-        </div>
-      </div>
-
-      {/* Divider */}
-      <div className="border-t border-yellow-600 mt-10 pt-6 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
-          {/* Copyright */}
-          <p className="text-sm text-gray-300 mb-4 md:mb-0">
-            © 2025 A.Bio.site. One Link Endless Connections
-          </p>
-
-          {/* Socials */}
-          <div className="flex space-x-4">
-            <a href="#" className="p-2 border border-white rounded hover:bg-white hover:text-black">
-              <FaLinkedin />
-            </a>
-            <a href="#" className="p-2 border border-white rounded hover:bg-white hover:text-black">
-              <FaInstagram />
-            </a>
-            <a href="#" className="p-2 border border-white rounded hover:bg-white hover:text-black">
-              <FaTiktok />
-            </a>
-            <a href="#" className="p-2 border border-white rounded hover:bg-white hover:text-black">
-              <FaSnapchatGhost />
-            </a>
+            </div>
           </div>
         </div>
       </div>
     </footer>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

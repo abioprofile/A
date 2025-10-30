@@ -1,137 +1,169 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { useRef, useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { MapPin, ImageIcon } from "lucide-react"
-import { useUserStore } from "@/stores/user.store"
-import Image from "next/image"
-import { Textarea } from "@/components/ui/textarea"
-import { useRouter } from "next/navigation"
+import { useRef, useState, ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { MapPin, ImageIcon } from "lucide-react";
+import { useUserStore } from "@/stores/user.store";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export default function ProfileScreen() {
-    const { bio, location, profileImage, setBio, setLocation, resetStore, setProfileImage } = useUserStore()
-    const fileInputRef = useRef<HTMLInputElement>(null)
-    const router = useRouter()
-    const [loading, setLoading] = useState(false)
+  const {
+    bio,
+    location,
+    profileImage,
+    setBio,
+    setLocation,
+    resetStore,
+    setProfileImage,
+  } = useUserStore();
 
-    const handleContinue = () => {
-        setLoading(true)
-        resetStore()
-        setTimeout(() => {
-            router.push("/auth/complete")
-        }, 3000)
-    }
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
 
-    const handleProfileImageClick = () => {
-        if (fileInputRef.current) {
-            fileInputRef.current.click()
-        }
-    }
+  const handleContinue = (): void => {
+    setLoading(true);
+    resetStore();
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const file = event.target.files?.[0]
-        if (!file) return
+    setTimeout(() => {
+      router.push("/auth/complete");
+    }, 2000);
+  };
 
-        const reader = new FileReader()
-        reader.onload = (e) => {
-            const imageUrl = e.target?.result as string
-            setProfileImage(imageUrl)
-        }
-        reader.readAsDataURL(file)
-    }
+  const handleProfileImageClick = (): void => {
+    fileInputRef.current?.click();
+  };
 
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>): void => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (typeof e.target?.result === "string") {
+        setProfileImage(e.target.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // LOADING SCREEN
+  if (loading) {
     return (
-        <main className="min-h-screen container flex flex-col mx-auto pb-20 pt-10">
-            {loading && (
-                <div className="absolute inset-0 z-50 flex flex-col space-y-5 items-center justify-center bg-white/70 backdrop-blur-sm">
-                    <div className="flex items-center gap-3">
-                        <Image src="/assets/icons/loading.svg" alt="Loading icon" width={50} height={50} className="size-10 animate-spin" />
-                        <h1 className="text-xl font-bold mb-2 bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
-                            Uploading your Abio
-                        </h1>
-                    </div>
-                    <Image src="/assets/icons/loading-image.svg" alt="Loading icon" priority width={500} height={500} />
-                </div>
-            )}
+      <main className="min-h-screen flex flex-col items-center justify-center bg-[#FEF4EA]">
+        <div className="flex items-center gap-3 text-[#331400]">
+          {/* Spinner */}
+          <div className="w-5 h-5 border-2 border-[#331400]/30 border-t-[#331400] rounded-full animate-spin" />
+          <span className="font-bold text-xl">Uploading your Abio</span>
+        </div>
+      </main>
+    );
+  }
 
-            <div className="flex justify-between mb-5 w-[90%] md:w-full mx-auto">
-                <div className="flex items-center cursor-pointer" onClick={() => router.push("/auth/links")}>
-                    <Image src={"/assets/icons/back.svg"} alt="back icon" width={20} height={50} />
-                    <span className="text-[#7140EB] text-sm font-semibold">Back</span>
-                </div>
-                <div className="flex items-center cursor-pointer" onClick={() => router.push("/auth/complete")}>
-                    <span className="text-[#7140EB] text-sm font-semibold">Skip</span>
-                    <Image src={"/assets/icons/skip.svg"} alt="skip icon" width={20} height={50} />
-                </div>
+  return (
+    <main className="min-h-screen bg-[#FEF4EA] flex flex-col items-center px-4 pt-6 pb-10">
+      {/* Back Button */}
+      <div
+        onClick={() => router.back()}
+        className="flex items-center gap-1 bg-[#331400] text-[#FFE4A5] px-3 py-1 text-sm font-medium cursor-pointer self-start ml-4"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="text-[#FFE4A5]"
+        >
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+        Back
+      </div>
+
+      {/* Header */}
+      <h1 className="text-center text-[#4B2E1E] text-[22px] font-semibold mt-6 mb-10 leading-snug max-w-md">
+        Add your name and image to make <br />
+        your Profile more you
+      </h1>
+
+      {/* Gradient Card */}
+      <div className="bg-gradient-to-b from-[#FFE9B1] to-[#FDF6E3] px-6 py-10 w-full max-w-xl flex flex-col items-center shadow-sm">
+        {/* Image Upload */}
+        <button
+          onClick={handleProfileImageClick}
+          className="w-24 h-24 rounded-full bg-[#4B2E1E] flex items-center justify-center text-white text-sm mb-4 relative overflow-hidden group"
+        >
+          {profileImage ? (
+            <>
+              <Image
+                src={profileImage}
+                alt="Profile"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <ImageIcon className="w-5 h-5 text-white" />
+              </div>
+            </>
+          ) : (
+            <ImageIcon className="w-7 h-7" />
+          )}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*"
+            className="hidden"
+          />
+        </button>
+
+        <p className="text-[#4B2E1E] font-semibold mb-8">
+          Add Bio and Location
+        </p>
+
+        {/* Inputs */}
+        <div className="w-full items-center flex flex-col gap-4">
+          <Textarea
+            placeholder="Bio"
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
+            className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] placeholder:text-[#4B2E1E]/60 focus:ring-0 min-h-[100px] resize-none"
+          />
+
+          {/* Location Input */}
+          <div className="w-full flex justify-center">
+            <div className="relative w-full max-w-md">
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4B2E1E]/60" />
+              <Input
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="w-full pl-10 border border-[#4B2E1E] bg-transparent text-[#4B2E1E] placeholder:text-[#4B2E1E]/60 focus:ring-0"
+              />
             </div>
+          </div>
+        </div>
 
-            <div className="mb-14 flex justify-center items-center flex-col">
-                <h1 className="text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
-                    Add Profile Details
-                </h1>
-            </div>
-
-            <div className="flex flex-col items-center mb-8">
-                <h2 className="font-semibold text-lg mb-4">Select Profile Image</h2>
-                <button
-                    onClick={handleProfileImageClick}
-                    className="size-24 rounded-full bg-[#7E4FF3] flex items-center justify-center mb-4 cursor-pointer hover:bg-[#7d4ff3ed] transition overflow-hidden relative group"
-                >
-                    {profileImage ? (
-                        <>
-                            <Image fill src={profileImage || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
-                            <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                <ImageIcon className="size-6 text-white" />
-                            </div>
-                        </>
-                    ) : (
-                        <ImageIcon className="size-6 text-white" />
-                    )}
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        onChange={handleFileChange}
-                        accept="image/*"
-                        className="sr-only"
-                        aria-hidden="true"
-                    />
-                </button>
-            </div>
-
-            <div className="flex flex-col justify-between flex-grow mx-auto w-[90%] md:max-w-md">
-                <div className="space-y-6 ">
-                    <h2 className="font-semibold text-center text-lg">Add Bio and Location</h2>
-
-                    <div>
-                        <Textarea
-                            placeholder="Bio"
-                            className="min-h-[120px ] border-[#7140EB80] focus-visible:ring-[1px] focus-visible:ring-purple-500"
-                            value={bio}
-                            onChange={(e) => setBio(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="flex items-center gap-2 relative">
-                        <MapPin className="w-5 h-5 text-gray-400 absolute left-3" />
-                        <Input
-                            placeholder="Location"
-                            className="pl-9"
-                            value={location}
-                            onChange={(e) => setLocation(e.target.value)}
-                        />
-                    </div>
-                </div>
-
-                <Button
-                    onClick={handleContinue}
-                    className="w-full text-lg font-medium "
-                >
-                    Continue
-                </Button>
-            </div>
-        </main>
-    )
+        {/* Continue Button */}
+        <Button
+          onClick={handleContinue}
+          disabled={loading}
+          className="w-full bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E] text-lg font-semibold py-6 mt-8"
+        >
+          Continue
+        </Button>
+      </div>
+    </main>
+  );
 }
+
+
+
+

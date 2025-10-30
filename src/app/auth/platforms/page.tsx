@@ -7,7 +7,7 @@ import Image from "next/image"
 import { PLATFORMS } from "@/data"
 import { toast } from "sonner"   
 
-const MAX_PLATFORMS = 4
+const MAX_PLATFORMS = 5
 
 const Platforms = () => {
   const { selectedPlatforms, togglePlatform } = useUserStore()
@@ -36,12 +36,29 @@ const Platforms = () => {
           <span className="text-[#7140EB] text-sm font-semibold">Back</span>
         </div> */}
         <div
-          className="flex items-center gap-1 cursor-pointer"
-          onClick={() => router.push("/auth/links")}
+        className="flex bg-[#331400] px-3 py-1  items-center gap-1 cursor-pointer hover:bg-[#442000] transition-all"
+        onClick={() => router.push("/auth/links")}
         >
-          <span className="text-[#7140EB] text-sm font-semibold">Skip</span>
-          <Image src="/assets/icons/skip.svg" alt="skip icon" width={20} height={20} />
+        <span className="text-[#FFE4A5] text-sm font-semibold">Skip</span>
+
+        {/* Right Arrow Icon */}
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-[#FFE4A5]"
+        >
+            <path d="M9 18l6-6-6-6" />
+        </svg>
         </div>
+
+
       </div>
 
       {/* 🔹 Centered main content */}

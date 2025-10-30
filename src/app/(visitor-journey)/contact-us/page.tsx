@@ -1,61 +1,84 @@
-import GetStarted from '@/components/GetStarted'
+import Footer from '@/components/Footer'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import Image from 'next/image'
 import React from 'react'
 
 const ContactPage = () => {
-    return (
-        <main className='container mx-auto px-5'>
-            <div className='mb-12 max-w-[50rem] mx-auto'>
-                <h1 className='text-3xl lg:text-5xl font-extrabold text-center tracking-tight leading-snug'>Let us know how we can help.</h1>
-                <p className='text-center text-lg font-semibold'>Whether you&apos;re curious about features, plans, or need support — just drop us a message and
-                    we&apos;ll get back to you soon.
-                </p>
-            </div>
-            <div className='grid gris-cols-1 md:grid-cols-2 rounded-[30px'>
-                <div className='p-16 space-y-5 bg-[#E9E0FE] rounded-[30px lg:rounded-none lg:rounded-l-[30px flex flex-col justify-center'>
-                    <div className='space-y-1'>
-                        <h1 className='text-[#7140EB] capitalize text-3xl md:text-4xl font-bold'>Contact</h1>
-                        <p className='text-base md:text-lg font-semibold md:max-w-96'>
-                            Questions, feedback, or support we&apos;re just
-                            a message away.
-                        </p>
-                    </div>
+  return (
+    <section>
+    <main className="min-h-screen flex flex-col items-center justify-center bg-[#FEF4EA] px-5 pt-36 pb-20">
+      {/* Header */}
+      <div className="mb-12 max-w-[50rem] text-center">
+        <h1 className="text-3xl text-[#331400] trialheader mb-4 font-semibold">
+          Let us know how we can help.
+        </h1>
+        <p className="text-[15px] font-light text-gray-700">
+          Whether you're curious about features, plans, or need support — just drop us a
+          message and we&apos;ll get back to you soon.
+        </p>
+      </div>
 
-                    <form action="" className='space-y-4'>
-                        <div className='flex gap-4'>
-                            <Input placeholder='First Name' className='bg-white border-none placeholder:text-sm!' />
-                            <Input placeholder='Last Name' className='bg-white border-none placeholder:text-sm!' />
-                        </div>
-                        <Input className='w-full! bg-white border-none placeholder:text-sm!' placeholder='Email' />
-                        <Input className='w-full! bg-white border-none placeholder:text-sm!' placeholder='Subject' />
-                        <Textarea className='w-full! [field-sizing:initial]! bg-white border-none placeholder:text-sm!' placeholder='Message' rows={5} />
-                        <div className='text-left'>
-                            <Button
-                                type='submit'
-                                className='w-28 font-semibold h-10!'>
-                                Submit
-                            </Button>
-                        </div>
-                    </form>
-                </div>
-                <div className="relative w-full h-auto flex">
-                    <div className="relative w-full h-full flex-1">
-                        <Image
-                            src="/images/contact-us-image.svg"
-                            alt="contact us image"
-                            fill
-                            className="object-cover rounded-r-[30px"
-                            priority={true}
-                        />
-                    </div>
-                </div>
-            </div>
-            <GetStarted />
-        </main>
-    )
+      {/* Contact Form */}
+      <div className="w-full max-w-2xl bg-white rounded-[30px] shadow-md p-10 md:p-16 space-y-6">
+        <div className="space-y-2 text-center">
+          <h1 className="trialheader text-[#331400] capitalize text-4xl font-medium">
+            Contact
+          </h1>
+          <p className="text-[14px]">
+            Questions, feedback, or support — we&apos;re just a message away.
+          </p>
+        </div>
+
+        <form className="space-y-4">
+          <Input
+            placeholder="Full Name"
+            className="border-0 border-b border-black w-full placeholder:text-sm focus:ring-0 focus:border-[#7140EB]"
+          />
+          <Input
+            placeholder="Email"
+            className="border-0 border-b border-black w-full placeholder:text-sm focus:ring-0 focus:border-[#7140EB]"
+          />
+          <Textarea
+            placeholder="Message"
+            rows={10}
+            className="border-0 border-b border-black w-full placeholder:text-sm focus:ring-0 focus:border-[#7140EB]"
+          />
+
+          <div className="text-center">
+            <Button type="submit" className="w-28 font-semibold">
+              Submit
+            </Button>
+          </div>
+        </form>
+      </div>
+
+      {/* Subscription Section */}
+      <div className="mt-20 w-full max-w-3xl p-10 md:p-14 text-center space-y-6">
+        <h2 className="text-3xl trialheader font-medium text-[#331400]">
+          Subscribe to Our Newsletter
+        </h2>
+        <p className="text-[13px] text-gray-700">
+          Loved by creators, influencers, artists, musicians, coaches, and entrepreneurs worldwide.
+        </p>
+
+        <form className="flex flex-col sm:flex-row items-center gap-4 justify-center">
+          <Input
+            type="email"
+            placeholder="Enter your email address"
+            className="border-1 border border-black w-full sm:w-auto placeholder:text-sm focus:ring-0 focus:border-[#7140EB]"
+          />
+          <Button type="submit" className="w-full sm:w-32 font-semibold">
+            Subscribe
+          </Button>
+        </form>
+      </div>
+    </main>
+      <Footer  />
+
+    </section>
+  )
 }
 
 export default ContactPage
+

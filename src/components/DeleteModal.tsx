@@ -14,21 +14,21 @@ const DeleteModal: FC<DeleteModalProps> = ({ isOpen, onClose, onConfirm }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="w-[300px] md:w-[400px] mx-auto text-center space-y-3 md:space-y-4">
-        <h2 className="text-base md:text-lg font-bold">Delete Link</h2>
-        <p className="text-[10px] md:text-[12px]">Are you sure you want to delete this link?</p>
-        <div className="flex justify-center gap-3 md:gap-4 mt-3 md:mt-4">
+        <h2 className="text-base md:text-lg font-bold">Are you sure you want to delete?</h2>
+        {/* <p className="text-[10px] md:text-[12px]">Are you sure you want to delete this link?</p> */}
+        <div className="flex justify-center gap-6 mt-6">
           <button
             onClick={() => {
               onConfirm();
               onClose();
             }}
-            className="bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-white font-medium px-3 md:px-4 py-1 md:py-2 rounded-md text-xs md:text-sm hover:bg-red-600"
+            className="text-black font-bold px-3 md:px-4 py-1 md:py-2 border-1 border-black text-xs md:text-sm hover:bg-red-600"
           >
             Yes, Delete
           </button>
           <button
             onClick={onClose}
-            className="bg-gray-200 text-xs md:text-sm font-medium px-3 md:px-4 py-1 md:py-2 rounded-md hover:bg-gray-300"
+            className="bg-[#FED45C] text-xs md:text-sm font-bold px-3 md:px-4 py-1 md:py-2 "
           >
             Cancel
           </button>

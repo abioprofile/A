@@ -92,7 +92,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
       </div>
 
       {/* Opacity */}
-      <div className="w-full">
+      {/* <div className="w-full">
         <label className="block font-medium mb-2">Opacity</label>
         <div className="flex items-center bg-[#ECECED] border border-[#7E4FF3] py-[5px] px-[4px] gap-2 w-full">
           <input
@@ -122,7 +122,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
             {Math.round(fontStyle.opacity * 50)}%
           </span>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

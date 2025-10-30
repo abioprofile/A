@@ -58,13 +58,23 @@ const SelectGoalPage = () => {
                                                 className={"w-full h-10 px-6 rounded-none flex items-center justify-between transition-all bg-[#D9D9D9] border border-gray-200 hover:bg-gray-200"}
                                             >
                                                 <span className="font-semibold">{goal.id}: {goal.title}</span>
-                                                {selectedGoal?.id === goal.id && <Image
-                                                    src={'/assets/icons/dashboard/blue-check.svg'}
-                                                    alt='check icon'
-                                                    width={15}
-                                                    height={15}
-                                                    priority
-                                                />}
+                                                {selectedGoal?.id === goal.id && <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="15"
+                                                        height="15"
+                                                        viewBox="0 0 24 24"
+                                                        fill="none"
+                                                        >
+                                                        <circle cx="12" cy="12" r="12" fill="#000000" />
+                                                        <path
+                                                            d="M17 8L10.5 14.5L7 11"
+                                                            stroke="white"
+                                                            strokeWidth="2"
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                        />
+                                                        </svg>
+                                                        }
                                             </Button>
                                         </div>
                                     ) : (

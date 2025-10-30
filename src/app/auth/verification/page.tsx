@@ -73,7 +73,7 @@ const OTPVerificationContent = () => {
                                 <InputOTPGroup key={index}>
                                     <InputOTPSlot
                                         index={index}
-                                        className="border border-[#334155] rounded-md size-12 text-center text-lg"
+                                        className="border border-[#334155]  size-15 text-center text-lg"
                                     />
                                 </InputOTPGroup>
                             ))}
@@ -81,13 +81,13 @@ const OTPVerificationContent = () => {
 
 
                         {/* Align change email to right */}
-                        <div className="flex justify-end w-full">
-                            <p className="text-sm text-gray-600 mr-1">
+                        <div className="flex text-[12px] justify-end w-full">
+                            <p className="text-gray-600 mr-1">
                                 Using different email address?
                             </p>
                             <Link
                                 href=""
-                                className="font-semibold text-sm bg-[#EA2228] text-transparent bg-clip-text hover:underline"
+                                className="font-semibold bg-[#EA2228] text-transparent bg-clip-text hover:underline"
                             >
                                 Change
                             </Link>

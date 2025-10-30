@@ -13,7 +13,7 @@ const platforms = [
     link: "https://www.snapchat.com/add/davidosh",
     icon: "/icons/snapchat.svg",
     bg: "bg-[#FFDCE3]",
-    offset: "ml-14", // displace to right
+    offset: "lg:ml-14", // displace to right
   },
   {
     name: "Behance",
@@ -25,7 +25,7 @@ const platforms = [
     link: "https://x.com/davidosh",
     icon: "/icons/x.svg",
     bg: "bg-[#FFDCE3]",
-    offset: "ml-14", // displace to right
+    offset: "lg:ml-14", // displace to right
   },
 ];
 
@@ -44,7 +44,7 @@ function SocialLinkCard({
 }) {
   return (
     <div
-      className={`flex flex-col border border-[#5D2D2B] shadow-[4px_4px_0px_0px_#000000] p-2 w-[400px] max-w-lg ${
+      className={`flex flex-col border border-[#5D2D2B] shadow-[4px_4px_0px_0px_#000000] p-2  lg:w-[400px] max-w-lg ${
         bg || "bg-white"
       } ${offset || ""}`}
     >
@@ -84,12 +84,12 @@ function SocialLinkCard({
 
 const ManageYourLinks = () => {
   return (
-    <section className="bg-[#FED45C] mt-20 relative mx-auto  px-8 pt-8 pb-20">
-      <div className="container mx-auto relative flex flex-col-reverse xl:grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-16 items-center">
+    <section className="bg-[#FED45C] mt-20 relative mb-10 lg:mb-0 mx-4 lg:mx-auto px-8 pt-8 pb-20">
+      <div className="container mx-auto relative flex flex-col xl:grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-16 items-center">
         {/* Text Section */}
         <div className="space-y-6">
           <div className="space-y-4 max-w-xl">
-            <h2 className="text-3xl xl:text-5xl trialheader text-[#5D2D2B] font-bold tracking-tight">
+            <h2 className="text-[35px] xl:text-5xl trialheader text-[#5D2D2B] font-bold tracking-none leading-tight">
               Integrate and Manage your Links
             </h2>
             <p className="text-[13px] w-[90%] xl:w-full xl:text-[15px] font-thin">
@@ -102,7 +102,7 @@ const ManageYourLinks = () => {
                 height="50"
                 width="50"
                 
-                className="w-full absolute -bottom-8 right-40 h-[250px]"
+                className="w-full hidden lg:block absolute -bottom-8 right-40 h-[250px]"
             />
         {/* Cards Section */}
         <div className="space-y-4">

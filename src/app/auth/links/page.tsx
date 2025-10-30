@@ -49,19 +49,45 @@ const LinksScreen = () => {
     }
 
     return (
-        <main className="min-h-screen container flex flex-col mx-auto pb-20 pt-10">
-            <div className="flex justify-between mb-5 w-[90%] md:w-full mx-auto">
-                <div className="flex items-center cursor-pointer" onClick={() => router.push("/auth/platforms")}>
-                    <Image src={"/assets/icons/back.svg"} alt="back icon" width={20} height={50} />
-                    <span className="text-[#7140EB] text-sm font-semibold">Back</span>
+        <main className="min-h-screen bg-[#FEF4EA] flex flex-col pt-6 pb-10">
+            <div className="flex justify-between px-10 mb-5 w-[90%] md:w-full mx-auto">
+                <div className="flex items-center bg-[#331400] px-3 py-1 cursor-pointer" onClick={() => router.push("/auth/platforms")}>
+                      <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            className="text-[#FFE4A5]"
+                        >
+                            <path d="M15 18l-6-6 6-6" />
+                        </svg>
+                    <span className="text-[#FFE4A5] text-sm font-semibold">Back</span>
                 </div>
-                <div className="flex items-center cursor-pointer" onClick={() => router.push("/auth/profile")}>
-                    <span className="text-[#7140EB] text-sm font-semibold">Skip</span>
-                    <Image src={"/assets/icons/skip.svg"} alt="skip icon" width={20} height={50} />
+                <div className="flex items-center bg-[#331400] px-3 py-1 cursor-pointer" onClick={() => router.push("/auth/profile")}>
+                    <span className="text-[#FFE4A5] text-sm font-semibold">Skip</span>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        className="text-[#FFE4A5]"
+                    >
+                        <path d="M9 18l6-6-6-6" />
+                    </svg>
                 </div>
             </div>
-            <div className="mb-16 flex justify-center items-center flex-col">
-                <h1 className="text-3xl lg:text-4xl font-bold mb-2 bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-transparent bg-clip-text">
+            <div className="mb-8 flex justify-center items-center flex-col">
+                <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-[#331400] ">
                     Add your Links
                 </h1>
                 <p className="font-semibold px-16 text-center">Complete  the field below to add your content on you new ABio.</p>
@@ -104,8 +130,8 @@ const LinksScreen = () => {
                                     </div>
                                 ) : (
                                     <>
-                                        <LinkIcon className="w-5 h-5 text-purple-500 group-hover:opacity-0 transition-opacity absolute" />
-                                        <Upload className="cursor-pointer w-5 h-5 text-purple-600 opacity-0 group-hover:opacity-100 transition-opacity absolute" />
+                                        <LinkIcon className="w-5 h-5 text-[#331400] group-hover:opacity-0 transition-opacity absolute" />
+                                        <Upload className="cursor-pointer w-5 h-5 text-[#331400] opacity-0 group-hover:opacity-100 transition-opacity absolute" />
                                     </>
                                 )}
                                 <Input
@@ -130,7 +156,7 @@ const LinksScreen = () => {
 
                 <Button
                     onClick={() => router.push("/auth/profile")}
-                    className="w-full text-lg font-medium h-10!"
+                    className="w-full mt-8 bg-[#FED45C] text-black text-[16px] font-medium h-10!"
                 >
                     Continue
                 </Button>

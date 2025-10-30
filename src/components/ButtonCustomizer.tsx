@@ -10,50 +10,50 @@ interface ButtonCustomizerProps {
 
 const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setButtonStyle }) => {
   return (
-    <div className="space-y-6 bg-white p-6 shadow-sm">
+    <div className="space-y-4  overflow-y-auto max-h-[400px] pr-2">
     {/* Corner */}
 <div>
-  <h3 className="font-semibold text-[18px] mb-4 relative inline-block">
+  {/* <h3 className="font-semibold text-[18px] mb-4 relative inline-block">
     Corner
     <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gradient-to-r from-[#7140EB] to-[#FF6EC7]"></span>
-  </h3>
+  </h3> */}
 
-  <div className="flex w-full gap-4 mt-2">
+  <div className="flex w-3/4 gap-12 mt-2">
     <button
       onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '0px' }))}
-      className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+      className="flex-1 flex flex-col items-center gap-1 text-[10px] py-3 bg-[#D9D9D9]"
     >
       <Image 
         src="/icons/sharpedge.svg" 
         alt="Sharp"
-        width={20}
-        height={20}
+        width={16}
+        height={16}
       />
       Sharp
     </button>
 
     <button
       onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '12px' }))}
-      className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+      className="flex-1 flex flex-col items-center gap-1 text-[10px] rounded-md py-3 bg-[#D9D9D9]"
     >
       <Image 
         src="/icons/curvededge.svg" 
         alt="Curved"
-        width={20}
-        height={20}
+        width={16}
+        height={16}
       />
       Curved
     </button>
 
     <button
       onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '9999px' }))}
-      className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+      className="flex-1 flex flex-col items-center rounded-full gap-1 text-[10px] py-3  bg-[#D9D9D9]"
     >
       <Image 
         src="/icons/roundedge.svg" 
         alt="Round"
-        width={20}
-        height={20}
+        width={16}
+        height={16}
       />
       Round
     </button>
@@ -63,9 +63,9 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
 
       {/* Color */}
 <div>
-  <h3 className="font-semibold text-[18px] mb-2 relative inline-block">
+  <h3 className="font-semibold text-[15px] mb-1 relative inline-block">
         Color
-        <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gradient-to-r from-[#7140EB] to-[#FF6EC7]"></span>
+        {/* <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gradient-to-r from-[#7140EB] to-[#FF6EC7]"></span> */}
     </h3>
 
   {/* Fill Color */}

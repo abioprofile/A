@@ -27,7 +27,7 @@ const faqs = [
 
 const Faq = () => {
   return (
-    <section className="container max-auto py-16 px-6 relative">
+    <section className="container max-auto py-16 px-3 md:px-6 relative">
       {/* Background Logo */}
       <div className="absolute top-80 inset-0 flex justify-center items-center pointer-events-none ">
         <Image
@@ -42,10 +42,10 @@ const Faq = () => {
       {/* Content on top */}
       <div className="relative z-10">
         {/* Header */}
-        <h2 className="text-center trialheader text-5xl mb-2 text-red-600">
+        <h2 className="text-center trialheader text-2xl md:text-5xl mb-2 text-red-600">
           Got Questions ?
         </h2>
-        <p className="text-center text-lg text-[#5D2D2B] mb-10">
+        <p className="text-center text-[14px] text-[#5D2D2B] mb-10">
           Everything you need to know about A
         </p>
 
@@ -53,13 +53,13 @@ const Faq = () => {
         <div className="max-w-3xl mx-auto space-y-4">
           {faqs.map((faq, index) => (
             <details key={index} className="group bg-[#FED45C] rounded-none">
-              <summary className="flex justify-between items-center cursor-pointer font-semibold text-xl p-4 text-[#5D2D2B]">
+              <summary className="flex justify-between items-center cursor-pointer font-semibold text-[14px] md:text-xl p-4 text-[#5D2D2B]">
                 {faq.question}
                 <span className="transition-transform duration-300 group-open:rotate-180">
                   ▼
                 </span>
               </summary>
-              <div className="p-4 pt-0 text-[#5D2D2B]">
+              <div className="p-4 pt-0 text-[13px] md:text-[14px] text-[#5D2D2B]">
                 <p>{faq.answer}</p>
               </div>
             </details>

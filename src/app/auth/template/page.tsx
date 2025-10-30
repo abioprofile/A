@@ -1,3 +1,4 @@
+// import Footer from "@/components/Footer"
 import TemplateSelector from "@/components/templates/TemplateSelector"
 
 const TemplateGallery = () => {
@@ -14,6 +15,7 @@ const TemplateGallery = () => {
 
                 <TemplateSelector />
             </div>
+            {/* <Footer /> */}
         </main>
     )
 }

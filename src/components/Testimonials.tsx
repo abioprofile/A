@@ -4,7 +4,7 @@ import "keen-slider/keen-slider.min.css"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
-// Autoplay plugin for slider
+// Autoplay plugin
 function AutoplayPlugin(slider: any) {
   let timeout: ReturnType<typeof setTimeout>
   let mouseOver = false
@@ -17,7 +17,7 @@ function AutoplayPlugin(slider: any) {
     if (mouseOver) return
     timeout = setTimeout(() => {
       slider.next()
-    }, 2000)
+    }, 2500)
   }
 
   slider.on("created", () => {
@@ -41,8 +41,8 @@ const influencers = [
   { src: "/images/WHite card.png", alt: "Influencer 2", name: "Influencer 2", link: "https://example.com/2" },
   { src: "/images/Rectangle 1189.png", alt: "Influencer 3", name: "Influencer 3", link: "https://example.com/3" },
   { src: "/images/Rectangle 1188.png", alt: "Influencer 4", name: "Influencer 4", link: "https://example.com/4" },
-  { src: "/images/WHite card.png", alt: "Influencer 2", name: "Influencer 2", link: "https://example.com/2" },
-  { src: "/images/Rectangle 1188.png", alt: "Influencer 4", name: "Influencer 4", link: "https://example.com/4" },
+  { src: "/images/WHite card.png", alt: "Influencer 5", name: "Influencer 5", link: "https://example.com/5" },
+  { src: "/images/Rectangle 1188.png", alt: "Influencer 6", name: "Influencer 6", link: "https://example.com/6" },
 ]
 
 const rotatingWords = ["Influencers", "Creators", "Artists", "Leaders", "Innovators", "Web3"]
@@ -51,9 +51,19 @@ const Testimonials = () => {
   const [sliderRef] = useKeenSlider<HTMLDivElement>(
     {
       loop: true,
-      slides: {
-        perView: 4,
-        spacing: 5,
+      breakpoints: {
+        "(max-width: 480px)": {
+          slides: { perView: 1, spacing: 10 },
+        },
+        "(min-width: 481px) and (max-width: 768px)": {
+          slides: { perView: 2, spacing: 10 },
+        },
+        "(min-width: 769px) and (max-width: 1024px)": {
+          slides: { perView: 3, spacing: 10 },
+        },
+        "(min-width: 1025px)": {
+          slides: { perView: 4, spacing: 15 },
+        },
       },
     },
     [AutoplayPlugin]
@@ -71,14 +81,10 @@ const Testimonials = () => {
     const type = () => {
       setText((prev) => {
         if (!isDeleting) {
-          // typing
           const newText = currentWord.substring(0, prev.length + 1)
-          if (newText === currentWord) {
-            setTimeout(() => setIsDeleting(true), 1000) // wait before deleting
-          }
+          if (newText === currentWord) setTimeout(() => setIsDeleting(true), 1000)
           return newText
         } else {
-          // deleting
           const newText = currentWord.substring(0, prev.length - 1)
           if (newText === "") {
             setIsDeleting(false)
@@ -94,8 +100,8 @@ const Testimonials = () => {
   }, [text, isDeleting, wordIndex])
 
   return (
-    <div className="w-full pb-16">
-      <h2 className="text-center trialheader text-[#5D2D2B] text-5xl font-bold mb-10">
+    <div className="w-full pb-16 pt-6 px-3 sm:px-6 md:px-10">
+      <h2 className="text-center trialheader text-[#5D2D2B] text-2xl sm:text-4xl md:text-5xl font-bold mb-10 leading-snug">
         Abio for all. Trusted by <br />
         <span className="text-yellow-500 border-r-4 border-yellow-500 pr-1 animate-pulse">
           {text}
@@ -104,9 +110,8 @@ const Testimonials = () => {
 
       <div ref={sliderRef} className="keen-slider">
         {influencers.map((item, index) => (
-          <div key={index} className="keen-slider__slide flex justify-start">
-            {/* Flip Card */}
-            <div className="group w-[200px] h-[200px] [perspective:1000px]">
+          <div key={index} className="keen-slider__slide flex justify-center">
+            <div className="group w-[180px] sm:w-[200px] h-[180px] sm:h-[200px] [perspective:1000px]">
               <div className="relative w-full h-full transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
                 {/* Front */}
                 <div className="absolute inset-0 [backface-visibility:hidden]">
@@ -117,6 +122,7 @@ const Testimonials = () => {
                     className="rounded-lg shadow-lg object-cover"
                   />
                 </div>
+
                 {/* Back */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-black text-white rounded-lg shadow-lg [transform:rotateY(180deg)] [backface-visibility:hidden]">
                   <p className="mb-2 font-semibold">{item.name}</p>
@@ -139,6 +145,7 @@ const Testimonials = () => {
 }
 
 export default Testimonials
+
 
 
 

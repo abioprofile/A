@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React from "react"
 import {
   Sidebar,
   SidebarContent,
@@ -10,58 +10,68 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from '../ui/sidebar'
-import Logo from '../shared/Logo'
-import { Button } from '../ui/button'
-import Image from 'next/image'
-import Link from 'next/link'
-import { sidebarNav } from '@/data'
-import { usePathname } from 'next/navigation'
-import { Separator } from '../ui/separator'
-import { useSidebarTitle } from '@/components/partials/SidebarTitleContext'
+} from "../ui/sidebar"
+import Logo from "../shared/Logo"
+import Image from "next/image"
+import Link from "next/link"
+import { sidebarNav } from "@/data"
+import { usePathname } from "next/navigation"
+import { useSidebarTitle } from "@/components/partials/SidebarTitleContext"
+import { Bell, MoreVertical, User } from "lucide-react"
 
 const DashboardSideNav = ({ ...props }: React.ComponentProps<typeof Sidebar>) => {
   const pathname = usePathname()
-  const { setTitle } = useSidebarTitle();
+  const { setTitle } = useSidebarTitle()
+
   return (
-    <Sidebar collapsible="icon" {...props} className="w-[14rem]">
-      <SidebarHeader className="px-10">
-        <Logo width={9} height={9} showText />
+    <Sidebar
+      collapsible="icon"
+      {...props}
+      className="h-full w-[4rem] bg-white shadow-sm flex flex-col items-center justify-between"
+    >
+      {/* Header with Logo */}
+      <SidebarHeader className="flex justify-center items-center mb-16">
+        <Logo width={28} height={28} />
       </SidebarHeader>
-      <Separator />
-      <SidebarContent className="w-full">
-        <SidebarGroup className="p-0">
-          <SidebarMenu className="space-y-2 w-full mx-auto md:pt-20">
-            {sidebarNav.map((item) => {
+
+      {/* Sidebar Menu (Icons Only) */}
+      <SidebarContent className="flex-1 flex flex-col items-center justify-start">
+        <SidebarGroup className="w-full">
+          <SidebarMenu className="space-y-4 flex flex-col items-center">
+            {sidebarNav.map((item, index) => {
               const isActive = pathname === item.url
+              const isFirst = index === 0
+
               return (
-                <Link key={item.title} href={item.url} onClick={() => setTitle(item.title)}>
+                <Link
+                  key={item.title}
+                  href={item.url}
+                  onClick={() => setTitle(item.title)}
+                  className="flex justify-center"
+                >
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      className={`rounded-none cursor-pointer pl-10 w-full h-8 flex items-center gap-2 hover:bg-[#f4f4f4] ${
-                        isActive ? 'bg-[#f4f4f4]' : ''
+                      className={`cursor-pointer w-9 h-9 flex items-center justify-center rounded-lg transition-all hover:bg-[#f4f4f4] ${
+                        isActive ? "bg-[#f4f4f4] shadow-sm" : ""
                       }`}
                     >
-                      {item.icon && (
-                        <Image
-                          src={item.icon}
-                          alt={`${item.title} Icon`}
-                          width={20}
-                          height={20}
-                          className={`${
-                            isActive ? 'filter-purple' : 'filter-gray'
-                          }`}
-                        />
+                      {isFirst ? (
+                        <User size={20} color={isActive ? "#FF0000" : "#331400"} />
+                      ) : (
+                        item.icon && (
+                          <Image
+                            src={item.icon}
+                            alt={`${item.title} Icon`}
+                            width={20}
+                            height={20}
+                            style={{
+                              filter: isActive
+                                ? "invert(25%) sepia(98%) saturate(7300%) hue-rotate(355deg) brightness(98%) contrast(100%)"
+                                : "invert(14%) sepia(15%) saturate(2076%) hue-rotate(347deg) brightness(94%) contrast(87%)",
+                            }}
+                          />
+                        )
                       )}
-                      <span
-                        className={`${
-                          isActive
-                            ? 'text-[#7140eb] font-bold'
-                            : 'text-black font-bold'
-                        }`}
-                      >
-                        {item.title}
-                      </span>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </Link>
@@ -71,26 +81,36 @@ const DashboardSideNav = ({ ...props }: React.ComponentProps<typeof Sidebar>) =>
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="mb-5">
-        <SidebarContent className="mx-auto">
-          <Button
-            variant="outline"
-            className="flex items-center gap-1 border-1 border-[#9F9F9F] max-w-[8rem] max-h-9"
-          >
-            <Image
-              src="/assets/icons/dashboard/signout.svg"
-              alt="Signout Icon"
-              width={15}
-              height={15}
-            />
-            Signout
-          </Button>
-        </SidebarContent>
+      {/* Footer Icons — Notification, Menu, Signout */}
+      <SidebarFooter className="pb-6 w-full flex flex-col items-center space-y-3">
+        <button className="p-2 rounded-lg hover:bg-[#f4f4f4]">
+          <Bell size={18} color="#331400" />
+        </button>
+        <button className="p-2 rounded-lg hover:bg-[#f4f4f4]">
+          <MoreVertical size={18} color="#331400" />
+        </button>
+        <button className="p-2 rounded-lg hover:bg-[#f4f4f4]">
+          <Image
+            src="/assets/icons/dashboard/signout.svg"
+            alt="Signout Icon"
+            width={18}
+            height={18}
+            style={{
+              filter:
+                "invert(14%) sepia(15%) saturate(2076%) hue-rotate(347deg) brightness(94%) contrast(87%)",
+            }}
+          />
+        </button>
       </SidebarFooter>
     </Sidebar>
   )
 }
 
 export default DashboardSideNav
+
+
+
+
+
 
 
