@@ -6,60 +6,96 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
-import Logo from "@/components/shared/Logo";
 import { Eye, EyeOff } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/lib/auth";
+import { AuthContext } from "@/context/AuthContext";
+import { login, resendOtp } from "@/lib/auth";
 
 const SignIn = () => {
   const router = useRouter();
+  const { loginUser } = useContext(AuthContext);
+
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // form data
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  // handle submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email || !password) {
+    if (!email.trim() || !password.trim()) {
       toast.error("All fields are required");
       return;
     }
 
     setLoading(true);
-    try {
-      const res = await loginUser(email, password);
 
-      if (!res?.token) throw new Error("Login failed");
+    try {
+      const res = await login(email, password);
+      const payload = res?.data?.data ?? null;
+      if (!payload) throw new Error("Invalid server response");
+
+      const { user, token } = payload;
+
+      if (!user || !token) {
+        throw new Error("Login failed");
+      }
+
+      // Save to AuthContext
+      loginUser({ user, token });
 
       toast.success("Login Successful", {
         description: "Welcome back!",
       });
 
       router.push("/dashboard");
+
     } catch (error: any) {
-      toast.error(error.message || "Login failed. Please try again.");
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Login failed. Please try again.";
+
+      console.error("LOGIN ERROR:", message);
+
+      // If email isn't verified → resend OTP automatically
+      if (message.includes("verify your email")) {
+        await resendOtp(email);
+        toast.error("Please verify your email. We've sent a new OTP.");
+        router.push(`/auth/verification?email=${email}`);
+      } else {
+        toast.error(message);
+      }
+
     } finally {
       setLoading(false);
     }
   };
 
+
   return (
     <div className="lg:flex lg:justify-between bg-[#FEF4EA] min-h-screen w-full">
-      {/* Logo Section */}
       <div className="p-4">
-        <Logo className="h-auto" />
+        <Link href="/" className="flex items-center gap-1 group">
+          <Image
+            src="/icons/A.Bio.png"
+            alt="A.Bio Logo"
+            width={28}
+            height={28}
+            priority
+            className="cursor-pointer select-none transition-transform group-hover:scale-105"
+          />
+          <span className="font-bold text-xl md:text-2xl text-black tracking-wide">
+            bio
+          </span>
+        </Link>
       </div>
 
-      {/* Main Content */}
       <div className="p-4 mt-10 max-w-xl mx-auto flex flex-col">
         <div className="flex flex-col items-center lg:mt-2 flex-1">
-          {/* Header Text */}
           <div className="mb-4 text-center">
             <h1 className="text-xl lg:text-2xl font-bold mb-1 bg-[#331400] text-transparent bg-clip-text">
               Welcome Back!
@@ -69,29 +105,23 @@ const SignIn = () => {
             </p>
           </div>
 
-          {/* Form */}
-          <form
-            className="space-y-2.5 w-full lg:max-w-fit"
-            onSubmit={handleSubmit}
-          >
-            {/* Email */}
+          <form onSubmit={handleSubmit} className="space-y-2.5 w-full lg:max-w-fit">
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold text-xs">
+              <Label htmlFor="email" className="font-semibold text-[14px]">
                 Email Address
               </Label>
               <Input
                 id="email"
                 type="email"
                 placeholder="Email"
-                className="h-8 text-xs placeholder:text-[11px] border border-black"
+                className="md:h-8 text-xs placeholder:text-[11px] border border-black"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
 
-            {/* Password */}
             <div className="space-y-2">
-              <Label htmlFor="password" className="font-semibold text-xs">
+              <Label htmlFor="password" className="font-semibold text-[14px]">
                 Password
               </Label>
               <div className="relative">
@@ -99,7 +129,7 @@ const SignIn = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="h-8 pr-7 text-xs placeholder:text-[11px] border border-black"
+                  className="md:h-8 pr-7 text-xs placeholder:text-[11px] border border-black"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -113,65 +143,52 @@ const SignIn = () => {
               </div>
             </div>
 
-            {/* Forgot Password */}
             <div className="text-right">
               <Link
                 href="/auth/forgot-password"
-                className="text-[11px] text-[#EA2228] font-semibold hover:underline"
+                className="text-[12px] text-[#EA2228] font-semibold hover:underline"
               >
                 Forgot Password?
               </Link>
             </div>
 
-            {/* Submit */}
             <Button
               type="submit"
               disabled={loading}
-              className="w-full h-8 bg-[#FED45C] text-[#331400] text-sm font-semibold"
+              className="w-full md:h-8 bg-[#FED45C] text-[#331400] text-sm font-semibold"
             >
               {loading ? "Signing in..." : "Sign In"}
             </Button>
 
-            {/* OR Divider */}
             <div className="flex items-center gap-2">
               <Separator className="flex-1" />
               <span className="text-gray-500 text-[10px]">or</span>
               <Separator className="flex-1" />
             </div>
 
-            {/* Socials */}
             <div className="grid grid-cols-2 gap-2">
-              <Button
-                variant="outline"
-                className="h-8 text-[10px] font-medium flex items-center gap-1"
-              >
+              <Button variant="outline" className="md:h-8 text-[10px] font-medium flex items-center gap-1">
                 <Image
                   src="/assets/icons/auth/apple.svg"
                   alt="apple icon"
                   width={14}
                   height={14}
-                  priority
                 />
                 Apple
               </Button>
-              <Button
-                variant="outline"
-                className="h-8 text-[10px] font-medium flex items-center gap-1"
-              >
+              <Button variant="outline" className="md:h-8 text-[10px] font-medium flex items-center gap-1">
                 <Image
                   src="/assets/icons/auth/google.svg"
                   alt="google icon"
                   width={14}
                   height={14}
-                  priority
                 />
                 Google
               </Button>
             </div>
 
-            {/* Redirect to Sign Up */}
             <div className="text-center">
-              <p className="text-[11px] text-gray-600 font-semibold">
+              <p className="text-[12px] text-gray-600 font-semibold">
                 Don&apos;t have an account?{" "}
                 <Link
                   href="/auth/sign-up"
@@ -184,11 +201,10 @@ const SignIn = () => {
           </form>
         </div>
 
-        {/* Footer */}
         <div className="mt-auto pt-2 text-right lg:pr-8">
           <Link
             href="/privacy-policy"
-            className="text-[11px] text-gray-500 font-semibold hover:underline"
+            className="text-[12px] text-gray-500 font-semibold hover:underline"
           >
             Privacy Policy
           </Link>
@@ -199,7 +215,4 @@ const SignIn = () => {
 };
 
 export default SignIn;
-
-
-
-
+  

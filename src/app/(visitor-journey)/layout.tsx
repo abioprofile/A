@@ -1,7 +1,4 @@
 import NavBar from "@/components/partials/NavBar";
-import Footer from "@/components/partials/Footer";
-    
-
 export default function VisitorLayout({
     children,
 }: Readonly<{
@@ -13,7 +10,6 @@ export default function VisitorLayout({
             <div className="flex-1 ">
                 {children}
             </div>
-            {/* <Footer /> */}
         </div>
     );
 }

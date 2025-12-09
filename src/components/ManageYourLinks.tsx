@@ -5,24 +5,24 @@ import { GripVertical, Trash2, Image as ImageIcon, Pencil } from "lucide-react";
 const platforms = [
   {
     name: "Instagram",
-    link: "https://www.instagram.com/davidosh",
+    link: "https://www.instagram.com",
     icon: "/icons/instagram.svg",
   },
   {
     name: "Snapchat",
-    link: "https://www.snapchat.com/add/davidosh",
+    link: "https://www.snapchat.com",
     icon: "/icons/snapchat.svg",
     bg: "bg-[#FFDCE3]",
     offset: "lg:ml-14", // displace to right
   },
   {
     name: "Behance",
-    link: "https://www.behance.net/davidosh",
+    link: "https://www.behance.net",
     icon: "/icons/behance.svg",
   },
   {
     name: "X",
-    link: "https://x.com/davidosh",
+    link: "https://x.com",
     icon: "/icons/x.svg",
     bg: "bg-[#FFDCE3]",
     offset: "lg:ml-14", // displace to right

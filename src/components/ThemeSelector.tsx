@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 
@@ -23,26 +23,27 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 }) => {
   return (
     <div>
-      <h3 className="font-semibold text-lg mb-4">Choose a Theme</h3>
-      <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
+     
+      <div className="grid mt-6 grid-cols-3 sm:grid-cols-4 gap-4">
         {themes.map((theme, index) => (
-          <button
-            key={index}
-            onClick={() => setSelectedTheme(theme)}
-            className={`relative border-2 rounded-lg overflow-hidden ${
-              selectedTheme === theme
-                ? "border-[#7140EB]"
-                : "border-transparent"
-            }`}
-          >
-            <Image
-              src={theme}
-              alt={`Theme ${index + 1}`}
-              width={120}
-              height={200}
-              className="object-cover"
-            />
-          </button>
+         <button
+  key={index}
+  onClick={() => setSelectedTheme(theme)}
+  className={`relative inline-block border-2  overflow-hidden transition-all ${
+    selectedTheme === theme
+      ? "border-[#E30000]"
+      : "border-transparent hover:border-gray-400"
+  }`}
+>
+  <Image
+    src={theme}
+    alt={`Theme ${index + 1}`}
+    width={100}          // Adjust width to your desired thumbnail size
+    height={100}
+    className="object-cover w-full h-full block"
+  />
+</button>
+
         ))}
       </div>
     </div>
@@ -50,3 +51,4 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 };
 
 export default ThemeSelector;
+

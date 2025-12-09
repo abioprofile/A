@@ -20,9 +20,9 @@ const ButtonAndFontTabs: React.FC<Props> = ({
   const [subTab, setSubTab] = useState<'corner' | 'font'>('corner');
 
   return (
-    <div className="bg-white shadow-sm rounded-md p-6">
+    <div className="bg-white shadow-sm  p-6">
       {/* Sub-tabs under Buttons */}
-      <div className="flex border-b border-gray-200 mb-6">
+      <div className="flex  mb-4">
         <button
           onClick={() => setSubTab('corner')}
           className={`px-4 py-2 font-semibold text-[12px] relative ${

@@ -11,7 +11,7 @@ const ForgotPassword = () => {
     const [email, setEmail] = useState("")
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        //TODO: handle form submission logic
+        //handle form submission logic
         toast("OTP sent to you email", {
             description: `Check your email`,
         })

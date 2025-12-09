@@ -28,15 +28,9 @@ const Platforms = () => {
     <main className="min-h-screen bg-[#FEF4EA] flex flex-col">
       {/* 🔹 Full-width top bar */}
       <div className="flex justify-end items-center px-16 py-8">
-        {/* <div
-          className="flex items-center gap-1 cursor-pointer"
-          onClick={() => router.push("/auth/template")}
-        >
-          <Image src="/assets/icons/back.svg" alt="back icon" width={20} height={20} />
-          <span className="text-[#7140EB] text-sm font-semibold">Back</span>
-        </div> */}
+        
         <div
-        className="flex bg-[#331400] px-3 py-1  items-center gap-1 cursor-pointer hover:bg-[#442000] transition-all"
+        className=" bg-[#331400] px-3 py-1 hidden md:flex  items-center gap-1 cursor-pointer hover:bg-[#442000] transition-all"
         onClick={() => router.push("/auth/links")}
         >
         <span className="text-[#FFE4A5] text-sm font-semibold">Skip</span>
@@ -63,11 +57,11 @@ const Platforms = () => {
 
       {/* 🔹 Centered main content */}
       <section className="flex flex-col items-center justify-center flex-grow text-center px-4">
-        <h1 className="text-3xl lg:text-4xl font-bold mb-2 text-[#331400]">
+        <h1 className="text-2xl lg:text-4xl font-bold mb-2 text-[#331400]">
           Which Platforms Are You On?
         </h1>
-        <p className="text-[#331400] font-semibold max-w-xl mb-10">
-          Where can people find you? - Tap to add platforms you use.
+        <p className="text-[#331400] text-[13px] md:text-[16px] font-semibold max-w-xl mb-10">
+          Where can people find you? Tap to add platforms you use.
         </p>
 
         <div className="flex flex-wrap max-w-xl justify-center gap-4 mb-8">
@@ -91,6 +85,17 @@ const Platforms = () => {
         >
           Continue
         </Button>
+             {/* Footer */}
+            <footer className="w-full flex items-center md:hidden justify-between gap-2 py-4  text-sm text-[#331400] mt-8">
+              <p>© 2025 Abio</p>
+              
+              <a
+                href="/privacy-policy"
+                className=" hover:text-[#000000] transition"
+              >
+                Privacy Policy
+              </a>
+            </footer>
       </section>
     </main>
   )

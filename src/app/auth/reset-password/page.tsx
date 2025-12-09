@@ -13,7 +13,7 @@ const ResetPassword = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        //TODO: handle form submission logic
+        //handle form submission logic
         toast("Password reset", {
             description: `You have successfully reset you password`
         })

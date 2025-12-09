@@ -60,17 +60,17 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
   };
 
   return (
-    <div className="max-w-3xl w-full overflow-hidden  ">
+    <div className="w-full overflow-hidden">
       {/* Card */}
-      <div className="px-6 py-6 -mb-4 ">
+      <div className="w-full py-4 -mb-4">
         <div
-          className={`  transition-all duration-200 ${
+          className={`transition-all duration-200 ${
             isActive
-              ? 'bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] p-[2px]'
-              : 'border border-[#7140EB80] hover:border-[#7140EB] p-[2px]'
+              ? ' p-[2px]'
+              : 'border border-[#000] hover:border-[#000] p-[2px]'
           }`}
         >
-          <div className="flex items-center bg-[#fafafc] p-4  select-none">
+          <div className="flex items-center bg-[#FAFAFC] p-4 select-none w-full">
             {/* Drag handle (visual only) */}
             <div
               className="flex flex-col justify-center items-center mr-4 cursor-grab space-y-1"
@@ -78,19 +78,19 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
             >
               {[0, 1, 2].map((row) => (
                 <div key={row} className="flex space-x-1">
-                  <span className="w-1 h-1 bg-gray-600 rounded-full" />
-                  <span className="w-1 h-1 bg-gray-600 rounded-full" />
+                  <span className="w-1 h-1 bg-[#ff0000] rounded-full" />
+                  <span className="w-1 h-1 bg-[#ff0000] rounded-full" />
                 </div>
               ))}
             </div>
 
             {/* Icon */}
-            <div className="flex justify-center items-center w-10 h-10 rounded-full mr-4">
+            <div className="flex justify-center items-center w-5 h-5 rounded-full mr-4">
               <Image
                 src={iconSrc}
                 alt={`${item.platform} icon`}
-                width={24}
-                height={24}
+                width={30}
+                height={30}
                 className="object-contain pointer-events-none"
                 draggable={false}
               />
@@ -109,7 +109,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
                     type="button"
                     onClick={handleEdit}
                     onPointerDown={stopAll}
-                    className="font-bold text-[16px]  hover:text-[#7140EB] transition-colors outline-none"
+                    className="font-bold text-[16px] hover:text-[#ff0000] transition-colors outline-none"
                   >
                     {item.platform}
                   </button>
@@ -118,7 +118,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
                     type="button"
                     onClick={handleEdit}
                     onPointerDown={stopAll}
-                    className="text-gray-500 hover:text-[#7140EB] transition-colors p-1 rounded"
+                    className="text-gray-500 hover:text-[#ff0000] transition-colors p-1 rounded"
                     aria-label={`Edit ${item.platform}`}
                   >
                     <PencilIcon className="h-3 w-3 pointer-events-none" />
@@ -126,12 +126,12 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
                 </div>
 
                 {/* URL (edit) */}
-                <div className="flex font-medium mb-0 text-[13px] items-center ">
+                <div className="flex font-medium mb-1 text-[13px] items-center">
                   <button
                     type="button"
                     onClick={handleEdit}
                     onPointerDown={stopAll}
-                    className="text-left hover:text-[#7140EB] transition-colors outline-none"
+                    className="text-left hover:text-[#ff0000] transition-colors outline-none"
                     title={item.url}
                   >
                     {item.url}
@@ -141,24 +141,24 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
                     type="button"
                     onClick={handleEdit}
                     onPointerDown={stopAll}
-                    className="text-gray-500 hover:text-[#7140EB] transition-colors p-1 rounded"
+                    className="text-gray-500 hover:text-[#ff0000] transition-colors p-1 rounded"
                     aria-label={`Edit URL for ${item.platform}`}
                   >
-                    <PencilIcon className="h-4 w-4 pointer-events-none" />
+                    <PencilIcon className="h-3 w-3 pointer-events-none" />
                   </button>
                 </div>
 
                 {/* Analytics toggle */}
-                <div className="flex items-center text-sm text-gray-500 gap-2">
+                <div className="flex items-center text-[10px] text-gray-500 gap-2">
                   <button
                     type="button"
                     onClick={toggleAnalytics}
                     onPointerDown={stopAll}
-                    className="flex items-center gap-2 hover:text-[#7140EB] transition-colors"
+                    className="flex items-start gap-1 hover:text-[#ff0000] transition-colors"
                     aria-expanded={showAnalytics}
                     aria-controls={`analytics-${item.id}`}
                   >
-                    <ChartBarIcon className="h-4 w-4 pointer-events-none" />
+                    <ChartBarIcon className="h-3 w-3 pointer-events-none" />
                     <span>{item.clicks} clicks</span>
                   </button>
                 </div>
@@ -174,7 +174,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
                   onClick={toggleActive}
                   onPointerDown={stopAll}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
-                    isActive ? 'bg-[#7140EB]' : 'bg-gray-300'
+                    isActive ? 'bg-[#000]' : 'bg-gray-300'
                   }`}
                 >
                   <span
@@ -220,10 +220,3 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
 };
 
 export default LinkCard;
-
-
-
-
-
-
-

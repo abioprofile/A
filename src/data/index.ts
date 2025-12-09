@@ -6,7 +6,7 @@ export const sidebarNav = [
     {
         title: "A.Bio",
         url: "/dashboard",
-        icon: "/assets/icons/dashboard/home.svg",
+        icon: "/icons/link.svg"
     },
     {
         title: "Appearance",

@@ -32,25 +32,25 @@ const DashboardTopNav = () => {
   }
   const { title } = useSidebarTitle();
   return (
-    <div className='sticky top-0 hidden md:flex justify-between bg-white items-center px-8 py-2 border-b border-l relative z-50'>
+    <div className='sticky top-0 hidden md:flex justify-between bg-white items-center px-8 py-2  relative z-50'>
       <h1 className='text-xl font-bold w-full flex-1'>{title}</h1>
 
       <div className='flex items-center gap-6 relative'>
-        <button className='relative'>
+        {/* <button className='relative'>
           <Image src='/icons/notification.svg' width={24} height={24} alt="Notifications" />
           <span className='absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full'></span>
-        </button>
+        </button> */}
 
         <div className='relative' ref={dropdownRef}>
           <button onClick={() => setDropdownOpen(!dropdownOpen)}>
             <div className="w-8 h-8 overflow-hidden">
-              <Image
-                src='/icons/profileplaceholder.png'
+              {/* <Image
+                src='/icons/Profile Picture.png'
                 width={32}
                 height={32}
                 alt="Profile"
                 className="object-cover"
-              />
+              /> */}
             </div>
           </button>
 

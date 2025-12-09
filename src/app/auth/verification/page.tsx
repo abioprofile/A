@@ -7,6 +7,7 @@ import { Suspense, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { maskEmail } from "@/lib/helpers/mask-email"
 import Link from "next/link"
+import { verifyOtp } from "@/lib/auth"
 
 const OTPVerification = () => {
     return (
@@ -30,8 +31,10 @@ const OTPVerificationContent = () => {
         setPrev(prev)
     }, [searchParams])
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault()
+        const res= await verifyOtp(otp)
+        console.log(res)
         toast("OTP Verified", {
             description: `Your OTP: ${otp}`,
         })
@@ -48,11 +51,11 @@ const OTPVerificationContent = () => {
         <div className="h-screen w-full bg-[#FEF4EA] flex justify-center items-center p-5">
             <div className="max-w-lg mx-auto w-full">
                 <div className="mb-8 text-left">
-                    <h1 className="text-xl capitalize lg:text-3xl font-bold mb-2 whitespace-nowrap text-[#331400] bg-clip-text">
+                    <h1 className="text-2xl capitalize lg:text-3xl font-bold mb-2 whitespace-nowrap text-[#331400] bg-clip-text">
                         Input OTP Code
                     </h1>
 
-                    <p className="text-[#666464] text-[15px]">
+                    <p className="text-[#666464] text-[13px]">
                         {`We have sent an OTP code to your email
                         ${maskEmail(email)}. Enter the OTP code below to
                         verify.`}
@@ -73,14 +76,12 @@ const OTPVerificationContent = () => {
                                 <InputOTPGroup key={index}>
                                     <InputOTPSlot
                                         index={index}
-                                        className="border border-[#334155]  size-15 text-center text-lg"
+                                        className="border border-[#334155] size-8 md:size-15 text-center text-lg"
                                     />
                                 </InputOTPGroup>
                             ))}
                         </InputOTP>
 
-
-                        {/* Align change email to right */}
                         <div className="flex text-[12px] justify-end w-full">
                             <p className="text-gray-600 mr-1">
                                 Using different email address?
@@ -110,6 +111,17 @@ const OTPVerificationContent = () => {
                         </Button>
                     </div>
                 </form>
+            {/* Footer  */}
+      <footer className="w-full flex items-center justify-between px-4 md:hidden gap-3 py-4  text-sm text-[#331400] mt-auto">
+        <p>© 2025 Abio</p>
+        
+        <a
+          href="/privacy-policy"
+          className="hover:text-[#000000] transition"
+        >
+          Privacy Policy
+        </a>
+      </footer>
             </div>
         </div>
     )

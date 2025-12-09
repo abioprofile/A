@@ -13,10 +13,6 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
     <div className="space-y-4  overflow-y-auto max-h-[400px] pr-2">
     {/* Corner */}
 <div>
-  {/* <h3 className="font-semibold text-[18px] mb-4 relative inline-block">
-    Corner
-    <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gradient-to-r from-[#7140EB] to-[#FF6EC7]"></span>
-  </h3> */}
 
   <div className="flex w-3/4 gap-12 mt-2">
     <button
@@ -69,7 +65,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
     </h3>
 
   {/* Fill Color */}
-  <label className="block text-[14px] font-medium mt-2">Fill</label>
+  <label className="block text-[12px] font-semibold mt-2">Fill</label>
   <div className="flex items-center gap-2">
     <input
       type="color"
@@ -79,11 +75,11 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
         setButtonStyle(s => ({ ...s, backgroundColor: e.target.value }))
       }
     />
-    <span className="text-[12px] bg-[#ECECED] border border-[#7E4FF3] w-full pl-2 py-[5px]">{buttonStyle.backgroundColor}</span>
+    <span className="text-[12px] bg-[#ECECED] border border-[#000] w-full pl-2 py-[5px]">{buttonStyle.backgroundColor}</span>
   </div>
 
   {/* Stroke Color */}
-  <label className="block text-[14px] font-medium mt-2">Stroke</label>
+  <label className="block text-[12px] font-semibold mt-2">Stroke</label>
   <div className="flex items-center gap-2">
     <input
       type="color"
@@ -93,14 +89,14 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
         setButtonStyle(s => ({ ...s, borderColor: e.target.value }))
       }
     />
-    <span className="text-[12px] bg-[#ECECED] border border-[#7E4FF3] w-full pl-2 py-[5px]">{buttonStyle.borderColor}</span>
+    <span className="text-[12px] bg-[#ECECED] border border-[#000] w-full pl-2 py-[5px]">{buttonStyle.borderColor}</span>
   </div>
 
   {/* Opacity (background only) */}
 
 <div className="mt-4">
-  <label className="block text-[14px] font-medium mb-2">Opacity</label>
-  <div className="flex items-center bg-[#ECECED] border border-[#7E4FF3] py-[5px] px-[4px] gap-2">
+  <label className="block text-[12px] font-semibold mb-2">Opacity</label>
+  <div className="flex items-center bg-[#ECECED] rounded-full border-4 border-[#000] py-[5px] px-[4px] gap-2">
     <input
       type="range"
       min="0"
@@ -111,9 +107,9 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
         setButtonStyle(s => ({ ...s, opacity: parseFloat(e.target.value) }))
       }
       style={{
-        background: `linear-gradient(to right, black ${buttonStyle.opacity * 100}%, #e5e7eb ${buttonStyle.opacity * 100}%)`,
+        background: `linear-gradient(to right, black ${buttonStyle.opacity * 100}%, #ff0000 ${buttonStyle.opacity * 100}%)`,
       }}
-      className="w-full h-[2px] rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black"
+      className="w-full h-[2px] rounded-lg pl-2 appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black"
     />
     <span className="text-sm font-medium w-12 text-center">
       {Math.round(buttonStyle.opacity * 50)}%
@@ -125,14 +121,14 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
 </div>
 
 
-      {/* Effect */}
-      <div>
-  <h3 className="font-semibold text-[18px] mb-2 relative inline-block">
+  {/* Effect */}
+<div>
+  <h3 className="font-semibold text-[15px] mb-2 relative inline-block">
     Effect
-    <span className="absolute left-0 bottom-0 w-full h-[2px] bg-gradient-to-r from-[#7140EB] to-[#FF6EC7]"></span>
   </h3>
-  <p className="text-[14px] font-medium">Drop Shadow</p>
-  <div className="flex w-full gap-4 mt-2">
+  <p className="text-[12px] font-medium">Drop Shadow</p>
+  <div className="flex w-full gap-4 my-2">
+    {/* No Shadow */}
     <button
       onClick={() => setButtonStyle(s => ({ ...s, boxShadow: 'none' }))}
       className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
@@ -146,6 +142,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
       None
     </button>
 
+    {/* Soft Shadow */}
     <button
       onClick={() =>
         setButtonStyle(s => ({
@@ -153,7 +150,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
           boxShadow: '2px 2px 6px rgba(0,0,0,0.2)',
         }))
       }
-      className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+      className="flex-1 flex flex-col items-center gap-1 shadow-[2px_2px_6px_rgba(0,0,0,0.2)] text-[10px] py-4 bg-[#D9D9D9]"
     >
       <Image
         src="/icons/tabler_shadow.svg"
@@ -164,14 +161,15 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
       Soft Shadow
     </button>
 
+    {/* Hard Shadow */}
     <button
       onClick={() =>
         setButtonStyle(s => ({
           ...s,
-          boxShadow: '4px 4px 10px rgba(0,0,0,0.4)',
+          boxShadow: '4px 4px 0px 0px #000000',
         }))
       }
-      className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+      className="flex-1 flex flex-col items-center gap-1 shadow-[4px_4px_0px_0px_#000000] text-[10px] py-4 bg-[#D9D9D9]"
     >
       <Image
         src="/icons/tablerhard.svg"
@@ -183,6 +181,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
     </button>
   </div>
 </div>
+
 
     </div>
   );

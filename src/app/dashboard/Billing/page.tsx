@@ -72,12 +72,14 @@ export default function Billing() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-10">
       {/* Plan section */}
-      <div className="bg-[#7140EB] p-6  text-white mb-10">
+      <div className='p-6 bg-[#FEF4EA] mb-4'>
+        
+      <div className="bg-[#fff] p-6  text- mb-6">
         <h2 className="text-xl font-bold mb-1">Free Plan</h2>
-        <p className="text-[12px] text-white/90 mb-6">You can edit your card details here</p>
+        <p className="text-[12px]  mb-6">You can edit your card details here</p>
 
         <p className="font-bold mb-2 text-[15px]">Payment method</p>
-        <div className="bg-[#E8DAFF] text-black p-4 flex items-center justify-between">
+        <div className="bg-[#FFE4A5] text-black p-4 flex items-center justify-between">
           <div className="flex items-center">
             <Image src="/icons/Visa icon.png" alt="Visa" width={60} height={40} className="mr-4" />
             <div className="text-sm">
@@ -86,33 +88,34 @@ export default function Billing() {
               <p className="text-[10px] text-gray-700 mb-1">💳 davidosh2003@gmail.com</p>
             </div>
           </div>
-          <button className="bg-[#B388EB] hover:bg-[#a46ae2] text-white text-sm px-4 py-2 flex items-center gap-1 transition">
+          <button className="bg-[#5D2D2B] hover:bg-[#5D2D2a] text-white text-sm px-6 py-1 flex items-center gap-1 transition">
             Edit
             <PencilIcon className="w-4 h-4" />
           </button>
         </div>
       </div>
+      </div>
 
       {/* Billing history */}
-      <div>
+      <div className='bg-[#FEF4EA] p-6'>
         <h2 className="text-xl font-bold mb-1">Billing history</h2>
         <p className="text-[12px] text-gray-600 mb-4">Get records of orders purchased</p>
 
-        <div className="overflow-x-auto border border-[#7140EB] ">
+        <div className="overflow-x-auto border border-[#B698FF] ">
           <table className="min-w-full bg-white text-sm">
             <thead className="bg-[#F9F9F9] text-left">
               <tr>
-                <th className="py-3 px-4 font-medium">Date</th>
-                <th className="py-3 px-4 font-medium">Order number</th>
-                <th className="py-3 px-4 font-medium">Product</th>
-                <th className="py-3 px-4 font-medium">Amount</th>
-                <th className="py-3 px-4 font-medium">Status</th>
+                <th className="py-3 px-4 font-bold">Date</th>
+                <th className="py-3 px-4 font-bold">Order number</th>
+                <th className="py-3 px-4 font-bold">Product</th>
+                <th className="py-3 px-4 font-bold">Amount</th>
+                <th className="py-3 px-4 font-bold">Status</th>
                 <th className="py-3 px-4 font-medium"> </th>
               </tr>
             </thead>
             <tbody>
               {history.map((item, index) => (
-                <tr key={index} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr key={index} className="border-t text-[12px] border-gray-100 hover:bg-gray-50">
                   <td className="py-3 px-4">{item.date}</td>
                   <td className="py-3 px-4">{item.order}</td>
                   <td className="py-3 px-4">{item.product}</td>
@@ -128,7 +131,7 @@ export default function Billing() {
                       {item.status}
                     </span>
                   </td>
-                  <td className="py-3 px-4 text-[#7140EB] font-medium hover:underline cursor-pointer">
+                  <td className="py-3 px-4 text-[#331400] font-medium hover:underline cursor-pointer">
                     View
                   </td>
                 </tr>

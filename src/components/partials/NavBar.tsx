@@ -29,7 +29,7 @@ const NavBar = () => {
                 className="cursor-pointer select-none transition-transform group-hover:scale-105"
               />
               <span className="font-bold text-xl md:text-2xl text-black tracking-wide ">
-                bio.site
+                bio
               </span>
               </Link>
             {/* Desktop Nav */}
@@ -44,7 +44,7 @@ const NavBar = () => {
                             className="cursor-pointer select-none transition-transform group-hover:scale-105"
                           />
                           <span className="font-bold text-xl md:text-2xl text-black tracking-wide ">
-                            bio.site
+                            bio
                           </span>
               </Link>
               {navLinks.map((link) => (

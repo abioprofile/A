@@ -1,26 +1,49 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react"; 
 import Image from "next/image";
 import Modal from "@/components/ui/modal";
 import { toast } from "sonner";
 import SideDashboard from "@/components/SideDashboard";
 import LinkList from "@/components/LinkList";
 import PhoneDisplay from "@/components/PhoneDisplay";
-import Skeleton from "@/components/Skeleton/Skeleton";
 import ButtonCustomizer, {ButtonStyle} from '@/components/ButtonCustomizer';
 import FontCustomizer, { FontStyle } from '@/components/FontCustomizer';
 import ProfileContent, {profile} from "@/components/ProfileContent";
+import { AuthContext } from "@/context/AuthContext"; 
 
 export default function DashboardPage() {
+ const { user } = useContext(AuthContext) || {};
+
+    const getFirstName = (fullName?: string) => {
+    if (!fullName) return "User";
+    return fullName.split(" ")[0];
+  };
+
+  const [firstName, setFirstName] = useState<string>(getFirstName(user?.name));
+
+  useEffect(() => {
+    if (user?.name) {
+      setFirstName(getFirstName(user.name));
+    }
+  }, [user]);
+
   const [loading, setLoading] = useState(true);
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState("David Oshinowo");
+  
   const [bio, setBio] = useState("UI/UX Designer");
   const [location, setLocation] = useState("Lagos, Nigeria");
   const [locations, setLocations] = useState<string[]>([]);
-  const [tempLocation, setTempLocation] = useState(""); // Temporary location state for editing
-  const [profileImage, setProfileImage] = useState<string>("/icons/profileplaceholder.png");
+  const [tempLocation, setTempLocation] = useState("");
+  const [profileImage, setProfileImage] = useState<string>("/icons/Profile Picture.png");
+
+   const handleToggleActive = (id: string) => {
+    setLinks(prev =>
+      prev.map(link =>
+        link.id === id ? { ...link, isActive: !link.active } : link
+      )
+    );
+  };
 
    const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
       borderRadius: '12px',
@@ -43,7 +66,7 @@ export default function DashboardPage() {
 
   const openModal = (type: string) => {
     if (type === "editLocation") {
-      setTempLocation(location); // Initialize temp location with current location
+      setTempLocation(location); 
     }
     setActiveModal(type);
   };
@@ -56,7 +79,7 @@ export default function DashboardPage() {
 ]);
   
   const handleLocationSearch = async (query: string) => {
-    setTempLocation(query); // Update temp location as user types
+    setTempLocation(query); 
     if (query.length < 2) {
       setLocations([]);
       return;
@@ -93,89 +116,39 @@ export default function DashboardPage() {
   };
 
   const handleDeleteImage = () => {
-    setProfileImage("/icons/profileplaceholder.png");
+    setProfileImage("/icons/Profile Picture.png");
     toast.success("Profile image deleted");
     closeModal();
   };
 
    
 
-  if (loading) {
-    return (
-      <section className="flex min-h-screen mt-8 p-4 md:p-6 space-y-4 md:space-y-6 bg-[#f8f9fd]">
-        {/* Main Content Skeleton */}
-        <main className="w-full md:w-[60%] space-y-4 md:space-y-6">
-          {/* Profile Card Skeleton */}
-          <div className="border shadow-sm flex gap-3 md:gap-4 items-center p-3 md:p-4 bg-white ">
-            <Skeleton width="80px" height="80px" />
-            <div className="space-y-3 w-full">
-              <div className="space-y-2">
-                <Skeleton width="150px" height="200px" />
-                <Skeleton width="100px" height="150px" />
-              </div>
-              <Skeleton width="120px" height="14px" />
-              <Skeleton width="100px" height="24px" />
-            </div>
-          </div>
-
-          {/* Link List Skeleton */}
-          <div className="bg-white p-4  space-y-4">
-            <Skeleton width="100px" height="20px" className="mb-4" />
-            {[...Array(5)].map((_, i) => (
-              <div key={i} className="flex items-center justify-between p-3 border-b border-gray-200">
-                <div className="flex items-center gap-3">
-                  <Skeleton width="24px" height="24px" />
-                  <Skeleton width="120px" height="16px" />
-                </div>
-                <Skeleton width="24px" height="24px"  />
-              </div>
-            ))}
-          </div>
-        </main>
-
-        {/* Sidebar Skeleton */}
-        <aside className="hidden md:block md:w-[40%] space-y-6">
-          {/* SideDashboard Skeleton */}
-          <div className="bg-white p-4 space-y-4">
-            <Skeleton width="150px" height="20px" />
-            <div className="grid grid-cols-2 gap-4">
-              <Skeleton width="100%" height="80px" />
-              <Skeleton width="100%" height="80px" />
-            </div>
-          </div>
-
-          {/* PhoneDisplay Skeleton */}
-          <div className="bg-white p-4 ">
-            <Skeleton width="100%" height="400px" />
-          </div>
-        </aside>
-      </section>
-    );
-  }
+  
 
   return (
-    <section className="flex min-h-screen p-4 md:p-6 space-y-4 md:space-y-6 bg-[#f8f9fd]">
-      <main className="w-full md:w-[60%] space-y-4 md:space-y-6">
-        <div className="border shadow-sm flex gap-3 md:gap-4 items-center p-3 md:p-4 bg-white ">
+    <section className="flex min-h-screen  space-y-4 md:space-y-6 bg-[#fff]">
+      <main className="w-full md:w-[60%] space-y-4">
+        <h1 className="p-8 text-[30px] font-medium">Hi, {firstName} </h1>
+        <div className=" max-w-3xl flex gap-4 items-center px-8 ">
           <Image
             src={profileImage}
             alt="Profile"
             width={80}
             height={80}
-            className="object-cover w-20 h-20 md:w-25 md:h-25 cursor-pointer rounded-full"
+            className="object-cover w-25 h-25 cursor-pointer rounded-full"
             onClick={() => openModal("imageOptions")}
           />
 
           <div>
-            <div className="mb-2 md:mb-3 cursor-pointer" onClick={() => openModal("editBio")}>
-              <h1 className="font-bold text-base md:text-lg">{displayName}</h1>
-              <p className="font-thin text-xs md:text-[12px]">@davidosh</p>
+            <div className=" mb-1 cursor-pointer" onClick={() => openModal("editBio")}>
+              <h1 className="font-semibold text-[16px]">{firstName}</h1>
+              <p className="font-thin text-xs md:text-[10px]">@davidosh</p>
             </div>
 
-            <p className="font-semibold mb-1 md:mb-2 text-xs md:text-[11px]">{bio}</p>
+            <p className="font-bold mt-2 mb-1 text-[11px]">{bio}</p>
 
             <div
-              className="flex items-center min-w-fit whitespace-nowrap border border-gray-300 gap-1 text-xs md:text-[12px] text-gray-500 cursor-pointer px-2 py-1 rounded"
+              className="flex items-center min-w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
               onClick={() => openModal("editLocation")}
             >
               <Image 
@@ -183,7 +156,7 @@ export default function DashboardPage() {
                 alt="Location" 
                 width={12} 
                 height={12} 
-                className="w-3 h-3 md:w-[14px] md:h-[14px] flex-shrink-0" 
+                className="w-3 h-3 md:w-[12px] md:h-[12px] flex-shrink-0" 
               />
               <span className="truncate">{location}</span>
             </div>
@@ -214,8 +187,8 @@ export default function DashboardPage() {
                   id="displayName"
                   name="displayName"
                   type="text"
-                  defaultValue={displayName}
-                  className="w-full border border-2 border-[#7140EB80] px-3 py-2 text-xs md:text-sm"
+                  defaultValue={firstName}
+                  className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
                   required
                 />
               </div>
@@ -229,7 +202,7 @@ export default function DashboardPage() {
                   name=" "
                   rows={3}
                   defaultValue={bio}
-                  className="w-full border border-2 border-[#7140EB80] rounded-md px-3 py-2 text-xs md:text-sm"
+                  className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
                   required
                 />
               </div>
@@ -237,7 +210,7 @@ export default function DashboardPage() {
               <div className="flex justify-center gap-3">
                 <button
                   type="submit"
-                  className="bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] w-full text-white px-4 py-2 text-xs md:text-sm rounded-md"
+                  className="bg-[#FED45C] w-full text-[#331400] font-bold px-4 py-2 text-[14px] "
                 >
                   Save Changes
                 </button>
@@ -260,7 +233,7 @@ export default function DashboardPage() {
                 placeholder="Location"
                 value={tempLocation}
                 onChange={(e) => handleLocationSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 border border-[#7140EB80] text-xs md:text-sm"
+                className="w-full pl-8 pr-3 py-2 border border-[#000] text-[13px]"
               />
             </div>
 
@@ -272,7 +245,7 @@ export default function DashboardPage() {
                     setTempLocation(loc);
                     setLocations([]); // Clear suggestions when one is selected
                   }}
-                  className="px-3 py-2 cursor-pointer hover:bg-gray-100 rounded-md text-xs md:text-sm"
+                  className="px-3 py-2 cursor-pointer hover:bg-gray-100  text-xs md:text-sm"
                 >
                   {loc}
                 </li>
@@ -281,7 +254,7 @@ export default function DashboardPage() {
 
             <button
               onClick={handleSaveLocation}
-              className="mt-2 w-full text-xs md:text-sm bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-white px-4 py-2 rounded-md"
+              className="mt-1  text-[13px] font-bold bg-[#FED45C] text-[#331400] px-4 py-2 "
             >
               Save Changes
             </button>
@@ -295,7 +268,7 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-3 md:gap-4">
               <button
                 onClick={() => setActiveModal("uploadImage")}
-                className="bg-[#EBEBEB] py-2 px-3 md:px-4 rounded-md text-xs md:text-sm hover:bg-gray-200"
+                className="bg-[#EBEBEB] py-2 px-3 md:px-4  text-xs md:text-sm hover:bg-gray-200"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <Image src="/images/contact-us-image.svg" alt="Upload" width={30} height={30} className="w-6 h-6 md:w-[35px] md:h-[35px]" />
@@ -307,7 +280,7 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setActiveModal("deleteConfirm")}
-                className="w-full px-3 md:px-4 py-2 bg-[#EBEBEB] text-black rounded-md hover:bg-gray-200 text-xs md:text-sm"
+                className="w-full px-3 md:px-4 py-2 bg-[#EBEBEB] text-black hover:bg-gray-200 text-xs md:text-sm"
               >
                 <div className="flex items-center gap-2 md:gap-3">
                   <Image src="/icons/delete.svg" alt="Delete" width={30} height={30} className="w-6 h-6 md:w-[35px] md:h-[35px]" />
@@ -344,7 +317,7 @@ export default function DashboardPage() {
                 onChange={handleImageUpload} 
               />
             </label>
-            <button onClick={closeModal} className="mt-3 md:mt-4 border border-2 w-full py-2 rounded-full text-xs md:text-sm text-gray-500 hover:underline">
+            <button onClick={closeModal} className="mt-3 md:mt-4 border border-2 w-full py-2 text-xs md:text-sm text-gray-500 hover:underline">
               Cancel
             </button>
           </div>
@@ -372,9 +345,10 @@ export default function DashboardPage() {
           </div>
         </Modal>
         <LinkList />
+        
       </main>
 
-      <aside className="hidden md:block md:w-[40%]">
+      <aside className="hidden md:block bg-[#FFF7DE]  md:w-[40%]">
         <SideDashboard />
         <PhoneDisplay buttonStyle={buttonStyle} fontStyle={fontStyle}
         selectedTheme={"/themes/theme1.png"}

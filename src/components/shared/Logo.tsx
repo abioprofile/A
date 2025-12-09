@@ -14,11 +14,11 @@ const Logo = ({ className, width, height, showText = false, textSize = "text-lg"
     return (
         <Link href='/' className={cn('cursor-pointer inline-flex gap-1 w-fit items-center', className)}>
             <Image
-                src='/assets/icons/logo.svg'
+                src='/icons/logo.png'
                 alt='A logo'
-                width={width || 50}
-                height={height || 50}
-                className='max-[320px]:size-10 size-9 md:size-10'
+                width={width || 60}
+                height={height || 60}
+                className='max-[380px]:size-10 size-9 md:size-10'
                 priority
             />
             {showText && <span className={`${textSize} font-extrabold tracking-tight`}>A.Bio</span>}

@@ -22,13 +22,13 @@ const DeleteModal: FC<DeleteModalProps> = ({ isOpen, onClose, onConfirm }) => {
               onConfirm();
               onClose();
             }}
-            className="text-black font-bold px-3 md:px-4 py-1 md:py-2 border-1 border-black text-xs md:text-sm hover:bg-red-600"
+            className="text-black font-semibold px-3 md:px-4 py-1 md:py-2 border-1 border-black text-[12px] hover:text-white hover:bg-[#ff0000]"
           >
             Yes, Delete
           </button>
           <button
             onClick={onClose}
-            className="bg-[#FED45C] text-xs md:text-sm font-bold px-3 md:px-4 py-1 md:py-2 "
+            className="bg-[#FED45C] text-[12px] font-semibold px-3 md:px-4 py-1 md:py-2 "
           >
             Cancel
           </button>

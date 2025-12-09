@@ -1,57 +1,58 @@
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://abio-site-backend.onrender.com/api/v1";
+import axios, { AxiosError } from "axios";
 
-export async function postData<T>(endpoint: string, body: any): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
-  console.log("📡 POST =>", url);
+const getBaseURL = (): string => {
+  // if (typeof window !== "undefined") {
+    // const hostname = window.location.hostname;
+    return process.env.NEXT_PUBLIC_API_URL!;
+  // }
+  // console.log(process.env.NEXT_PUBLIC_DEV_API_URL);
+  // return process.env.NEXT_PUBLIC_DEV_API_URL!;
+};
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
+export const apiInstance = axios.create({
+  baseURL: getBaseURL(),
+  withCredentials: true,
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/json",
+  },
+});
 
-  let data: any = {};
-  try {
-    data = await res.json();
-  } catch {
-    throw new Error("Invalid JSON response from server.");
+// Request interceptor
+apiInstance.interceptors.request.use(
+  (config) => {
+    // Ensure credentials are always sent
+    config.withCredentials = true;
+    
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
+);
 
-  if (!res.ok) {
-    // Use backend message or fallback
-    throw new Error(data?.message || `Request failed with status ${res.status}`);
+// Response interceptor for handling errors
+apiInstance.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error: AxiosError) => {
+    // Handle unauthorized errors (401)
+    if (error.response?.status === 401) {
+      if (typeof window !== "undefined") {
+        // Store the current path to redirect back after login
+        const currentPath = window.location.pathname;
+        if (currentPath !== "/" && currentPath !== "/auth/login") {
+          sessionStorage.setItem("redirectAfterLogin", currentPath);
+        }
+        
+        // Redirect to login page - adjust this path to match your login route
+        // window.location.href = "/";
+      }
+    }
+    
+    return Promise.reject(error);
   }
-
-  return data;
-}
-
-export async function getData<T>(endpoint: string): Promise<T> {
-  const token = localStorage.getItem("token");
-  const url = `${API_BASE_URL}${endpoint}`;
-  console.log("📡 GET =>", url);
-
-  const res = await fetch(url, {
-    headers: {
-      Authorization: token ? `Bearer ${token}` : "",
-    },
-  });
-
-  let data: any = {};
-  try {
-    data = await res.json();
-  } catch {
-    throw new Error("Invalid JSON response from server.");
-  }
-
-  if (!res.ok) {
-    throw new Error(data?.message || `Request failed with status ${res.status}`);
-  }
-
-  return data;
-}
-
+);
 
 

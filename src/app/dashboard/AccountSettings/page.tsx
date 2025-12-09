@@ -13,8 +13,7 @@ export default function AccountSettings() {
   const handleUsernameChange = () => {
     const newUsername = prompt('Enter new username', username);
     if (newUsername && newUsername !== username) {
-      setUsername(newUsername);
-      // Here you would typically call an API to update the username
+      setUsername(newUsername); 
     }
   };
 
@@ -22,12 +21,12 @@ export default function AccountSettings() {
     const newEmail = prompt('Enter new email', email);
     if (newEmail && newEmail !== email) {
       setEmail(newEmail);
-      // Here you would typically call an API to update the email
+     
     }
   };
 
   return (
-    <div className="max-w-6xl mx-auto my-6 p-6 bg-white  shadow-sm">
+    <div className="max-w-6xl mx-auto my-6 p-4">
       <h1 className="text-2xl font-bold mb-8">Security</h1>
 
       {/* Username Section */}
@@ -52,14 +51,14 @@ export default function AccountSettings() {
       <div className="border-t border-gray-200 pt-6 mt-6 flex justify-between items-center">
         <div>
           <h3 className="font-semibold text-sm">Password</h3>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-[12px] mt-1">
             Set a unique password to protect your account.
           </p>
         </div>
         <button 
-          className="px-4 py-2 text-sm font-medium  border border-gray-500  hover:bg-[#7140EB] hover:text-white transition-colors"
+          className="px-4 py-1 text-[12px] font-medium  border border-gray-500  hover:bg-[#FED45C]   transition-colors"
           onClick={() => {
-            // Implement password change logic
+            
             alert('Password change flow would open here');
           }}
         >
@@ -71,7 +70,7 @@ export default function AccountSettings() {
       <div className="border-t border-gray-200 pt-6 mt-6 flex justify-between items-center">
         <div>
           <h3 className="font-semibold text-sm">Two-Factor Authentication</h3>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-[12px] mt-1">
             Add an extra layer of security to your account.
           </p>
         </div>
@@ -92,7 +91,7 @@ export default function AccountSettings() {
       <div className="border-t border-gray-200 pt-6 mt-6 flex justify-between items-center">
         <div>
           <h3 className="font-semibold text-sm">Restricted Members</h3>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-[12px] mt-1">
             Members you've restricted from interacting with your account.
           </p>
         </div>
@@ -103,7 +102,7 @@ export default function AccountSettings() {
       <div className="border-t border-gray-200 pt-6 mt-6 flex justify-between items-center">
         <div>
           <h3 className="font-semibold text-sm">Deactivate Account</h3>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-[12px] mt-1">
             Temporarily disable your account. You can reactivate later.
           </p>
         </div>
@@ -119,7 +118,7 @@ export default function AccountSettings() {
       <div className="border-t border-gray-200 pt-6 mt-6 flex justify-between items-center">
         <div>
           <h3 className="font-semibold text-sm text-red-600">Delete Account</h3>
-          <p className="text-gray-500 text-sm mt-1">
+          <p className="text-gray-500 text-[12px] mt-1">
             Permanently delete your account and all associated data.
           </p>
         </div>
@@ -142,7 +141,7 @@ export default function AccountSettings() {
             <div className="flex justify-end space-x-3">
               <button
                 onClick={() => setShowDeactivateModal(false)}
-                className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300  text-gray-700 hover:bg-gray-50"
               >
                 Cancel
               </button>
@@ -151,7 +150,7 @@ export default function AccountSettings() {
                   setShowDeactivateModal(false);
                   // Implement deactivation logic
                 }}
-                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                className="px-4 py-2 bg-red-600 text-white  hover:bg-red-700"
               >
                 Deactivate
               </button>
@@ -178,7 +177,7 @@ export default function AccountSettings() {
               <button
                 onClick={() => {
                   setShowDeleteModal(false);
-                  // Implement deletion logic
+                  
                 }}
                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
               >
@@ -204,7 +203,7 @@ const SettingRow = ({ label, value, description, verified, onEdit }: SettingRowP
   <div className="border-t border-gray-200 pt-6 mt-6 flex justify-between items-start">
     <div className="flex-1">
       <h3 className="font-semibold text-sm">{label}</h3>
-      <p className="text-gray-500 text-sm mt-1">{description}</p>
+      <p className="text-gray-500 text-[12px] mt-1">{description}</p>
     </div>
     <div className="flex items-center gap-4">
       <div className="text-right">
@@ -219,7 +218,7 @@ const SettingRow = ({ label, value, description, verified, onEdit }: SettingRowP
       {onEdit && (
         <button
           onClick={onEdit}
-          className="flex items-center gap-1 py-1 px-3 border border-gray-300 rounded-md text-sm hover:bg-gray-50 hover:text-[#7140EB] transition-colors"
+          className="flex items-center gap-1 py-1 px-3 border border-gray-300 text-[12px] hover:bg-gray-50 hover:text-[#ff0000] transition-colors"
         >
           Edit <PencilIcon className="w-3 h-3" />
         </button>

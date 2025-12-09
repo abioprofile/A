@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import Modal from '@/components/ui/modal';
-import { toast } from 'sonner';
-import { Button } from './ui/button';
-import { CopyIcon, Share2Icon, QrCodeIcon } from 'lucide-react';
+"use client";
+
+import React, { useState } from "react";
+import Modal from "@/components/ui/modal";
+import { toast } from "sonner";
+import { CopyIcon, Share2Icon, QrCodeIcon } from "lucide-react";
 
 const QRCodeButton = ({ link }: { link: string }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,18 +13,18 @@ const QRCodeButton = ({ link }: { link: string }) => {
       if (navigator.clipboard) {
         await navigator.clipboard.writeText(link);
       } else {
-        const textarea = document.createElement('textarea');
+        const textarea = document.createElement("textarea");
         textarea.value = link;
-        textarea.style.position = 'fixed';
+        textarea.style.position = "fixed";
         document.body.appendChild(textarea);
         textarea.select();
-        document.execCommand('copy');
+        document.execCommand("copy");
         document.body.removeChild(textarea);
       }
-      toast.success('Link copied to clipboard!');
+      toast.success("Link copied to clipboard!");
     } catch (err) {
-      console.error('Failed to copy:', err);
-      toast.error('Failed to copy link');
+      console.error("Failed to copy:", err);
+      toast.error("Failed to copy link");
     }
   };
 
@@ -31,66 +32,89 @@ const QRCodeButton = ({ link }: { link: string }) => {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'My A.Bio Link',
-          text: 'Check out my A.Bio profile',
+          title: "My A.Bio Link",
+          text: "Check out my A.Bio profile",
           url: link,
         });
       } else {
         await copyToClipboard();
-        toast.info('Link copied - paste to share');
+        toast.info("Link copied — paste to share");
       }
     } catch (err) {
-      if (typeof err === 'object' && err !== null && 'name' in err && (err as { name?: unknown }).name !== 'AbortError') {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "name" in err &&
+        (err as { name?: unknown }).name !== "AbortError"
+      ) {
         await copyToClipboard();
       }
     }
   };
 
+
+  const formatLink = (url: string) => {
+    const parts = url.split("abio.site/");
+    if (parts.length === 2) {
+      return (
+        <>
+          <span className="text-red-500 font-semibold text-[18px]">abio.site/</span>
+          {parts[1]}
+        </>
+      );
+    }
+    return url;
+  };
+
   return (
     <>
-      <div className="w-full max-w-[400px] -mt-5 mx-auto"> {/* Fixed width container */}
-        <div className="flex items-center justify-between p-3 sm:p-4 bg-white  shadow-sm border">
-          <div className="flex items-center gap-2 sm:gap-3 overflow-hidden">
+      <div className="w-full max-w-[400px] -mt-5 mx-auto">
+        <div className="flex items-center justify-between p-3 sm:p-4">
+          <div className="flex items-center gap- overflow-hidden">
+            {/* QR Button */}
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-[#ff0000] hover:opacity-90 transition-opacity"
+              className="flex-shrink-0 flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 hover:opacity-90 transition-opacity"
               aria-label="Show QR code"
             >
-              <QrCodeIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              <QrCodeIcon className="w-6 h-6 text-[#331400]" />
             </button>
-            
+
+            {/* Copy Button */}
             <button
               onClick={copyToClipboard}
-              className="flex-shrink-0 p-1 sm:p-2 text-gray-500 hover:text-[#7140EB] hover:bg-gray-50  transition-all"
+              className="flex-shrink-0 p-1 sm:p-2 text-[#331400] hover:text-[#ff0000] hover:bg-gray-20 rounded-md transition-all"
               title="Copy link"
               aria-label="Copy link"
             >
-              <CopyIcon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <CopyIcon className="w-6 h-6 " />
             </button>
 
-            <span className="text-xs sm:text-sm text-gray-600 truncate flex-1 min-w-0">
-              {link}
-            </span>
-          </div>
-
-          <div className="flex-shrink-0 ml-2">
-            <Button
+            {/* Share Button */}
+            <button
               onClick={shareLink}
-              className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-bold  hover:opacity-90 transition-opacity whitespace-nowrap"
+              className="flex-shrink-0 p-1 sm:p-2 text-[#331400] hover:text-[#ff0000] hover:bg-gray-20 rounded-md transition-all"
               title="Share link"
               aria-label="Share link"
             >
-              Share
-            </Button>
+              <Share2Icon className="w-6 h-6 " />
+            </button>
+
+            {/* Link Display */}
+            <span className="text-xs sm:text-sm text-gray-600 truncate flex-1 min-w-0">
+              {formatLink(link)}
+            </span>
           </div>
         </div>
       </div>
 
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-  <div className="w-full max-w-[280px] sm:max-w-xs p-4 sm:p-6 text-center relative">
+      {/* Modal for QR */}
+<Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+  <div className="w">
+    {/* Close Button */}
     <button
       onClick={() => setIsModalOpen(false)}
-      className="absolute top-2 right-2 text-black  focus:outline-none"
+      className="absolute top-3 right-3 text-gray-700 hover:text-black focus:outline-none"
       aria-label="Close"
     >
       <svg
@@ -106,40 +130,101 @@ const QRCodeButton = ({ link }: { link: string }) => {
         />
       </svg>
     </button>
-    
-    <h1 className="text-[20px] font-bold ">Here is your code!!!</h1>
-    <p className='text-[13px]'>This is your unique code for another 
-    person to scan</p>
-    <div className="bg-gray-50 p-3 sm:p-4 mb-3 sm:mb-4 flex justify-center">
-      <div className="bg-white p-3 sm:p-4  shadow-sm">
-        <div className="w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center border-2 border-dashed border-gray-200 ">
-          <span className="text-xs sm:text-sm text-gray-400">QR Code Preview</span>
-        </div>
-        <div className="mt-2 sm:mt-3 text-xs text-gray-500 break-all px-2">
-          {link}
-        </div>
+
+    {/* Header */}
+    <div className="flex flex-col items-center gap-1 mt-2">
+      <div className="bg-[#331400]/90 text-white rounded-full w-10 h-10 flex items-center justify-center mb-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-5 w-5"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+      </div>
+      <h1 className="text-[18px] font-bold text-[#331400]">
+        Here is your code!!!
+      </h1>
+      <p className="text-[15px] text-gray-500">
+        This is your unique code for another person to scan
+      </p>
+    </div>
+
+    {/* QR Code Section */}
+    <div className="flex justify-center mt-5 mb-6">
+      <div className="bg-white shadow-md rounded-xl p-3">
+        <img
+          src="/QR-placeholder.png"
+          alt="QR Code"
+          className="w-40 h-40 object-contain"
+        />
       </div>
     </div>
 
-    <div className="">
+    {/* Action Buttons */}
+    <div className="flex items-center justify-center gap-6">
       <button
-        onClick={copyToClipboard}
-        className="flex-1 py-1.5 sm:py-2 text-xs sm:text-sm bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] text-white  hover:opacity-90"
+        onClick={shareLink}
+        className="flex flex-col items-center text-[#331400] hover:opacity-80"
       >
-        Copy Link
+        <div className="bg-[#331400] text-white w-10 h-10 rounded-md flex items-center justify-center mb-1">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8" />
+            <polyline points="16 6 12 2 8 6" />
+            <line x1="12" x2="12" y1="2" y2="15" />
+          </svg>
+        </div>
+        <span className="text-[12px] font-semibold">Share</span>
+      </button>
+
+      <button
+        onClick={() => toast.info("Downloading QR...")}
+        className="flex flex-col items-center text-[#331400] hover:opacity-80"
+      >
+        <div className="bg-[#331400] text-white w-10 h-10 rounded-md flex items-center justify-center mb-1">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path d="M4 4v16a2 2 0 002 2h12a2 2 0 002-2V4" />
+            <polyline points="16 10 12 14 8 10" />
+            <line x1="12" x2="12" y1="14" y2="3" />
+          </svg>
+        </div>
+        <span className="text-[12px] font-semibold">Download</span>
       </button>
     </div>
   </div>
 </Modal>
+
     </>
   );
 };
 
 export default function SideDashboard() {
-  const profileLink = 'https://abio.example.com/davidosh';
+  const profileLink = "https://abio.site/davidosh";
 
   return (
-    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 text-sm text-gray-800">
+    <div className="p-4 sm:p-6 space-y-4 sm:space-y-6 text-[18px] text-gray-800">
       <QRCodeButton link={profileLink} />
     </div>
   );

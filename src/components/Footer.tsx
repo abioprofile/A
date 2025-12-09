@@ -24,7 +24,7 @@ const Footer = () => {
               className="cursor-pointer select-none transition-transform group-hover:scale-105"
             />
             <span className="font-bold text-xl md:text-2xl text-white tracking-wide ">
-              bio.site
+              bio
             </span>
           </Link>
 
@@ -57,7 +57,7 @@ const Footer = () => {
         <div className="border-t border-[#FED45C] pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-white font-semibold text-sm mb-4 md:mb-0">
-              © {currentYear} abio.site One Link Endless Connections
+              © {currentYear} abio One Link Endless Connections
             </p>
 
             {/* Social Icons */}

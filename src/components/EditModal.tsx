@@ -45,7 +45,7 @@ const EditModal: FC<EditModalProps> = ({
               name="platform"
               type="text"
               defaultValue={initialPlatform}
-              className="w-full border border-2 border-[#7140EB80] rounded-md px-3 py-2 text-xs md:text-sm"
+              className="w-full border border-2 px-3 py-2 text-xs md:text-[10px]"
               required
             />
           </div>
@@ -59,7 +59,7 @@ const EditModal: FC<EditModalProps> = ({
               name="url"
               type="url"
               defaultValue={initialUrl}
-              className="w-full border border-2 border-[#7140EB80] rounded-md px-3 py-2 text-xs md:text-sm"
+              className="w-full border border-2  px-3 py-2 text-xs md:text-[10px]"
               required
             />
           </div>
@@ -67,7 +67,7 @@ const EditModal: FC<EditModalProps> = ({
           <div className="flex justify-center gap-3">
             <button
               type="submit"
-              className="bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] w-full text-white px-4 py-2 text-xs md:text-sm rounded-md"
+              className="bg-[#FED45C] w-full text-[#331400] px-4 py-2 text-xs md:text-[14px] font-semibold "
             >
               Save Changes
             </button>
