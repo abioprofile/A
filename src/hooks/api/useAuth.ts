@@ -1,0 +1,252 @@
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import {
+  signUp,
+  signIn,
+  getCurrentUser,
+  verifyEmail,
+  resendOtp,
+  forgotPassword,
+} from "@/lib/api/auth.api";
+import {
+  SignUpRequest,
+  SignInRequest,
+  AuthResponse,
+  User,
+} from "@/types/auth.types";
+import { useAppDispatch } from "@/stores/hooks";
+import { setAuth, updateUser } from "@/stores/slices/auth.slice";
+import {
+  ResendOtpFormData,
+  VerifyOtpFormData,
+  ForgotPasswordFormData,
+} from "@/lib/validations/auth.schema";
+
+// Sign up mutation
+export const useSignUp = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  return useMutation({
+    mutationFn: (data: SignUpRequest) => signUp(data),
+    onSuccess: (response: AuthResponse) => {
+      // Store user data in Redux
+      // if (response.data) {
+      //   dispatch(setAuth({ user: response.data, token: null })); // Token might come from sign-in
+      // }
+
+      // Store in localStorage if needed
+      // if (typeof window !== "undefined" && response.data) {
+      //   localStorage.setItem("user_data", JSON.stringify(response.data));
+      // }
+
+      // queryClient.setQueryData(["user"], response.data);
+
+      toast.success("Account created successfully", {
+        description:
+          response.message || "Please check your email to verify your account",
+      });
+
+      router.push(`/auth/verification?prev=register&email=${encodeURIComponent(response.data.email)}`);
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to create account. Please try again.";
+      toast.error("Sign up failed", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+// Sign in mutation
+export const useSignIn = () => {
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  return useMutation({
+    mutationFn: async (data: SignInRequest) => {
+      // Step 1: Call login endpoint
+      const loginResponse = await signIn(data);
+
+      // Step 2: Extract token from login response
+      // Based on your API: token is in data.token, user is in data.user
+      const responseData = loginResponse.data || (loginResponse as any);
+      let token = responseData?.token;
+
+      // Check if token is in Authorization header
+      if (!token && loginResponse.headers) {
+        const authHeader =
+          loginResponse.headers["authorization"] ||
+          loginResponse.headers["Authorization"];
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+          token = authHeader.substring(7);
+        }
+      }
+
+      // Step 3: Store token immediately so the next request is authenticated
+      if (token && typeof window !== "undefined") {
+        localStorage.setItem("auth_token", token);
+      }
+
+      // Step 4: Fetch complete user data with profile from /user endpoint
+      try {
+        const userResponse = await getCurrentUser();
+        return {
+          ...userResponse,
+          // Preserve token
+          token: token || (userResponse as any).token,
+        } as AuthResponse & { token?: string };
+      } catch (error) {
+        // If /user endpoint fails, try to use login response data
+        // But login response doesn't have profile, so we still need /user
+        console.error("Failed to fetch user data:", error);
+        throw error; // Re-throw to trigger onError handler
+      }
+    },
+    onSuccess: (response: AuthResponse & { token?: string }) => {
+      const token = response.token;
+
+      // Store auth data in Redux
+      if (response.data) {
+        dispatch(setAuth({ user: response.data, token: token || null }));
+      }
+
+      // Store in localStorage
+      if (typeof window !== "undefined") {
+        if (token) {
+          localStorage.setItem("auth_token", token);
+        }
+        if (response.data) {
+          localStorage.setItem("user_data", JSON.stringify(response.data));
+        }
+      }
+
+      queryClient.setQueryData(["user"], response.data);
+
+      toast.success("Login successful", {
+        description: response.message || "Welcome back!",
+      });
+
+      router.push("/dashboard");
+    },
+    onError: (error: any) => {
+      // Clear any stored token on error
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("auth_token");
+      }
+
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to sign in. Please check your credentials.";
+      toast.error("Sign in failed", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useVerifyOtp = () => {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: async (data: VerifyOtpFormData) => {
+      return await verifyEmail(data.token);
+    },
+    onSuccess: (response: AuthResponse) => {
+      if (response.data) {
+        router.push("/auth/sign-in");
+      }
+      toast.success("Email verified successfully", {
+        description: "Please sign in to continue",
+      });
+    },
+    onError: (error: any) => {
+      toast.error("Failed to verify OTP", {
+        description:
+          error?.response?.data?.message ||
+          error?.message ||
+          "Failed to verify OTP. Please try again.",
+      });
+    },
+  });
+};
+
+export const useResendOtp = () => {
+  return useMutation({
+    mutationFn: async (data: ResendOtpFormData) => {
+      return await resendOtp(data.email);
+    },
+    onSuccess: (response: { success: boolean; message: string }) => {
+      toast.success("OTP resent successfully", {
+        description:
+          response.message || "Please check your email to verify your account",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to resend OTP. Please try again.";
+      toast.error("Failed to resend OTP", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useForgotPassword = () => {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: async (data: ForgotPasswordFormData) => {
+      return await forgotPassword(data.email);
+    },
+    onSuccess: (response: { status: string; message: string }, variables: ForgotPasswordFormData) => {
+      if (response.status === "success") {
+        toast.success("OTP code sent to email", {
+          description: response.message || "Please check your email for OTP code",
+        });
+        router.push(`/auth/verification?prev=forgot-password&email=${encodeURIComponent(variables.email)}`);
+      }
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to send OTP. Please try again.";
+      toast.error("Failed to send OTP", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+// Hook to fetch current user (useful for refreshing user data)
+export const useCurrentUser = () => {
+  const dispatch = useAppDispatch();
+
+  return useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const response = await getCurrentUser();
+      return response.data;
+    },
+    enabled:
+      typeof window !== "undefined" && !!localStorage.getItem("auth_token"),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    onSuccess: (user: User) => {
+      // Update Redux store with fresh user data
+      dispatch(updateUser(user));
+
+      // Update localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user_data", JSON.stringify(user));
+      }
+    },
+  });
+};

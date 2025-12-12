@@ -5,6 +5,8 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local"; 
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { QueryProvider } from "@/providers/QueryProvider";
+import { ReduxProvider } from "@/providers/ReduxProvider";
 
 
 export const metadata: Metadata = {
@@ -67,12 +69,16 @@ export default function RootLayout({
       className={`${inter.className} ${satoshi.variable} ${monumentExtended.variable}`} 
     >
       <body className="max-[320px]:text-sm antialiased">
-         <AuthProvider>       
-          <CartProvider>
-            {children}
-            <Toaster theme="light" richColors />
-          </CartProvider>
-        </AuthProvider>
+        <ReduxProvider>
+          <QueryProvider>
+            <AuthProvider>       
+              <CartProvider>
+                {children}
+                <Toaster theme="light" richColors />
+              </CartProvider>
+            </AuthProvider>
+          </QueryProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

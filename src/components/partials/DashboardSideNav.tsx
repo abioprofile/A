@@ -11,28 +11,50 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "../ui/sidebar";
-import Logo from "../shared/Logo";
 import Image from "next/image";
 import Link from "next/link";
 import { sidebarNav } from "@/data";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSidebarTitle } from "@/components/partials/SidebarTitleContext";
 import {
   Bell,
   MoreHorizontal,
-  User,
   Settings,
   Moon,
   LogOut,
   CreditCard,
 } from "lucide-react";
+import { useAppDispatch } from "@/stores/hooks";
+import { clearAuth } from "@/stores/slices/auth.slice";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const DashboardSideNav = ({
   ...props
 }: React.ComponentProps<typeof Sidebar>) => {
   const pathname = usePathname();
+  const router = useRouter();
   const { setTitle } = useSidebarTitle();
   const [showMenu, setShowMenu] = useState(false);
+  const dispatch = useAppDispatch();
+  const queryClient = useQueryClient();
+
+  const handleLogout = () => {
+    // Clear Redux state (this also clears localStorage)
+    dispatch(clearAuth());
+    
+    // Clear React Query cache
+    queryClient.clear();
+    
+    // Close the menu
+    setShowMenu(false);
+    
+    // Show success message
+    toast.success("Logged out successfully");
+    
+    // Redirect to sign-in page
+    router.push("/auth/sign-in");
+  };
 
   const menuItems = [
     // { icon: User, label: "Profile", href: "/profile" },
@@ -52,14 +74,14 @@ const DashboardSideNav = ({
         {/* Header */}
         <SidebarHeader className="flex justify-center items-center mb-16">
           {/* <Logo width={28} height={28} /> */}
-           <Image
-                          src='/icons/logo.png'
-                          alt='A logo'
-                          width={60}
-                          height={60}
-                          className='max-[380px]:size-10 size-9 md:size-10'
-                          priority
-                      />
+          <Image
+            src='/icons/logo.png'
+            alt='A logo'
+            width={60}
+            height={60}
+            className='max-[380px]:size-10 size-9 md:size-10'
+            priority
+          />
         </SidebarHeader>
 
         {/* Sidebar Nav Icons */}
@@ -77,9 +99,8 @@ const DashboardSideNav = ({
                   >
                     <SidebarMenuItem>
                       <SidebarMenuButton
-                        className={`cursor-pointer w-9 h-9 flex items-center justify-center rounded-lg transition-all hover:bg-[#f4f4f4] ${
-                          isActive ? "bg-[#f4f4f4] shadow-sm" : ""
-                        }`}
+                        className={`cursor-pointer w-9 h-9 flex items-center justify-center rounded-lg transition-all hover:bg-[#f4f4f4] ${isActive ? "bg-[#f4f4f4] shadow-sm" : ""
+                          }`}
                       >
                         <Image
                           src={item.icon}
@@ -163,7 +184,10 @@ const DashboardSideNav = ({
 
             {/* Logout */}
             <div className="border-t border-gray-100 p-2">
-              <button className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition">
+              <button 
+                onClick={handleLogout}
+                className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition"
+              >
                 <LogOut size={16} />
                 Log Out
               </button>

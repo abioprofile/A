@@ -4,104 +4,30 @@
   import { Button } from "@/components/ui/button";
   import Image from "next/image";
   import Link from "next/link";
-  import { useRouter } from "next/navigation";
-  import { toast } from "sonner";
   import { useState } from "react";
   import { Label } from "@/components/ui/label";
   import { Eye, EyeOff } from "lucide-react";
   import { Separator } from "@/components/ui/separator";
-  import { registerUser } from "@/lib/auth";
+import { useSignUp } from "@/hooks/api/useAuth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { SignUpFormData, signUpSchema } from "@/lib/validations/auth.schema";
 
   const SignUp = () => {
-    const router = useRouter();
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const signUpMutation = useSignUp();
 
-    // Form data
-    const [formData, setFormData] = useState({
-      firstName: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: ""
+    const {
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+    } = useForm<SignUpFormData>({
+        resolver: zodResolver(signUpSchema),
     });
-
-    // Handle input changes
-    const handleInputChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({
-        ...prev,
-        [field]: e.target.value
-      }));
-    };
-
-  // Validate form
-  const validateForm = () => {
-    const { firstName, lastName, email, password, confirmPassword } = formData;
-
-    if (!firstName || !lastName || !email || !password || !confirmPassword) {
-      toast.error("All fields are required");
-      return false;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast.error("Please enter a valid email address");
-      return false;
-    }
-
-    if (password.length < 8) {
-      toast.error("Password must be at least 8 characters long");
-      return false;
-    }
-
-   
-    if (!/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?])/.test(password)) {
-      toast.error("Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character");
-      return false;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-      return false;
-    }
-
-    return true;
-  };
-
-    // Submit 
-    const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-
-      if (!validateForm()) {
-        return;
-      }
-
-      setLoading(true);
-      try {
-        const res = await registerUser(
-        `${formData.firstName} ${formData.lastName}`,
-        formData.email,
-        formData.password,
-        formData.confirmPassword
-      );
-
-        if (!res.success) {
-          throw new Error(res.message || "Signup failed");
-        }
-
-        toast.success("Account created successfully!", {
-          description: "Check your email for verification to complete signup.",
-        });
-
-        // Redirect to verification page with user email
-        router.push(`/auth/verification?email=${encodeURIComponent(formData.email)}&prev=register`);
-        
-      } catch (error: any) {
-        console.error('Signup error:', error);
-        toast.error(error.message || "Signup failed. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+ 
+    const onSubmit = async (data: SignUpFormData) => {
+        signUpMutation.mutate(data);
     };
 
     return (
@@ -133,37 +59,23 @@
               </p>
             </div>
 
-            <form className="space-y-2.5 w-full lg:max-w-fit" onSubmit={handleSubmit}>
+            <form className="space-y-2.5 w-full lg:max-w-fit" onSubmit={handleSubmit(onSubmit)}>
               {/* First Name */}
               <div className="space-y-2">
-                <Label htmlFor="firstName" className="font-semibold text-[14px]">
-                  First Name
+                <Label htmlFor="name" className="font-semibold text-[14px]">
+                Name
                 </Label>
                 <Input
-                  id="firstName"
+                  id="name"
                   type="text"
-                  placeholder="First Name"
+                  placeholder="Name"
                   className="md:h-8 text-xs placeholder:text-[11px] border border-black"
-                  value={formData.firstName}
-                  onChange={handleInputChange('firstName')}
-                  disabled={loading}
+                  {...register("name")}
+                  disabled={isSubmitting}
                 />
-              </div>
-
-              {/* Last Name */}
-              <div className="space-y-2">
-                <Label htmlFor="lastName" className="font-semibold text-[14px]">
-                  Last Name
-                </Label>
-                <Input
-                  id="lastName"
-                  type="text"
-                  placeholder="Last Name"
-                  className="md:h-8 text-xs placeholder:text-[11px] border border-black"
-                  value={formData.lastName}
-                  onChange={handleInputChange('lastName')}
-                  disabled={loading}
-                />
+                {errors.name && (
+                  <p className="text-[11px] text-red-500">{errors.name.message}</p>
+                )}
               </div>
 
               {/* Email */}
@@ -176,10 +88,12 @@
                   type="email"
                   placeholder="Email"
                   className="md:h-8 text-xs placeholder:text-[11px] border border-black"
-                  value={formData.email}
-                  onChange={handleInputChange('email')}
-                  disabled={loading}
+                  {...register("email")}
+                  disabled={isSubmitting}
                 />
+                {errors.email && (
+                  <p className="text-[11px] text-red-500">{errors.email.message}</p>
+                )}
               </div>
 
               {/* Password */}
@@ -193,19 +107,21 @@
                     type={showPassword ? "text" : "password"}
                     className="md:h-8 pr-7 text-xs placeholder:text-[11px] border border-black"
                     placeholder="Password"
-                    value={formData.password}
-                    onChange={handleInputChange('password')}
-                    disabled={loading}
+                    {...register("password")}
+                    disabled={isSubmitting}
                   />
                   <button
                     type="button"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
                     onClick={() => setShowPassword(!showPassword)}
-                    disabled={loading}
+                    disabled={isSubmitting}
                   >
                     {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-[11px] text-red-500">{errors.password.message}</p>
+                )}
                 <p className="text-[10px] text-gray-500">
                   Must be at least 8 characters with uppercase, lowercase, number, and special character
                 </p>
@@ -213,37 +129,39 @@
 
               {/* Confirm Password */}
               <div className="space-y-1">
-                <Label htmlFor="confirm_password" className="font-semibold text-[14px]">
+                <Label htmlFor="passwordConfirm" className="font-semibold text-[14px]">
                   Confirm Password
                 </Label>
                 <div className="relative">
                   <Input
-                    id="confirm_password"
+                    id="passwordConfirm"
                     type={showConfirmPassword ? "text" : "password"}
                     className="md:h-8 pr-7 text-[11px] placeholder:text-[11px] border border-black"
                     placeholder="Confirm Password"
-                    value={formData.confirmPassword}
-                    onChange={handleInputChange('confirmPassword')}
-                    disabled={loading}
+                    {...register("passwordConfirm")}
+                    disabled={isSubmitting}
                   />
                   <button
                     type="button"
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    disabled={loading}
+                    disabled={isSubmitting}
                   >
                     {showConfirmPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                   </button>
                 </div>
+                {errors.passwordConfirm && (
+                  <p className="text-[11px] text-red-500">{errors.passwordConfirm.message}</p>
+                )}
               </div>
 
               {/* Submit */}
               <Button
                 type="submit"
                 className="w-full md:h-8 bg-[#FED45C] text-[#331400] text-sm font-semibold hover:bg-[#fecf4a] transition-colors"
-                disabled={loading}
+                disabled={isSubmitting}
               >
-                {loading ? "Creating Account..." : "Create Account"}
+                {isSubmitting ? "Creating Account..." : "Create Account"}
               </Button>
 
               {/* OR Divider */}
@@ -259,7 +177,7 @@
                   type="button"
                   variant="outline" 
                   className="md:h-8 text-[10px] font-medium flex items-center gap-1"
-                  disabled={loading}
+                  disabled={isSubmitting}
                 >
                   <Image src={"/assets/icons/auth/apple.svg"} alt="apple icon" width={14} height={14} priority />
                   Apple
@@ -268,7 +186,7 @@
                   type="button"
                   variant="outline" 
                   className="md:h-8 text-[10px] font-medium flex items-center gap-1"
-                  disabled={loading}
+                  disabled={isSubmitting}
                 >
                   <Image src={"/assets/icons/auth/google.svg"} alt="google icon" width={14} height={14} priority />
                   Google

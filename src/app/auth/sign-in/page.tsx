@@ -7,72 +7,26 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import Image from "next/image";
 import { Eye, EyeOff } from "lucide-react";
-import { useState, useContext } from "react";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { AuthContext } from "@/context/AuthContext";
-import { login, resendOtp } from "@/lib/auth";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signInSchema, type SignInFormData } from "@/lib/validations/auth.schema";
+import { useSignIn } from "@/hooks/api/useAuth";
 
 const SignIn = () => {
-  const router = useRouter();
-  const { loginUser } = useContext(AuthContext);
-
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const signInMutation = useSignIn();
 
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignInFormData>({
+    resolver: zodResolver(signInSchema),
+  });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!email.trim() || !password.trim()) {
-      toast.error("All fields are required");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const res = await login(email, password);
-      const payload = res?.data?.data ?? null;
-      if (!payload) throw new Error("Invalid server response");
-
-      const { user, token } = payload;
-
-      if (!user || !token) {
-        throw new Error("Login failed");
-      }
-
-      // Save to AuthContext
-      loginUser({ user, token });
-
-      toast.success("Login Successful", {
-        description: "Welcome back!",
-      });
-
-      router.push("/dashboard");
-
-    } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        error?.message ||
-        "Login failed. Please try again.";
-
-      console.error("LOGIN ERROR:", message);
-
-      // If email isn't verified → resend OTP automatically
-      if (message.includes("verify your email")) {
-        await resendOtp(email);
-        toast.error("Please verify your email. We've sent a new OTP.");
-        router.push(`/auth/verification?email=${email}`);
-      } else {
-        toast.error(message);
-      }
-
-    } finally {
-      setLoading(false);
-    }
+  const onSubmit = async (data: SignInFormData) => {
+    signInMutation.mutate(data);
   };
 
 
@@ -105,7 +59,7 @@ const SignIn = () => {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-2.5 w-full lg:max-w-fit">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-2.5 w-full lg:max-w-fit">
             <div className="space-y-2">
               <Label htmlFor="email" className="font-semibold text-[14px]">
                 Email Address
@@ -115,9 +69,11 @@ const SignIn = () => {
                 type="email"
                 placeholder="Email"
                 className="md:h-8 text-xs placeholder:text-[11px] border border-black"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                {...register("email")}
               />
+              {errors.email && (
+                <p className="text-[11px] text-red-500">{errors.email.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -130,8 +86,7 @@ const SignIn = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   className="md:h-8 pr-7 text-xs placeholder:text-[11px] border border-black"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  {...register("password")}
                 />
                 <button
                   type="button"
@@ -141,6 +96,9 @@ const SignIn = () => {
                   {showPassword ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-[11px] text-red-500">{errors.password.message}</p>
+              )}
             </div>
 
             <div className="text-right">
@@ -154,10 +112,10 @@ const SignIn = () => {
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={isSubmitting || signInMutation.isPending}
               className="w-full md:h-8 bg-[#FED45C] text-[#331400] text-sm font-semibold"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {isSubmitting || signInMutation.isPending ? "Signing in..." : "Sign In"}
             </Button>
 
             <div className="flex items-center gap-2">
@@ -201,7 +159,7 @@ const SignIn = () => {
           </form>
         </div>
 
-        <div className="mt-auto pt-2 text-right lg:pr-8">
+        <div className="mt-4 pt-2 text-right lg:pr-8">
           <Link
             href="/privacy-policy"
             className="text-[12px] text-gray-500 font-semibold hover:underline"
