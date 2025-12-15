@@ -8,14 +8,18 @@ import {
   verifyEmail,
   resendOtp,
   forgotPassword,
+  usernameAvailability,
+  updateProfile as updateProfileApi
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
   SignInRequest,
   AuthResponse,
   User,
+  UpdateProfileRequest,
+  UpdateProfileResponse,
 } from "@/types/auth.types";
-import { useAppDispatch } from "@/stores/hooks";
+import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setAuth, updateUser } from "@/stores/slices/auth.slice";
 import {
   ResendOtpFormData,
@@ -133,7 +137,7 @@ export const useSignIn = () => {
         description: response.message || "Welcome back!",
       });
 
-      router.push("/dashboard");
+      router.push("/auth/username");
     },
     onError: (error: any) => {
       // Clear any stored token on error
@@ -220,6 +224,81 @@ export const useForgotPassword = () => {
         error?.message ||
         "Failed to send OTP. Please try again.";
       toast.error("Failed to send OTP", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useCheckUsername = (username: string) => {
+  return useQuery({
+    queryKey: ['username', username],
+    queryFn: async () => {
+      return await usernameAvailability(username)
+    },
+    enabled: !!username,
+  })
+}
+
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((state) => state.auth.user);
+
+  return useMutation({
+    mutationFn: async (data: UpdateProfileRequest) => {
+      return await updateProfileApi(data);
+    },
+    onSuccess: (response: UpdateProfileResponse) => {
+      // Update Redux store with new profile data
+      // The response.data is ProfileWithLinks, we need to merge it into the user's profile
+      if (currentUser) {
+        // Merge the updated profile into the existing user
+        const updatedUser: User = {
+          ...currentUser,
+          profile: {
+            ...currentUser.profile,
+            // Merge all profile fields from response (includes links)
+            ...response.data,
+          },
+        };
+
+        // Update Redux store
+        dispatch(updateUser(updatedUser));
+
+        // Update localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user_data', JSON.stringify(updatedUser));
+        }
+      }
+
+      // Update React Query cache
+      queryClient.setQueryData(["user"], (oldData: User | undefined) => {
+        if (oldData) {
+          return {
+            ...oldData,
+            profile: {
+              ...oldData.profile,
+              ...response.data, // Merge updated profile data (includes links)
+            },
+          };
+        }
+        return oldData;
+      });
+
+      // Invalidate queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+
+      toast.success("Profile updated successfully", {
+        description: response.message || "Your profile has been updated",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update profile. Please try again.";
+      toast.error("Failed to update profile", {
         description: errorMessage,
       });
     },

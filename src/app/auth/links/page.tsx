@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { addLink as addLinkApi } from "@/lib/auth";
 import { useAuth } from "@/context/AuthContext";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 const LinksScreen = () => {
   const { token, addLinkToCache } = useAuth();
@@ -124,6 +125,7 @@ const LinksScreen = () => {
 };
 
   return (
+    <ProtectedRoute>
     <main className="min-h-screen bg-[#FEF4EA] flex flex-col pt-6 pb-10">
       <div className="flex justify-between px-10 mb-5 w-[90%] md:w-full mx-auto">
         <div
@@ -248,6 +250,7 @@ const LinksScreen = () => {
         </a>
       </footer>
     </main>
+    </ProtectedRoute>
   );
 };
 

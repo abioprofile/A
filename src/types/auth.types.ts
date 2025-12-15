@@ -67,3 +67,39 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
+// Link type for profile links
+export interface ProfileLink {
+  id: string;
+  profileId: string;
+  title: string;
+  url: string;
+  platform: string;
+  displayOrder: number;
+  isVisible: boolean;
+  clickCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Profile with links (returned from update profile endpoint)
+export interface ProfileWithLinks extends UserProfile {
+  links: ProfileLink[];
+}
+
+// Update profile request
+export interface UpdateProfileRequest {
+  username?: string;
+  displayName?: string | null;
+  bio?: string | null;
+  location?: string | null;
+  goals?: string[];
+}
+
+// Update profile response
+export interface UpdateProfileResponse {
+  success: boolean;
+  message: string;
+  data: ProfileWithLinks;
+  statusCode: number;
+}
+

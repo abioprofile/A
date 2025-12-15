@@ -1,72 +1,86 @@
 "use client";
 
-import { useState, useContext } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { updateUser, checkUsername } from "@/lib/auth";
-import { AuthContext } from "@/context/AuthContext";
+import { useCheckUsername, useUpdateProfile } from "@/hooks/api/useAuth";
+import { UpdateProfileResponse } from "@/types/auth.types";
+import { useDebounce } from "@/hooks/useDebounce";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
+
 
 const UsernamePage = () => {
-  const router = useRouter();
-  const { token } = useContext(AuthContext);
-
+  const updateProfileMutation = useUpdateProfile();
   const [username, setUsername] = useState("");
-
-  const { user, updateUserData } = useContext(AuthContext); 
-
+  const debouncedUsername = useDebounce(username, 500); // Wait 500ms after user stops typing
+  const { data: usernameData, isLoading: isCheckingUsername, isError } = useCheckUsername(debouncedUsername);
+  const router = useRouter();
+ 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-
-  if (!username.trim()) {
-    toast.error("Please enter a valid username.");
-    return;
-  }
-
-  if (!user?.id) {
-    toast.error("Authentication error. Please log in again.");
-    return;
-  }
-
-  try {
-    // Check username availability
-    const res = await checkUsername(username);
-
-    if (!res?.data?.isAvailable) {
-      toast.error("Username is already taken. Please choose another one.");
-      return;
+    e.preventDefault();
+    
+    if (!username.trim()) {
+      return toast.error("Please enter a username");
     }
 
-    // Update user profile using user.id
-   const updateRes = await updateUser(
-  { username },
-  { Authorization: `Bearer ${token}` }
-);
-
-
-    console.log("UPDATED USER:", updateRes);
-
-    // Optionally save to local context
-    updateUserData({ username });
-
-    toast.success("Username set!", {
-      description: "Your username was saved successfully.",
-    });
-
-  
-    setTimeout(() => {
-      router.push("/auth/goal");
-    }, 600);
-
-  } catch (error: any) {
-    console.error(error);
-    toast.error(error?.response?.data?.message || "Something went wrong.");
+    // Check if username is available and valid
+    if (usernameData?.data?.isAvailable && usernameData?.data?.isValid) {
+      updateProfileMutation.mutate(
+        { username: username.trim() },
+        {
+          onSuccess: (response: UpdateProfileResponse) => {
+            if (response.success) {
+              router.push("/auth/goal");
+            } else {
+              toast.error(response.message || "Failed to update profile");
+            }
+          },
+        }
+      );
+    } else {
+      toast.error("Username is not available", {
+        description: usernameData?.message || "Please choose a different username",
+      });
+    }
   }
-};
+
+  // Determine status icon to show
+  const getStatusIcon = () => {
+    if (!debouncedUsername || username !== debouncedUsername) {
+      // User is still typing, show nothing
+      return null;
+    }
+
+    if (isCheckingUsername) {
+      // Loading state
+      return <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />;
+    }
+
+    if (isError) {
+      // Error state
+      return <XCircle className="w-5 h-5 text-red-500" />;
+    }
+
+    if (usernameData?.data) {
+      if (usernameData.data.isAvailable && usernameData.data.isValid) {
+        // Available and valid
+        return <CheckCircle2 className="w-5 h-5 text-green-500" />;
+      } else {
+        // Not available or invalid
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      }
+    }
+
+    return null;
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#FEF4EA]">
+    <ProtectedRoute>
+      <div className="flex flex-col min-h-screen bg-[#FEF4EA]">
       {/* Main content */}
       <div className="flex flex-1 flex-col lg:flex-row items-center justify-center">
         <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-5 max-w-xl">
@@ -104,11 +118,17 @@ const UsernamePage = () => {
                 autoComplete="off"
               />
 
+              {/* Status icon (loading/checkmark/X) */}
+              <div className="absolute right-12 top-1/2 -translate-y-1/2">
+                {getStatusIcon()}
+              </div>
+
               {/* Desktop submit icon */}
               <button
                 type="submit"
                 aria-label="Submit username"
-                className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 bg-[#FED45C] hover:bg-[#f5ca4f] text-[#331400] p-2 rounded-md transition-all duration-200"
+                disabled={updateProfileMutation.isPending || isCheckingUsername || !(usernameData?.data?.isAvailable && usernameData?.data?.isValid)}
+                className="hidden lg:flex absolute right-2 top-1/2 -translate-y-1/2 bg-[#FED45C] hover:bg-[#f5ca4f] disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] p-2 rounded-md transition-all duration-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -127,12 +147,22 @@ const UsernamePage = () => {
               </button>
             </div>
 
+            {/* Status message */}
+            {debouncedUsername && username === debouncedUsername && !isCheckingUsername && usernameData?.data && (
+              <p className={`text-sm ${usernameData.data.isAvailable && usernameData.data.isValid ? 'text-green-600' : 'text-red-600'}`}>
+                {usernameData.data.isAvailable && usernameData.data.isValid
+                  ? "✓ Username is available"
+                  : usernameData.message || "Username is not available"}
+              </p>
+            )}
+
             {/* Mobile button */}
             <Button
               type="submit"
-              className="w-full lg:hidden bg-[#FED45C] hover:bg-[#f5ca4f] text-[#331400] py-2 font-semibold transition-all"
+              disabled={updateProfileMutation.isPending || isCheckingUsername || !(usernameData?.data?.isAvailable && usernameData?.data?.isValid)}
+              className="w-full lg:hidden bg-[#FED45C] hover:bg-[#f5ca4f] disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] py-2 font-semibold transition-all"
             >
-              Continue
+              {updateProfileMutation.isPending ? "Updating..." : "Continue"}
             </Button>
           </form>
         </div>
@@ -146,6 +176,7 @@ const UsernamePage = () => {
         </a>
       </footer>
     </div>
+    </ProtectedRoute>
   );
 };
 

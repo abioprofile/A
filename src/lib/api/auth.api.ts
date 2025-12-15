@@ -1,5 +1,5 @@
 import apiClient from './config';
-import { AuthResponse, SignUpRequest, SignInRequest, SignInResponse } from '@/types/auth.types';
+import { AuthResponse, SignUpRequest, SignInRequest, SignInResponse, UpdateProfileRequest, UpdateProfileResponse } from '@/types/auth.types';
 
 // Sign up API
 export const signUp = async (data: SignUpRequest): Promise<AuthResponse> => {
@@ -52,8 +52,40 @@ export const resetPassword = async (
 };
 
 // Resend OTP API
-export const resendOtp = async (email: string): Promise<{ success: boolean; message: string }> => {
+export const resendOtp = async (email: string): Promise<{ success: boolean; message: string; }> => {
   const response = await apiClient.post('/auth/resend-verification-email', { email });
   return response.data;
 };
 
+// Check for username availability
+export const usernameAvailability = async (username: string): Promise<{
+  success: boolean;
+  message: string;
+  data: {
+    username: string;
+    isAvailable: boolean;
+    isValid: boolean;
+  };
+  statusCode: number;
+}> => {
+  const response = await apiClient.get<{
+    success: boolean;
+    message: string;
+    data: {
+      username: string;
+      isAvailable: boolean;
+      isValid: boolean;
+    };
+    statusCode: number;
+  }>(`/user/check-username?username=${username}`);
+  return response.data;
+};
+
+// Update profile API
+export const updateProfile = async (data: UpdateProfileRequest): Promise<UpdateProfileResponse & { headers?: Record<string, string> }> => {
+  const response = await apiClient.patch<UpdateProfileResponse>('/user/profile', data);
+  return {
+    ...response.data,
+    headers: response.headers as Record<string, string>,
+  };
+}; 

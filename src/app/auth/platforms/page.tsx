@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 import { PLATFORMS } from "@/data"
 import { toast } from "sonner"   
+import ProtectedRoute from "@/components/auth/ProtectedRoute"
+import { PlatformInterface } from "@/interfaces/platform.interfaces"
 
 const MAX_PLATFORMS = 5
 
@@ -13,8 +15,8 @@ const Platforms = () => {
   const { selectedPlatforms, togglePlatform } = useUserStore()
   const router = useRouter()
 
-  const handlePlatformClick = (platform: any) => {
-    const alreadySelected = selectedPlatforms.some((p) => p.id === platform.id)
+  const handlePlatformClick = (platform: PlatformInterface) => {
+    const alreadySelected = selectedPlatforms.some((p: PlatformInterface) => p.id === platform.id)
 
     if (!alreadySelected && selectedPlatforms.length >= MAX_PLATFORMS) {
       toast.error(`You can only select up to ${MAX_PLATFORMS} platforms.`)
@@ -25,6 +27,7 @@ const Platforms = () => {
   }
 
   return (
+    <ProtectedRoute>
     <main className="min-h-screen bg-[#FEF4EA] flex flex-col">
       {/* 🔹 Full-width top bar */}
       <div className="flex justify-end items-center px-16 py-8">
@@ -98,6 +101,7 @@ const Platforms = () => {
             </footer>
       </section>
     </main>
+    </ProtectedRoute>
   )
 }
 
