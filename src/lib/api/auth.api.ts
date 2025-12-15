@@ -1,5 +1,5 @@
 import apiClient from './config';
-import { AuthResponse, SignUpRequest, SignInRequest, SignInResponse, UpdateProfileRequest, UpdateProfileResponse } from '@/types/auth.types';
+import { AuthResponse, SignUpRequest, SignInRequest, SignInResponse, UpdateProfileRequest, UpdateProfileResponse, AddLinksRequest, ProfileLink } from '@/types/auth.types';
 
 // Sign up API
 export const signUp = async (data: SignUpRequest): Promise<AuthResponse> => {
@@ -89,3 +89,25 @@ export const updateProfile = async (data: UpdateProfileRequest): Promise<UpdateP
     headers: response.headers as Record<string, string>,
   };
 }; 
+
+export const addLinks = async (data: AddLinksRequest): Promise<{
+  success: boolean;
+  message: string;
+  data: {
+    link: ProfileLink;
+  };
+  statusCode: number;
+} & { headers?: Record<string, string> }> => {
+  const response = await apiClient.post<{
+    success: boolean;
+    message: string;
+    data: {
+      link: ProfileLink;
+    };
+    statusCode: number;
+  }>(`/links`, data);
+  return {
+    ...response.data,
+    headers: response.headers as Record<string, string>,
+  };
+};

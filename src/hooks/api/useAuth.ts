@@ -9,7 +9,8 @@ import {
   resendOtp,
   forgotPassword,
   usernameAvailability,
-  updateProfile as updateProfileApi
+  updateProfile as updateProfileApi,
+  addLinks
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -18,6 +19,8 @@ import {
   User,
   UpdateProfileRequest,
   UpdateProfileResponse,
+  AddLinksRequest,
+  ProfileLink,
 } from "@/types/auth.types";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setAuth, updateUser } from "@/stores/slices/auth.slice";
@@ -299,6 +302,28 @@ export const useUpdateProfile = () => {
         error?.message ||
         "Failed to update profile. Please try again.";
       toast.error("Failed to update profile", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useAddLinks = () => {
+  return useMutation({
+    mutationFn: async (data: AddLinksRequest) => {
+      return await addLinks(data);
+    },
+    onSuccess: (response: { success: boolean; message: string; data: { link: ProfileLink } }) => {
+      toast.success("Links added successfully", {
+        description: response.message || "Your links have been added",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to add links. Please try again.";
+      toast.error("Failed to add links", {
         description: errorMessage,
       });
     },

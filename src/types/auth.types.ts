@@ -103,3 +103,8 @@ export interface UpdateProfileResponse {
   statusCode: number;
 }
 
+export interface AddLinksRequest {
+  title: string;
+  url: string;
+  platform: string;
+}
