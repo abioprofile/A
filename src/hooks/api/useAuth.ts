@@ -10,7 +10,9 @@ import {
   forgotPassword,
   usernameAvailability,
   updateProfile as updateProfileApi,
-  addLinks
+  addLinks,
+  getAllLinks,
+  getUserProfileByUsername,
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -330,6 +332,18 @@ export const useAddLinks = () => {
   });
 };
 
+export const useGetAllLinks = () => {
+  return useQuery({
+    queryKey: ["links"],
+    queryFn: async () => {
+      return await getAllLinks();
+    },
+    enabled:
+      typeof window !== "undefined" && !!localStorage.getItem("auth_token"),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
 // Hook to fetch current user (useful for refreshing user data)
 export const useCurrentUser = () => {
   const dispatch = useAppDispatch();
@@ -338,12 +352,8 @@ export const useCurrentUser = () => {
     queryKey: ["user"],
     queryFn: async () => {
       const response = await getCurrentUser();
-      return response.data;
-    },
-    enabled:
-      typeof window !== "undefined" && !!localStorage.getItem("auth_token"),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    onSuccess: (user: User) => {
+      const user = response.data;
+      
       // Update Redux store with fresh user data
       dispatch(updateUser(user));
 
@@ -351,6 +361,23 @@ export const useCurrentUser = () => {
       if (typeof window !== "undefined") {
         localStorage.setItem("user_data", JSON.stringify(user));
       }
+      
+      return user;
     },
+    enabled:
+      typeof window !== "undefined" && !!localStorage.getItem("auth_token"),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Hook to fetch user profile by username (public profile)
+export const useUserProfileByUsername = (username: string) => {
+  return useQuery({
+    queryKey: ["user-profile", username],
+    queryFn: async () => {
+      return await getUserProfileByUsername(username);
+    },
+    enabled: !!username,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

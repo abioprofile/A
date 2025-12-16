@@ -81,6 +81,14 @@ export interface ProfileLink {
   updatedAt: string;
 }
 
+// getting all links 
+export interface AllLinksResponse {
+  success: boolean,
+  message: string,
+  data: ProfileLink[],
+  statusCode: number
+}
+
 // Profile with links (returned from update profile endpoint)
 export interface ProfileWithLinks extends UserProfile {
   links: ProfileLink[];

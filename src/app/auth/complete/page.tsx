@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, JSX } from "react";
+import { useState, JSX } from "react";
 import { useRouter } from "next/navigation";
 import { FaInstagram, FaTiktok, FaPinterest, FaTwitter, FaCopy, FaWhatsapp, FaXTwitter, FaFacebook, FaSnapchat, FaYoutube } from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
@@ -8,7 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "@/context/AuthContext";
+import { useCurrentUser, useGetAllLinks } from "@/hooks/api/useAuth";
+import { useAppSelector } from "@/stores/hooks";
+import { User } from "@/types/auth.types";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface UserLink {
   id: string;
@@ -19,152 +22,65 @@ interface UserLink {
   isVisible: boolean;
 }
 
-interface UserProfileData {
-  id: string;
-  userId: string;
-  username: string;
-  displayName: string | null;
-  bio: string | null;
-  location: string | null;
-  avatarUrl: string | null;
-  isPublic: boolean;
-  links: UserLink[];
-}
-
-interface ApiResponse {
-  success: boolean;
-  message: string;
-  data: UserProfileData;
-  statusCode: number;
-}
-
-interface UserData {
-  username?: string;
-  displayName?: string;
-  bio?: string;
-  location?: string;
-  avatarUrl?: string;
-  links?: UserLink[];
-}
-
-// Fallback function if the API import fails
-const fallbackGetUserProfile = async (username: string, headers: Record<string, string> = {}) => {
-  try {
-    const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
-    const response = await fetch(`${baseURL}/user/${username}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        ...headers,
-      },
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    return await response.json();
-  } catch (error) {
-    console.error('Fallback API call failed:', error);
-    throw error;
-  }
-};
-
 export default function ProfileLivePage() {
   const router = useRouter();
-  const { getUserData, user, token } = useAuth();
-  const [userData, setUserData] = useState<UserData>({});
   const [showShareBox, setShowShareBox] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [apiError, setApiError] = useState<string | null>(null);
-
-  // Fetch user data from backend
-  const fetchUserData = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      setApiError(null);
-
-      const cachedData = getUserData();
-      const username = cachedData.username || user?.name;
-
-      if (!username) {
-        setError("Username not found");
-        setLoading(false);
-        return;
-      }
-
-      // Create headers with authentication
-      const headers: Record<string, string> = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      console.log("Fetching profile for username:", username);
-
-      let response;
-      
-      try {
-        // import and use the API function dynamically
-        const apiModule = await import("@/lib/auth");
-        if (apiModule.getUserProfile) {
-          response = await apiModule.getUserProfile(username, headers) as ApiResponse;
-        } else {
-          throw new Error("getUserProfile function not found in API module");
-        }
-      } catch (importError) {
-        console.error("API import failed, using fallback:", importError);
-        setApiError("Using fallback API method");
-        response = await fallbackGetUserProfile(username, headers) as ApiResponse;
-      }
-
-      console.log("API Response:", response);
-
-      if (response.success && response.data) {
-        const profileData = response.data;
-        
-        // Transform the backend data to match our frontend interface
-        const backendUserData: UserData = {
-          username: profileData.username,
-          displayName: profileData.displayName || undefined,
-          bio: profileData.bio || undefined,
-          location: profileData.location || undefined,
-          avatarUrl: profileData.avatarUrl || undefined,
-          links: profileData.links || [],
+  
+  // Get user data from Redux store (primary source)
+  const reduxUser = useAppSelector((state) => state.auth.user);
+  
+  // Fetch fresh user data using the hook (this also updates Redux)
+  const { data: currentUser, isLoading, isError, error, refetch } = useCurrentUser();
+  const { 
+    data: linksData, 
+    isLoading: linksLoading, 
+    isError: linksError, 
+    refetch: refetchLinks 
+  } = useGetAllLinks();
+  
+  // Use currentUser from hook if available, otherwise fallback to Redux
+  const user: User | null = (currentUser as User) || reduxUser;
+  
+  // Extract profile data
+  const profile = user?.profile;
+  
+  // Transform links data safely
+  const transformLinks = (links: unknown): UserLink[] => {
+    if (!links || !Array.isArray(links)) return [];
+    return links.map((link: unknown) => {
+      if (typeof link === 'object' && link !== null) {
+        const l = link as Record<string, unknown>;
+        return {
+          id: String(l.id || ''),
+          title: String(l.title || ''),
+          url: String(l.url || ''),
+          platform: String(l.platform || ''),
+          displayOrder: typeof l.displayOrder === 'number' ? l.displayOrder : 0,
+          isVisible: l.isVisible !== false, // Default to true if not specified
         };
-
-        console.log("Transformed user data:", backendUserData);
-        setUserData(backendUserData);
-      } else {
-        throw new Error(response.message || "Failed to load profile");
       }
-
-    } catch (err: any) {
-      console.error("Error fetching user data:", err);
-      const errorMessage = err?.message || err?.response?.data?.message || "Failed to load profile data";
-      setError(errorMessage);
-      
-      // Fallback to cached data
-      const cachedData = getUserData();
-      console.log("Falling back to cached data:", cachedData);
-      setUserData(cachedData);
-    } finally {
-      setLoading(false);
-    }
+      return null;
+    }).filter((link): link is UserLink => link !== null);
   };
-
-  // Fetch data on component mount
-  useEffect(() => {
-    fetchUserData();
-  }, []);
-
-  // Refresh data when token changes
-  useEffect(() => {
-    if (token) {
-      fetchUserData();
-    }
-  }, [token]);
+  
+  // Get links from API response (handle different response structures)
+  const links = linksData 
+    ? (Array.isArray(linksData) 
+        ? transformLinks(linksData) 
+        : transformLinks((linksData as { data?: unknown })?.data || linksData))
+    : [];
+  
+  // Transform to the format needed by the component
+  const userData = profile ? {
+    name: user?.name || undefined,
+    username: profile.username || undefined,
+    displayName: profile.displayName || undefined,
+    bio: profile.bio || undefined,
+    goals: profile.goals || undefined,
+    location: profile.location || undefined,
+    avatarUrl: profile.avatarUrl || undefined,
+    links,
+  } : {};
 
   const platformIcons: Record<string, JSX.Element> = {
     INSTAGRAM: <FaInstagram className="w-4 h-4" />,
@@ -189,7 +105,7 @@ export default function ProfileLivePage() {
     return platformIcons[normalizedPlatform] || platformIcons[platform.toLowerCase()] || <FaCopy className="w-4 h-4" />;
   };
 
-  const profileLink = userData.username ? `abio.site/${userData.username}` : "abio.site/profile";
+  const profileLink = userData.username ? `/${userData.username}` : "/profile";
 
   const handleShare = async (platform: string) => {
     const shareUrl = encodeURIComponent(profileLink);
@@ -221,10 +137,12 @@ export default function ProfileLivePage() {
   };
 
   const handleRetry = () => {
-    fetchUserData();
+    refetch();
+    refetchLinks();
   };
 
-  if (loading) {
+  // Combined loading state - show loading if either user or links are loading
+  if (isLoading || linksLoading) {
     return (
       <main className="min-h-screen bg-[#FFF4E8] flex flex-col items-center justify-center px-6 py-10">
         <div className="text-center">
@@ -235,55 +153,42 @@ export default function ProfileLivePage() {
     );
   }
 
-  if (error && !userData.username && !userData.displayName) {
+  // Show error only if user data failed to load (links error is non-critical)
+  if (isError && !userData.username && !userData.displayName) {
+    const errorMessage = error instanceof Error ? error.message : "Failed to load profile";
     return (
-      <main className="min-h-screen bg-[#FFF4E8] flex flex-col items-center justify-center px-6 py-10">
-        <div className="text-center max-w-md">
-          <p className="text-red-600 mb-4">{error}</p>
-          <div className="flex gap-3 justify-center">
-            <Button
-              onClick={handleRetry}
-              className="bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5]"
-            >
-              Retry
-            </Button>
-            <Button
-              onClick={() => router.push("/dashboard")}
-              className="bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E]"
-            >
-              Go to Dashboard
-            </Button>
+      <ProtectedRoute>
+        <main className="min-h-screen bg-[#FFF4E8] flex flex-col items-center justify-center px-6 py-10">
+          <div className="text-center max-w-md">
+            <p className="text-red-600 mb-4">{errorMessage}</p>
+            {linksError && (
+              <p className="text-yellow-600 text-sm mb-4">
+                Note: Links could not be loaded. You can still view your profile.
+              </p>
+            )}
+            <div className="flex gap-3 justify-center">
+              <Button
+                onClick={handleRetry}
+                className="bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5]"
+              >
+                Retry
+              </Button>
+              <Button
+                onClick={() => router.push("/dashboard")}
+                className="bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E]"
+              >
+                Go to Dashboard
+              </Button>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </ProtectedRoute>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#FFF4E8] flex flex-col items-center justify-center px-6 py-10 overflow-hidden relative">
-      {apiError && (
-        <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded z-50 max-w-md">
-          <span className="block sm:inline">{apiError}</span>
-          <button 
-            onClick={() => setApiError(null)}
-            className="absolute top-0 bottom-0 right-0 px-4 py-3"
-          >
-            ×
-          </button>
-        </div>
-      )}
-      
-      {error && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 bg-yellow-100 border border-yellow-400 text-yellow-700 px-4 py-3 rounded z-50 max-w-md">
-          <span className="block sm:inline">Note: {error}</span>
-          <button 
-            onClick={() => setError(null)}
-            className="absolute top-0 bottom-0 right-0 px-4 py-3"
-          >
-            ×
-          </button>
-        </div>
-      )}
+    <ProtectedRoute>
+      <main className="min-h-screen bg-[#FFF4E8] flex flex-col items-center justify-center px-6 py-10 overflow-hidden relative">
       
       <div className="flex flex-col-reverse lg:flex-row items-center justify-center w-full max-w-6xl gap-16 relative z-10">
         {/* Left Side — Profile Preview */}
@@ -307,7 +212,7 @@ export default function ProfileLivePage() {
 
                 <div>
                   <h2 className="font-bold text-[14px] text-[#2C1C0D]">
-                    {userData.displayName || userData.username || "User"}
+                    {userData.name || userData.displayName || userData.username || "User"}
                   </h2>
                   <p className="text-[10px] text-[#5C4C3B] mb-1">
                     @{userData.username || "username"}
@@ -328,11 +233,28 @@ export default function ProfileLivePage() {
 
               {/* Links */}
               <div className="bg-[#F5F5F5] p-4 w-full space-y-4">
-                {userData.links && userData.links.length > 0 ? (
+                {linksLoading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="w-4 h-4 border-2 border-[#331400]/30 border-t-[#331400] rounded-full animate-spin" />
+                    <span className="ml-2 text-[11px] text-[#3A2B20]">Loading links...</span>
+                  </div>
+                ) : linksError ? (
+                  <div className="text-center py-4">
+                    <p className="text-[11px] text-yellow-600 mb-2">
+                      Could not load links
+                    </p>
+                    <button
+                      onClick={() => refetchLinks()}
+                      className="text-[10px] text-[#331400] underline hover:no-underline"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : userData.links && userData.links.length > 0 ? (
                   userData.links
-                    .filter(link => link.isVisible !== false)
-                    .sort((a, b) => a.displayOrder - b.displayOrder)
-                    .map((link) => (
+                    .filter((link: UserLink) => link.isVisible !== false)
+                    .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
+                    .map((link: UserLink) => (
                     <a
                       key={link.id}
                       href={link.url}
@@ -456,6 +378,7 @@ export default function ProfileLivePage() {
           </motion.div>
         )}
       </AnimatePresence>
-    </main>
+      </main>
+    </ProtectedRoute>
   );
 }

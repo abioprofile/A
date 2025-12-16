@@ -7,6 +7,7 @@ import { FaInstagram, FaTiktok, FaPinterest, FaTwitter, FaCopy, FaWhatsapp, FaXT
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUserProfileByUsername } from "@/hooks/api/useAuth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAppSelector } from "@/stores/hooks";
 
 interface UserLink {
   id: string;
@@ -44,6 +45,8 @@ const getPlatformIcon = (platform: string) => {
 export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
+  const usernameData = useAppSelector((state) => state.auth.user);
+  console.log(usernameData, "usernameData");
 
   // Fetch user profile by username
   const { 
@@ -115,11 +118,11 @@ export default function PublicProfilePage() {
           <div className="flex items-center gap-3">
             {/* Avatar */}
             <Avatar className="w-[56px] h-[56px] border">
-              <AvatarImage
+              {/* <AvatarImage
                 src={userData.avatarUrl || "/icons/Profile Picture.png"}
                 alt={userData.name || userData.username || "Profile"}
                 className="object-cover"
-              />
+              /> */}
               <AvatarFallback>
                 {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
               </AvatarFallback>
@@ -127,7 +130,7 @@ export default function PublicProfilePage() {
 
             {/* Name */}
             <div>
-              <p className="font-bold text-sm">{userData.name || userData.username || "User"}</p>
+              <p className="font-bold text-sm">{usernameData?.name || "User"}</p>
               <p className="text-xs text-gray-500">@{userData.username || "username"}</p>
             </div>
           </div>
@@ -195,3 +198,4 @@ export default function PublicProfilePage() {
     </div>
   );
 }
+
