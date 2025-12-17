@@ -9,7 +9,7 @@ import LinkList from "@/components/LinkList";
 import PhoneDisplay from "@/components/PhoneDisplay";
 import ButtonCustomizer, {ButtonStyle} from '@/components/ButtonCustomizer';
 import FontCustomizer, { FontStyle } from '@/components/FontCustomizer';
-import ProfileContent, {profile} from "@/components/ProfileContent";
+import ProfileContent from "@/components/ProfileContent";
 import { AuthContext } from "@/context/AuthContext"; 
 
 export default function DashboardPage() {
