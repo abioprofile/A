@@ -69,7 +69,7 @@ export default function PublicProfilePage() {
   // Loading state
   if (profileLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-100">
+      <div className="min-h-screen flex items-center justify-center bg-[#FEF4EA]">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#331400] mx-auto mb-4"></div>
           <p className="text-[#331400]">Loading profile...</p>
@@ -85,7 +85,7 @@ export default function PublicProfilePage() {
       : "Profile not found";
     
     return (
-      <div className="min-h-screen flex items-center justify-center bg-neutral-100">
+      <div className="min-h-screen flex items-center justify-center bg-[#FEF4EA]">
         <div className="text-center max-w-md px-4">
           <p className="text-red-600 mb-4">{errorMessage}</p>
           <p className="text-gray-600 text-sm">
@@ -107,7 +107,7 @@ export default function PublicProfilePage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-100">
+    <div className="min-h-screen flex items-center justify-center bg-[#FEF4EA]">
       {/* Phone container */}
       <div className="relative w-[320px] h-[580px] border-[6px] border-black bg-white overflow-hidden shadow-xl">
         {/* ===== TOP PROFILE CARD ===== */}
@@ -159,7 +159,7 @@ export default function PublicProfilePage() {
         {/* ===== BACKGROUND IMAGE ===== */}
         <div className="absolute inset-0 top-[190px] -z-10">
           <Image
-            src="/themes/rick-morty.png"
+            src="/themes/theme5.png"
             alt="background"
             fill
             className="object-cover"
