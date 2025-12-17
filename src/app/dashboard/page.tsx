@@ -7,7 +7,8 @@ import { toast } from "sonner";
 import SideDashboard from "@/components/SideDashboard";
 import LinkList from "@/components/LinkList";
 import PhoneDisplay from "@/components/PhoneDisplay";
-import ButtonCustomizer, {ButtonStyle} from '@/components/ButtonCustomizer';
+import ButtonCustomizer from '@/components/ButtonCustomizer';
+import {ButtonStyle} from '@/app/dashboard/appearance/page';
 import FontCustomizer, { FontStyle } from '@/components/FontCustomizer';
 import ProfileContent from "@/components/ProfileContent";
 import { AuthContext } from "@/context/AuthContext"; 
@@ -59,6 +60,14 @@ export default function DashboardPage() {
       strokeColor: '#ff0000',
       opacity: 100,
     });
+
+  const profile = {
+    displayName: user?.name || 'User',
+    userName: user?.username || 'username',
+    bio,
+    location,
+    profileImage,
+  };
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
