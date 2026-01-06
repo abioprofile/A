@@ -1,6 +1,7 @@
 'use client'
 
 import DashboardSideNav from '@/components/partials/DashboardSideNav'
+import MobileBottomNav from '@/components/MobileBottomNav'
 import { SidebarProvider } from '@/components/ui/sidebar'
 import { SidebarTitleProvider } from '@/components/partials/SidebarTitleContext'
 import React from 'react'
@@ -18,12 +19,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <SidebarProvider>
         <div className="flex w-full h-screen overflow-hidden">
           
-          <div className="w-[8rem] flex-shrink-0">
+          <div className="hidden md:block w-[8rem] flex-shrink-0">
             <DashboardSideNav />
           </div>
 
           {/* Main content area */}
-          <div className="flex-1 bg-[#fffff] min-h-screen overflow-y-auto">
+          <div className="flex-1 bg-[#fffff] min-h-screen overflow-y-auto pb-24 md:pb-0">
             {/* {showTopNav && <DashboardTopNav />} */}
              <AuthProvider>       
                       
@@ -31,6 +32,10 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 </AuthProvider>
           </div>
         </div>
+        
+        {/* Mobile Bottom Navigation */}
+        
+        <MobileBottomNav />
       </SidebarProvider>
     </SidebarTitleProvider>
   )

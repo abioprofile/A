@@ -41,6 +41,42 @@ type LinkItem = {
   };
 };
 
+// Icon mapping - adjust these paths to match where your icons are stored
+const platformIcons: Record<string, string> = {
+  'Instagram': '/icons/instagram.png',
+  'Behance': '/icons/behance.png',
+  'Snapchat': '/icons/snapchat.png',
+  'X': '/icons/x.png',
+  'Twitter': '/icons/twitter.png',
+  'YouTube': '/icons/youtube.png',
+  'Facebook': '/icons/facebook.png',
+  'LinkedIn': '/icons/linkedin.png',
+  'GitHub': '/icons/github.png',
+  'Figma': '/icons/figma.png',
+  'Dribbble': '/icons/dribbble.png',
+  'Spotify': '/icons/spotify.png',
+  'Apple': '/icons/apple.png',
+  'Google': '/icons/google.png',
+  'Amazon': '/icons/amazon.png',
+  'Website': '/icons/website.png',
+  'Form': '/icons/form.png',
+  'Link': '/icons/link.png',
+  // Add more as needed
+};
+
+// Suggested platforms with their icons
+const suggestedPlatforms = [
+  { name: 'Instagram', icon: '/icons/instagram.png', abbr: 'IG' },
+  { name: 'Pinterest', icon: '/icons/pinterest.png', abbr: 'P' },
+  { name: 'YouTube', icon: '/icons/youtube (2).png', abbr: 'YT' },
+  { name: 'Snapchat', icon: '/icons/snapchat.png', abbr: 'SC' },
+  { name: 'X', icon: '/icons/x.png', abbr: 'X' },
+  { name: 'Psotify', icon: '/icons/Spotify.png', abbr: 'sp' },
+  { name: 'Telegram', icon: '/icons/Telegram.png', abbr: 'FB' },
+  { name: 'LinkedIn', icon: '/icons/linkedin-icon.svg', abbr: 'LI' },
+  { name: 'TikTok', icon: '/icons/TikTok.png', abbr: 'TT' },
+];
+
 export default function LinkList() {
   const [links, setLinks] = useState<LinkItem[]>([
     { id: '1', platform: 'Instagram', url: 'https://www.instagram.com/davidosh', clicks: 0 },
@@ -51,7 +87,6 @@ export default function LinkList() {
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<LinkItem | null>(null);
-
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -106,6 +141,21 @@ export default function LinkList() {
     setIsAddModalOpen(false);
   };
 
+  // Handle adding a suggested platform
+  const handleAddSuggested = (platform: string) => {
+    const newId = (links.length + 1).toString();
+    setLinks(prev => [
+      ...prev,
+      {
+        id: newId,
+        platform,
+        url: `https://www.${platform.toLowerCase()}.com/yourusername`,
+        clicks: 0
+      }
+    ]);
+    setIsAddModalOpen(false);
+  };
+
   return (
     <>
       <DndContext
@@ -119,12 +169,12 @@ export default function LinkList() {
           }
         }}
       >
-        <div className="max-w-2xl mx-auto bg-white py-[2px] flex flex-col" style={{ height: 'calc(100vh - 250px)' }}>
+        <div className="md:max-w-2xl mx-auto px-6 md:px-0 md:bg-white py-[2px] flex flex-col h-[calc(100vh-320px)] md:h-[calc(100vh-250px)]" >
 
           {/* STACK LIST */}
           <div className="flex-1 overflow-y-auto">
             <SortableContext items={links.map((link) => link.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-1 pr-2">
+              <div className="md:space-y-1 md:pr-2">
 
                 {links.map((item) => (
                   <SortableItem
@@ -144,10 +194,18 @@ export default function LinkList() {
           <div>
             <button 
               onClick={() => setIsAddModalOpen(true)}
-              className="w-full py-3 mt-6 shadow-md bg-[#331400] text-[#FED45C] font-semibold"
+              className="
+                w-full py-3
+                mt-3 md:mt-6
+                shadow-md
+                bg-[#331400]
+                text-[#FED45C]
+                font-semibold
+              "
             >
               + Add
             </button>
+
           </div>
         </div>
       </DndContext>
@@ -171,54 +229,241 @@ export default function LinkList() {
         initialUrl={editItem?.url || ''}
       />
 
-      {/* ADD MODAL */}
+      {/* ADD – MOBILE FULL PAGE */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-full max-w-lg p-6 shadow-lg relative">
+        <>
+          {/* MOBILE VIEW */}
+          <div className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col">
+            
+            {/* HEADER */}
+            <div className="sticky top-0 flex items-center justify-between px-4 py-8 border-b bg-[#FFF7DE]">
+              <button
+                onClick={() => setIsAddModalOpen(false)}
+                className="flex items-center gap-2 font-semibold text-[#331400]"
+              >
+                ← Add Board
+              </button>
 
-            <button onClick={() => setIsAddModalOpen(false)} className="absolute right-4 top-4">
-              <X className="w-5 h-5" />
-            </button>
-
-            <h2 className="text-xl font-semibold mb-4">Add</h2>
-
-            <div className="bg-gray-100 w-full p-3 mb-6 text-sm text-gray-500">
-              Paste or search a link
+              
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            {/* CONTENT */}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
 
+              {/* SEARCH */}
+              <div className="bg-gray-200 px-4 py-3 flex items-center gap-3 text-gray-500 ">
+                <img 
+                  src="/icons/search.png" 
+                  alt="Search" 
+                  className="w-5 h-5 opacity-60"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                  }}
+                />
+                <span className="text-sm">Paste or search a link</span>
+              </div>
+
+              {/* ADD LINK */}
               <button
                 onClick={handleAddLink}
-                className="bg-[#FED45C] border border-red-400 p-6 text-center"
+                className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
-                <p className="text-sm font-medium">Add Link &gt;&gt;</p>
+                <div className="flex items-center gap-3">
+                  <img 
+                    src="/icons/link.png" 
+                    alt="Link" 
+                    className="w-6 h-6"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <span className="font-medium text-[#331400]">Add Link</span>
+                </div>
+                <span className="font-semibold text-[#331400]">&gt;&gt;</span>
               </button>
 
+              {/* ADD FORM */}
               <button
                 onClick={handleAddForm}
-                className="bg-[#FED45C] border border-red-400 p-6 text-center"
+                className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
-                <p className="text-sm font-medium">Form &gt;&gt;</p>
+                <div className="flex items-center gap-3">
+                  <img 
+                    src="/icons/form.png" 
+                    alt="Form" 
+                    className="w-6 h-6"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <span className="font-medium text-[#331400]">Form</span>
+                </div>
+                <span className="font-semibold text-[#331400]">&gt;&gt;</span>
               </button>
 
-            </div>
-
-            {/* Icons */}
-            <p className="font-medium mb-3">Suggested</p>
-            <div className="flex items-center gap-3 mb-8">
-              {Array(9).fill(0).map((_, i) => (
-                <div key={i} className="w-10 h-10 bg-gray-200 rounded-full" />
-              ))}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-200 h-32 rounded" />
-              <div className="bg-gray-200 h-32 rounded" />
-            </div>
-
+              {/* SUGGESTED */}
+              <div className='mb-4'>
+  <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
+  <div className="relative">
+    {/* Gradient fade on the right to indicate more content */}
+    <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
+    
+    <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      {suggestedPlatforms.map((platform, index) => (
+        <button
+          key={index}
+          onClick={() => handleAddSuggested(platform.name)}
+          className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
+        >
+          <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
+            <img 
+              src={platform.icon} 
+              alt={platform.name}
+              className="w-12 h-12 object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
+              }}
+            />
           </div>
-        </div>
+        </button>
+      ))}
+    </div>
+  </div>
+              </div>
+              {/* RECENTLY ADDED PLACEHOLDERS */}
+              <div className="space-y-4">
+                <div className="bg-gray-100 h-32  p-4">
+                  <p className="text-sm text-gray-500 mb-2">Recently Added</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                    <div className="text-sm text-gray-700">Instagram</div>
+                  </div>
+                </div>
+                <div className="bg-gray-100 h-32  p-4">
+                  <p className="text-sm text-gray-500 mb-2">Popular</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                    <div className="text-sm text-gray-700">YouTube</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* DESKTOP MODAL */}
+          <div className="hidden md:flex fixed inset-0 bg-black/40 items-center justify-center z-50">
+            <div className="bg-white w-full max-w-lg p-6 shadow-lg relative">
+
+              <button 
+                onClick={() => setIsAddModalOpen(false)} 
+                className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+              >
+                <X className="w-6 h-6" />
+              </button>
+
+              <h2 className="text-2xl font-bold mb-6 text-[#331400]">Add New Item</h2>
+
+              {/* SEARCH BAR */}
+              <div className="bg-gray-100  w-full p-4 mb-6 text-sm text-gray-500  flex items-center gap-3">
+                <img 
+                  src="/icons/search.png" 
+                  alt="Search" 
+                  className="w-5 h-5 opacity-60"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+                <span>Paste or search a link</span>
+              </div>
+
+              {/* ADD OPTIONS */}
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <button
+                  onClick={handleAddLink}
+                  className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
+                >
+                  <img 
+                    src="/icons/link.png" 
+                    alt="Link" 
+                    className="w-10 h-10"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <p className="text-[14px] font-medium text-[#331400]">Add Link</p>
+                </button>
+
+                <button
+                  onClick={handleAddForm}
+                  className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
+                >
+                  <img 
+                    src="/icons/form.png" 
+                    alt="Form" 
+                    className="w-10 h-10"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                    }}
+                  />
+                  <p className="text-[14px] font-medium text-[#331400]">Form</p>
+                </button>
+              </div>
+
+              {/* SUGGESTED ICONS */}
+               <div className='mb-4'>
+  <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
+  <div className="relative">
+    {/* Gradient fade on the right to indicate more content */}
+    <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
+    
+    <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      {suggestedPlatforms.map((platform, index) => (
+        <button
+          key={index}
+          onClick={() => handleAddSuggested(platform.name)}
+          className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
+        >
+          <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
+            <img 
+              src={platform.icon} 
+              alt={platform.name}
+              className="w-12 h-12 object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
+              }}
+            />
+          </div>
+        </button>
+      ))}
+    </div>
+  </div>
+              </div>
+
+              {/* RECENTLY ADDED PLACEHOLDERS */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-gray-100 h-32  p-4">
+                  <p className="text-sm text-gray-500 mb-2">Recently Added</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                    <div className="text-sm text-gray-700">Instagram</div>
+                  </div>
+                </div>
+                <div className="bg-gray-100 h-32  p-4">
+                  <p className="text-sm text-gray-500 mb-2">Popular</p>
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+                    <div className="text-sm text-gray-700">YouTube</div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </>
       )}
     </>
   );
@@ -275,10 +520,10 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
         style={style}
         {...attributes}
         {...listeners}
-        className="bg-[#FAFAFC] p-5 mt-4 shadow-sm"
+        className="bg-[#FAFAFC] p-5 mt-4 shadow-sm rounded-lg"
       >
         {/* COLLECTING */}
-        <p className="text-xs font-semibold mb-3">COLLECTING</p>
+        <p className="text-xs font-semibold mb-3 text-gray-500">COLLECTING</p>
 
         <div className="flex gap-4 mb-6">
           {["name", "email", "phone"].map((f) => (
@@ -288,8 +533,10 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
                   handleFieldToggle(f as 'name' | 'email' | 'phone');
                   toggleInputVisibility(f as 'name' | 'email' | 'phone');
                 }}
-                className={`px-6 py-3 border ${
-                  item.form.fields[f] ? "bg-black text-white" : "bg-white"
+                className={`px-6 py-3 border rounded-lg transition-colors ${
+                  item.form.fields[f] 
+                    ? "bg-[#331400] text-[#FED45C] border-[#331400]" 
+                    : "bg-white text-gray-700 border-gray-300 hover:border-[#331400]"
                 }`}
               >
                 {f[0].toUpperCase() + f.slice(1)}
@@ -297,27 +544,27 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
               
               {/* Input stack that appears below when button is clicked */}
               {visibleInputs[f as 'name' | 'email' | 'phone'] && (
-                <div className="mt-2 p-4 bg-white border border-gray-300 rounded shadow-sm">
+                <div className="mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-sm">
                   <div className="space-y-3">
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">
+                      <label className="text-xs text-gray-500 mb-1 block font-medium">
                         {f.toUpperCase()} FIELD LABEL
                       </label>
                       <input
                         type="text"
                         placeholder={`Enter ${f} label`}
-                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                        className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#331400]"
                         defaultValue={f[0].toUpperCase() + f.slice(1)}
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-500 mb-1 block">
+                      <label className="text-xs text-gray-500 mb-1 block font-medium">
                         PLACEHOLDER TEXT
                       </label>
                       <input
                         type="text"
                         placeholder={`Enter ${f} placeholder`}
-                        className="w-full p-2 border border-gray-300 rounded text-sm"
+                        className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#331400]"
                         defaultValue={`Enter your ${f}`}
                       />
                     </div>
@@ -329,8 +576,8 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
         </div>
 
         {/* TITLE */}
-        <div className="bg-gray-100 p-4 mb-4 border relative">
-          <p className="text-xs text-gray-500 mb-1">TITLE</p>
+        <div className="bg-gray-100 p-4 mb-4 border border-gray-300 rounded relative">
+          <p className="text-xs text-gray-500 mb-1 font-medium">TITLE</p>
           <input
             value={item.form.title}
             onChange={(e) =>
@@ -342,7 +589,7 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
                 )
               )
             }
-            className="w-full bg-transparent outline-none font-medium pr-16"
+            className="w-full bg-transparent outline-none font-medium pr-16 text-[#331400]"
             maxLength={24}
           />
           <div className="absolute bottom-2 right-3 text-xs text-gray-500">
@@ -351,8 +598,8 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
         </div>
 
         {/* BUTTON TEXT */}
-        <div className="bg-gray-100 p-4 mb-4 border relative">
-          <p className="text-xs text-gray-500 mb-1">BUTTON TEXT</p>
+        <div className="bg-gray-100 p-4 mb-4 border border-gray-300 rounded relative">
+          <p className="text-xs text-gray-500 mb-1 font-medium">BUTTON TEXT</p>
           <input
             value={item.form.buttonText}
             onChange={(e) =>
@@ -364,7 +611,7 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
                 )
               )
             }
-            className="w-full bg-transparent outline-none font-medium pr-16"
+            className="w-full bg-transparent outline-none font-medium pr-16 text-[#331400]"
             maxLength={24}
           />
           <div className="absolute bottom-2 right-3 text-xs text-gray-500">
@@ -373,8 +620,8 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
         </div>
 
         {/* SUCCESS MESSAGE */}
-        <div className="bg-gray-100 p-4 border relative">
-          <p className="text-xs text-gray-500 mb-1">SUCCESS MESSAGE</p>
+        <div className="bg-gray-100 p-4 border border-gray-300 rounded relative">
+          <p className="text-xs text-gray-500 mb-1 font-medium">SUCCESS MESSAGE</p>
           <input
             value={item.form.successMessage}
             onChange={(e) =>
@@ -389,7 +636,7 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
                 )
               )
             }
-            className="w-full bg-transparent outline-none font-medium pr-16"
+            className="w-full bg-transparent outline-none font-medium pr-16 text-[#331400]"
             maxLength={24}
           />
           <div className="absolute bottom-2 right-3 text-xs text-gray-500">

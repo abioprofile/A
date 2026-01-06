@@ -17,7 +17,6 @@ type Props = {
   onEdit: (item: LinkItem) => void;
 };
 
-// Icon mapping
 const platformIcons: Record<string, string> = {
   snapchat: '/icons/Social 1.png',
   instagram: '/icons/Social.png',
@@ -39,179 +38,128 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit }) => {
   const iconSrc =
     platformIcons[item.platform?.toLowerCase?.()] || '/icons/default.png';
 
-  const handleEdit = (e: MouseEvent | PointerEvent) => {
-    stopAll(e);
-    onEdit(item);
-  };
-
-  const handleDelete = (e: MouseEvent | PointerEvent) => {
-    stopAll(e);
-    onDelete(item.id);
-  };
-
-  const toggleAnalytics = (e: MouseEvent | PointerEvent) => {
-    stopAll(e);
-    setShowAnalytics((s) => !s);
-  };
-
-  const toggleActive = (e: MouseEvent | PointerEvent) => {
-    stopAll(e);
-    setIsActive((a) => !a);
-  };
-
   return (
-    <div className="w-full overflow-hidden">
-      {/* Card */}
-      <div className="w-full py-4 -mb-4">
-        <div
-          className={`transition-all duration-200 ${
-            isActive
-              ? ' p-[2px]'
-              : 'border border-[#000] hover:border-[#000] p-[2px]'
-          }`}
-        >
-          <div className="flex items-center bg-[#FAFAFC] p-4 select-none w-full">
-            {/* Drag handle (visual only) */}
-            <div
-              className="flex flex-col justify-center items-center mr-4 cursor-grab space-y-1"
-              aria-hidden
-            >
-              {[0, 1, 2].map((row) => (
-                <div key={row} className="flex space-x-1">
-                  <span className="w-1 h-1 bg-[#ff0000] rounded-full" />
-                  <span className="w-1 h-1 bg-[#ff0000] rounded-full" />
-                </div>
-              ))}
-            </div>
+    <div className="w-full">
+      <div className="py-2 md:py-3">
+        <div className={`p-[1px] md:p-[2px] ${isActive ? '' : 'border border-black'}`}>
+          <div className="bg-[#FAFAFC] rounded-md p-3 md:p-4">
 
-            {/* Icon */}
-            <div className="flex justify-center items-center w-5 h-5 rounded-full mr-4">
-              <Image
-                src={iconSrc}
-                alt={`${item.platform} icon`}
-                width={30}
-                height={30}
-                className="object-contain pointer-events-none"
-                draggable={false}
-              />
-            </div>
+            {/* ================= TOP ROW ================= */}
+            <div className="flex items-center gap-2 md:gap-3">
 
-            {/* Main content */}
-            <div className="flex justify-between items-center w-full">
-              <div
-                className={`space-y-2 transition-opacity duration-300 ${
-                  isActive ? 'opacity-100' : 'opacity-50'
-                }`}
-              >
-                {/* Platform (edit) */}
-                <div className="flex items-center mb-0">
-                  <button
-                    type="button"
-                    onClick={handleEdit}
-                    onPointerDown={stopAll}
-                    className="font-bold text-[16px] hover:text-[#ff0000] transition-colors outline-none"
-                  >
-                    {item.platform}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleEdit}
-                    onPointerDown={stopAll}
-                    className="text-gray-500 hover:text-[#ff0000] transition-colors p-1 rounded"
-                    aria-label={`Edit ${item.platform}`}
-                  >
-                    <PencilIcon className="h-3 w-3 pointer-events-none" />
-                  </button>
-                </div>
-
-                {/* URL (edit) */}
-                <div className="flex font-medium mb-1 text-[13px] items-center">
-                  <button
-                    type="button"
-                    onClick={handleEdit}
-                    onPointerDown={stopAll}
-                    className="text-left hover:text-[#ff0000] transition-colors outline-none"
-                    title={item.url}
-                  >
-                    {item.url}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleEdit}
-                    onPointerDown={stopAll}
-                    className="text-gray-500 hover:text-[#ff0000] transition-colors p-1 rounded"
-                    aria-label={`Edit URL for ${item.platform}`}
-                  >
-                    <PencilIcon className="h-3 w-3 pointer-events-none" />
-                  </button>
-                </div>
-
-                {/* Analytics toggle */}
-                <div className="flex items-center text-[10px] text-gray-500 gap-2">
-                  <button
-                    type="button"
-                    onClick={toggleAnalytics}
-                    onPointerDown={stopAll}
-                    className="flex items-start gap-1 hover:text-[#ff0000] transition-colors"
-                    aria-expanded={showAnalytics}
-                    aria-controls={`analytics-${item.id}`}
-                  >
-                    <ChartBarIcon className="h-3 w-3 pointer-events-none" />
-                    <span>{item.clicks} clicks</span>
-                  </button>
-                </div>
+              {/* Drag dots (desktop only) */}
+              <div className="hidden md:flex flex-col gap-1 cursor-grab">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex gap-1">
+                    <span className="w-1 h-1 bg-red-500 rounded-full" />
+                    <span className="w-1 h-1 bg-red-500 rounded-full" />
+                  </div>
+                ))}
               </div>
 
-              {/* Toggle & Delete */}
-              <div className="flex items-center gap-4 ml-4">
-                {/* Accessible switch (button) */}
+              {/* Icon */}
+              <Image
+                src={iconSrc}
+                alt={item.platform}
+                width={28}
+                height={28}
+                className="w-6 h-6 md:w-8 md:h-8 object-contain"
+                draggable={false}
+              />
+
+              {/* Text */}
+              <div className="flex-1 min-w-0">
                 <button
-                  type="button"
+                  onClick={(e) => {
+                    stopAll(e);
+                    onEdit(item);
+                  }}
+                  className="block font-semibold text-[13px] md:text-[16px] truncate"
+                >
+                  {item.platform}
+                </button>
+
+                <button
+                  onClick={(e) => {
+                    stopAll(e);
+                    onEdit(item);
+                  }}
+                  className="block text-[11px] md:text-[13px] text-gray-600 truncate text-left"
+                >
+                  {item.url}
+                </button>
+              </div>
+            </div>
+
+            {/* ================= ACTION ROW ================= */}
+            <div className="flex items-center justify-between mt-2 md:mt-4">
+
+              {/* Analytics */}
+              <button
+                onClick={(e) => {
+                  stopAll(e);
+                  setShowAnalytics(!showAnalytics);
+                }}
+                className="flex items-center gap-1 text-[10px] md:text-[12px] text-gray-500"
+              >
+                <ChartBarIcon className="h-3 w-3 md:h-4 md:w-4" />
+                {item.clicks} clicks
+              </button>
+
+              {/* Controls */}
+              <div className="flex items-center gap-2 md:gap-4">
+
+                {/* Toggle */}
+                <button
                   role="switch"
                   aria-checked={isActive}
-                  onClick={toggleActive}
-                  onPointerDown={stopAll}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 ${
-                    isActive ? 'bg-[#000]' : 'bg-gray-300'
+                  onClick={(e) => {
+                    stopAll(e);
+                    setIsActive(!isActive);
+                  }}
+                  className={`relative h-5 w-9 md:h-6 md:w-11 rounded-full transition ${
+                    isActive ? 'bg-black' : 'bg-gray-300'
                   }`}
                 >
                   <span
-                    className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform duration-300 ${
-                      isActive ? 'translate-x-5' : 'translate-x-0.5'
+                    className={`absolute top-0.5 left-0.5 h-4 w-4 md:h-5 md:w-5 bg-white rounded-full transition ${
+                      isActive ? 'translate-x-4 md:translate-x-5' : ''
                     }`}
                   />
                 </button>
 
+                {/* Edit */}
+                <button
+                  onClick={(e) => {
+                    stopAll(e);
+                    onEdit(item);
+                  }}
+                >
+                  <PencilIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
+                </button>
+
                 {/* Delete */}
                 <button
-                  type="button"
-                  onClick={handleDelete}
-                  onPointerDown={stopAll}
-                  className="text-gray-600 hover:text-red-500 transition-colors p-1 rounded"
-                  aria-label={`Delete ${item.platform}`}
+                  onClick={(e) => {
+                    stopAll(e);
+                    onDelete(item.id);
+                  }}
                 >
-                  <TrashIcon className="h-5 w-5 pointer-events-none" />
+                  <TrashIcon className="h-4 w-4 md:h-5 md:w-5 text-red-500" />
                 </button>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Bottom analytics */}
-        <div
-          id={`analytics-${item.id}`}
-          className={`overflow-hidden transition-all duration-300 ease-in-out ${
-            showAnalytics ? 'max-h-40 opacity-100 mt-4' : 'max-h-0 opacity-0'
-          }`}
-        >
-          <div className="p-4 bg-gray-50 border border-gray-200 rounded-md">
-            <h4 className="font-medium text-gray-700 mb-2">Link Analytics</h4>
-            <div className="flex items-center justify-between text-sm text-gray-600">
-              <span>Last clicked: 2 days ago</span>
-              <span>Top location: United States</span>
-            </div>
+            {/* ================= ANALYTICS ================= */}
+            {showAnalytics && (
+              <div className="mt-3 md:mt-4 p-2 md:p-3 bg-gray-50 border rounded-md text-[11px] md:text-sm">
+                <div className="flex justify-between text-gray-600">
+                  <span>Last clicked: 2 days ago</span>
+                  <span>Top location: US</span>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       </div>

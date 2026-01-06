@@ -51,7 +51,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   const isImage = selectedTheme.startsWith("blob:") || selectedTheme.startsWith("/themes/");
 
   return (
-    <div className="relative w-[310px] h-[550px] mx-auto border-[6px] border-black overflow-hidden bg-white shadow-lg">
+    <div className="relative w-[310px] h-[550px]  mx-auto border-[6px] border-black overflow-hidden bg-white shadow-lg">
       {/* Background */}
       {isImage ? (
         <Image

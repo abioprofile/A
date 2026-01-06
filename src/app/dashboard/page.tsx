@@ -131,12 +131,27 @@ export default function DashboardPage() {
   };
 
    
+ const [isMobile, setIsMobile] = useState(false);
+  const [showMobileLinks, setShowMobileLinks] = useState(false);
 
+   useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+   }, []);
+  
+ 
+
+  const handlePhoneClick = () => {
+    if (!isMobile) return;
+    setShowMobileLinks(true);
+  };
   
 
   return (
-    <section className="flex min-h-screen  space-y-4 md:space-y-6 bg-[#fff]">
-      <main className="w-full md:w-[60%] space-y-4">
+    <section className="flex space-y-4 md:space-y-6 bg-[#fff]">
+      <main className="hidden md:block w-full md:w-[60%] space-y-4">
         <h1 className="p-8 text-[30px] font-medium">Hi, {firstName} </h1>
         <div className=" max-w-3xl flex gap-4 items-center px-8 ">
           <Image
@@ -357,14 +372,89 @@ export default function DashboardPage() {
         
       </main>
 
-      <aside className="hidden md:block bg-[#FFF7DE]  md:w-[40%]">
+      {/* <aside className="w-full   bg-[#FFF7DE]  md:w-[40%]">
         <SideDashboard />
         <PhoneDisplay buttonStyle={buttonStyle} fontStyle={fontStyle}
         selectedTheme={"/themes/theme1.png"}
          profile={profile}
         
         />
+      </aside> */}
+          <aside className="w-full md:w-[40%] bg-[#FFF7DE]">
+        <SideDashboard />
+
+        {/* PHONE DISPLAY (clickable only on mobile) */}
+        <div
+          onClick={handlePhoneClick}
+          className="md:pointer-events-none cursor-pointer"
+        >
+          <PhoneDisplay
+            buttonStyle={buttonStyle}
+            fontStyle={fontStyle}
+            selectedTheme="/themes/theme1.png"
+            profile={profile}
+          />
+        </div>
       </aside>
+
+      {/* ================= MOBILE LINKLIST OVERLAY ================= */}
+      {isMobile && showMobileLinks && (
+        <div className="fixed inset-0 bg-[#FFF7DE] z-[999] overflow-y-auto">
+          <div className="sticky top-0 py-8 bg-[#FFF7DE] px-4 border-b">
+            <div className="flex items-center justify-between">
+              <button
+              onClick={() => setShowMobileLinks(false)}
+              className="font-bold text-[#331400]"
+            >
+              ← A.bio Links
+            </button>
+            <button className="text-[#FED45C] text-[13px] font-semibold bg-[#331400] px-4 py-2"> Save </button>
+            </div>
+            
+          </div>
+          <div>
+            
+        <div className="mb-8 max-w-3xl flex gap-4 items-center px-8 ">
+          <Image
+            src={profileImage}
+            alt="Profile"
+            width={80}
+            height={80}
+            className="object-cover w-20 h-20 cursor-pointer rounded-full"
+            onClick={() => openModal("imageOptions")}
+          />
+
+          <div >
+            <div className=" mb-1 cursor-pointer" onClick={() => openModal("editBio")}>
+              <h1 className="font-semibold text-[16px]">{firstName}</h1>
+              <p className="font-thin text-xs md:text-[10px]">@davidosh</p>
+            </div>
+
+            <p className="font-bold mt-2 mb-1 text-[11px]">{bio}</p>
+
+            <div
+              className="flex items-center min-w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+              onClick={() => openModal("editLocation")}
+            >
+              <Image 
+                src="/icons/location1.png" 
+                alt="Location" 
+                width={12} 
+                height={12} 
+                className="w-3 h-3 md:w-[12px] md:h-[12px] flex-shrink-0" 
+              />
+              <span className="truncate text-[10px]">{location}</span>
+            </div>
+          </div>
+        </div>
+
+          </div>
+          {/* LinkList EXACTLY AS DESKTOP */}
+          <div className="p">
+            <LinkList />
+          </div>
+        </div>
+      )}
     </section>
   );
 }
