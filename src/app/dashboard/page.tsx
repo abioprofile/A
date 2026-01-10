@@ -11,11 +11,25 @@ import ButtonCustomizer from '@/components/ButtonCustomizer';
 import {ButtonStyle} from '@/app/dashboard/appearance/page';
 import FontCustomizer, { FontStyle } from '@/components/FontCustomizer';
 import ProfileContent from "@/components/ProfileContent";
-import { AuthContext } from "@/context/AuthContext"; 
+import { AuthContext, User } from "@/context/AuthContext"; 
+import { useAppSelector } from "@/stores/hooks";
+import { useGetAllLinks } from "@/hooks/api/useAuth";
+import { ProfileLink, UserProfile } from "@/types/auth.types";
+
+interface UserLink {
+  id: string;
+  title: string;
+  url: string;
+  platform: string;
+  displayOrder: number;
+  isVisible: boolean;
+}
+
 
 export default function DashboardPage() {
  const { user } = useContext(AuthContext) || {};
-
+ const userData = useAppSelector((state) => state.auth.user);
+ console.log(userData);
     const getFirstName = (fullName?: string) => {
     if (!fullName) return "User";
     return fullName.split(" ")[0];
@@ -86,7 +100,43 @@ export default function DashboardPage() {
   { id: '3', platform: 'Snapchat', url: 'https://www.snapchat.com/add/davidosh', clicks: 0, active: true },
   { id: '4', platform: 'X', url: 'https://x.com/davidosh', clicks: 0, active: true },
 ]);
+
+const { 
+  data: linksData, 
+  isLoading: linksLoading, 
+  isError: linksError, 
+  refetch: refetchLinks 
+} = useGetAllLinks();
+
+
+
+    // Transform links data safely
+    const transformLinks = (links: unknown): ProfileLink[] => {
+      if (!links || !Array.isArray(links)) return [];
+      return links.map((link: unknown) => {
+        if (typeof link === 'object' && link !== null) {
+          const l = link as Record<string, unknown>;
+          return {
+            id: String(l.id || ''),
+            title: String(l.title || ''),
+            url: String(l.url || ''),
+            platform: String(l.platform || ''),
+            displayOrder: typeof l.displayOrder === 'number' ? l.displayOrder : 0,
+            isVisible: l.isVisible !== false, // Default to true if not specified
+          };
+        }
+        return null;
+      }).filter((link): link is ProfileLink => link !== null);
+    };
+
+    // Transform links data - API returns AllLinksResponse with data: ProfileLink[]
+    const profileLinks = linksData?.data 
+      ? (Array.isArray(linksData.data) 
+          ? linksData.data as ProfileLink[]
+          : [])
+      : [];
   
+
   const handleLocationSearch = async (query: string) => {
     setTempLocation(query); 
     if (query.length < 2) {
@@ -152,7 +202,7 @@ export default function DashboardPage() {
   return (
     <section className="flex space-y-4 md:space-y-6 bg-[#fff]">
       <main className="hidden md:block w-full md:w-[60%] space-y-4">
-        <h1 className="p-8 text-[30px] font-medium">Hi, {firstName} </h1>
+        <h1 className="p-8 text-[30px] font-medium">Hi, {userData?.name} </h1>
         <div className=" max-w-3xl flex gap-4 items-center px-8 ">
           <Image
             src={profileImage}
@@ -165,14 +215,14 @@ export default function DashboardPage() {
 
           <div>
             <div className=" mb-1 cursor-pointer" onClick={() => openModal("editBio")}>
-              <h1 className="font-semibold text-[16px]">{firstName}</h1>
-              <p className="font-thin text-xs md:text-[10px]">@davidosh</p>
+              <h1 className="font-semibold text-[16px]">{userData?.name}</h1>
+              <p className="font-thin text-xs md:text-[10px]">@{userData?.profile?.username}</p>
             </div>
 
-            <p className="font-bold mt-2 mb-1 text-[11px]">{bio}</p>
+            <p className="font-bold mt-2 mb-1 text-[11px]">{userData?.profile?.bio}</p>
 
             <div
-              className="flex items-center min-w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+              className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
               onClick={() => openModal("editLocation")}
             >
               <Image 
@@ -180,9 +230,9 @@ export default function DashboardPage() {
                 alt="Location" 
                 width={12} 
                 height={12} 
-                className="w-3 h-3 md:w-[12px] md:h-[12px] flex-shrink-0" 
+                className="w-fit h-3 " 
               />
-              <span className="truncate">{location}</span>
+              <span className="truncate">{userData?.profile?.location}</span>
             </div>
           </div>
         </div>
@@ -368,7 +418,12 @@ export default function DashboardPage() {
             </div>
           </div>
         </Modal>
-        <LinkList />
+        <LinkList 
+          linksDataData={profileLinks
+            .filter((link: ProfileLink) => link.isVisible !== false)
+            .sort((a, b) => a.displayOrder - b.displayOrder)
+            }
+        />
         
       </main>
 
@@ -393,12 +448,13 @@ export default function DashboardPage() {
             fontStyle={fontStyle}
             selectedTheme="/themes/theme1.png"
             profile={profile}
+            links={profileLinks}
           />
         </div>
       </aside>
 
       {/* ================= MOBILE LINKLIST OVERLAY ================= */}
-      {isMobile && showMobileLinks && (
+      {isMobile && showMobileLinks && (  
         <div className="fixed inset-0 bg-[#FFF7DE] z-[999] overflow-y-auto">
           <div className="sticky top-0 py-8 bg-[#FFF7DE] px-4 border-b">
             <div className="flex items-center justify-between">
@@ -426,14 +482,14 @@ export default function DashboardPage() {
 
           <div >
             <div className=" mb-1 cursor-pointer" onClick={() => openModal("editBio")}>
-              <h1 className="font-semibold text-[16px]">{firstName}</h1>
-              <p className="font-thin text-xs md:text-[10px]">@davidosh</p>
+              <h1 className="font-semibold text-[16px]">{userData?.name}</h1>
+              <p className="font-thin text-xs md:text-[10px]">@{userData?.profile?.username}</p>
             </div>
 
-            <p className="font-bold mt-2 mb-1 text-[11px]">{bio}</p>
+            <p className="font-bold mt-2 mb-1 text-[11px]">{userData?.profile?.bio}</p>
 
             <div
-              className="flex items-center min-w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+              className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
               onClick={() => openModal("editLocation")}
             >
               <Image 
@@ -441,9 +497,9 @@ export default function DashboardPage() {
                 alt="Location" 
                 width={12} 
                 height={12} 
-                className="w-3 h-3 md:w-[12px] md:h-[12px] flex-shrink-0" 
+                className="w-3 h-3  flex-shrink-0" 
               />
-              <span className="truncate text-[10px]">{location}</span>
+              <span className="truncate text-[10px]">{userData?.profile?.location}</span>
             </div>
           </div>
         </div>
@@ -451,7 +507,11 @@ export default function DashboardPage() {
           </div>
           {/* LinkList EXACTLY AS DESKTOP */}
           <div className="p">
-            <LinkList />
+            <LinkList 
+              linksDataData={profileLinks
+                .filter((link: ProfileLink) => link.isVisible !== false)
+                .sort((a: ProfileLink, b: ProfileLink) => a.displayOrder - b.displayOrder)}
+            />
           </div>
         </div>
       )}

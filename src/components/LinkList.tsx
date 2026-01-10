@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -20,6 +20,7 @@ import LinkCard from './LinkCard';
 import DeleteModal from './DeleteModal';
 import EditModal from './EditModal';
 import { X } from "lucide-react";
+import { ProfileLink } from '@/types/auth.types';
 
 type LinkItem = {
   id: string;
@@ -77,84 +78,23 @@ const suggestedPlatforms = [
   { name: 'TikTok', icon: '/icons/TikTok.png', abbr: 'TT' },
 ];
 
-export default function LinkList() {
-  const [links, setLinks] = useState<LinkItem[]>([
-    { id: '1', platform: 'Instagram', url: 'https://www.instagram.com/davidosh', clicks: 0 },
-    { id: '2', platform: 'Behance', url: 'https://www.behance.net/davidosh', clicks: 0 },
-    { id: '3', platform: 'Snapchat', url: 'https://www.snapchat.com/add/davidosh', clicks: 0 },
-    { id: '4', platform: 'X', url: 'https://x.com/davidosh', clicks: 0 },
-  ]);
+export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}) { 
+  const [linksData, setLinksData] = useState<ProfileLink[]>(linksDataData);
+  
+  // Update linksData when prop changes (important for when data loads asynchronously)
+  useEffect(() => {
+    if (linksDataData && linksDataData.length > 0) {
+      setLinksData(linksDataData);
+    }
+  }, [linksDataData]);
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [editItem, setEditItem] = useState<LinkItem | null>(null);
+  const [editItem, setEditItem] = useState<ProfileLink | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-  const handleSaveEdit = (platform: string, url: string) => {
-    if (editItem) {
-      setLinks((prev) =>
-        prev.map((item) =>
-          item.id === editItem.id ? { ...item, platform, url } : item
-        )
-      );
-      setEditItem(null);
-    }
-  };
 
-  // ADD NORMAL LINK
-  const handleAddLink = () => {
-    const newId = (links.length + 1).toString();
-    setLinks(prev => [
-      ...prev,
-      {
-        id: newId,
-        platform: 'New Platform',
-        url: 'https://example.com',
-        clicks: 0
-      }
-    ]);
-    setIsAddModalOpen(false);
-  };
-
-  // ADD FORM BLOCK
-  const handleAddForm = () => {
-    const newId = (links.length + 1).toString();
-
-    setLinks(prev => [
-      ...prev,
-      {
-        id: newId,
-        platform: "Form",
-        url: "",
-        clicks: 0,
-        isForm: true,
-        form: {
-          fields: { name: true, email: true, phone: false },
-          title: "DNA Checkup",
-          buttonText: "Submit",
-          successMessage: "Submitted"
-        }
-      }
-    ]);
-
-    setIsAddModalOpen(false);
-  };
-
-  // Handle adding a suggested platform
-  const handleAddSuggested = (platform: string) => {
-    const newId = (links.length + 1).toString();
-    setLinks(prev => [
-      ...prev,
-      {
-        id: newId,
-        platform,
-        url: `https://www.${platform.toLowerCase()}.com/yourusername`,
-        clicks: 0
-      }
-    ]);
-    setIsAddModalOpen(false);
-  };
 
   return (
     <>
@@ -163,9 +103,9 @@ export default function LinkList() {
         collisionDetection={closestCenter}
         onDragEnd={({ active, over }) => {
           if (active.id !== over?.id) {
-            const oldIndex = links.findIndex((i) => i.id === active.id);
-            const newIndex = links.findIndex((i) => i.id === over?.id);
-            setLinks(arrayMove(links, oldIndex, newIndex));
+            const oldIndex = linksData.findIndex((i: ProfileLink) => i.id === active.id);
+            const newIndex = linksData.findIndex((i: ProfileLink) => i.id === over?.id);
+            setLinksData(arrayMove(linksData, oldIndex, newIndex));   
           }
         }}
       >
@@ -173,16 +113,16 @@ export default function LinkList() {
 
           {/* STACK LIST */}
           <div className="flex-1 overflow-y-auto">
-            <SortableContext items={links.map((link) => link.id)} strategy={verticalListSortingStrategy}>
+            <SortableContext items={linksData.map((link: ProfileLink) => link.id)} strategy={verticalListSortingStrategy}>
               <div className="md:space-y-1 md:pr-2">
 
-                {links.map((item) => (
+                {linksData.map((item: ProfileLink) => (
                   <SortableItem
                     key={item.id}
                     item={item}
-                    setLinks={setLinks}
+                    setLinks={setLinksData}
                     onDelete={() => setDeleteId(item.id)}
-                    onEdit={(item: LinkItem) => setEditItem(item)}
+                    onEdit={(item: ProfileLink) => setEditItem(item)}
                   />
                 ))}
 
@@ -215,7 +155,7 @@ export default function LinkList() {
         isOpen={deleteId !== null}
         onClose={() => setDeleteId(null)}
         onConfirm={() => {
-          setLinks((prev) => prev.filter((item) => item.id !== deleteId));
+          setLinksData((prev: ProfileLink[]) => prev.filter((item: ProfileLink) => item.id !== deleteId));
           setDeleteId(null);
         }}
       />
@@ -224,7 +164,7 @@ export default function LinkList() {
       <EditModal
         isOpen={editItem !== null}
         onClose={() => setEditItem(null)}
-        onSave={handleSaveEdit}
+        onSave={() => {}}
         initialPlatform={editItem?.platform || ''}
         initialUrl={editItem?.url || ''}
       />
@@ -266,7 +206,7 @@ export default function LinkList() {
 
               {/* ADD LINK */}
               <button
-                onClick={handleAddLink}
+                // onClick={handleAddLink}
                 className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
                 <div className="flex items-center gap-3">
@@ -285,7 +225,7 @@ export default function LinkList() {
 
               {/* ADD FORM */}
               <button
-                onClick={handleAddForm}
+                // onClick={handleAddForm}
                 className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
                 <div className="flex items-center gap-3">
@@ -313,7 +253,7 @@ export default function LinkList() {
       {suggestedPlatforms.map((platform, index) => (
         <button
           key={index}
-          onClick={() => handleAddSuggested(platform.name)}
+          // onClick={() => handleAddSuggested(platform.name)}
           className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
         >
           <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
@@ -382,7 +322,7 @@ export default function LinkList() {
               {/* ADD OPTIONS */}
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <button
-                  onClick={handleAddLink}
+                  // onClick={handleAddLink}
                   className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
                 >
                   <img 
@@ -397,7 +337,7 @@ export default function LinkList() {
                 </button>
 
                 <button
-                  onClick={handleAddForm}
+                  // onClick={handleAddForm}
                   className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
                 >
                   <img 
@@ -423,7 +363,7 @@ export default function LinkList() {
       {suggestedPlatforms.map((platform, index) => (
         <button
           key={index}
-          onClick={() => handleAddSuggested(platform.name)}
+          // onClick={() => handleAddSuggested(platform.name)}
           className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
         >
           <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">

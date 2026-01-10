@@ -4,6 +4,8 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { ButtonStyle } from "../app/dashboard/appearance/page";
 import { FontStyle } from "./FontCustomizer";
+import { ProfileLink, UserProfile } from "@/types/auth.types";
+import { useAppSelector } from "@/stores/hooks";
 
 interface PhoneDisplayProps {
   buttonStyle: ButtonStyle;
@@ -16,6 +18,7 @@ interface PhoneDisplayProps {
     bio?: string;
     location?: string;
   };
+  links: ProfileLink[];
 }
 
 const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
@@ -23,6 +26,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   fontStyle,
   selectedTheme,
   profile,
+  links,
 }) => {
   const [buttons] = useState([
     { icon: "/icons/Social.png", label: "Instagram", active: true },
@@ -30,6 +34,9 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     { icon: "/icons/Social 1.png", label: "Snapchat", active: true },
     { icon: "/icons/Social 3.png", label: "X", active: true },
   ]);
+
+ const userDataProfile = useAppSelector((state) => state.auth.user);
+
 
   const textStyle = {
     fontFamily: fontStyle.fontFamily,
@@ -81,22 +88,22 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     </div>
     <div>
       <h1 className="text-[14px] font-bold" >
-        {profile?.displayName || "Your Name"}
+        {userDataProfile?.name || "Your Name"}
       </h1>
       <p className="text-[10px] font-thin" >
-        @{profile?.displayName?.toLowerCase().replace(/\s+/g, '') || "username"}
+        @{userDataProfile?.profile?.username?.toLowerCase().replace(/\s+/g, '') || "username"}
       </p>
     </div>
   </div>
 
   <p className="mt-2 text-[10px] text-left font-medium" >
-    {profile?.bio || "Add a short bio here..."}
+    {userDataProfile?.profile?.bio || "Add a short bio here..."}
   </p>
 
   <div className="mt-2 flex items-center gap-1 p-1 border text-[10px] border-gray-300">
     <Image src="/icons/location1.png" alt="Location" width={10} height={10} />
     <span className="text-[9px]" >
-      {profile?.location || "Add location"}
+      {userDataProfile?.profile?.location || "Add location"}
     </span>
   </div>
 

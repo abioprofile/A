@@ -249,7 +249,7 @@ export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.user);
-
+  const router = useRouter();
   return useMutation({
     mutationFn: async (data: UpdateProfileRequest) => {
       return await updateProfileApi(data);
@@ -297,6 +297,8 @@ export const useUpdateProfile = () => {
       toast.success("Profile updated successfully", {
         description: response.message || "Your profile has been updated",
       });
+
+      router.push("/auth/platforms");
     },
     onError: (error: any) => {
       const errorMessage =

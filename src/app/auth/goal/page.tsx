@@ -37,17 +37,6 @@ const SelectGoalPage = () => {
         goals: [selectedGoal.title],
       });
     }
-    if (updateProfileMutation.isSuccess) {
-      toast.success("Goal saved successfully", {
-        description: "Your profile has been updated.",
-      });
-      router.push("/auth/platforms");
-    }
-    if (updateProfileMutation.isError) {
-      toast.error("Failed to save goal", {
-        description: updateProfileMutation.error.message,
-      });
-    }
   };
 
   return (
