@@ -26,6 +26,7 @@ type LinkItem = {
   platform: string;
   url: string;
   clicks: number;
+  customIcon?: string;
 
   // FORM SUPPORT
   isForm?: boolean;
@@ -253,7 +254,7 @@ export default function LinkList() {
               {/* SEARCH */}
               <div className="bg-gray-200 px-4 py-3 flex items-center gap-3 text-gray-500 ">
                 <img 
-                  src="/icons/search.png" 
+                  src="/icons/search.svg" 
                   alt="Search" 
                   className="w-5 h-5 opacity-60"
                   onError={(e) => {
@@ -284,7 +285,7 @@ export default function LinkList() {
               </button>
 
               {/* ADD FORM */}
-              <button
+              {/* <button
                 onClick={handleAddForm}
                 className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
@@ -300,7 +301,7 @@ export default function LinkList() {
                   <span className="font-medium text-[#331400]">Form</span>
                 </div>
                 <span className="font-semibold text-[#331400]">&gt;&gt;</span>
-              </button>
+              </button> */}
 
               {/* SUGGESTED */}
               <div className='mb-4'>
@@ -333,7 +334,7 @@ export default function LinkList() {
   </div>
               </div>
               {/* RECENTLY ADDED PLACEHOLDERS */}
-              <div className="space-y-4">
+              {/* <div className="space-y-4">
                 <div className="bg-gray-100 h-32  p-4">
                   <p className="text-sm text-gray-500 mb-2">Recently Added</p>
                   <div className="flex items-center gap-2">
@@ -348,7 +349,7 @@ export default function LinkList() {
                     <div className="text-sm text-gray-700">YouTube</div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
             </div>
           </div>
@@ -369,7 +370,7 @@ export default function LinkList() {
               {/* SEARCH BAR */}
               <div className="bg-gray-100  w-full p-4 mb-6 text-sm text-gray-500  flex items-center gap-3">
                 <img 
-                  src="/icons/search.png" 
+                  src="/icons/search.svg" 
                   alt="Search" 
                   className="w-5 h-5 opacity-60"
                   onError={(e) => {
@@ -396,7 +397,7 @@ export default function LinkList() {
                   <p className="text-[14px] font-medium text-[#331400]">Add Link</p>
                 </button>
 
-                <button
+                {/* <button
                   onClick={handleAddForm}
                   className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
                 >
@@ -409,7 +410,7 @@ export default function LinkList() {
                     }}
                   />
                   <p className="text-[14px] font-medium text-[#331400]">Form</p>
-                </button>
+                </button> */}
               </div>
 
               {/* SUGGESTED ICONS */}
@@ -444,7 +445,7 @@ export default function LinkList() {
               </div>
 
               {/* RECENTLY ADDED PLACEHOLDERS */}
-              <div className="grid grid-cols-2 gap-4">
+              {/* <div className="grid grid-cols-2 gap-4">
                 <div className="bg-gray-100 h-32  p-4">
                   <p className="text-sm text-gray-500 mb-2">Recently Added</p>
                   <div className="flex items-center gap-2">
@@ -459,7 +460,7 @@ export default function LinkList() {
                     <div className="text-sm text-gray-700">YouTube</div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
             </div>
           </div>
@@ -533,7 +534,7 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
                   handleFieldToggle(f as 'name' | 'email' | 'phone');
                   toggleInputVisibility(f as 'name' | 'email' | 'phone');
                 }}
-                className={`px-6 py-3 border rounded-lg transition-colors ${
+                className={`px-6 py-3 border  transition-colors ${
                   item.form.fields[f] 
                     ? "bg-[#331400] text-[#FED45C] border-[#331400]" 
                     : "bg-white text-gray-700 border-gray-300 hover:border-[#331400]"
