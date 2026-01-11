@@ -41,7 +41,7 @@ const AppearancePage: React.FC = () => {
 
   const [selectedTheme, setSelectedTheme] = useState<string>('/themes/theme1.png');
   const [profile, setProfile] = useState({
-    profileImage: "/icons/profileplaceholder.png",
+    profileImage: "/icons/Profile Picture.png",
     displayName: "",
     bio: "",
     location: "",
