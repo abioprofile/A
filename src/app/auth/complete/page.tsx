@@ -12,6 +12,7 @@ import { useCurrentUser, useGetAllLinks } from "@/hooks/api/useAuth";
 import { useAppSelector } from "@/stores/hooks";
 import { User } from "@/types/auth.types";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import { toast } from "sonner";
 
 interface UserLink {
   id: string;
@@ -105,7 +106,14 @@ export default function ProfileLivePage() {
     return platformIcons[normalizedPlatform] || platformIcons[platform.toLowerCase()] || <FaCopy className="w-4 h-4" />;
   };
 
-  const profileLink = userData.username ? `/${userData.username}` : "/profile";
+  // Get the current origin (localhost:3000, localhost:3001, etc.) dynamically
+  const getProfileLink = () => {
+    if (typeof window === 'undefined') return "/profile";
+    const origin = window.location.origin; // e.g., "http://localhost:3000"
+    return userData.username ? `${origin}/${userData.username}` : `${origin}/profile`;
+  };
+  
+  const profileLink = getProfileLink();
 
   const handleShare = async (platform: string) => {
     const shareUrl = encodeURIComponent(profileLink);
@@ -120,16 +128,9 @@ export default function ProfileLivePage() {
     if (platform === 'copy') {
       try {
         await navigator.clipboard.writeText(profileLink);
-        alert('Profile link copied to clipboard!');
+        toast.success("Profile link copied to clipboard!");
       } catch (err) {
-        console.error('Failed to copy:', err);
-        const textArea = document.createElement('textarea');
-        textArea.value = profileLink;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        alert('Profile link copied to clipboard!');
+        toast.error("Failed to copy profile link to clipboard!");
       }
     } else if (shareUrls[platform]) {
       window.open(shareUrls[platform], '_blank', 'noopener,noreferrer');

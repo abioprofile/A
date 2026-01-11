@@ -45,8 +45,7 @@ const getPlatformIcon = (platform: string) => {
 export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
-  const usernameData = useAppSelector((state) => state.auth.user);
-  console.log(usernameData, "usernameData");
+  const usernameData = useAppSelector((state) => state.auth.user)
 
   // Fetch user profile by username
   const { 

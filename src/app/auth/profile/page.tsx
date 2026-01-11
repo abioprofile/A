@@ -54,9 +54,6 @@ export default function ProfileScreen() {
           toast.success("Profile updated successfully");
           router.push("/auth/complete");
         },
-        onError: () => {
-          // Error is already handled by the hook
-        },
       }
     );
   };

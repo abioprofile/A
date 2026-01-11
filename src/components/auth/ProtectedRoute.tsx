@@ -9,13 +9,6 @@ interface ProtectedRouteProps {
   redirectTo?: string;
 }
 
-/**
- * ProtectedRoute component - Wraps pages that require authentication
- * Redirects to sign-in if user is not authenticated
- * 
- * @param children - The page content to render if authenticated
- * @param redirectTo - Optional custom redirect path (default: /auth/sign-in)
- */
 export default function ProtectedRoute({
   children,
   redirectTo = "/auth/sign-in",
