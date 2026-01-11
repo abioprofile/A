@@ -225,7 +225,7 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
               </button>
 
               {/* ADD FORM */}
-              <button
+              {/* <button
                 onClick={handleAddForm}
                 className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
@@ -241,7 +241,7 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                   <span className="font-medium text-[#331400]">Form</span>
                 </div>
                 <span className="font-semibold text-[#331400]">&gt;&gt;</span>
-              </button> */}
+              </button>  */}
 
               {/* SUGGESTED */}
               <div className='mb-4'>
@@ -337,7 +337,7 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                   <p className="text-[14px] font-medium text-[#331400]">Add Link</p>
                 </button>
 
-                <button
+                {/* <button
                   onClick={handleAddForm}
                   className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
                 >
@@ -350,7 +350,7 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                     }}
                   />
                   <p className="text-[14px] font-medium text-[#331400]">Form</p>
-                </button> */}
+                </button>  */}
               </div>
 
               {/* SUGGESTED ICONS */}
