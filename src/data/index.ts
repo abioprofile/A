@@ -143,11 +143,11 @@ export const PLATFORMS: Platform[] = [
 
 // Sample profile for templates
 const defaultProfile: ProfileInfo = {
-    name: "David Osh",
-    username: "davidosh",
-    bio: "Product designer & Co founder",
+    name: "Mary Godwin",
+    username: "Mayeetee",
+    bio: "Unleashing creativity, one link at a time.",
     avatar: "/icons/osh.svg",
-    location: "Lagos, Nigeria"
+    location: "Embu, Kenya"
 }
 
 // Sample links for templates
@@ -177,43 +177,43 @@ export const templates: TemplateConfig[] = [
             backgroundImage: "url('/images/template-image.svg')",
         },
     },
-    {
-        id: "dark-gold-3d",
-        name: "Dark Gold 3D",
-        profile: defaultProfile,
-        links: defaultLinks,
-        style: {
-            backgroundColor: "#121212",
-            textColor: "#ffffff",
-            buttonColor: "#1a1a1a",
-            buttonTextColor: "#ffd700",
-            accentColor: "#ffd700",
-            fontFamily: "'Playfair Display', serif",
-            buttonStyle: "pill",
-            buttonBorder: false,
-            buttonEffect: "3d",
-            backgroundImage: "url('/images/template-image-2.svg')",
-            // overlay: true,
-        },
-    },
-    {
-        id: "earthy-brown-shadow",
-        name: "Earthy Brown Shadow",
-        profile: defaultProfile,
-        links: defaultLinks,
-        style: {
-            backgroundColor: "#f5f5f5",
-            textColor: "#333333",
-            buttonColor: "#959595",
-            buttonTextColor: "#fffffe",
-            accentColor: "#777777",
-            fontFamily: "'Roboto Mono', monospace",
-            buttonStyle: "square",
-            buttonBorder: true,
-            buttonEffect: "minimal",
-            backgroundImage: "url('/images/template-image-3.svg')",
-        },
-    },
+    // {
+    //     id: "dark-gold-3d",
+    //     name: "Dark Gold 3D",
+    //     profile: defaultProfile,
+    //     links: defaultLinks,
+    //     style: {
+    //         backgroundColor: "#121212",
+    //         textColor: "#ffffff",
+    //         buttonColor: "#1a1a1a",
+    //         buttonTextColor: "#ffd700",
+    //         accentColor: "#ffd700",
+    //         fontFamily: "'Playfair Display', serif",
+    //         buttonStyle: "pill",
+    //         buttonBorder: false,
+    //         buttonEffect: "3d",
+    //         backgroundImage: "url('/images/template-image-2.svg')",
+    //         // overlay: true,
+    //     },
+    // },
+    // {
+    //     id: "earthy-brown-shadow",
+    //     name: "Earthy Brown Shadow",
+    //     profile: defaultProfile,
+    //     links: defaultLinks,
+    //     style: {
+    //         backgroundColor: "#f5f5f5",
+    //         textColor: "#333333",
+    //         buttonColor: "#959595",
+    //         buttonTextColor: "#fffffe",
+    //         accentColor: "#777777",
+    //         fontFamily: "'Roboto Mono', monospace",
+    //         buttonStyle: "square",
+    //         buttonBorder: true,
+    //         buttonEffect: "minimal",
+    //         backgroundImage: "url('/images/template-image-3.svg')",
+    //     },
+    // },
 ]
 export const dropdownLinks = [
   { label: "Edit Image", action: "editImage", icon: ImageIcon },

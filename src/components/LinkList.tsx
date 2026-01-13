@@ -1,26 +1,26 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   DndContext,
   closestCenter,
   PointerSensor,
   useSensor,
   useSensors,
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
-import LinkCard from './LinkCard';
-import DeleteModal from './DeleteModal';
-import EditModal from './EditModal';
+import LinkCard from "./LinkCard";
+import DeleteModal from "./DeleteModal";
+import EditModal from "./EditModal";
 import { X } from "lucide-react";
-import { ProfileLink } from '@/types/auth.types';
+import { ProfileLink } from "@/types/auth.types";
 
 type LinkItem = {
   id: string;
@@ -45,43 +45,47 @@ type LinkItem = {
 
 // Icon mapping - adjust these paths to match where your icons are stored
 const platformIcons: Record<string, string> = {
-  'Instagram': '/icons/instagram.png',
-  'Behance': '/icons/behance.png',
-  'Snapchat': '/icons/snapchat.png',
-  'X': '/icons/x.png',
-  'Twitter': '/icons/twitter.png',
-  'YouTube': '/icons/youtube.png',
-  'Facebook': '/icons/facebook.png',
-  'LinkedIn': '/icons/linkedin.png',
-  'GitHub': '/icons/github.png',
-  'Figma': '/icons/figma.png',
-  'Dribbble': '/icons/dribbble.png',
-  'Spotify': '/icons/spotify.png',
-  'Apple': '/icons/apple.png',
-  'Google': '/icons/google.png',
-  'Amazon': '/icons/amazon.png',
-  'Website': '/icons/website.png',
-  'Form': '/icons/form.png',
-  'Link': '/icons/link.png',
+  Instagram: "/icons/instagram.png",
+  Behance: "/icons/behance.png",
+  Snapchat: "/icons/snapchat.png",
+  X: "/icons/x.png",
+  Twitter: "/icons/twitter.png",
+  YouTube: "/icons/youtube.png",
+  Facebook: "/icons/facebook.png",
+  LinkedIn: "/icons/linkedin.png",
+  GitHub: "/icons/github.png",
+  Figma: "/icons/figma.png",
+  Dribbble: "/icons/dribbble.png",
+  Spotify: "/icons/spotify.png",
+  Apple: "/icons/apple.png",
+  Google: "/icons/google.png",
+  Amazon: "/icons/amazon.png",
+  Website: "/icons/website.png",
+  Form: "/icons/form.png",
+  Link: "/icons/link.png",
   // Add more as needed
 };
 
 // Suggested platforms with their icons
 const suggestedPlatforms = [
-  { name: 'Instagram', icon: '/icons/instagram.png', abbr: 'IG' },
-  { name: 'Pinterest', icon: '/icons/pinterest.png', abbr: 'P' },
-  { name: 'YouTube', icon: '/icons/youtube (2).png', abbr: 'YT' },
-  { name: 'Snapchat', icon: '/icons/snapchat.png', abbr: 'SC' },
-  { name: 'X', icon: '/icons/x.png', abbr: 'X' },
-  { name: 'Psotify', icon: '/icons/Spotify.png', abbr: 'sp' },
-  { name: 'Telegram', icon: '/icons/Telegram.png', abbr: 'FB' },
-  { name: 'LinkedIn', icon: '/icons/linkedin-icon.svg', abbr: 'LI' },
-  { name: 'TikTok', icon: '/icons/TikTok.png', abbr: 'TT' },
+  { name: "Instagram", icon: "/icons/instagram.png", abbr: "IG" },
+  { name: "Pinterest", icon: "/icons/pinterest.png", abbr: "P" },
+  { name: "YouTube", icon: "/icons/youtube (2).png", abbr: "YT" },
+  { name: "Snapchat", icon: "/icons/snapchat.png", abbr: "SC" },
+  { name: "X", icon: "/icons/x.png", abbr: "X" },
+  { name: "Psotify", icon: "/icons/Spotify.png", abbr: "sp" },
+  { name: "Telegram", icon: "/icons/Telegram.png", abbr: "FB" },
+  { name: "LinkedIn", icon: "/icons/linkedin-icon.svg", abbr: "LI" },
+  { name: "TikTok", icon: "/icons/TikTok.png", abbr: "TT" },
 ];
 
-export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}) { 
+export default function LinkList({
+  linksDataData,
+}: {
+  linksDataData: ProfileLink[];
+}) {
   const [linksData, setLinksData] = useState<ProfileLink[]>(linksDataData);
-  
+
   // Update linksData when prop changes (important for when data loads asynchronously)
   useEffect(() => {
     if (linksDataData && linksDataData.length > 0) {
@@ -95,8 +99,6 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
 
   const sensors = useSensors(useSensor(PointerSensor));
 
-
-
   return (
     <>
       <DndContext
@@ -104,19 +106,24 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
         collisionDetection={closestCenter}
         onDragEnd={({ active, over }) => {
           if (active.id !== over?.id) {
-            const oldIndex = linksData.findIndex((i: ProfileLink) => i.id === active.id);
-            const newIndex = linksData.findIndex((i: ProfileLink) => i.id === over?.id);
-            setLinksData(arrayMove(linksData, oldIndex, newIndex));   
+            const oldIndex = linksData.findIndex(
+              (i: ProfileLink) => i.id === active.id
+            );
+            const newIndex = linksData.findIndex(
+              (i: ProfileLink) => i.id === over?.id
+            );
+            setLinksData(arrayMove(linksData, oldIndex, newIndex));
           }
         }}
       >
-        <div className="md:max-w-2xl mx-auto px-6 md:px-0 md:bg-white py-[2px] flex flex-col h-[calc(100vh-320px)] md:h-[calc(100vh-250px)]" >
-
+        <div className="md:max-w-3xl mx-auto px-6 md:px-0 md:bg-white py-[2px] flex flex-col h-[calc(100vh-320px)] md:h-[calc(100vh-290px)]">
           {/* STACK LIST */}
           <div className="flex-1 overflow-y-auto">
-            <SortableContext items={linksData.map((link: ProfileLink) => link.id)} strategy={verticalListSortingStrategy}>
-              <div className="md:space-y-1 md:pr-2">
-
+            <SortableContext
+              items={linksData.map((link: ProfileLink) => link.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="md:space-y-1  md:pr-2">
                 {linksData.map((item: ProfileLink) => (
                   <SortableItem
                     key={item.id}
@@ -126,14 +133,13 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                     onEdit={(item: ProfileLink) => setEditItem(item)}
                   />
                 ))}
-
               </div>
             </SortableContext>
           </div>
 
           {/* ADD BUTTON */}
           <div>
-            <button 
+            <button
               onClick={() => setIsAddModalOpen(true)}
               className="
                 w-full py-3
@@ -146,7 +152,6 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
             >
               + Add
             </button>
-
           </div>
         </div>
       </DndContext>
@@ -156,7 +161,9 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
         isOpen={deleteId !== null}
         onClose={() => setDeleteId(null)}
         onConfirm={() => {
-          setLinksData((prev: ProfileLink[]) => prev.filter((item: ProfileLink) => item.id !== deleteId));
+          setLinksData((prev: ProfileLink[]) =>
+            prev.filter((item: ProfileLink) => item.id !== deleteId)
+          );
           setDeleteId(null);
         }}
       />
@@ -166,8 +173,8 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
         isOpen={editItem !== null}
         onClose={() => setEditItem(null)}
         onSave={() => {}}
-        initialPlatform={editItem?.platform || ''}
-        initialUrl={editItem?.url || ''}
+        initialPlatform={editItem?.platform || ""}
+        initialUrl={editItem?.url || ""}
       />
 
       {/* ADD – MOBILE FULL PAGE */}
@@ -175,7 +182,6 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
         <>
           {/* MOBILE VIEW */}
           <div className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col">
-            
             {/* HEADER */}
             <div className="sticky top-0 flex items-center justify-between px-4 py-8 border-b bg-[#FFF7DE]">
               <button
@@ -184,22 +190,21 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
               >
                 ← Add Board
               </button>
-
-              
             </div>
 
             {/* CONTENT */}
             <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
-
               {/* SEARCH */}
               <div className="bg-gray-200 px-4 py-3 flex items-center gap-3 text-gray-500 ">
-                <img 
-                  src="/icons/search.svg" 
-                  alt="Search" 
+                <img
+                  src="/icons/search.svg"
+                  alt="Search"
                   className="w-5 h-5 opacity-60"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                    e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                    e.currentTarget.style.display = "none";
+                    e.currentTarget.nextElementSibling?.classList.remove(
+                      "hidden"
+                    );
                   }}
                 />
                 <span className="text-sm">Paste or search a link</span>
@@ -211,12 +216,12 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                 className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <img 
-                    src="/icons/link.png" 
-                    alt="Link" 
+                  <img
+                    src="/icons/link.png"
+                    alt="Link"
                     className="w-6 h-6"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.style.display = "none";
                     }}
                   />
                   <span className="font-medium text-[#331400]">Add Link</span>
@@ -244,34 +249,34 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
               </button>  */}
 
               {/* SUGGESTED */}
-              <div className='mb-4'>
-  <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
-  <div className="relative">
-    {/* Gradient fade on the right to indicate more content */}
-    <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
-    
-    <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      {suggestedPlatforms.map((platform, index) => (
-        <button
-          key={index}
-          // onClick={() => handleAddSuggested(platform.name)}
-          className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
-        >
-          <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
-            <img 
-              src={platform.icon} 
-              alt={platform.name}
-              className="w-12 h-12 object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
-              }}
-            />
-          </div>
-        </button>
-      ))}
-    </div>
-  </div>
+              <div className="mb-4">
+                <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
+                <div className="relative">
+                  {/* Gradient fade on the right to indicate more content */}
+                  <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
+
+                  <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    {suggestedPlatforms.map((platform, index) => (
+                      <button
+                        key={index}
+                        // onClick={() => handleAddSuggested(platform.name)}
+                        className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
+                      >
+                        <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
+                          <img
+                            src={platform.icon}
+                            alt={platform.name}
+                            className="w-12 h-12 object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                              e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
+                            }}
+                          />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
               {/* RECENTLY ADDED PLACEHOLDERS */}
               {/* <div className="space-y-4">
@@ -290,31 +295,31 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                   </div>
                 </div>
               </div> */}
-
             </div>
           </div>
 
           {/* DESKTOP MODAL */}
           <div className="hidden md:flex fixed inset-0 bg-black/40 items-center justify-center z-50">
             <div className="bg-white w-full max-w-lg p-6 shadow-lg relative">
-
-              <button 
-                onClick={() => setIsAddModalOpen(false)} 
+              <button
+                onClick={() => setIsAddModalOpen(false)}
                 className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
               >
                 <X className="w-6 h-6" />
               </button>
 
-              <h2 className="text-2xl font-bold mb-6 text-[#331400]">Add New Item</h2>
+              <h2 className="text-2xl font-bold mb-6 text-[#331400]">
+                Add New Item
+              </h2>
 
               {/* SEARCH BAR */}
               <div className="bg-gray-100  w-full p-4 mb-6 text-sm text-gray-500  flex items-center gap-3">
-                <img 
-                  src="/icons/search.svg" 
-                  alt="Search" 
+                <img
+                  src="/icons/search.svg"
+                  alt="Search"
                   className="w-5 h-5 opacity-60"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.style.display = "none";
                   }}
                 />
                 <span>Paste or search a link</span>
@@ -326,15 +331,17 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                   // onClick={handleAddLink}
                   className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
                 >
-                  <img 
-                    src="/icons/link.png" 
-                    alt="Link" 
+                  <img
+                    src="/icons/link.png"
+                    alt="Link"
                     className="w-10 h-10"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.style.display = "none";
                     }}
                   />
-                  <p className="text-[14px] font-medium text-[#331400]">Add Link</p>
+                  <p className="text-[14px] font-medium text-[#331400]">
+                    Add Link
+                  </p>
                 </button>
 
                 {/* <button
@@ -354,34 +361,34 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
               </div>
 
               {/* SUGGESTED ICONS */}
-               <div className='mb-4'>
-  <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
-  <div className="relative">
-    {/* Gradient fade on the right to indicate more content */}
-    <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
-    
-    <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-      {suggestedPlatforms.map((platform, index) => (
-        <button
-          key={index}
-          // onClick={() => handleAddSuggested(platform.name)}
-          className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
-        >
-          <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
-            <img 
-              src={platform.icon} 
-              alt={platform.name}
-              className="w-12 h-12 object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
-              }}
-            />
-          </div>
-        </button>
-      ))}
-    </div>
-  </div>
+              <div className="mb-4">
+                <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
+                <div className="relative">
+                  {/* Gradient fade on the right to indicate more content */}
+                  <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
+
+                  <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                    {suggestedPlatforms.map((platform, index) => (
+                      <button
+                        key={index}
+                        // onClick={() => handleAddSuggested(platform.name)}
+                        className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
+                      >
+                        <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
+                          <img
+                            src={platform.icon}
+                            alt={platform.name}
+                            className="w-12 h-12 object-cover"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                              e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
+                            }}
+                          />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               {/* RECENTLY ADDED PLACEHOLDERS */}
@@ -401,7 +408,6 @@ export default function LinkList({linksDataData}: {linksDataData: ProfileLink[]}
                   </div>
                 </div>
               </div> */}
-
             </div>
           </div>
         </>
@@ -423,19 +429,19 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
   const [visibleInputs, setVisibleInputs] = useState({
     name: false,
     email: false,
-    phone: false
+    phone: false,
   });
 
   // Simple toggle for input visibility
-  const toggleInputVisibility = (field: 'name' | 'email' | 'phone') => {
-    setVisibleInputs(prev => ({
+  const toggleInputVisibility = (field: "name" | "email" | "phone") => {
+    setVisibleInputs((prev) => ({
       ...prev,
-      [field]: !prev[field]
+      [field]: !prev[field],
     }));
   };
 
   // Handle field toggle (existing functionality)
-  const handleFieldToggle = (field: 'name' | 'email' | 'phone') => {
+  const handleFieldToggle = (field: "name" | "email" | "phone") => {
     setLinks((prev: any) =>
       prev.map((x: any) =>
         x.id === item.id
@@ -471,20 +477,20 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
             <div key={f} className="flex flex-col">
               <button
                 onClick={() => {
-                  handleFieldToggle(f as 'name' | 'email' | 'phone');
-                  toggleInputVisibility(f as 'name' | 'email' | 'phone');
+                  handleFieldToggle(f as "name" | "email" | "phone");
+                  toggleInputVisibility(f as "name" | "email" | "phone");
                 }}
                 className={`px-6 py-3 border  transition-colors ${
-                  item.form.fields[f] 
-                    ? "bg-[#331400] text-[#FED45C] border-[#331400]" 
+                  item.form.fields[f]
+                    ? "bg-[#331400] text-[#FED45C] border-[#331400]"
                     : "bg-white text-gray-700 border-gray-300 hover:border-[#331400]"
                 }`}
               >
                 {f[0].toUpperCase() + f.slice(1)}
               </button>
-              
+
               {/* Input stack that appears below when button is clicked */}
-              {visibleInputs[f as 'name' | 'email' | 'phone'] && (
+              {visibleInputs[f as "name" | "email" | "phone"] && (
                 <div className="mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-sm">
                   <div className="space-y-3">
                     <div>
@@ -562,7 +568,9 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
 
         {/* SUCCESS MESSAGE */}
         <div className="bg-gray-100 p-4 border border-gray-300 rounded relative">
-          <p className="text-xs text-gray-500 mb-1 font-medium">SUCCESS MESSAGE</p>
+          <p className="text-xs text-gray-500 mb-1 font-medium">
+            SUCCESS MESSAGE
+          </p>
           <input
             value={item.form.successMessage}
             onChange={(e) =>
@@ -584,7 +592,6 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
             {item.form.successMessage.length}/24
           </div>
         </div>
-
       </div>
     );
   }

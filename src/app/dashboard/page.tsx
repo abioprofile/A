@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect, useContext } from "react"; 
+import { useState, useEffect, useContext } from "react";
 import Image from "next/image";
 import Modal from "@/components/ui/modal";
 import { toast } from "sonner";
 import SideDashboard from "@/components/SideDashboard";
 import LinkList from "@/components/LinkList";
 import PhoneDisplay from "@/components/PhoneDisplay";
-import ButtonCustomizer from '@/components/ButtonCustomizer';
-import {ButtonStyle} from '@/app/dashboard/appearance/page';
-import FontCustomizer, { FontStyle } from '@/components/FontCustomizer';
+import ButtonCustomizer from "@/components/ButtonCustomizer";
+import { ButtonStyle } from "@/app/dashboard/appearance/page";
+import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
 import ProfileContent from "@/components/ProfileContent";
-import { AuthContext, User } from "@/context/AuthContext"; 
+import { AuthContext, User } from "@/context/AuthContext";
 import { useAppSelector } from "@/stores/hooks";
 import { useGetAllLinks } from "@/hooks/api/useAuth";
 import { ProfileLink, UserProfile } from "@/types/auth.types";
@@ -25,63 +25,69 @@ interface UserLink {
   isVisible: boolean;
 }
 
-
 export default function DashboardPage() {
- const { user } = useContext(AuthContext) || {};
- const userData = useAppSelector((state) => state.auth.user);
- console.log(userData);
-    const getFirstName = (fullName?: string) => {
-    if (!fullName) return "User";
-    return fullName.split(" ")[0];
-  };
-
-  const [firstName, setFirstName] = useState<string>(getFirstName(user?.name));
+  const { user } = useContext(AuthContext) || {};
+  const userData = useAppSelector((state) => state.auth.user);
+  console.log(userData);
+  
+  // Fix: Initialize with empty string to avoid server/client mismatch
+  const [displayName, setDisplayName] = useState<string>("");
+  const [firstName, setFirstName] = useState<string>("User");
 
   useEffect(() => {
     if (user?.name) {
-      setFirstName(getFirstName(user.name));
+      const name = user.name.split(" ")[0];
+      setDisplayName(user.name);
+      setFirstName(name);
+    } else if (userData?.name) {
+      const name = userData.name.split(" ")[0];
+      setDisplayName(userData.name);
+      setFirstName(name);
     }
-  }, [user]);
+  }, [user, userData]);
 
   const [loading, setLoading] = useState(true);
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  
+
   const [bio, setBio] = useState("UI/UX Designer");
   const [location, setLocation] = useState("Lagos, Nigeria");
   const [locations, setLocations] = useState<string[]>([]);
   const [tempLocation, setTempLocation] = useState("");
-  const [profileImage, setProfileImage] = useState<string>("/icons/Profile Picture.png");
+  const [profileImage, setProfileImage] = useState<string>(
+    "/icons/Profile Picture.png"
+  );
 
-   const handleToggleActive = (id: string) => {
-    setLinks(prev =>
-      prev.map(link =>
+  const handleToggleActive = (id: string) => {
+    setLinks((prev) =>
+      prev.map((link) =>
         link.id === id ? { ...link, isActive: !link.active } : link
       )
     );
   };
 
-   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
-      borderRadius: '12px',
-      backgroundColor: '#EAEAEA',
-      borderColor: '#000000',
-      opacity: 1,
-      boxShadow: 'none',
-    });
-  
-    const [fontStyle, setFontStyle] = useState<FontStyle>({
-      fontFamily: 'Poppins',
-      fillColor: '#000000',
-      strokeColor: '#ff0000',
-      opacity: 100,
-    });
+  const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
+    borderRadius: "12px",
+    backgroundColor: "#EAEAEA",
+    borderColor: "#000000",
+    opacity: 1,
+    boxShadow: "none",
+  });
+
+  const [fontStyle, setFontStyle] = useState<FontStyle>({
+    fontFamily: "Poppins",
+    fillColor: "#000000",
+    strokeColor: "#ff0000",
+    opacity: 100,
+  });
 
   const profile = {
-    displayName: user?.name || 'User',
-    userName: user?.username || 'username',
+    displayName: user?.name || "User",
+    userName: user?.username || "username",
     bio,
     location,
     profileImage,
   };
+  
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
@@ -89,56 +95,80 @@ export default function DashboardPage() {
 
   const openModal = (type: string) => {
     if (type === "editLocation") {
-      setTempLocation(location); 
+      setTempLocation(location);
     }
     setActiveModal(type);
   };
   const closeModal = () => setActiveModal(null);
+  
   const [links, setLinks] = useState([
-  { id: '1', platform: 'Instagram', url: 'https://www.instagram.com/davidosh', clicks: 0, active: true },
-  { id: '2', platform: 'Behance', url: 'https://www.behance.net/davidosh', clicks: 0, active: true },
-  { id: '3', platform: 'Snapchat', url: 'https://www.snapchat.com/add/davidosh', clicks: 0, active: true },
-  { id: '4', platform: 'X', url: 'https://x.com/davidosh', clicks: 0, active: true },
-]);
+    {
+      id: "1",
+      platform: "Instagram",
+      url: "https://www.instagram.com/davidosh",
+      clicks: 0,
+      active: true,
+    },
+    {
+      id: "2",
+      platform: "Behance",
+      url: "https://www.behance.net/davidosh",
+      clicks: 0,
+      active: true,
+    },
+    {
+      id: "3",
+      platform: "Snapchat",
+      url: "https://www.snapchat.com/add/davidosh",
+      clicks: 0,
+      active: true,
+    },
+    {
+      id: "4",
+      platform: "X",
+      url: "https://x.com/davidosh",
+      clicks: 0,
+      active: true,
+    },
+  ]);
 
-const { 
-  data: linksData, 
-  isLoading: linksLoading, 
-  isError: linksError, 
-  refetch: refetchLinks 
-} = useGetAllLinks();
+  const {
+    data: linksData,
+    isLoading: linksLoading,
+    isError: linksError,
+    refetch: refetchLinks,
+  } = useGetAllLinks();
 
-
-
-    // Transform links data safely
-    const transformLinks = (links: unknown): ProfileLink[] => {
-      if (!links || !Array.isArray(links)) return [];
-      return links.map((link: unknown) => {
+  // Transform links data safely
+  const transformLinks = (links: unknown): ProfileLink[] => {
+    if (!links || !Array.isArray(links)) return [];
+    return links
+      .map((link: unknown) => {
         if (typeof link === 'object' && link !== null) {
           const l = link as Record<string, unknown>;
           return {
-            id: String(l.id || ''),
-            title: String(l.title || ''),
-            url: String(l.url || ''),
-            platform: String(l.platform || ''),
+            id: String(l.id || ""),
+            title: String(l.title || ""),
+            url: String(l.url || ""),
+            platform: String(l.platform || ""),
             displayOrder: typeof l.displayOrder === 'number' ? l.displayOrder : 0,
-            isVisible: l.isVisible !== false, // Default to true if not specified
+            isVisible: l.isVisible !== false,
           };
         }
         return null;
-      }).filter((link): link is ProfileLink => link !== null);
-    };
+      })
+      .filter((link): link is ProfileLink => link !== null);
+  };
 
-    // Transform links data - API returns AllLinksResponse with data: ProfileLink[]
-    const profileLinks = linksData?.data 
-      ? (Array.isArray(linksData.data) 
-          ? linksData.data as ProfileLink[]
-          : [])
-      : [];
-  
+  // Transform links data
+  const profileLinks = linksData?.data
+    ? Array.isArray(linksData.data)
+      ? (linksData.data as ProfileLink[])
+      : []
+    : [];
 
   const handleLocationSearch = async (query: string) => {
-    setTempLocation(query); 
+    setTempLocation(query);
     if (query.length < 2) {
       setLocations([]);
       return;
@@ -148,7 +178,9 @@ const {
       const data = await res.json();
       const filtered = data
         .map((country: any) => country.name.common)
-        .filter((name: string) => name.toLowerCase().includes(query.toLowerCase()))
+        .filter((name: string) =>
+          name.toLowerCase().includes(query.toLowerCase())
+        )
         .sort();
       setLocations(filtered);
     } catch (error) {
@@ -180,59 +212,72 @@ const {
     closeModal();
   };
 
-   
- const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const [showMobileLinks, setShowMobileLinks] = useState(false);
 
-   useEffect(() => {
+  useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
     window.addEventListener("resize", checkMobile);
     return () => window.removeEventListener("resize", checkMobile);
-   }, []);
-  
- 
+  }, []);
 
   const handlePhoneClick = () => {
     if (!isMobile) return;
     setShowMobileLinks(true);
   };
-  
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#fff]">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#331400]"></div>
+      </div>
+    );
+  }
 
   return (
     <section className="flex space-y-4 md:space-y-6 bg-[#fff]">
       <main className="hidden md:block w-full md:w-[60%] space-y-4">
-        <h1 className="p-8 text-[30px] font-medium">Hi, {userData?.name} </h1>
-        <div className=" max-w-3xl flex gap-4 items-center px-8 ">
+        {/* FIXED: Use state variable instead of direct userData?.name */}
+        <h1 className="p-8 text-[30px] font-medium"> Hi, {firstName} </h1>
+        <div className="max-w-3xl flex gap-4 items-center px-8">
           <Image
             src={profileImage}
             alt="Profile"
             width={80}
             height={80}
-            className="object-cover w-25 h-25 cursor-pointer rounded-full"
+            className="object-cover w-24 h-24 cursor-pointer rounded-full"
             onClick={() => openModal("imageOptions")}
           />
 
           <div>
-            <div className=" mb-1 cursor-pointer" onClick={() => openModal("editBio")}>
-              <h1 className="font-semibold text-[16px]">{userData?.name}</h1>
-              <p className="font-thin text-xs md:text-[10px]">@{userData?.profile?.username}</p>
+            <div
+              className="mb-1 cursor-pointer"
+              onClick={() => openModal("editBio")}
+            >
+              {/* FIXED: Use displayName state variable */}
+              <h1 className="font-semibold text-[24px] ">{displayName || "User"}</h1>
+              <p className="font-thin text-[10px] mt-2 md:text-[14px]">
+                @{userData?.profile?.username || "username"}
+              </p>
             </div>
 
-            <p className="font-bold mt-2 mb-1 text-[11px]">{userData?.profile?.bio}</p>
+            <p className="font-bold my-2 text-[14px]">
+              {userData?.profile?.bio || bio}
+            </p>
 
             <div
-              className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+              className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500 cursor-pointer px-1 py-1"
               onClick={() => openModal("editLocation")}
             >
-              <Image 
-                src="/icons/location1.png" 
-                alt="Location" 
-                width={12} 
-                height={12} 
-                className="w-fit h-3 " 
+              <Image
+                src="/icons/location1.png"
+                alt="Location"
+                width={12}
+                height={12}
+                className="w-fit h-3"
               />
-              <span className="truncate">{userData?.profile?.location}</span>
+              <span className="truncate">{userData?.profile?.location || location}</span>
             </div>
           </div>
         </div>
@@ -240,13 +285,19 @@ const {
         {/* Edit Bio Modal */}
         <Modal isOpen={activeModal === "editBio"} onClose={closeModal}>
           <div className="w-full md:w-[400px] mx-auto">
-            <h2 className="text-base md:text-lg font-semibold text-center mb-3 md:mb-4">Edit Name and Bio</h2>
+            <h2 className="text-base md:text-lg font-semibold text-center mb-3 md:mb-4">
+              Edit Name and Bio
+            </h2>
             <form
               onSubmit={(e) => {
                 e.preventDefault();
                 const form = e.currentTarget;
-                const name = (form.elements.namedItem("displayName") as HTMLInputElement).value;
-                const bioInput = (form.elements.namedItem("bio") as HTMLInputElement).value;
+                const name = (
+                  form.elements.namedItem("displayName") as HTMLInputElement
+                ).value;
+                const bioInput = (
+                  form.elements.namedItem("bio") as HTMLInputElement
+                ).value;
                 setDisplayName(name);
                 setBio(bioInput);
                 toast.success("Profile updated");
@@ -254,28 +305,34 @@ const {
               }}
             >
               <div className="mb-3 md:mb-4">
-                <label htmlFor="displayName" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="displayName"
+                  className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
+                >
                   Display Name
                 </label>
                 <input
                   id="displayName"
                   name="displayName"
                   type="text"
-                  defaultValue={firstName}
+                  defaultValue={displayName || ""}
                   className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
                   required
                 />
               </div>
 
               <div className="mb-3 md:mb-4">
-                <label htmlFor="bio" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                <label
+                  htmlFor="bio"
+                  className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
+                >
                   Bio
                 </label>
                 <textarea
                   id="bio"
-                  name=" "
+                  name="bio"
                   rows={3}
-                  defaultValue={bio}
+                  defaultValue={userData?.profile?.bio || bio}
                   className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
                   required
                 />
@@ -284,7 +341,7 @@ const {
               <div className="flex justify-center gap-3">
                 <button
                   type="submit"
-                  className="bg-[#FED45C] w-full text-[#331400] font-bold px-4 py-2 text-[14px] "
+                  className="bg-[#FED45C] w-full text-[#331400] font-bold px-4 py-2 text-[14px]"
                 >
                   Save Changes
                 </button>
@@ -296,11 +353,19 @@ const {
         {/* Edit Location Modal */}
         <Modal isOpen={activeModal === "editLocation"} onClose={closeModal}>
           <div className="w-[280px] md:w-[320px] mx-auto text-center">
-            <h2 className="text-base md:text-lg font-bold mb-3 md:mb-4">Location</h2>
+            <h2 className="text-base md:text-lg font-bold mb-3 md:mb-4">
+              Location
+            </h2>
 
             <div className="relative mb-3 md:mb-4">
               <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Image src="/icons/location1.png" alt="Location Icon" width={12} height={12} className="w-3 h-3 md:w-[14px] md:h-[14px]" />
+                <Image
+                  src="/icons/location1.png"
+                  alt="Location Icon"
+                  width={12}
+                  height={12}
+                  className="w-3 h-3 md:w-[14px] md:h-[14px]"
+                />
               </span>
               <input
                 type="text"
@@ -317,9 +382,9 @@ const {
                   key={idx}
                   onClick={() => {
                     setTempLocation(loc);
-                    setLocations([]); // Clear suggestions when one is selected
+                    setLocations([]);
                   }}
-                  className="px-3 py-2 cursor-pointer hover:bg-gray-100  text-xs md:text-sm"
+                  className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-xs md:text-sm"
                 >
                   {loc}
                 </li>
@@ -328,7 +393,7 @@ const {
 
             <button
               onClick={handleSaveLocation}
-              className="mt-1  text-[13px] font-bold bg-[#FED45C] text-[#331400] px-4 py-2 "
+              className="mt-1 text-[13px] font-bold bg-[#FED45C] text-[#331400] px-4 py-2"
             >
               Save Changes
             </button>
@@ -342,13 +407,23 @@ const {
             <div className="flex flex-col gap-3 md:gap-4">
               <button
                 onClick={() => setActiveModal("uploadImage")}
-                className="bg-[#EBEBEB] py-2 px-3 md:px-4  text-xs md:text-sm hover:bg-gray-200"
+                className="bg-[#EBEBEB] py-2 px-3 md:px-4 text-xs md:text-sm hover:bg-gray-200"
               >
                 <div className="flex items-center gap-2 md:gap-3">
-                  <Image src="/images/contact-us-image.svg" alt="Upload" width={30} height={30} className="w-6 h-6 md:w-[35px] md:h-[35px]" />
+                  <Image
+                    src="/images/contact-us-image.svg"
+                    alt="Upload"
+                    width={30}
+                    height={30}
+                    className="w-6 h-6 md:w-[35px] md:h-[35px]"
+                  />
                   <div className="text-left">
-                    <h1 className="text-sm md:text-[15px] font-bold">Upload your own image</h1>
-                    <p className="text-[9px] md:text-[10px] font-light">Choose an image, GIF from your device.</p>
+                    <h1 className="text-sm md:text-[15px] font-bold">
+                      Upload your own image
+                    </h1>
+                    <p className="text-[9px] md:text-[10px] font-light">
+                      Choose an image, GIF from your device.
+                    </p>
                   </div>
                 </div>
               </button>
@@ -357,14 +432,25 @@ const {
                 className="w-full px-3 md:px-4 py-2 bg-[#EBEBEB] text-black hover:bg-gray-200 text-xs md:text-sm"
               >
                 <div className="flex items-center gap-2 md:gap-3">
-                  <Image src="/icons/delete.svg" alt="Delete" width={30} height={30} className="w-6 h-6 md:w-[35px] md:h-[35px]" />
+                  <Image
+                    src="/icons/delete.svg"
+                    alt="Delete"
+                    width={30}
+                    height={30}
+                    className="w-6 h-6 md:w-[35px] md:h-[35px]"
+                  />
                   <div className="text-left">
                     <h1 className="text-sm md:text-[15px] font-bold">Delete</h1>
-                    <p className="text-[9px] md:text-[10px] font-light">Delete current image.</p>
+                    <p className="text-[9px] md:text-[10px] font-light">
+                      Delete current image.
+                    </p>
                   </div>
                 </div>
               </button>
-              <button onClick={closeModal} className="text-xs md:text-sm text-gray-500 hover:underline">
+              <button
+                onClick={closeModal}
+                className="text-xs md:text-sm text-gray-500 hover:underline"
+              >
                 Cancel
               </button>
             </div>
@@ -374,24 +460,40 @@ const {
         {/* Upload Modal */}
         <Modal isOpen={activeModal === "uploadImage"} onClose={closeModal}>
           <div className="w-[280px] md:w-[320px] mx-auto text-center">
-            <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Profile Picture</h2>
+            <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+              Profile Picture
+            </h2>
             <label className="flex flex-col items-center justify-center w-full h-40 md:h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer">
               <div className="flex flex-col items-center space-y-1 md:space-y-2">
-                <Image src="/icons/upload.svg" alt="Upload" width={32} height={32} className="w-8 h-8 md:w-10 md:h-10" />
-                <p className="text-xs md:text-sm font-medium text-gray-700">Select file to upload</p>
-                <p className="text-[10px] md:text-xs text-gray-400">or drag-and-drop file</p>
+                <Image
+                  src="/icons/upload.svg"
+                  alt="Upload"
+                  width={32}
+                  height={32}
+                  className="w-8 h-8 md:w-10 md:h-10"
+                />
+                <p className="text-xs md:text-sm font-medium text-gray-700">
+                  Select file to upload
+                </p>
+                <p className="text-[10px] md:text-xs text-gray-400">
+                  or drag-and-drop file
+                </p>
                 <p className="text-[8px] md:text-[10px] text-gray-500 mt-1">
-                  Allowed file types: JPEG, PNG, WebP, GIF, AVIF, BMP, HEIC, HEIF
+                  Allowed file types: JPEG, PNG, WebP, GIF, AVIF, BMP, HEIC,
+                  HEIF
                 </p>
               </div>
-              <input 
-                type="file" 
-                accept="image/jpeg, image/png, image/webp, image/gif, image/avif, image/bmp, image/heic, image/heif" 
-                hidden 
-                onChange={handleImageUpload} 
+              <input
+                type="file"
+                accept="image/jpeg, image/png, image/webp, image/gif, image/avif, image/bmp, image/heic, image/heif"
+                hidden
+                onChange={handleImageUpload}
               />
             </label>
-            <button onClick={closeModal} className="mt-3 md:mt-4 border border-2 w-full py-2 text-xs md:text-sm text-gray-500 hover:underline">
+            <button
+              onClick={closeModal}
+              className="mt-3 md:mt-4 border border-2 w-full py-2 text-xs md:text-sm text-gray-500 hover:underline"
+            >
               Cancel
             </button>
           </div>
@@ -400,8 +502,12 @@ const {
         {/* Delete Confirmation Modal */}
         <Modal isOpen={activeModal === "deleteConfirm"} onClose={closeModal}>
           <div className="w-[300px] md:w-[400px] mx-auto text-center space-y-3 md:space-y-4">
-            <h2 className="text-base md:text-lg font-bold">Delete Profile Image</h2>
-            <p className="text-[10px] md:text-[12px]">Are you sure you want to delete your profile picture?</p>
+            <h2 className="text-base md:text-lg font-bold">
+              Delete Profile Image
+            </h2>
+            <p className="text-[10px] md:text-[12px]">
+              Are you sure you want to delete your profile picture?
+            </p>
             <div className="flex justify-center gap-3 md:gap-4 mt-3 md:mt-4">
               <button
                 onClick={handleDeleteImage}
@@ -418,24 +524,15 @@ const {
             </div>
           </div>
         </Modal>
-        <LinkList 
+        
+        <LinkList
           linksDataData={profileLinks
             .filter((link: ProfileLink) => link.isVisible !== false)
-            .sort((a, b) => a.displayOrder - b.displayOrder)
-            }
+            .sort((a, b) => a.displayOrder - b.displayOrder)}
         />
-        
       </main>
 
-      {/* <aside className="w-full   bg-[#FFF7DE]  md:w-[40%]">
-        <SideDashboard />
-        <PhoneDisplay buttonStyle={buttonStyle} fontStyle={fontStyle}
-        selectedTheme={"/themes/theme1.png"}
-         profile={profile}
-        
-        />
-      </aside> */}
-          <aside className="w-full md:w-[40%] bg-[#FFF7DE]">
+      <aside className="w-full md:w-[40%] bg-[#FFF7DE]">
         <SideDashboard />
 
         {/* PHONE DISPLAY (clickable only on mobile) */}
@@ -454,63 +551,74 @@ const {
       </aside>
 
       {/* ================= MOBILE LINKLIST OVERLAY ================= */}
-      {isMobile && showMobileLinks && (  
+      {isMobile && showMobileLinks && (
         <div className="fixed inset-0 bg-[#FFF7DE] z-[999] overflow-y-auto">
           <div className="sticky top-0 py-8 bg-[#FFF7DE] px-4 border-b">
             <div className="flex items-center justify-between">
               <button
-              onClick={() => setShowMobileLinks(false)}
-              className="font-bold text-[#331400]"
-            >
-              ← A.bio Links
-            </button>
-            <button className="text-[#FED45C] text-[13px] font-semibold bg-[#331400] px-4 py-2"> Save </button>
+                onClick={() => setShowMobileLinks(false)}
+                className="font-bold text-[#331400]"
+              >
+                ← A.bio Links
+              </button>
+              <button className="text-[#FED45C] text-[13px] font-semibold bg-[#331400] px-4 py-2">
+                Save
+              </button>
             </div>
-            
           </div>
           <div>
-            
-        <div className="mb-8 max-w-3xl flex gap-4 items-center px-8 ">
-          <Image
-            src={profileImage}
-            alt="Profile"
-            width={80}
-            height={80}
-            className="object-cover w-20 h-20 cursor-pointer rounded-full"
-            onClick={() => openModal("imageOptions")}
-          />
-
-          <div >
-            <div className=" mb-1 cursor-pointer" onClick={() => openModal("editBio")}>
-              <h1 className="font-semibold text-[16px]">{userData?.name}</h1>
-              <p className="font-thin text-xs md:text-[10px]">@{userData?.profile?.username}</p>
-            </div>
-
-            <p className="font-bold mt-2 mb-1 text-[11px]">{userData?.profile?.bio}</p>
-
-            <div
-              className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
-              onClick={() => openModal("editLocation")}
-            >
-              <Image 
-                src="/icons/location1.png" 
-                alt="Location" 
-                width={12} 
-                height={12} 
-                className="w-3 h-3  flex-shrink-0" 
+            <div className="mb-8 max-w-3xl flex gap-4 items-center px-8">
+              <Image
+                src={profileImage}
+                alt="Profile"
+                width={80}
+                height={80}
+                className="object-cover w-20 h-20 cursor-pointer rounded-full"
+                onClick={() => openModal("imageOptions")}
               />
-              <span className="truncate text-[10px]">{userData?.profile?.location}</span>
-            </div>
-          </div>
-        </div>
 
+              <div>
+                <div
+                  className="mb-1 cursor-pointer"
+                  onClick={() => openModal("editBio")}
+                >
+                  <h1 className="font-semibold text-[16px]">{displayName || "User"}</h1>
+                  <p className="font-thin text-xs md:text-[10px]">
+                    @{userData?.profile?.username || "username"}
+                  </p>
+                </div>
+
+                <p className="font-bold mt-2 mb-1 text-[11px]">
+                  {userData?.profile?.bio || bio}
+                </p>
+
+                <div
+                  className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+                  onClick={() => openModal("editLocation")}
+                >
+                  <Image
+                    src="/icons/location1.png"
+                    alt="Location"
+                    width={12}
+                    height={12}
+                    className="w-3 h-3 flex-shrink-0"
+                  />
+                  <span className="truncate text-[10px]">
+                    {userData?.profile?.location || location}
+                  </span>
+                </div>
+              </div>
+            </div>
           </div>
           {/* LinkList EXACTLY AS DESKTOP */}
           <div className="p">
-            <LinkList 
+            <LinkList
               linksDataData={profileLinks
                 .filter((link: ProfileLink) => link.isVisible !== false)
-                .sort((a: ProfileLink, b: ProfileLink) => a.displayOrder - b.displayOrder)}
+                .sort(
+                  (a: ProfileLink, b: ProfileLink) =>
+                    a.displayOrder - b.displayOrder
+                )}
             />
           </div>
         </div>

@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, type SignInFormData } from "@/lib/validations/auth.schema";
 import { useSignIn } from "@/hooks/api/useAuth";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -35,7 +35,7 @@ const SignIn = () => {
     setIsMounted(true);
   }, []);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -47,7 +47,7 @@ const SignIn = () => {
     },
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -59,7 +59,7 @@ const SignIn = () => {
     },
   };
 
-  const logoVariants = {
+  const logoVariants: Variants = {
     hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,
@@ -71,7 +71,7 @@ const SignIn = () => {
     },
   };
 
-  const formVariants = {
+  const formVariants: Variants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
@@ -83,7 +83,7 @@ const SignIn = () => {
     },
   };
 
-  const inputVariants = {
+  const inputVariants: Variants = {
     focus: {
       scale: 1.02,
       transition: { duration: 0.2 },
@@ -94,7 +94,7 @@ const SignIn = () => {
     },
   };
 
-  const buttonHoverVariants = {
+  const buttonHoverVariants: Variants = {
     hover: {
       scale: 1.03,
       transition: {
@@ -110,7 +110,7 @@ const SignIn = () => {
     },
   };
 
-  const socialButtonHoverVariants = {
+  const socialButtonHoverVariants: Variants = {
     hover: {
       scale: 1.02,
       backgroundColor: "rgba(0, 0, 0, 0.05)",
@@ -121,7 +121,7 @@ const SignIn = () => {
     },
   };
 
-  const errorVariants = {
+  const errorVariants: Variants = {
     hidden: { opacity: 0, height: 0 },
     visible: {
       opacity: 1,
@@ -133,7 +133,7 @@ const SignIn = () => {
     },
   };
 
-  const eyeButtonVariants = {
+  const eyeButtonVariants: Variants = {
     tap: {
       scale: 0.9,
       transition: {
@@ -156,9 +156,9 @@ const SignIn = () => {
       {/* Logo Section */}
       <motion.div
         variants={logoVariants}
-        className="p-4"
+        className="px-4 py-10 md:px-20 md:pt-8 md:pb-4"
       >
-        <Link href="/" className="flex items-center gap-1 group">
+        <Link href="/" className="flex items-end gap-1 group">
           <motion.div
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -167,19 +167,13 @@ const SignIn = () => {
             <Image
               src="/icons/A.Bio.png"
               alt="A.Bio Logo"
-              width={28}
-              height={28}
+              width={48}
+              height={48}
               priority
               className="cursor-pointer select-none"
             />
           </motion.div>
-          <motion.span
-            className="font-bold text-xl md:text-2xl text-black tracking-wide"
-            whileHover={{ scale: 1.02 }}
-            transition={{ duration: 0.2 }}
-          >
-            bio
-          </motion.span>
+          <span className="text-[#331400] text-3xl font-bold">bio</span>
         </Link>
       </motion.div>
       
@@ -191,10 +185,10 @@ const SignIn = () => {
         >
           <motion.div 
             variants={itemVariants}
-            className="mb-6 text-center"
+            className="mb-10 text-center"
           >
             <motion.h1 
-              className="text-3xl lg:text-4xl font-bold mb-2 bg-[#331400] text-transparent bg-clip-text"
+              className="text-3xl md:text-3xl font-extrabold mb-4 bg-[#331400] text-transparent bg-clip-text"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -202,9 +196,9 @@ const SignIn = () => {
             </motion.h1>
             <motion.p 
               variants={itemVariants}
-              className="text-[#666464] text-sm lg:text-base"
+              className="text-[#666464] text-sm lg:text-[14px] font-medium"
             >
-              Let&apos;s get you back to building your smart bio.
+              Enter your biography!
             </motion.p>
           </motion.div>
 
@@ -226,7 +220,7 @@ const SignIn = () => {
                   id="email"
                   type="email"
                   placeholder="Email"
-                  className="h-10 text-sm placeholder:text-sm border-1 border-black"
+                  className="h-10 text-sm placeholder:text-sm border-1 border-[#331400]"
                   {...register("email")}
                 />
               </motion.div>
@@ -260,7 +254,7 @@ const SignIn = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="h-10 pr-10 text-sm placeholder:text-sm border-1 border-black"
+                  className="h-10 pr-10 text-sm placeholder:text-sm border-1 border-[#331400]"
                   {...register("password")}
                 />
                 <motion.button
@@ -391,7 +385,7 @@ const SignIn = () => {
               <motion.p
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
-                className="text-sm text-gray-600"
+                className="text-sm font-semibold"
               >
                 Don&apos;t have an account?{" "}
                 <motion.span
@@ -412,15 +406,15 @@ const SignIn = () => {
           {/* Privacy Policy */}
           <motion.div 
             variants={itemVariants}
-            className="mt-8 pt-4 border-t text-center"
+            className="mt-8 pt-4  text-center md:text-right"
           >
             <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-            >
+            > 
               <Link
                 href="/privacy-policy"
-                className="text-sm text-gray-500 hover:underline"
+                className="text-[12px] font-semibold hover:underline"
               >
                 Privacy Policy
               </Link>
