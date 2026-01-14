@@ -1,24 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin } from "lucide-react";
+import { MapPin, Upload, X, User as UserIcon } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useUpdateProfile, useCurrentUser } from "@/hooks/api/useAuth";
+import { useUpdateProfile, useCurrentUser, useUpdateProfileAvatar } from "@/hooks/api/useAuth";
 import { COUNTRIES } from "@/lib/data/countries";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { User } from "@/types/auth.types";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 export default function ProfileScreen() {
   const router = useRouter();
   const updateProfileMutation = useUpdateProfile();
+  const updateAvatarMutation = useUpdateProfileAvatar();
   const { data: currentUser } = useCurrentUser();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Form state
   const [bio, setBio] = useState("");
   const [location, setLocation] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
 
   // Load existing values from current user if available
   useEffect(() => {
@@ -27,9 +31,50 @@ export default function ProfileScreen() {
       if (user.profile) {
         setBio(user.profile.bio || "");
         setLocation(user.profile.location || "");
+        setAvatarPreview(user.profile.avatarUrl || null);
       }
     }
   }, [currentUser]);
+
+  const handleAvatarUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Please select an image file");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
+
+    // Create preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setAvatarPreview(e.target?.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    // Upload avatar
+    updateAvatarMutation.mutate(file);
+  };
+
+  const handleRemoveAvatar = () => {
+    setAvatarPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    // Note: You might want to call an API to remove avatar from backend
+    // For now, we just clear the preview
+  };
+
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleContinue = async () => {
     // Validation
@@ -108,6 +153,60 @@ export default function ProfileScreen() {
         {/* Gradient Card */}
         <div className="md:bg-gradient-to-b from-[#FFE9B1] to-[#FDF6E3] px-6 py-10 w-full max-w-xl flex flex-col items-center md:shadow-sm">
           <p className="text-[#4B2E1E] font-semibold mb-8">Add Bio and Location</p>
+
+          {/* Avatar Upload Section */}
+          <div className="mb-8 flex flex-col items-center gap-4">
+            <div className="relative">
+              <Avatar className="w-24 h-24 md:w-32 md:h-32 border-4 border-[#331400] cursor-pointer hover:opacity-90 transition-opacity" onClick={handleAvatarClick}>
+                {avatarPreview ? (
+                  <AvatarImage src={avatarPreview} alt="Profile" className="object-cover" />
+                ) : (
+                  <AvatarFallback className="bg-[#FED45C] text-[#331400] text-2xl md:text-3xl font-bold">
+                    <UserIcon className="w-12 h-12 md:w-16 md:h-16" />
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              
+              {/* Upload overlay button */}
+              <button
+                type="button"
+                onClick={handleAvatarClick}
+                className="absolute -bottom-2 -right-2 bg-[#331400] text-[#FED45C] p-2 rounded-full hover:bg-[#4a2c1a] transition-colors shadow-lg"
+                title="Upload avatar"
+              >
+                <Upload className="w-4 h-4" />
+              </button>
+
+              {/* Remove button if avatar exists */}
+              {avatarPreview && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveAvatar();
+                  }}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white p-1.5 rounded-full hover:bg-red-600 transition-colors shadow-lg"
+                  title="Remove avatar"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarUpload}
+              className="hidden"
+            />
+
+            <p className="text-xs text-[#4B2E1E]/70 text-center max-w-xs">
+              {updateAvatarMutation.isPending 
+                ? "Uploading avatar..." 
+                : "Click to upload or change your profile picture"}
+            </p>
+          </div>
 
           <div className="w-full items-center flex flex-col gap-4">
             <Textarea

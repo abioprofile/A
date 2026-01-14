@@ -13,6 +13,7 @@ import {
   addLinks,
   getAllLinks,
   getUserProfileByUsername,
+  updateProfileAvatar,
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -23,6 +24,8 @@ import {
   UpdateProfileResponse,
   AddLinksRequest,
   ProfileLink,
+  VerifyOtpResponse,
+  UserProfile,
 } from "@/types/auth.types";
 import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { setAuth, updateUser } from "@/stores/slices/auth.slice";
@@ -163,17 +166,22 @@ export const useSignIn = () => {
 
 export const useVerifyOtp = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   return useMutation({
     mutationFn: async (data: VerifyOtpFormData) => {
       return await verifyEmail(data.token);
     },
-    onSuccess: (response: AuthResponse) => {
+    onSuccess: (response: VerifyOtpResponse) => {
+      
       if (response.data) {
-        router.push("/auth/sign-in");
+        dispatch(setAuth({ user: response.data.user, token: response.data.token }));
+        localStorage.setItem("auth_token", response.data.token);
+        localStorage.setItem("user_data", JSON.stringify(response.data.user));
+        router.push("/auth/username");
+        toast.success("Email verified successfully", {
+          description: response.message || "Please set your username to continue",
+        });
       }
-      toast.success("Email verified successfully", {
-        description: "Please sign in to continue",
-      });
     },
     onError: (error: any) => {
       toast.error("Failed to verify OTP", {
@@ -235,13 +243,16 @@ export const useForgotPassword = () => {
   });
 };
 
-export const useCheckUsername = (username: string) => {
+export const useCheckUsername = (username: string, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ['username', username],
     queryFn: async () => {
       return await usernameAvailability(username)
     },
-    enabled: !!username,
+    enabled: options?.enabled !== undefined ? options.enabled : (!!username && username.trim().length > 0),
+    // Prevent refetching if query is disabled
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   })
 }
 
@@ -381,5 +392,51 @@ export const useUserProfileByUsername = (username: string) => {
     },
     enabled: !!username,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useUpdateProfileAvatar = () => {
+  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((state) => state.auth.user);
+  
+  return useMutation({
+    mutationFn: async (avatarFile: File) => {
+      return await updateProfileAvatar(avatarFile);
+    },
+    onSuccess: (response: UpdateProfileResponse) => {
+      // Update Redux store with new avatar URL
+      if (currentUser && response.data?.avatarUrl) {
+        const updatedUser: User = {
+          ...currentUser,
+          profile: {
+            ...currentUser.profile,
+            avatarUrl: response.data.avatarUrl,
+          },
+        };
+        dispatch(updateUser(updatedUser));
+        
+        // Update localStorage
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user_data", JSON.stringify(updatedUser));
+        }
+      }
+      
+      // Invalidate and refetch user queries
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      
+      toast.success("Profile avatar updated successfully", {
+        description: response.message || "Your profile avatar has been updated",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update profile avatar. Please try again.";
+      toast.error("Failed to update profile avatar", {
+        description: errorMessage,
+      });
+    },
   });
 };

@@ -8,25 +8,28 @@ import { toast } from "sonner";
 import { useUpdateProfile } from "@/hooks/api/useAuth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { useAppSelector } from "@/stores/hooks";
 
-type Goal = {
-  id: number;
-  title: string;
-};
+
 
 const SelectGoalPage = () => {
   const router = useRouter();
+  const currentUser = useAppSelector((state) => state.auth.user);
   const [isMounted, setIsMounted] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
+  const [selectedGoal, setSelectedGoal] = useState<string | null>(currentUser?.profile?.goals?.[0] || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const updateProfileMutation = useUpdateProfile();
 
-  const goals: Goal[] = [
-    { id: 1, title: "Grow My Brand" },
-    { id: 2, title: "Promote My Content" },
-    { id: 3, title: "Sell Products/Services" },
-    { id: 4, title: "Share all my Links" },
-    { id: 5, title: "Just Exploring" },
+  // Check if selected goal matches existing goal
+  const existingGoal = currentUser?.profile?.goals?.[0];
+  const isOwnGoal = selectedGoal === existingGoal;
+
+  const goals: string[] = [
+    "Grow My Brand",
+    "Promote My Content",
+    "Sell Products/Services",
+    "Share all my Links",
+    "Just Exploring",
   ];
 
   useEffect(() => {
@@ -38,20 +41,30 @@ const SelectGoalPage = () => {
       toast.error("Please select a goal.");
       return;
     }
-    
+
+    // Check if the selected goal matches the user's existing goal
+    const existingGoal = currentUser?.profile?.goals?.[0];
+    const isOwnGoal = selectedGoal === existingGoal;
+
+    // If it's their own goal, just redirect without calling the API
+    if (isOwnGoal) {
+      toast.success("Continuing with your goal");
+      router.push("/auth/platforms");
+      return;
+    }
+
+    // For new/changed goals, call the mutation
     setIsSubmitting(true);
     
     try {
       updateProfileMutation.mutate(
         {
-          goals: [selectedGoal.title],
+          goals: [selectedGoal],
         },
         {
           onSuccess: () => {
             toast.success("Goal saved successfully!");
-            setTimeout(() => {
-              router.push("/dashboard");
-            }, 500);
+            router.push("/auth/platforms");
           },
           onError: () => {
             setIsSubmitting(false);
@@ -213,11 +226,11 @@ const SelectGoalPage = () => {
           >
             <div className="space-y-4 mb-8">
               {goals.map((goal, index) => {
-                const isSelected = selectedGoal?.id === goal.id;
+                const isSelected = selectedGoal === goal;
 
                 return (
                   <motion.div
-                    key={goal.id}
+                    key={goal}
                     custom={index}
                     variants={itemVariants}
                     initial="hidden"
@@ -239,13 +252,13 @@ const SelectGoalPage = () => {
                       )}
                     >
                       <span className="font-semibold text-[#331400]">
-                        {goal.id}: {goal.title}
+                        {goal}
                       </span>
 
                       <AnimatePresence>
                         {isSelected && (
                           <motion.div
-                            key={`check-${goal.id}`}
+                            key={`check-${goal}`}
                             variants={checkmarkVariants}
                             initial="hidden"
                             animate="visible"
@@ -284,11 +297,11 @@ const SelectGoalPage = () => {
               whileTap={selectedGoal ? "tap" : {}}
               onClick={handleSubmit}
               className={cn(
-                "w-full h-12 text-black shadow-[4px_4px_0px_0px_#000000] font-semibold rounded-none flex items-center justify-center gap-2",
-                !selectedGoal && "cursor-not-allowed"
+                "w-full h-12 text-black shadow-[4px_4px_0px_0px_#000000] font-semibold rounded-none flex items-center justify-center gap-2 cursor-pointer",
+                !selectedGoal && "cursor-not-allowed opacity-50"
               )}
             >
-              {isSubmitting || updateProfileMutation.isPending ? (
+              {(isSubmitting || updateProfileMutation.isPending) && !isOwnGoal ? (
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}

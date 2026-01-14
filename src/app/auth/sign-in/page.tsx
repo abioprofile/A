@@ -13,12 +13,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, type SignInFormData } from "@/lib/validations/auth.schema";
 import { useSignIn } from "@/hooks/api/useAuth";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { clearAuth } from "@/stores/slices/auth.slice";
+import { useAppDispatch } from "@/stores/hooks";
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const signInMutation = useSignIn();
-
+  const dispatch = useAppDispatch();
   const {
     register,
     handleSubmit,
@@ -33,6 +35,13 @@ const SignIn = () => {
 
   useEffect(() => {
     setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    // clear the token and user data from the local storage (more like logout function)
+    localStorage.removeItem("auth_token");
+    localStorage.removeItem("user_data");
+    dispatch(clearAuth());
   }, []);
 
   const containerVariants: Variants = {

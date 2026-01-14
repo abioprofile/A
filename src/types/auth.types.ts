@@ -6,6 +6,7 @@ export interface User {
   email: string;
   active: boolean;
   isEmailVerified: boolean;
+  isOnboardingCompleted?: boolean;
   emailVerificationToken?: string;
   emailVerificationExpires?: string;
   createdAt: string;
@@ -30,12 +31,23 @@ export interface UserProfile {
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
+  links?: ProfileLink[];
 }
 
 export interface AuthResponse {
   success: boolean;
   message: string;
   data: User;
+  statusCode: number;
+}
+
+export interface VerifyOtpResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: User;
+    token: string;
+  };
   statusCode: number;
 }
 
