@@ -17,6 +17,7 @@ const Platforms = () => {
   const [isMounted, setIsMounted] = useState(false);
   const { selectedPlatforms, togglePlatform } = useUserStore();
   const router = useRouter();
+  
 
   useEffect(() => {
     setIsMounted(true);

@@ -310,7 +310,7 @@ const SignUp = () => {
                   type="button"
                   variants={eyeButtonVariants}
                   whileTap="tap"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isSubmitting}
                 >
@@ -372,7 +372,7 @@ const SignUp = () => {
                   type="button"
                   variants={eyeButtonVariants}
                   whileTap="tap"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   disabled={isSubmitting}
                 >

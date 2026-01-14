@@ -56,6 +56,20 @@ const LinksScreen = () => {
     updateCustomLink(index + 1, value, customLinks[index].iconUrl);
   };
 
+  // Format URL to ensure it starts with http:// or https://
+  const formatUrl = (url: string): string => {
+    const trimmed = url.trim();
+    if (!trimmed) return trimmed;
+    
+    // If it already starts with http:// or https://, return as is
+    if (trimmed.toLowerCase().startsWith('http://') || trimmed.toLowerCase().startsWith('https://')) {
+      return trimmed;
+    }
+    
+    // Otherwise, add https:// prefix
+    return `https://${trimmed}`;
+  };
+
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
@@ -67,7 +81,7 @@ const LinksScreen = () => {
             return url
               ? {
                   title: p.name,
-                  url: url,
+                  url: formatUrl(url),
                   platform: p.id,
                 }
               : null;
@@ -77,7 +91,7 @@ const LinksScreen = () => {
           .filter((l) => l.url.trim())
           .map((l) => ({
             title: "Custom Link",
-            url: l.url.trim(),
+            url: formatUrl(l.url),
             platform: "Custom Platform",
           })),
       ];

@@ -9,6 +9,8 @@ import {
   AddLinksRequest,
   ProfileLink,
   AllLinksResponse,
+  UserProfile,
+  VerifyOtpResponse,
 } from "@/types/auth.types";
 
 // Sign up API
@@ -38,8 +40,8 @@ export const getCurrentUser = async (): Promise<AuthResponse> => {
 };
 
 // Verify email API (if needed)
-export const verifyEmail = async (token: string): Promise<AuthResponse> => {
-  const response = await apiClient.post<AuthResponse>("/auth/verify-email", {
+export const verifyEmail = async (token: string): Promise<VerifyOtpResponse> => {
+  const response = await apiClient.post<VerifyOtpResponse>("/auth/verify-email", {
     token,
   });
   return response.data;
@@ -189,5 +191,21 @@ export const getUserProfileByUsername = async (
     };
     statusCode: number;
   }>(`/user/${username}`);
+  return response.data;
+};
+
+// update profile avatar in form data 
+export const updateProfileAvatar = async (
+  avatarFile: File
+): Promise<UpdateProfileResponse> => {
+  const formData = new FormData();
+  formData.append('avatar', avatarFile);
+  
+  // The interceptor will handle removing Content-Type for FormData
+  // so the browser can set it with the correct boundary
+  const response = await apiClient.patch<UpdateProfileResponse>(
+    "/user/profile/avatar", 
+    formData
+  );
   return response.data;
 };
