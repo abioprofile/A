@@ -11,10 +11,18 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useAppSelector } from "@/stores/hooks";
 
 
 export default function SideDashboard() {
-  const profileLink = "https://abio.site/user";
+  const userData = useAppSelector((state) => state.auth.user);
+
+const getProfileLink = () => {
+  if (typeof window === 'undefined') return "/profile";
+  const origin = window.location.origin; // e.g., "http://localhost:3000"
+  return userData?.profile?.username ? <span className="text-red-500 font-semibold">{origin}/<span className="text-black font-semibold">{userData?.profile?.username}</span></span> : <span className="text-red-500 font-semibold">{origin}/profile</span>; 
+}
+const profileLink = getProfileLink();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const router = useRouter();
@@ -22,7 +30,7 @@ export default function SideDashboard() {
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(profileLink);
+      await navigator.clipboard.writeText(profileLink.toString());
       toast.success("Link copied");
     } catch {
       toast.error("Failed to copy link");
@@ -34,7 +42,7 @@ export default function SideDashboard() {
       if (navigator.share) {
         await navigator.share({
           title: "David Osh",
-          url: profileLink,
+          url: profileLink.toString(),
         });
       } else {
         copyToClipboard();
@@ -43,11 +51,9 @@ export default function SideDashboard() {
   };
 
   const formatLink = (url: string) => {
-    const parts = url.split("abio.site/");
     return (
       <>
-        <span className="text-red-500 font-semibold">abio.site/</span>
-        {parts[1]}
+        <span className="text-red-500 font-semibold">{profileLink}</span>
       </>
     );
   };
@@ -122,7 +128,7 @@ export default function SideDashboard() {
       User
     </p>
     <p className="text-[16px] text-gray-600 truncate">
-      {formatLink(profileLink)}
+      {formatLink(profileLink.toString())}
     </p>
   </div>
 </div>
@@ -137,18 +143,18 @@ export default function SideDashboard() {
           {/* <h1 className="font-semibold md: text-lg">David Osh</h1> */}
 
           <div className="flex items-center gap-6 mb-6">
-            <button onClick={() => setIsModalOpen(true)}>
+            <button className="cursor-pointer" onClick={() => setIsModalOpen(true)}>
               <QrCodeIcon className="w-6 h-6 text-[#331400]" />
             </button>
 
-            <button onClick={copyToClipboard}>
+            <button className="cursor-pointer" onClick={copyToClipboard}>
               <CopyIcon className="w-6 h-6 text-[#331400]" />
             </button>
 
-            <button onClick={shareLink}>
+            <button className="cursor-pointer" onClick={shareLink}>
               <Share2Icon className="w-6 h-6 text-[#331400]" />
             </button>
-        <p className="text-sm text-gray-600">{formatLink(profileLink)}</p>
+        <p className="text-sm text-gray-600">{formatLink(profileLink.toString())}</p>
           </div>
         </div>
 

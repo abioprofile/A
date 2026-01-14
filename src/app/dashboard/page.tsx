@@ -15,6 +15,7 @@ import { AuthContext, User } from "@/context/AuthContext";
 import { useAppSelector } from "@/stores/hooks";
 import { useGetAllLinks } from "@/hooks/api/useAuth";
 import { ProfileLink, UserProfile } from "@/types/auth.types";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface UserLink {
   id: string;
@@ -200,6 +201,7 @@ const {
   
 
   return (
+    <ProtectedRoute>
     <section className="flex space-y-4 md:space-y-6 bg-[#fff]">
       <main className="hidden md:block w-full md:w-[60%] space-y-4">
         <h1 className="p-8 text-[30px] font-medium">Hi, {userData?.name} </h1>
@@ -516,5 +518,6 @@ const {
         </div>
       )}
     </section>
+    </ProtectedRoute>
   );
 }
