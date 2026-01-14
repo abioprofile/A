@@ -8,7 +8,7 @@ import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUserProfileByUsername } from "@/hooks/api/useAuth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/stores/hooks";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 interface UserLink {
   id: string;
@@ -44,7 +44,7 @@ const getPlatformIcon = (platform: string) => {
 };
 
 // Animation variants
-const pageVariants = {
+const pageVariants: Variants = {
   initial: { opacity: 0 },
   animate: { 
     opacity: 1,
@@ -62,7 +62,7 @@ const pageVariants = {
   }
 };
 
-const phoneContainerVariants = {
+const phoneContainerVariants: Variants = {
   initial: { 
     scale: 0.9,
     opacity: 0,
@@ -81,7 +81,7 @@ const phoneContainerVariants = {
   }
 };
 
-const profileCardVariants = {
+const profileCardVariants: Variants = {
   initial: { y: -30, opacity: 0 },
   animate: { 
     y: 0, 
@@ -95,7 +95,7 @@ const profileCardVariants = {
   }
 };
 
-const linkItemVariants = {
+const linkItemVariants: Variants = {
   initial: { x: -20, opacity: 0 },
   animate: (i: number) => ({ 
     x: 0, 
@@ -118,7 +118,7 @@ const linkItemVariants = {
   }
 };
 
-const blurSideVariants = {
+const blurSideVariants: Variants = {
   initial: { opacity: 0 },
   animate: { 
     opacity: 1,

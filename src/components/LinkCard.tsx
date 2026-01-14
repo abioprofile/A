@@ -8,18 +8,15 @@ import {
   ChartBarIcon,
   ChevronDownIcon,
   CameraIcon,
-  PhotoIcon,
 } from "@heroicons/react/24/outline";
 import ReactCrop, { Crop, PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
-// Import Font Awesome icons
 import {
   FaInstagram,
   FaTiktok,
   FaPinterest,
   FaTwitter,
-  FaCopy,
   FaLinkedinIn,
   FaBehance,
   FaLink,
@@ -28,6 +25,14 @@ import {
   FaFacebook,
   FaSnapchat,
   FaYoutube,
+  FaGithub,
+  FaSpotify,
+  FaApple,
+  FaGoogle,
+  FaAmazon,
+  FaFigma,
+  FaDribbble,
+  FaTelegram,
 } from "react-icons/fa6";
 
 type LinkItem = {
@@ -49,23 +54,23 @@ type Props = {
   ) => void;
 };
 
-// Updated platformIcons with Font Awesome components
+// Updated platformIcons with Font Awesome components - ALL IN BLACK AND WHITE
 const platformIcons: Record<string, { name: string; icon: JSX.Element }> = {
   snapchat: { 
     name: "Snapchat", 
-    icon: <FaSnapchat className="w-6 h-6 text-yellow-400" />
+    icon: <FaSnapchat className="w-6 h-6 text-black" />
   },
   instagram: { 
     name: "Instagram", 
-    icon: <FaInstagram className="w-6 h-6 text-pink-600" />
+    icon: <FaInstagram className="w-6 h-6 text-black" />
   },
   behance: { 
     name: "Behance", 
-    icon: <FaBehance className="w-6 h-6 text-blue-700" />
+    icon: <FaBehance className="w-6 h-6 text-black" />
   },
   linkedin: { 
     name: "LinkedIn", 
-    icon: <FaLinkedinIn className="w-6 h-6 text-blue-600" />
+    icon: <FaLinkedinIn className="w-6 h-6 text-black" />
   },
   tiktok: { 
     name: "TikTok", 
@@ -73,11 +78,63 @@ const platformIcons: Record<string, { name: string; icon: JSX.Element }> = {
   },
   x: { 
     name: "X (Twitter)", 
+    icon: <FaXTwitter className="w-6 h-6 text-black" />
+  },
+  twitter: { 
+    name: "Twitter", 
     icon: <FaTwitter className="w-6 h-6 text-black" />
+  },
+  youtube: { 
+    name: "YouTube", 
+    icon: <FaYoutube className="w-6 h-6 text-black" />
+  },
+  facebook: { 
+    name: "Facebook", 
+    icon: <FaFacebook className="w-6 h-6 text-black" />
+  },
+  whatsapp: { 
+    name: "WhatsApp", 
+    icon: <FaWhatsapp className="w-6 h-6 text-black" />
+  },
+  pinterest: { 
+    name: "Pinterest", 
+    icon: <FaPinterest className="w-6 h-6 text-black" />
   },
   custom: { 
     name: "Custom Image", 
     icon: <FaLink className="w-6 h-6 text-gray-500" />
+  },
+  github: { 
+    name: "GitHub", 
+    icon: <FaGithub className="w-6 h-6 text-black" />
+  },
+  spotify: { 
+    name: "Spotify", 
+    icon: <FaSpotify className="w-6 h-6 text-black" />
+  },
+  apple: { 
+    name: "Apple", 
+    icon: <FaApple className="w-6 h-6 text-black" />
+  },
+  google: { 
+    name: "Google", 
+    icon: <FaGoogle className="w-6 h-6 text-black" />
+  },
+  amazon: { 
+    name: "Amazon", 
+    icon: <FaAmazon className="w-6 h-6 text-black" />
+  },
+  figma: { 
+    name: "Figma", 
+    icon: <FaFigma className="w-6 h-6 text-black" />
+  },
+  dribbble: { 
+    name: "Dribbble", 
+    icon: <FaDribbble className="w-6 h-6 text-black" />
+  },
+  telegram: { 
+    name: "Telegram", 
+    icon: <FaTelegram className="w-6 h-6 text-black" />
   },
 };
 
@@ -187,6 +244,43 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
     }, "image/png");
   };
 
+  // Handler for platform name click
+  const handlePlatformNameClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    onEdit(item);
+  };
+
+  // Handler for URL click
+  const handleUrlClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    onEdit(item);
+  };
+
+  // Handler for toggle button
+  const handleToggleClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    console.log(isActive);
+    setIsActive(!isActive);
+  };
+
+  // Handler for edit button
+  const handleEditClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    onEdit(item);
+  };
+
+  // Handler for delete button
+  const handleDeleteClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    onDelete(item.id);
+  };
+
+  // Handler for analytics button
+  const handleAnalyticsClick = (e: MouseEvent) => {
+    e.stopPropagation();
+    setShowAnalytics(!showAnalytics);
+  };
+
   return (
     <div className="w-full">
       <div className="py-2 md:py-3">
@@ -281,29 +375,23 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
                 className="hidden"
               />
 
-              {/* Text */}
+              {/* Text - REMOVED onClick from container, added to individual elements */}
               <div className="flex-1 min-w-0">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(item);
-                  }}
-                  className="block font-semibold text-[13px] md:text-[16px] truncate hover:text-gray-700 transition-colors"
+                  onClick={handlePlatformNameClick}
+                  className="block w-full text-left font-semibold text-[13px] md:text-[16px] truncate hover:text-gray-700 transition-colors"
                 >
                   {item.platform}
                 </button>
 
-                <span
+                <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(item);
-                  }}
-                  className="block text-[11px] md:text-[13px] text-gray-600 line-clamp-3 truncate text-left hover:text-gray-800 transition-colors"
+                  onClick={handleUrlClick}
+                  className="block w-full text-left text-[11px] md:text-[13px] text-gray-600 line-clamp-3 truncate hover:text-gray-800 transition-colors"
                 >
                   {item.url}
-                </span>
+                </button>
               </div>
             </div>
 
@@ -370,10 +458,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
               {/* Analytics */}
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowAnalytics(!showAnalytics);
-                }}
+                onClick={handleAnalyticsClick}
                 className="flex items-center gap-1 text-[10px] md:text-[12px] text-gray-500 hover:text-gray-700 transition-colors"
               >
                 <ChartBarIcon className="h-3 w-3 md:h-4 md:w-4" />
@@ -385,11 +470,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
                 {/* Toggle */}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log(isActive);
-                    setIsActive(!isActive);
-                  }}
+                  onClick={handleToggleClick}
                   className={`relative h-5 w-9 md:h-6 md:w-11 rounded-full transition ${
                     isActive ? "bg-black" : "bg-gray-300"
                   }`}
@@ -404,10 +485,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
                 {/* Edit */}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onEdit(item);
-                  }}
+                  onClick={handleEditClick}
                   className="hover:opacity-70 transition-opacity"
                 >
                   <PencilIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
@@ -416,10 +494,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
                 {/* Delete */}
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onDelete(item.id);
-                  }}
+                  onClick={handleDeleteClick}
                   className="hover:opacity-70 transition-opacity"
                 >
                   <TrashIcon className="h-4 w-4 md:h-5 md:w-5 text-red-500" />
@@ -443,4 +518,4 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
   );
 };
 
-export default LinkCard;
+export default LinkCard;  

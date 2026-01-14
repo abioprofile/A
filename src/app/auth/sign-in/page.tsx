@@ -156,7 +156,7 @@ const SignIn = () => {
       {/* Logo Section */}
       <motion.div
         variants={logoVariants}
-        className="px-4 py-10 md:px-20 md:pt-8 md:pb-4"
+        className="px-4 pt-4  md:px-20 md:pt-8 md:pb-4"
       >
         <Link href="/" className="flex items-end gap-1 group">
           <motion.div
@@ -185,10 +185,10 @@ const SignIn = () => {
         >
           <motion.div 
             variants={itemVariants}
-            className="mb-10 text-center"
+            className="mb-6 text-center"
           >
             <motion.h1 
-              className="text-3xl md:text-3xl font-extrabold mb-4 bg-[#331400] text-transparent bg-clip-text"
+              className="text-3xl md:text-3xl font-extrabold mb-1 md:mb-4 bg-[#331400] text-transparent bg-clip-text"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >

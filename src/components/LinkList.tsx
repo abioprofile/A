@@ -99,6 +99,18 @@ export default function LinkList({
 
   const sensors = useSensors(useSensor(PointerSensor));
 
+    const handleAddLink = () => {
+    const newLink: ProfileLink = {
+      id: Date.now().toString(), // Generate unique ID
+      platform: "Custom Link",
+      url: "",
+      clicks: 0,
+      customIcon: "/icons/link.png"
+    };
+    
+    setLinksData(prev => [...prev, newLink]);
+    setIsAddModalOpen(false); // Close modal after adding
+  };
   return (
     <>
       <DndContext
@@ -212,7 +224,7 @@ export default function LinkList({
 
               {/* ADD LINK */}
               <button
-                // onClick={handleAddLink}
+                onClick={handleAddLink}
                 className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
               >
                 <div className="flex items-center gap-3">
@@ -328,7 +340,7 @@ export default function LinkList({
               {/* ADD OPTIONS */}
               <div className="grid grid-cols-2 gap-4 mb-8">
                 <button
-                  // onClick={handleAddLink}
+                  onClick={handleAddLink}
                   className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
                 >
                   <img
