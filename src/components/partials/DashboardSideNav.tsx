@@ -24,7 +24,7 @@ import {
   LogOut,
   CreditCard,
 } from "lucide-react";
-import { useAppDispatch } from "@/stores/hooks";
+import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import { clearAuth } from "@/stores/slices/auth.slice";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -35,24 +35,20 @@ const DashboardSideNav = ({
   const pathname = usePathname();
   const router = useRouter();
   const { setTitle } = useSidebarTitle();
+  const currentUser = useAppSelector((state) => state.auth.user);
   const [showMenu, setShowMenu] = useState(false);
   const dispatch = useAppDispatch();
   const queryClient = useQueryClient();
 
   const handleLogout = () => {
-    // Clear Redux state (this also clears localStorage)
     dispatch(clearAuth());
+
+    queryClient.clear()
     
-    // Clear React Query cache
-    queryClient.clear();
-    
-    // Close the menu
     setShowMenu(false);
     
-    // Show success message
     toast.success("Logged out successfully");
     
-    // Redirect to sign-in page
     router.push("/auth/sign-in");
   };
 
@@ -153,7 +149,7 @@ const DashboardSideNav = ({
             <div className="flex items-center gap-3 p-4 border-b border-gray-100">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
                 <Image
-                  src="/avatar.jpg"
+                  src={currentUser?.profile?.avatarUrl || "/icons/Profile Picture.png"}
                   alt="User Avatar"
                   width={40}
                   height={40}
@@ -162,9 +158,9 @@ const DashboardSideNav = ({
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900 text-sm">
-                  David Oshinowo
+                  {currentUser?.name}
                 </h3>
-                <p className="text-xs text-gray-500">Active</p>
+                <p className="text-xs text-gray-500">@{currentUser?.profile?.username}</p>
               </div>
             </div>
 

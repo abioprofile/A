@@ -29,7 +29,7 @@ interface UserLink {
 export default function DashboardPage() {
   const { user } = useContext(AuthContext) || {};
   const userData = useAppSelector((state) => state.auth.user);
-  console.log(userData);
+
   
   // Fix: Initialize with empty string to avoid server/client mismatch
   const [displayName, setDisplayName] = useState<string>("");
@@ -244,7 +244,7 @@ export default function DashboardPage() {
         <h1 className="p-8 text-[30px] font-medium"> Hi, {firstName} </h1>
         <div className="max-w-3xl flex gap-4 items-center px-8">
           <Image
-            src={profileImage}
+            src={userData?.profile?.avatarUrl || "/icons/Profile Picture.png"}
             alt="Profile"
             width={80}
             height={80}
@@ -571,7 +571,7 @@ export default function DashboardPage() {
           <div>
             <div className="mb-8 max-w-3xl flex gap-4 items-center px-8">
               <Image
-                src={profileImage}
+                src={userData?.profile?.avatarUrl || "/icons/Profile Picture.png"}
                 alt="Profile"
                 width={80}
                 height={80}

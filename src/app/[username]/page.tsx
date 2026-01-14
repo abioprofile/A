@@ -9,6 +9,7 @@ import { useUserProfileByUsername } from "@/hooks/api/useAuth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/stores/hooks";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 interface UserLink {
   id: string;
@@ -46,14 +47,14 @@ const getPlatformIcon = (platform: string) => {
 // Animation variants
 const pageVariants: Variants = {
   initial: { opacity: 0 },
-  animate: { 
+  animate: {
     opacity: 1,
     transition: {
       duration: 0.5,
       ease: "easeOut"
     }
   },
-  exit: { 
+  exit: {
     opacity: 0,
     transition: {
       duration: 0.3,
@@ -63,12 +64,12 @@ const pageVariants: Variants = {
 };
 
 const phoneContainerVariants: Variants = {
-  initial: { 
+  initial: {
     scale: 0.9,
     opacity: 0,
     y: 20
   },
-  animate: { 
+  animate: {
     scale: 1,
     opacity: 1,
     y: 0,
@@ -83,8 +84,8 @@ const phoneContainerVariants: Variants = {
 
 const profileCardVariants: Variants = {
   initial: { y: -30, opacity: 0 },
-  animate: { 
-    y: 0, 
+  animate: {
+    y: 0,
     opacity: 1,
     transition: {
       type: "spring",
@@ -97,8 +98,8 @@ const profileCardVariants: Variants = {
 
 const linkItemVariants: Variants = {
   initial: { x: -20, opacity: 0 },
-  animate: (i: number) => ({ 
-    x: 0, 
+  animate: (i: number) => ({
+    x: 0,
     opacity: 1,
     transition: {
       delay: 0.5 + (i * 0.1),
@@ -120,7 +121,7 @@ const linkItemVariants: Variants = {
 
 const blurSideVariants: Variants = {
   initial: { opacity: 0 },
-  animate: { 
+  animate: {
     opacity: 1,
     transition: {
       duration: 0.8,
@@ -135,16 +136,17 @@ export default function PublicProfilePage() {
   const usernameData = useAppSelector((state) => state.auth.user)
 
   // Fetch user profile by username
-  const { 
-    data: profileData, 
-    isLoading: profileLoading, 
-    isError: profileError, 
-    error: profileErrorData 
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    isError: profileError,
+    error: profileErrorData
   } = useUserProfileByUsername(username);
+  console.log(profileData, 'profileData')
 
   // Get links from profile data (profileData already includes links)
   const profileLinks = profileData?.data?.links || [];
-  
+
   // Transform profile links to UserLink format
   const links: UserLink[] = profileLinks.map((link) => ({
     id: link.id,
@@ -186,11 +188,12 @@ export default function PublicProfilePage() {
 
   // Error state
   if (profileError || !profileData?.data) {
-    const errorMessage = profileErrorData instanceof Error 
-      ? profileErrorData.message 
+    const errorMessage = profileErrorData instanceof Error
+      ? profileErrorData.message
       : "Profile not found";
-    
+
     return (
+
       <motion.div
         key="error"
         initial={{ opacity: 0 }}
@@ -225,370 +228,370 @@ export default function PublicProfilePage() {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key="profile"
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="min-h-screen bg-[#FEF4EA] overflow-hidden"
-      >
-        {/* Desktop Layout with Blurred Sides */}
-        <div className="hidden lg:flex items-center justify-center min-h-screen">
-          {/* Left Blurred Side */}
-          <motion.div
-            variants={blurSideVariants}
-            initial="initial"
-            animate="animate"
-            className="fixed left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
-          />
-          
-          {/* Center Phone Container */}
-          <motion.div
-            variants={phoneContainerVariants}
-            initial="initial"
-            animate="animate"
-            className="relative z-20 mx-auto"
-          >
-            {/* Phone Frame */}
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="relative w-[375px] h-[667px] mx-auto bg-black rounded-[45px] p-3 shadow-[0_0_40px_rgba(0,0,0,0.3)] overflow-hidden"
-            >
-              {/* Camera Cutout */}
-              <motion.div
-                initial={{ width: 0 }}
-                animate={{ width: "100px" }}
-                transition={{ delay: 0.8, duration: 0.3 }}
-                className="absolute top-5 left-1/2 -translate-x-1/2 h-4 bg-black rounded-full z-10"
-              />
-              
-              {/* Screen Content */}
-              <div className="w-full h-full bg-white rounded-[38px] overflow-hidden relative">
-                {/* Background Image inside phone */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute inset-0"
-                >
-                  <Image
-                    src="/themes/theme6.png"
-                    alt="background"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  {/* Overlay to ensure content is readable */}
-                  <div className="absolute inset-0" />
-                </motion.div>
-
-                {/* ===== TOP PROFILE CARD ===== */}
-                <motion.div
-                  variants={profileCardVariants}
-                  initial="initial"
-                  animate="animate"
-                  className="relative z-20 bg-white/95 p-5 backdrop-blur-sm"
-                >
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="flex items-center gap-3"
-                  >
-                    {/* Avatar */}
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                    >
-                      <Avatar className="w-[56px] h-[56px] border">
-                        <AvatarImage
-                          src={userData.avatarUrl || "/icons/Profile Picture.png"}
-                          alt={userData.name || userData.username || "Profile"}
-                          className="object-cover"
-                        />
-                        <AvatarFallback>
-                          {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </motion.div>
-
-                    {/* Name */}
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.7 }}
-                    >
-                      <p className="font-bold text-sm">{usernameData?.name || "User"}</p>
-                      <p className="text-xs text-gray-500">@{userData.username || "username"}</p>
-                    </motion.div>
-                  </motion.div>
-
-                  {/* Bio */}
-                  {userData.bio && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      transition={{ delay: 0.8 }}
-                      className="text-xs mt-3 overflow-hidden"
-                    >
-                      {userData.bio}
-                    </motion.p>
-                  )}
-
-                  {/* Location */}
-                  {userData.location && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.9, type: "spring" }}
-                      className="inline-flex items-center gap-1 mb-5 mt-2 border px-2 py-[2px] text-[10px] bg-white/80"
-                    >
-                      <FaMapMarkerAlt className="w-3 h-3" />
-                      {userData.location}
-                    </motion.div>
-                  )}
-
-                  {/* Link indicator */}
-                  {links.length > 0 && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 1 }}
-                      className="mt-3 flex items-center gap-2 absolute bottom-0"
-                    >
-                      <Image src="/icons/link.png" alt="link" width={18} height={18} />
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: "24px" }}
-                        transition={{ delay: 1.1, duration: 0.3 }}
-                        className="absolute -bottom-1 left-0 h-[2px] bg-red-500"
-                      />
-                    </motion.div>
-                  )}
-                </motion.div>
-
-                {/* ===== BUTTONS ===== */}
-                <div className="relative z-20 px-4 pt-6 space-y-4">
-                  <AnimatePresence>
-                    {links.length > 0 ? (
-                      links
-                        .filter((link: UserLink) => link.isVisible !== false)
-                        .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
-                        .map((link: UserLink, index: number) => (
-                          <motion.a
-                            key={link.id}
-                            variants={linkItemVariants}
-                            initial="initial"
-                            animate="animate"
-                            whileHover="hover"
-                            custom={index}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3 font-medium text-sm
-                                       bg-white/70 border-2 border-black rounded-xl
-                                       shadow-[0_5px_0_#fff/70] hover:shadow-[0_3px_0_#fff]
-                                       transition-shadow cursor-pointer relative z-20"
-                          >
-                            <motion.span
-                              whileHover={{ rotate: 10 }}
-                              transition={{ type: "spring", stiffness: 300 }}
-                            >
-                              {getPlatformIcon(link.platform)}
-                            </motion.span>
-                            <span className="truncate">{link.title}</span>
-                          </motion.a>
-                        ))
-                    ) : (
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="text-xs text-gray-500 text-center py-4 relative z-20"
-                      >
-                        No links added yet.
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                </div>
-
-                {/* iPhone Home Indicator */}
-                <motion.div
-                  initial={{ opacity: 0, scaleX: 0 }}
-                  animate={{ opacity: 1, scaleX: 1 }}
-                  transition={{ delay: 1.2 }}
-                  className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[134px] h-1 bg-gray-800 rounded-full z-20 transform origin-center"
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-
-          {/* Right Blurred Side */}
-          <motion.div
-            variants={blurSideVariants}
-            initial="initial"
-            animate="animate"
-            className="fixed right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
-          />
-        </div>
-
-        {/* Mobile Layout - Full Screen View */}
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="lg:hidden w-full min-h-screen bg-[#FEF4EA]"
+          key="profile"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="min-h-screen bg-[#FEF4EA] overflow-hidden"
         >
-          {/* Background Image for Mobile */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="fixed inset-0"
-          >
-            <Image
-              src="/themes/theme6.png"
-              alt="background"
-              fill
-              className="object-cover"
-              priority
-            />
-            {/* Overlay to ensure content is readable */}
-            <div className="absolute inset-0" />
-          </motion.div>
-
-          {/* Mobile Content */}
-          <div className="relative z-10 w-full min-h-screen">
-            {/* ===== TOP PROFILE CARD ===== */}
+          {/* Desktop Layout with Blurred Sides */}
+          <div className="hidden lg:flex items-center justify-center min-h-screen">
+            {/* Left Blurred Side */}
             <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/90 p-5 backdrop-blur-sm"
+              variants={blurSideVariants}
+              initial="initial"
+              animate="animate"
+              className="fixed left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
+            />
+
+            {/* Center Phone Container */}
+            <motion.div
+              variants={phoneContainerVariants}
+              initial="initial"
+              animate="animate"
+              className="relative z-20 mx-auto"
             >
-              <div className="flex items-center gap-3">
-                {/* Avatar */}
+              {/* Phone Frame */}
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="relative w-[375px] h-[667px] mx-auto bg-black rounded-[45px] p-3 shadow-[0_0_40px_rgba(0,0,0,0.3)] overflow-hidden"
+              >
+                {/* Camera Cutout */}
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", delay: 0.3 }}
-                >
-                  <Avatar className="w-[66px] h-[66px] border">
-                    <AvatarImage
-                      src={userData.avatarUrl || "/icons/Profile Picture.png"}
-                      alt={userData.name || userData.username || "Profile"}
-                      className="object-cover"
-                    />
-                    <AvatarFallback>
-                      {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
+                  initial={{ width: 0 }}
+                  animate={{ width: "100px" }}
+                  transition={{ delay: 0.8, duration: 0.3 }}
+                  className="absolute top-5 left-1/2 -translate-x-1/2 h-4 bg-black rounded-full z-10"
+                />
 
-                {/* Name */}
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <p className="font-bold text-[16px] capitalize mb-1">{usernameData?.name || "User"}</p>
-                  <p className="text-[14px]">@{userData.username || "username"}</p>
-                </motion.div>
-              </div>
-
-              {/* Bio */}
-              {userData.bio && (
-                <motion.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  transition={{ delay: 0.5 }}
-                  className="text-[14px] capitalize font-medium mt-3 overflow-hidden"
-                >
-                  {userData.bio}
-                </motion.p>
-              )}
-
-              {/* Location */}
-              {userData.location && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6, type: "spring" }}
-                  className="inline-flex items-center gap-1 mt-2 border px-2 py-[2px] text-[10px] mb-4 bg-white/80"
-                >
-                  <FaMapMarkerAlt className="w-3 h-3" />
-                  {userData.location}
-                </motion.div>
-              )}
-
-              {/* Link indicator */}
-              {links.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.7 }}
-                  className="mt-3 flex items-center gap-2 absolute bottom-0"
-                >
-                  <Image src="/icons/link.png" alt="link" width={18} height={18} />
+                {/* Screen Content */}
+                <div className="w-full h-full bg-white rounded-[38px] overflow-hidden relative">
+                  {/* Background Image inside phone */}
                   <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: "24px" }}
-                    transition={{ delay: 0.8 }}
-                    className="absolute -bottom-1 left-0 h-[4px] bg-red-500"
-                  />
-                </motion.div>
-              )}
-            </motion.div>
-
-            {/* ===== BUTTONS ===== */}
-            <div className="px-6 pt-6 pb-18 space-y-4">
-              <AnimatePresence>
-                {links.length > 0 ? (
-                  links
-                    .filter((link: UserLink) => link.isVisible !== false)
-                    .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
-                    .map((link: UserLink, index: number) => (
-                      <motion.a
-                        key={link.id}
-                        initial={{ x: -30, opacity: 0 }}
-                        animate={{ x: 0, opacity: 1 }}
-                        transition={{ delay: 0.3 + (index * 0.1), type: "spring" }}
-                        whileHover={{ scale: 1.03, y: -2 }}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center gap-3 px-4 py-3 font-medium text-sm
-                                   bg-white/70 border-2 border-black rounded-xl
-                                   hover:translate-y-[2px]
-                                   transition-all cursor-pointer"
-                      >
-                        <motion.span
-                          whileHover={{ rotate: 10 }}
-                          transition={{ type: "spring", stiffness: 300 }}
-                        >
-                          {getPlatformIcon(link.platform)}
-                        </motion.span>
-                        <span className="truncate font-bold">{link.title}</span>
-                      </motion.a>
-                    ))
-                ) : (
-                  <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.5 }}
-                    className="text-xs text-gray-500 text-center py-4"
+                    className="absolute inset-0"
                   >
-                    No links added yet.
+                    <Image
+                      src="/themes/theme6.png"
+                      alt="background"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
+                    {/* Overlay to ensure content is readable */}
+                    <div className="absolute inset-0" />
+                  </motion.div>
+
+                  {/* ===== TOP PROFILE CARD ===== */}
+                  <motion.div
+                    variants={profileCardVariants}
+                    initial="initial"
+                    animate="animate"
+                    className="relative z-20 bg-white/95 p-5 backdrop-blur-sm"
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="flex items-center gap-3"
+                    >
+                      {/* Avatar */}
+                      <motion.div
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      >
+                        <Avatar className="w-[56px] h-[56px] border">
+                          <AvatarImage
+                            src={userData.avatarUrl || "/icons/Profile Picture.png"}
+                            alt={userData.name || userData.username || "Profile"}
+                            className="object-cover"
+                          />
+                          <AvatarFallback>
+                            {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                      </motion.div>
+
+                      {/* Name */}
+                      <motion.div
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.7 }}
+                      >
+                        <p className="font-bold text-sm">{usernameData?.name || "User"}</p>
+                        <p className="text-xs text-gray-500">@{userData.username || "username"}</p>
+                      </motion.div>
+                    </motion.div>
+
+                    {/* Bio */}
+                    {userData.bio && (
+                      <motion.p
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        transition={{ delay: 0.8 }}
+                        className="text-xs mt-3 overflow-hidden"
+                      >
+                        {userData.bio}
+                      </motion.p>
+                    )}
+
+                    {/* Location */}
+                    {userData.location && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.9, type: "spring" }}
+                        className="inline-flex items-center gap-1 mb-5 mt-2 border px-2 py-[2px] text-[10px] bg-white/80"
+                      >
+                        <FaMapMarkerAlt className="w-3 h-3" />
+                        {userData.location}
+                      </motion.div>
+                    )}
+
+                    {/* Link indicator */}
+                    {links.length > 0 && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 1 }}
+                        className="mt-3 flex items-center gap-2 absolute bottom-0"
+                      >
+                        <Image src="/icons/link.png" alt="link" width={18} height={18} />
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: "24px" }}
+                          transition={{ delay: 1.1, duration: 0.3 }}
+                          className="absolute -bottom-1 left-0 h-[2px] bg-red-500"
+                        />
+                      </motion.div>
+                    )}
+                  </motion.div>
+
+                  {/* ===== BUTTONS ===== */}
+                  <div className="relative z-20 px-4 pt-6 space-y-4">
+                    <AnimatePresence>
+                      {links.length > 0 ? (
+                        links
+                          .filter((link: UserLink) => link.isVisible !== false)
+                          .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
+                          .map((link: UserLink, index: number) => (
+                            <motion.a
+                              key={link.id}
+                              variants={linkItemVariants}
+                              initial="initial"
+                              animate="animate"
+                              whileHover="hover"
+                              custom={index}
+                              href={link.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full flex items-center gap-3 px-4 py-3 font-medium text-sm
+                                       bg-white/70 border-2 border-black rounded-xl
+                                       shadow-[0_5px_0_#fff/70] hover:shadow-[0_3px_0_#fff]
+                                       transition-shadow cursor-pointer relative z-20"
+                            >
+                              <motion.span
+                                whileHover={{ rotate: 10 }}
+                                transition={{ type: "spring", stiffness: 300 }}
+                              >
+                                {getPlatformIcon(link.platform)}
+                              </motion.span>
+                              <span className="truncate">{link.title}</span>
+                            </motion.a>
+                          ))
+                      ) : (
+                        <motion.p
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.5 }}
+                          className="text-xs text-gray-500 text-center py-4 relative z-20"
+                        >
+                          No links added yet.
+                        </motion.p>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
+                  {/* iPhone Home Indicator */}
+                  <motion.div
+                    initial={{ opacity: 0, scaleX: 0 }}
+                    animate={{ opacity: 1, scaleX: 1 }}
+                    transition={{ delay: 1.2 }}
+                    className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[134px] h-1 bg-gray-800 rounded-full z-20 transform origin-center"
+                  />
+                </div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right Blurred Side */}
+            <motion.div
+              variants={blurSideVariants}
+              initial="initial"
+              animate="animate"
+              className="fixed right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
+            />
+          </div>
+
+          {/* Mobile Layout - Full Screen View */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="lg:hidden w-full min-h-screen bg-[#FEF4EA]"
+          >
+            {/* Background Image for Mobile */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="fixed inset-0"
+            >
+              <Image
+                src="/themes/theme6.png"
+                alt="background"
+                fill
+                className="object-cover"
+                priority
+              />
+              {/* Overlay to ensure content is readable */}
+              <div className="absolute inset-0" />
+            </motion.div>
+
+            {/* Mobile Content */}
+            <div className="relative z-10 w-full min-h-screen">
+              {/* ===== TOP PROFILE CARD ===== */}
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="bg-white/90 p-5 backdrop-blur-sm"
+              >
+                <div className="flex items-center gap-3">
+                  {/* Avatar */}
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: "spring", delay: 0.3 }}
+                  >
+                    <Avatar className="w-[66px] h-[66px] border">
+                      <AvatarImage
+                        src={userData.avatarUrl || "/icons/Profile Picture.png"}
+                        alt={userData.name || userData.username || "Profile"}
+                        className="object-cover"
+                      />
+                      <AvatarFallback>
+                        {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  </motion.div>
+
+                  {/* Name */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <p className="font-bold text-[16px] capitalize mb-1">{usernameData?.displayName || "User"}</p>
+                    <p className="text-[14px]">@{userData.username || "username"}</p>
+                  </motion.div>
+                </div>
+
+                {/* Bio */}
+                {userData.bio && (
+                  <motion.p
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    transition={{ delay: 0.5 }}
+                    className="text-[14px] capitalize font-medium mt-3 overflow-hidden"
+                  >
+                    {userData.bio}
                   </motion.p>
                 )}
-              </AnimatePresence>
+
+                {/* Location */}
+                {userData.location && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.6, type: "spring" }}
+                    className="inline-flex items-center gap-1 mt-2 border px-2 py-[2px] text-[10px] mb-4 bg-white/80"
+                  >
+                    <FaMapMarkerAlt className="w-3 h-3" />
+                    {userData.location}
+                  </motion.div>
+                )}
+
+                {/* Link indicator */}
+                {links.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.7 }}
+                    className="mt-3 flex items-center gap-2 absolute bottom-0"
+                  >
+                    <Image src="/icons/link.png" alt="link" width={18} height={18} />
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: "24px" }}
+                      transition={{ delay: 0.8 }}
+                      className="absolute -bottom-1 left-0 h-[4px] bg-red-500"
+                    />
+                  </motion.div>
+                )}
+              </motion.div>
+
+              {/* ===== BUTTONS ===== */}
+              <div className="px-6 pt-6 pb-18 space-y-4">
+                <AnimatePresence>
+                  {links.length > 0 ? (
+                    links
+                      .filter((link: UserLink) => link.isVisible !== false)
+                      .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
+                      .map((link: UserLink, index: number) => (
+                        <motion.a
+                          key={link.id}
+                          initial={{ x: -30, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.3 + (index * 0.1), type: "spring" }}
+                          whileHover={{ scale: 1.03, y: -2 }}
+                          href={link.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full flex items-center gap-3 px-4 py-3 font-medium text-sm
+                                   bg-white/70 border-2 border-black rounded-xl
+                                   hover:translate-y-[2px]
+                                   transition-all cursor-pointer"
+                        >
+                          <motion.span
+                            whileHover={{ rotate: 10 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          >
+                            {getPlatformIcon(link.platform)}
+                          </motion.span>
+                          <span className="truncate font-bold">{link.title}</span>
+                        </motion.a>
+                      ))
+                  ) : (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      className="text-xs text-gray-500 text-center py-4"
+                    >
+                      No links added yet.
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
+          </motion.div>
         </motion.div>
-      </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
   );
 }

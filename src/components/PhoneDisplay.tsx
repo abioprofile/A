@@ -135,7 +135,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           <div className="flex gap-3 items-center">
             <div className="w-[60px] h-[60px] rounded-full overflow-hidden shadow-md border border-gray-300">
               <img
-                src={profile?.profileImage || "/icons/Profile Picture.png"}
+                src={userDataProfile?.profile?.avatarUrl || "/icons/Profile Picture.png"}
                 alt="Profile"
                 className="object-cover w-full h-full"
               />
