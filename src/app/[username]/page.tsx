@@ -258,7 +258,7 @@ export default function PublicProfilePage() {
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                className="relative w-[375px] h-[667px] mx-auto bg-black rounded-[45px] p-3 shadow-[0_0_40px_rgba(0,0,0,0.3)] overflow-hidden"
+                className="relative w-[375px] h-[667px] mx-auto bg-black p-3 shadow-[0_0_40px_rgba(0,0,0,0.3)] overflow-hidden"
               >
                 {/* Camera Cutout */}
                 <motion.div
