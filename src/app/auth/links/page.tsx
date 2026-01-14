@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { LinkIcon } from "lucide-react";
@@ -11,8 +11,10 @@ import { toast } from "sonner";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useAddLinks, useCurrentUser } from "@/hooks/api/useAuth";
 import { AddLinksRequest } from "@/types/auth.types";
+import { motion, AnimatePresence, type Variants  } from "framer-motion";
 
 const LinksScreen = () => {
+  const [isMounted, setIsMounted] = useState(false);
   const { selectedPlatforms, customLinks, updateCustomLink } = useUserStore();
   const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const router = useRouter();
@@ -20,16 +22,19 @@ const LinksScreen = () => {
   const { refetch: refetchCurrentUser } = useCurrentUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Use selected platforms from store, or fallback to defaults
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const platforms =
     selectedPlatforms.length > 0
       ? selectedPlatforms
       : [
-        { id: "instagram", name: "Instagram", icon: "/icons/instagram.svg" },
-        { id: "behance", name: "Behance", icon: "/icons/behance.svg" },
-        { id: "x", name: "X", icon: "/icons/x.svg" },
-        { id: "snapchat", name: "Snapchat", icon: "/icons/snapchat.svg" },
-      ];
+          { id: "instagram", name: "Instagram", icon: "/icons/instagram.svg" },
+          { id: "behance", name: "Behance", icon: "/icons/behance.svg" },
+          { id: "x", name: "X", icon: "/icons/x.svg" },
+          { id: "snapchat", name: "Snapchat", icon: "/icons/snapchat.svg" },
+        ];
 
   const handleIconClick = (index: number) => {
     fileInputRefs.current[index]?.click();
@@ -55,22 +60,19 @@ const LinksScreen = () => {
     setIsSubmitting(true);
 
     try {
-      // Collect all links to save
       const linksToSave: AddLinksRequest[] = [
-        // Platform links - use title (name) and platform (id) from selected platforms
         ...platforms
           .map((p) => {
             const url = (document.getElementById(`platform-${p.id}`) as HTMLInputElement)?.value?.trim();
             return url
               ? {
-                  title: p.name, // Use platform name as title
+                  title: p.name,
                   url: url,
-                  platform: p.id, // Use platform id
+                  platform: p.id,
                 }
               : null;
           })
           .filter((link): link is AddLinksRequest => link !== null),
-        // Custom links
         ...customLinks
           .filter((l) => l.url.trim())
           .map((l) => ({
@@ -86,10 +88,8 @@ const LinksScreen = () => {
         return;
       }
 
-      // Track results for each link
       const results: Array<{ link: AddLinksRequest; success: boolean; error?: string }> = [];
 
-      // Add all links one by one and track results
       for (const link of linksToSave) {
         try {
           await addLinksMutation.mutateAsync(link);
@@ -103,32 +103,25 @@ const LinksScreen = () => {
             message?: string;
           };
 
-          // Handle duplicate links (409) - still count as success since link exists
           if (axiosError?.response?.status === 409) {
             results.push({ link, success: true });
-            console.log(`Link already exists: ${link.url}`);
           } else {
-            // Track failed links with error message
             const errorMessage =
               axiosError?.response?.data?.message ||
               axiosError?.message ||
               "Failed to add link";
             results.push({ link, success: false, error: errorMessage });
-            console.error(`Failed to add link ${link.title} (${link.url}):`, error);
           }
         }
       }
 
-      // Check if all links succeeded
       const failedLinks = results.filter((r) => !r.success);
 
       if (failedLinks.length > 0) {
-        // Some links failed - show error and don't redirect
         const failedCount = failedLinks.length;
         const totalCount = linksToSave.length;
         const successCount = totalCount - failedCount;
 
-        // Show detailed error message
         if (successCount > 0) {
           toast.error(
             `${failedCount} link${failedCount > 1 ? "s" : ""} failed to save`,
@@ -138,23 +131,16 @@ const LinksScreen = () => {
             }
           );
         } else {
-          // All links failed
           toast.error("Failed to save links", {
             description: failedLinks[0]?.error || "Please check your links and try again.",
             duration: 5000,
           });
         }
 
-        // Log failed links for debugging
-        failedLinks.forEach(({ link, error }) => {
-          console.error(`Failed: ${link.title} (${link.url}) - ${error}`);
-        });
-
         setIsSubmitting(false);
-        return; // Don't redirect if any link failed
+        return;
       }
 
-      // All links succeeded - fetch fresh user data
       try {
         await refetchCurrentUser();
         toast.success("All links saved successfully!", {
@@ -162,8 +148,6 @@ const LinksScreen = () => {
         });
         router.push("/auth/profile");
       } catch (error) {
-        console.error("Error fetching updated user data:", error);
-        // Still redirect even if refetch fails, since links were saved
         toast.success("Links saved successfully!", {
           description: "Note: Could not refresh user data, but links were saved.",
         });
@@ -181,13 +165,104 @@ const LinksScreen = () => {
     }
   };
 
+  // Animation variants 
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.5,
+        when: "beforeChildren",
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.4,
+        ease: "easeOut",
+      },
+    },
+  };
+
+  const iconVariants: Variants = {
+    hover: {
+      scale: 1.1,
+      backgroundColor: "rgba(209, 213, 219, 0.8)",
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+    tap: {
+      scale: 0.95,
+      transition: {
+        duration: 0.1,
+      },
+    },
+  };
+
+  const buttonVariants: Variants = {
+    hover: {
+      scale: 1.02,
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+    tap: {
+      scale: 0.98,
+      transition: {
+        duration: 0.1,
+      },
+    },
+  };
+
+  const navButtonVariants: Variants = {
+    hover: {
+      scale: 1.05,
+      backgroundColor: "#4a2c1a",
+      transition: {
+        duration: 0.2,
+        ease: "easeInOut",
+      },
+    },
+    tap: {
+      scale: 0.95,
+      transition: {
+        duration: 0.1,
+      },
+    },
+  };
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-[#FEF4EA] flex flex-col pt-6 pb-10">
-        <div className="flex justify-between px-10 mb-5 w-[90%] md:w-full mx-auto">
-          <div
-            className="hidden md:flex items-center bg-[#331400] px-3 py-1 cursor-pointer"
+      <motion.main
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="min-h-screen bg-[#FEF4EA] flex flex-col pt-6 pb-10"
+      >
+        {/* Navigation Buttons - Original layout preserved */}
+        <motion.div 
+          variants={itemVariants}
+          className="flex justify-between px-4 md:px-10 mb-10 w-[100%] md:w-full mx-auto"
+        >
+          <motion.div
+            variants={navButtonVariants}
+            whileHover="hover"
+            whileTap="tap"
             onClick={() => router.push("/auth/platforms")}
+            className="flex items-center md:bg-[#331400] md:px-3 md:py-1 cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -199,18 +274,21 @@ const LinksScreen = () => {
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-[#FFE4A5]"
+              className="md:text-[#FFE4A5]"
             >
               <path d="M15 18l-6-6 6-6" />
             </svg>
-            <span className="text-[#FFE4A5] text-sm font-semibold">Back</span>
-          </div>
+            <span className="md:text-[#FFE4A5] text-sm font-semibold">Back</span>
+          </motion.div>
 
-          <div
-            className="hidden md:flex items-center bg-[#331400] px-3 py-1 cursor-pointer"
+          <motion.div
+            variants={navButtonVariants}
+            whileHover="hover"
+            whileTap="tap"
             onClick={() => router.push("/auth/profile")}
+            className="flex items-center md:bg-[#331400] md:px-3 py-1 cursor-pointer"
           >
-            <span className="text-[#FFE4A5] text-sm font-semibold">Skip</span>
+            <span className="md:text-[#FFE4A5] text-sm font-semibold">Skip</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -221,93 +299,160 @@ const LinksScreen = () => {
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="text-[#FFE4A5]"
+              className="md:text-[#FFE4A5]"
             >
               <path d="M9 18l6-6-6-6" />
             </svg>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="mb-4 md:mb-8 flex justify-center items-center flex-col">
-          <h1 className="text-2xl lg:text-4xl font-bold mb-2 text-[#331400]">Add your Links</h1>
-          <p className="font-semibold text-[13px] md:text-[16px] px-16 text-center">
-            Complete the field below to add your content on your new ABio.
-          </p>
-        </div>
-
-        <div className="w-[90%] md:max-w-md mx-auto flex flex-col justify-start flex-grow space-y-5 pb-10">
-          <div className="space-y-3">
-            <h2 className="text-center font-semibold text-lg">Your Selected Platforms</h2>
-
-            {platforms.map((platform) => (
-              <div key={platform.id} className="flex items-center gap-2">
-                <Image src={platform.icon} alt={platform.name} width={20} height={20} />
-                <Input
-                  id={`platform-${platform.id}`}
-                  placeholder={`Input your ${platform.name} Link`}
-                  className="h-10!"
-                />
-              </div>
-            ))}
-
-            <h2 className="font-semibold text-lg pt-4 text-center">Add your own Links</h2>
-
-            {customLinks.map((link, index) => (
-              <div key={link.id} className="flex items-center gap-3">
-                <div
-                  onClick={() => handleIconClick(index)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative overflow-hidden cursor-pointer"
-                >
-                  {link.iconUrl ? (
-                    <Image
-                      src={link.iconUrl}
-                      alt="Custom icon"
-                      width={32}
-                      height={32}
-                      className="rounded-full object-cover"
-                    />
-                  ) : (
-                    <LinkIcon className="text-[#331400]" />
-                  )}
-                </div>
-
-                <input
-                  type="file"
-                  ref={(el) => {
-                    fileInputRefs.current[index] = el;
-                  }}
-                  onChange={(e) => handleFileChange(e, index)}
-                  accept="image/*"
-                  className="hidden"
-                />
-
-                <Input
-                  placeholder="Add Link"
-                  value={link.url}
-                  onChange={(e) => handleLinkChange(e.target.value, index)}
-                  className="h-10!"
-                />
-              </div>
-            ))}
-
-          </div>
-
-          <Button
-            onClick={handleSubmit}
-            disabled={isSubmitting || addLinksMutation.isPending}
-            className="w-full md:mt-8 bg-[#FED45C] text-black text-[16px] font-medium h-10! disabled:opacity-50 disabled:cursor-not-allowed"
+        {/* Header - Original layout preserved */}
+        <motion.div 
+          variants={itemVariants}
+          className="mb-4 md:mb-8 flex justify-center items-center flex-col"
+        >
+          <motion.h1 
+            className="text-3xl md:text-4xl font-bold mb-2 text-[#331400]"
+            whileHover={{ scale: 1.01 }}
+            transition={{ duration: 0.2 }}
           >
-            {isSubmitting || addLinksMutation.isPending ? "Saving..." : "Continue"}
-          </Button>
+            Add your Links
+          </motion.h1>
+          <motion.p 
+            variants={itemVariants}
+            className="font-semibold text-[12px] md:text-[14px] px-16 text-center"
+          >
+            Fill the fields below to add content to your Biography
+          </motion.p>
+        </motion.div>
+
+        {/* Form Content - CENTERED while maintaining original width */}
+        <div className="flex justify-center items-start w-full flex-grow">
+          <div className="w-[90%] md:max-w-md mx-auto flex flex-col justify-start space-y-5 pb-10">
+            <motion.div variants={itemVariants} className="space-y-3">
+              <h2 className="text-center font-semibold text-lg">Selected Platforms form</h2>
+
+              {platforms.map((platform, index) => (
+                <motion.div
+                  key={platform.id}
+                  custom={index}
+                  variants={itemVariants}
+                  transition={{ delay: index * 0.05 }}
+                  className="flex items-center gap-2"
+                >
+                  <Image src={platform.icon} alt={platform.name} width={20} height={20} />
+                  <Input
+                    id={`platform-${platform.id}`}
+                    placeholder={`Input your ${platform.name} Link`}
+                    className="h-10!"
+                  />
+                </motion.div>
+              ))}
+
+              <motion.h2 
+                variants={itemVariants}
+                className="font-semibold text-lg pt-4 text-center"
+              >
+                Optional Additions form
+              </motion.h2>
+
+              {customLinks.map((link, index) => (
+                <motion.div
+                  key={link.id}
+                  custom={index}
+                  variants={itemVariants}
+                  transition={{ delay: index * 0.05 }}
+                  className="flex items-center gap-3"
+                >
+                  <motion.div
+                    variants={iconVariants}
+                    whileHover="hover"
+                    whileTap="tap"
+                    onClick={() => handleIconClick(index)}
+                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative overflow-hidden cursor-pointer"
+                  >
+                    {link.iconUrl ? (
+                      <Image
+                        src={link.iconUrl}
+                        alt="Custom icon"
+                        width={32}
+                        height={32}
+                        className="rounded-full object-cover"
+                      />
+                    ) : (
+                      <LinkIcon className="text-[#331400]" />
+                    )}
+                  </motion.div>
+
+                  <input
+                    type="file"
+                    ref={(el) => {
+                      fileInputRefs.current[index] = el;
+                    }}
+                    onChange={(e) => handleFileChange(e, index)}
+                    accept="image/*"
+                    className="hidden"
+                  />
+
+                  <Input
+                    placeholder="Add Link"
+                    value={link.url}
+                    onChange={(e) => handleLinkChange(e.target.value, index)}
+                    className="h-10!"
+                  />
+                </motion.div>
+              ))}
+
+            </motion.div>
+
+            <motion.div variants={itemVariants}>
+              <motion.div
+                variants={buttonVariants}
+                whileHover="hover"
+                whileTap="tap"
+              >
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting || addLinksMutation.isPending}
+                  className="w-full md:mt-8 bg-[#FED45C] text-black text-[16px] font-medium h-10! disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting || addLinksMutation.isPending ? (
+                    <motion.span
+                      animate={{ opacity: [0.7, 1, 0.7] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      Saving...
+                    </motion.span>
+                  ) : (
+                    "Continue"
+                  )}
+                </Button>
+              </motion.div>
+            </motion.div>
+          </div>
         </div>
 
-        <footer className="w-full flex items-center md:hidden justify-between gap-2 py-4 px-4 text-sm text-[#331400] mt-8">
-          <p>© 2025 Abio</p>
-          <a href="/privacy-policy" className="hover:text-[#000000] transition">
+        {/* Footer - Original layout preserved */}
+        <motion.footer 
+          variants={itemVariants}
+          className="w-full flex items-center md:hidden justify-between gap-2 py-4 px-4 text-sm text-[#331400] mt-8"
+        >
+          <motion.p
+            whileHover={{ scale: 1.03 }}
+            transition={{ duration: 0.2 }}
+          >
+            © 2025 Abio
+          </motion.p>
+          <motion.a
+            href="/privacy-policy"
+            className="hover:text-[#000000] transition"
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
+          >
             Privacy Policy
-          </a>
-        </footer>
-      </main>
+          </motion.a>
+        </motion.footer>
+      </motion.main>
     </ProtectedRoute>
   );
 };

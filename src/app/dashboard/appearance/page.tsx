@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { toast } from 'sonner';
-import PhoneDisplay from '@/components/PhoneDisplay';
-import ProfileContent from '@/components/ProfileContent';
-import WallpaperSelector from '@/components/Wallpaper';
-import FontCustomizer, { FontStyle } from '@/components/FontCustomizer';
-import ThemeSelector from '@/components/ThemeSelector';
-import ButtonAndFontTabs from '@/components/ButtonAndFontTabs';
+import React, { useState } from "react";
+import { toast } from "sonner";
+import PhoneDisplay from "@/components/PhoneDisplay";
+import ProfileContent from "@/components/ProfileContent";
+import WallpaperSelector from "@/components/Wallpaper";
+import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
+import ThemeSelector from "@/components/ThemeSelector";
+import ButtonAndFontTabs from "@/components/ButtonAndFontTabs";
 
 //Shared style interface
 export interface ButtonStyle {
@@ -21,27 +21,28 @@ export interface ButtonStyle {
 const AppearancePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [hoverTab, setHoverTab] = useState<number | null>(null);
-  const menuItems = ['Profile', 'Style', 'Themes', 'Wallpaper'];
+  const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
   //Button style handled by ButtonCustomizer
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
-    borderRadius: '12px',
-    backgroundColor: '#ffffff',
-    borderColor: '#000000',
+    borderRadius: "12px",
+    backgroundColor: "#ffffff",
+    borderColor: "#000000",
     opacity: 1,
-    boxShadow: '2px 2px 6px rgba(0,0,0,0.2)',
+    boxShadow: "2px 2px 6px rgba(0,0,0,0.2)",
   });
 
   const [fontStyle, setFontStyle] = useState<FontStyle>({
-    fontFamily: 'Poppins',
-    fillColor: '#000000',
-    strokeColor: 'none',
+    fontFamily: "Poppins",
+    fillColor: "#000000",
+    strokeColor: "none",
     opacity: 100,
   });
 
-  const [selectedTheme, setSelectedTheme] = useState<string>('/themes/theme1.png');
+  const [selectedTheme, setSelectedTheme] =
+    useState<string>("/themes/theme1.png");
   const [profile, setProfile] = useState({
-    profileImage: "/icons/profileplaceholder.png",
+    profileImage: "/icons/Profile Picture.png",
     displayName: "",
     bio: "",
     location: "",
@@ -93,10 +94,10 @@ const AppearancePage: React.FC = () => {
                 <span
                   className={`absolute bottom-0 left-0 right-0 h-0.5 bg-[#ff0000] transition-opacity duration-300 ${
                     activeTab === index
-                      ? 'opacity-100'
+                      ? "opacity-100"
                       : hoverTab === index
-                      ? 'opacity-50'
-                      : 'opacity-0'
+                      ? "opacity-50"
+                      : "opacity-0"
                   }`}
                 />
               </button>
@@ -105,33 +106,36 @@ const AppearancePage: React.FC = () => {
 
           {/*Tab content */}
           <div className="mt-6">
-  {activeTab === 0 && <ProfileContent onProfileUpdate={setProfile}    initialData={profile}
- />}
+            {activeTab === 0 && (
+              <ProfileContent
+                onProfileUpdate={setProfile}
+                initialData={profile}
+              />
+            )}
 
-  {activeTab === 1 && (
-    <ButtonAndFontTabs
-      buttonStyle={buttonStyle}
-      setButtonStyle={setButtonStyle}
-      fontStyle={fontStyle}
-      setFontStyle={setFontStyle}
-    />
-  )}
+            {activeTab === 1 && (
+              <ButtonAndFontTabs
+                buttonStyle={buttonStyle}
+                setButtonStyle={setButtonStyle}
+                fontStyle={fontStyle}
+                setFontStyle={setFontStyle}
+              />
+            )}
 
-  {activeTab === 2 && (
-    <ThemeSelector
-      selectedTheme={selectedTheme}
-      setSelectedTheme={setSelectedTheme}
-    />
-  )}
+            {activeTab === 2 && (
+              <ThemeSelector
+                selectedTheme={selectedTheme}
+                setSelectedTheme={setSelectedTheme}
+              />
+            )}
 
-  {activeTab === 3 && (
-    <WallpaperSelector
-      selectedTheme={selectedTheme}
-      setSelectedTheme={setSelectedTheme}
-    />
-  )}
-</div>
-
+            {activeTab === 3 && (
+              <WallpaperSelector
+                selectedTheme={selectedTheme}
+                setSelectedTheme={setSelectedTheme}
+              />
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -139,11 +143,3 @@ const AppearancePage: React.FC = () => {
 };
 
 export default AppearancePage;
-
-
-
-
-
-
-
- 

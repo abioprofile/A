@@ -11,6 +11,7 @@ import React, {
 export interface User {
   id: string;
   name: string;
+  username?: string;
   email: string;
   active: boolean;
   isEmailVerified: boolean;

@@ -148,9 +148,9 @@ export function LinkButton({ text, style }: LinkButtonProps) {
     const icon = iconMap[iconKey] || <FaLink />;
 
     return (
-        <button className={cn(baseClasses, 'flex items-center justify-start gap-1 md:gap-2')} style={effectStyles.style}>
-            {icon}
-            {text}
+        <button className={cn(baseClasses, 'flex items-center h-5 md:h-10 justify-start gap-1 md:gap-2')} style={effectStyles.style}>
+            {/* {icon}
+            {text} */}
         </button>
     )
 }
