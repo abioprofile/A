@@ -529,7 +529,6 @@ export default function DashboardPage() {
         
         <LinkList
           linksDataData={profileLinks
-            .filter((link: ProfileLink) => link.isVisible !== false)
             .sort((a, b) => a.displayOrder - b.displayOrder)}
         />
       </main>
@@ -616,7 +615,6 @@ export default function DashboardPage() {
           <div className="p">
             <LinkList
               linksDataData={profileLinks
-                .filter((link: ProfileLink) => link.isVisible !== false)
                 .sort(
                   (a: ProfileLink, b: ProfileLink) =>
                     a.displayOrder - b.displayOrder

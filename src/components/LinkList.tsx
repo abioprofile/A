@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   DndContext,
   closestCenter,
@@ -21,63 +21,30 @@ import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
 import { X } from "lucide-react";
 import { ProfileLink } from "@/types/auth.types";
+import {
+  useAddLinks,
+  useUpdateLink,
+  useDeleteLink,
+  useReorderLinks,
+  useGetAllLinks,
+} from "@/hooks/api/useAuth";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-type LinkItem = {
-  id: string;
-  platform: string;
-  url: string;
-  clicks: number;
-  customIcon?: string;
-
-  // FORM SUPPORT
-  isForm?: boolean;
-  form?: {
-    fields: {
-      name: boolean;
-      email: boolean;
-      phone: boolean;
-    };
-    title: string;
-    buttonText: string;
-    successMessage: string;
-  };
-};
-
-// Icon mapping - adjust these paths to match where your icons are stored
-const platformIcons: Record<string, string> = {
-  Instagram: "/icons/instagram.png",
-  Behance: "/icons/behance.png",
-  Snapchat: "/icons/snapchat.png",
-  X: "/icons/x.png",
-  Twitter: "/icons/twitter.png",
-  YouTube: "/icons/youtube.png",
-  Facebook: "/icons/facebook.png",
-  LinkedIn: "/icons/linkedin.png",
-  GitHub: "/icons/github.png",
-  Figma: "/icons/figma.png",
-  Dribbble: "/icons/dribbble.png",
-  Spotify: "/icons/spotify.png",
-  Apple: "/icons/apple.png",
-  Google: "/icons/google.png",
-  Amazon: "/icons/amazon.png",
-  Website: "/icons/website.png",
-  Form: "/icons/form.png",
-  Link: "/icons/link.png",
-  // Add more as needed
-};
-
-// Suggested platforms with their icons
-const suggestedPlatforms = [
-  { name: "Instagram", icon: "/icons/instagram.png", abbr: "IG" },
-  { name: "Pinterest", icon: "/icons/pinterest.png", abbr: "P" },
-  { name: "YouTube", icon: "/icons/youtube (2).png", abbr: "YT" },
-  { name: "Snapchat", icon: "/icons/snapchat.png", abbr: "SC" },
-  { name: "X", icon: "/icons/x.png", abbr: "X" },
-  { name: "Psotify", icon: "/icons/Spotify.png", abbr: "sp" },
-  { name: "Telegram", icon: "/icons/Telegram.png", abbr: "FB" },
-  { name: "LinkedIn", icon: "/icons/linkedin-icon.svg", abbr: "LI" },
-  { name: "TikTok", icon: "/icons/TikTok.png", abbr: "TT" },
-];
+// Suggested platforms
+const PLATFORMS = [
+  "INSTAGRAM",
+  "TIKTOK",
+  "PINTEREST",
+  "TWITTER",
+  "FACEBOOK",
+  "SNAPCHAT",
+  "YOUTUBE",
+  "LINKEDIN",
+  "GITHUB",
+  "CUSTOM",
+] as const;
 
 export default function LinkList({
   linksDataData,
@@ -85,48 +52,189 @@ export default function LinkList({
   linksDataData: ProfileLink[];
 }) {
   const [linksData, setLinksData] = useState<ProfileLink[]>(linksDataData);
+  const { refetch: refetchLinks } = useGetAllLinks();
 
   // Update linksData when prop changes (important for when data loads asynchronously)
   useEffect(() => {
     if (linksDataData && linksDataData.length > 0) {
       setLinksData(linksDataData);
+    } else if (linksDataData && linksDataData.length === 0) {
+      setLinksData([]);
     }
   }, [linksDataData]);
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<ProfileLink | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  
+  // Add link form state
+  const [newLink, setNewLink] = useState({
+    title: "",
+    url: "",
+    platform: "INSTAGRAM",
+    isVisible: true,
+  });
 
   const sensors = useSensors(useSensor(PointerSensor));
+  
+  // Hooks
+  const addLinksMutation = useAddLinks();
+  const updateLinkMutation = useUpdateLink();
+  const deleteLinkMutation = useDeleteLink();
+  const reorderLinksMutation = useReorderLinks();
 
-    const handleAddLink = () => {
-    const newLink: ProfileLink = {
-      id: Date.now().toString(), // Generate unique ID
-      platform: "Custom Link",
-      url: "",
-      clicks: 0,
-      customIcon: "/icons/link.png"
+  // Handle drag end - reorder links
+  const handleDragEnd = useCallback(
+    async ({ active, over }: { active: any; over: any }) => {
+      if (active.id !== over?.id) {
+        const oldIndex = linksData.findIndex(
+          (i: ProfileLink) => i.id === active.id
+        );
+        const newIndex = linksData.findIndex(
+          (i: ProfileLink) => i.id === over?.id
+        );
+
+        if (oldIndex === -1 || newIndex === -1) return;
+
+        const newOrder = arrayMove(linksData, oldIndex, newIndex);
+        setLinksData(newOrder);
+
+        // Call API to reorder
+        try {
+          await reorderLinksMutation.mutateAsync({
+            links: newOrder.map((link, index) => ({
+              id: link.id,
+              displayOrder: index + 1,
+            })),
+          });
+        } catch (error) {
+          // Revert on error
+          setLinksData(linksData);
+          console.error("Failed to reorder links:", error);
+        }
+      }
+    },
+    [linksData, reorderLinksMutation]
+  );
+
+  // Handle delete
+  const handleDelete = useCallback(
+    async (linkId: string) => {
+      try {
+        await deleteLinkMutation.mutateAsync({ linkId });
+        setDeleteId(null);
+        // Refetch to get updated list
+        await refetchLinks();
+      } catch (error) {
+        console.error("Failed to delete link:", error);
+      }
+    },
+    [deleteLinkMutation, refetchLinks]
+  );
+
+  // Handle toggle visibility
+  const handleToggleVisibility = useCallback(
+    async (link: ProfileLink) => {
+      try {
+        await updateLinkMutation.mutateAsync({
+          linkId: link.id,
+          isVisible: !link.isVisible,
+        });
+        // Optimistically update local state
+        setLinksData((prev) =>
+          prev.map((l) =>
+            l.id === link.id ? { ...l, isVisible: !l.isVisible } : l
+          )
+        );
+        await refetchLinks();
+      } catch (error) {
+        console.error("Failed to toggle visibility:", error);
+      }
+    },
+    [updateLinkMutation, refetchLinks]
+  );
+
+  // Handle edit
+  const handleEdit = useCallback(
+    async (link: ProfileLink, title: string, url: string) => {
+      try {
+        await updateLinkMutation.mutateAsync({
+          linkId: link.id,
+          title,
+          url,
+        });
+        setEditItem(null);
+        await refetchLinks();
+      } catch (error) {
+        console.error("Failed to update link:", error);
+      }
+    },
+    [updateLinkMutation, refetchLinks]
+  );
+
+  // Handle add link
+  const handleAddLink = useCallback(async () => {
+    if (!newLink.title.trim() || !newLink.url.trim()) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    // Format URL
+    const formatUrl = (url: string): string => {
+      const trimmed = url.trim();
+      if (!trimmed) return trimmed;
+      if (
+        trimmed.toLowerCase().startsWith("http://") ||
+        trimmed.toLowerCase().startsWith("https://")
+      ) {
+        return trimmed;
+      }
+      return `https://${trimmed}`;
     };
-    
-    setLinksData(prev => [...prev, newLink]);
-    setIsAddModalOpen(false); // Close modal after adding
-  };
+
+    try {
+      await addLinksMutation.mutateAsync({
+        title: newLink.title,
+        url: formatUrl(newLink.url),
+        platform: newLink.platform,
+      });
+
+      // If visibility is false, update it
+      if (!newLink.isVisible) {
+        // We need to get the newly created link ID
+        // For now, refetch and then update the last link
+        await refetchLinks();
+        const updatedLinks = await refetchLinks();
+        if (updatedLinks.data?.data && updatedLinks.data.data.length > 0) {
+          const lastLink = updatedLinks.data.data[updatedLinks.data.data.length - 1];
+          await updateLinkMutation.mutateAsync({
+            linkId: lastLink.id,
+            isVisible: false,
+          });
+        }
+      } else {
+        await refetchLinks();
+      }
+
+      // Reset form
+      setNewLink({
+        title: "",
+        url: "",
+        platform: "INSTAGRAM",
+        isVisible: true,
+      });
+      setIsAddModalOpen(false);
+    } catch (error) {
+      console.error("Failed to add link:", error);
+    }
+  }, [newLink, addLinksMutation, updateLinkMutation, refetchLinks]);
+
   return (
     <>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
-        onDragEnd={({ active, over }) => {
-          if (active.id !== over?.id) {
-            const oldIndex = linksData.findIndex(
-              (i: ProfileLink) => i.id === active.id
-            );
-            const newIndex = linksData.findIndex(
-              (i: ProfileLink) => i.id === over?.id
-            );
-            setLinksData(arrayMove(linksData, oldIndex, newIndex));
-          }
-        }}
+        onDragEnd={handleDragEnd}
       >
         <div className="md:max-w-3xl mx-auto px-6 md:px-0 md:bg-white py-[2px] flex flex-col h-[calc(100vh-320px)] md:h-[calc(100vh-290px)]">
           {/* STACK LIST */}
@@ -135,14 +243,14 @@ export default function LinkList({
               items={linksData.map((link: ProfileLink) => link.id)}
               strategy={verticalListSortingStrategy}
             >
-              <div className="md:space-y-1  md:pr-2">
+              <div className="md:space-y-1 md:pr-2">
                 {linksData.map((item: ProfileLink) => (
                   <SortableItem
                     key={item.id}
                     item={item}
-                    setLinks={setLinksData}
                     onDelete={() => setDeleteId(item.id)}
                     onEdit={(item: ProfileLink) => setEditItem(item)}
+                    onToggleVisibility={() => handleToggleVisibility(item)}
                   />
                 ))}
               </div>
@@ -152,15 +260,11 @@ export default function LinkList({
           {/* ADD BUTTON */}
           <div>
             <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="
-                w-full py-3
-                mt-3 md:mt-6
-                shadow-md
-                bg-[#331400]
-                text-[#FED45C]
-                font-semibold
-              "
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsAddModalOpen(true);
+              }}
+              className="w-full py-3 mt-3 md:mt-6 shadow-md bg-[#331400] text-[#FED45C] font-semibold"
             >
               + Add
             </button>
@@ -168,258 +272,227 @@ export default function LinkList({
         </div>
       </DndContext>
 
-      {/* DELETE */}
+      {/* DELETE MODAL */}
       <DeleteModal
         isOpen={deleteId !== null}
         onClose={() => setDeleteId(null)}
         onConfirm={() => {
-          setLinksData((prev: ProfileLink[]) =>
-            prev.filter((item: ProfileLink) => item.id !== deleteId)
-          );
-          setDeleteId(null);
+          if (deleteId) {
+            handleDelete(deleteId);
+          }
         }}
       />
 
-      {/* EDIT */}
+      {/* EDIT MODAL */}
       <EditModal
         isOpen={editItem !== null}
         onClose={() => setEditItem(null)}
-        onSave={() => {}}
+        onSave={(platform: string, url: string) => {
+          if (editItem) {
+            handleEdit(editItem, platform, url);
+          }
+        }}
         initialPlatform={editItem?.platform || ""}
         initialUrl={editItem?.url || ""}
       />
 
-      {/* ADD – MOBILE FULL PAGE */}
+      {/* ADD LINK MODAL - MOBILE */}
       {isAddModalOpen && (
         <>
-          {/* MOBILE VIEW */}
           <div className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col">
-            {/* HEADER */}
             <div className="sticky top-0 flex items-center justify-between px-4 py-8 border-b bg-[#FFF7DE]">
               <button
-                onClick={() => setIsAddModalOpen(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAddModalOpen(false);
+                }}
                 className="flex items-center gap-2 font-semibold text-[#331400]"
               >
-                ← Add Board
+                ← Add Link
               </button>
             </div>
 
-            {/* CONTENT */}
-            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-6">
-              {/* SEARCH */}
-              <div className="bg-gray-200 px-4 py-3 flex items-center gap-3 text-gray-500 ">
-                <img
-                  src="/icons/search.svg"
-                  alt="Search"
-                  className="w-5 h-5 opacity-60"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                    e.currentTarget.nextElementSibling?.classList.remove(
-                      "hidden"
-                    );
-                  }}
+            <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#331400] mb-2">
+                  Title
+                </label>
+                <Input
+                  value={newLink.title}
+                  onChange={(e) =>
+                    setNewLink({ ...newLink, title: e.target.value })
+                  }
+                  placeholder="e.g., Instagram"
+                  className="w-full"
                 />
-                <span className="text-sm">Paste or search a link</span>
               </div>
 
-              {/* ADD LINK */}
-              <button
-                onClick={handleAddLink}
-                className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <img
-                    src="/icons/link.png"
-                    alt="Link"
-                    className="w-6 h-6"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
-                  />
-                  <span className="font-medium text-[#331400]">Add Link</span>
-                </div>
-                <span className="font-semibold text-[#331400]">&gt;&gt;</span>
-              </button>
-
-              {/* ADD FORM */}
-              {/* <button
-                onClick={handleAddForm}
-                className="w-full bg-[#FED45CB2] border-2 border-[#ff0000] p-6 flex items-center justify-between  hover:bg-[#f5c84c] transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <img 
-                    src="/icons/form.png" 
-                    alt="Form" 
-                    className="w-6 h-6"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
-                  />
-                  <span className="font-medium text-[#331400]">Form</span>
-                </div>
-                <span className="font-semibold text-[#331400]">&gt;&gt;</span>
-              </button>  */}
-
-              {/* SUGGESTED */}
-              <div className="mb-4">
-                <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
-                <div className="relative">
-                  {/* Gradient fade on the right to indicate more content */}
-                  <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
-
-                  <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {suggestedPlatforms.map((platform, index) => (
-                      <button
-                        key={index}
-                        // onClick={() => handleAddSuggested(platform.name)}
-                        className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
-                      >
-                        <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
-                          <img
-                            src={platform.icon}
-                            alt={platform.name}
-                            className="w-12 h-12 object-cover"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                              e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
-                            }}
-                          />
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-[#331400] mb-2">
+                  URL
+                </label>
+                <Input
+                  value={newLink.url}
+                  onChange={(e) =>
+                    setNewLink({ ...newLink, url: e.target.value })
+                  }
+                  placeholder="https://instagram.com/username"
+                  className="w-full"
+                />
               </div>
-              {/* RECENTLY ADDED PLACEHOLDERS */}
-              {/* <div className="space-y-4">
-                <div className="bg-gray-100 h-32  p-4">
-                  <p className="text-sm text-gray-500 mb-2">Recently Added</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                    <div className="text-sm text-gray-700">Instagram</div>
-                  </div>
-                </div>
-                <div className="bg-gray-100 h-32  p-4">
-                  <p className="text-sm text-gray-500 mb-2">Popular</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                    <div className="text-sm text-gray-700">YouTube</div>
-                  </div>
-                </div>
-              </div> */}
+
+              <div>
+                <label className="block text-sm font-medium text-[#331400] mb-2">
+                  Platform
+                </label>
+                <select
+                  value={newLink.platform}
+                  onChange={(e) =>
+                    setNewLink({ ...newLink, platform: e.target.value })
+                  }
+                  className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] px-3 py-2 rounded"
+                >
+                  {PLATFORMS.map((platform) => (
+                    <option key={platform} value={platform}>
+                      {platform}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-[#331400]">
+                  Visible
+                </label>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setNewLink({ ...newLink, isVisible: !newLink.isVisible });
+                  }}
+                  className={`relative w-12 h-6 rounded-full transition-colors ${
+                    newLink.isVisible ? "bg-[#331400]" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                      newLink.isVisible ? "translate-x-6" : ""
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <Button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleAddLink();
+                }}
+                disabled={addLinksMutation.isPending}
+                className="w-full bg-[#FED45C] text-[#331400] font-semibold mt-4"
+              >
+                {addLinksMutation.isPending ? "Adding..." : "Add Link"}
+              </Button>
             </div>
           </div>
 
-          {/* DESKTOP MODAL */}
+          {/* ADD LINK MODAL - DESKTOP */}
           <div className="hidden md:flex fixed inset-0 bg-black/40 items-center justify-center z-50">
             <div className="bg-white w-full max-w-lg p-6 shadow-lg relative">
               <button
-                onClick={() => setIsAddModalOpen(false)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAddModalOpen(false);
+                }}
                 className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
               >
                 <X className="w-6 h-6" />
               </button>
 
               <h2 className="text-2xl font-bold mb-6 text-[#331400]">
-                Add New Item
+                Add New Link
               </h2>
 
-              {/* SEARCH BAR */}
-              <div className="bg-gray-100  w-full p-4 mb-6 text-sm text-gray-500  flex items-center gap-3">
-                <img
-                  src="/icons/search.svg"
-                  alt="Search"
-                  className="w-5 h-5 opacity-60"
-                  onError={(e) => {
-                    e.currentTarget.style.display = "none";
-                  }}
-                />
-                <span>Paste or search a link</span>
-              </div>
-
-              {/* ADD OPTIONS */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                <button
-                  onClick={handleAddLink}
-                  className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
-                >
-                  <img
-                    src="/icons/link.png"
-                    alt="Link"
-                    className="w-10 h-10"
-                    onError={(e) => {
-                      e.currentTarget.style.display = "none";
-                    }}
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-[#331400] mb-2">
+                    Title
+                  </label>
+                  <Input
+                    value={newLink.title}
+                    onChange={(e) =>
+                      setNewLink({ ...newLink, title: e.target.value })
+                    }
+                    placeholder="e.g., Instagram"
+                    className="w-full"
                   />
-                  <p className="text-[14px] font-medium text-[#331400]">
-                    Add Link
-                  </p>
-                </button>
+                </div>
 
-                {/* <button
-                  onClick={handleAddForm}
-                  className="bg-[#FED45CB2] border-2 border-[#ff0000] p-4 text-center  hover:bg-[#f5c84c] transition-colors flex flex-col items-center justify-center gap-3"
-                >
-                  <img 
-                    src="/icons/form.png" 
-                    alt="Form" 
-                    className="w-10 h-10"
-                    onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                    }}
+                <div>
+                  <label className="block text-sm font-medium text-[#331400] mb-2">
+                    URL
+                  </label>
+                  <Input
+                    value={newLink.url}
+                    onChange={(e) =>
+                      setNewLink({ ...newLink, url: e.target.value })
+                    }
+                    placeholder="https://instagram.com/username"
+                    className="w-full"
                   />
-                  <p className="text-[14px] font-medium text-[#331400]">Form</p>
-                </button>  */}
-              </div>
+                </div>
 
-              {/* SUGGESTED ICONS */}
-              <div className="mb-4">
-                <p className="font-semibold mb-3 text-[#331400]">Suggested</p>
-                <div className="relative">
-                  {/* Gradient fade on the right to indicate more content */}
-                  <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-[#FFF7DE] to-transparent pointer-events-none z-10"></div>
-
-                  <div className="flex items-center gap-4 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                    {suggestedPlatforms.map((platform, index) => (
-                      <button
-                        key={index}
-                        // onClick={() => handleAddSuggested(platform.name)}
-                        className="flex flex-col items-center gap-2 flex-shrink-0 hover:opacity-80 transition-opacity active:scale-95"
-                      >
-                        <div className="flex items-center justify-center shadow-md border border-gray-200 rounded-full overflow-hidden hover:shadow-lg transition-shadow">
-                          <img
-                            src={platform.icon}
-                            alt={platform.name}
-                            className="w-12 h-12 object-cover"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                              e.currentTarget.parentElement!.innerHTML = `<div class="w-12 h-12 rounded-full bg-[#FED45C] flex items-center justify-center"><span class="text-[#331400] font-bold text-sm">${platform.abbr}</span></div>`;
-                            }}
-                          />
-                        </div>
-                      </button>
+                <div>
+                  <label className="block text-sm font-medium text-[#331400] mb-2">
+                    Platform
+                  </label>
+                  <select
+                    value={newLink.platform}
+                    onChange={(e) =>
+                      setNewLink({ ...newLink, platform: e.target.value })
+                    }
+                    className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] px-3 py-2 rounded"
+                  >
+                    {PLATFORMS.map((platform) => (
+                      <option key={platform} value={platform}>
+                        {platform}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                 </div>
-              </div>
 
-              {/* RECENTLY ADDED PLACEHOLDERS */}
-              {/* <div className="grid grid-cols-2 gap-4">
-                <div className="bg-gray-100 h-32  p-4">
-                  <p className="text-sm text-gray-500 mb-2">Recently Added</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                    <div className="text-sm text-gray-700">Instagram</div>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-[#331400]">
+                    Visible
+                  </label>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setNewLink({ ...newLink, isVisible: !newLink.isVisible });
+                    }}
+                    className={`relative w-12 h-6 rounded-full transition-colors ${
+                      newLink.isVisible ? "bg-[#331400]" : "bg-gray-300"
+                    }`}
+                  >
+                    <span
+                      className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                        newLink.isVisible ? "translate-x-6" : ""
+                      }`}
+                    />
+                  </button>
                 </div>
-                <div className="bg-gray-100 h-32  p-4">
-                  <p className="text-sm text-gray-500 mb-2">Popular</p>
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
-                    <div className="text-sm text-gray-700">YouTube</div>
-                  </div>
-                </div>
-              </div> */}
+
+                <Button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleAddLink();
+                  }}
+                  disabled={addLinksMutation.isPending}
+                  className="w-full bg-[#FED45C] text-[#331400] font-semibold mt-4"
+                >
+                  {addLinksMutation.isPending ? "Adding..." : "Add Link"}
+                </Button>
+              </div>
             </div>
           </div>
         </>
@@ -428,7 +501,17 @@ export default function LinkList({
   );
 }
 
-function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
+function SortableItem({
+  item,
+  onDelete,
+  onEdit,
+  onToggleVisibility,
+}: {
+  item: ProfileLink;
+  onDelete: () => void;
+  onEdit: (item: ProfileLink) => void;
+  onToggleVisibility: () => void;
+}) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: item.id });
 
@@ -437,181 +520,36 @@ function SortableItem({ item, setLinks, onDelete, onEdit }: any) {
     transition,
   };
 
-  // State to track which field inputs are visible
-  const [visibleInputs, setVisibleInputs] = useState({
-    name: false,
-    email: false,
-    phone: false,
-  });
-
-  // Simple toggle for input visibility
-  const toggleInputVisibility = (field: "name" | "email" | "phone") => {
-    setVisibleInputs((prev) => ({
-      ...prev,
-      [field]: !prev[field],
-    }));
-  };
-
-  // Handle field toggle (existing functionality)
-  const handleFieldToggle = (field: "name" | "email" | "phone") => {
-    setLinks((prev: any) =>
-      prev.map((x: any) =>
-        x.id === item.id
-          ? {
-              ...x,
-              form: {
-                ...x.form,
-                fields: {
-                  ...x.form.fields,
-                  [field]: !x.form.fields[field],
-                },
-              },
-            }
-          : x
-      )
-    );
-  };
-
-  if (item.isForm) {
-    return (
-      <div
-        ref={setNodeRef}
-        style={style}
-        {...attributes}
-        {...listeners}
-        className="bg-[#FAFAFC] p-5 mt-4 shadow-sm rounded-lg"
-      >
-        {/* COLLECTING */}
-        <p className="text-xs font-semibold mb-3 text-gray-500">COLLECTING</p>
-
-        <div className="flex gap-4 mb-6">
-          {["name", "email", "phone"].map((f) => (
-            <div key={f} className="flex flex-col">
-              <button
-                onClick={() => {
-                  handleFieldToggle(f as "name" | "email" | "phone");
-                  toggleInputVisibility(f as "name" | "email" | "phone");
-                }}
-                className={`px-6 py-3 border  transition-colors ${
-                  item.form.fields[f]
-                    ? "bg-[#331400] text-[#FED45C] border-[#331400]"
-                    : "bg-white text-gray-700 border-gray-300 hover:border-[#331400]"
-                }`}
-              >
-                {f[0].toUpperCase() + f.slice(1)}
-              </button>
-
-              {/* Input stack that appears below when button is clicked */}
-              {visibleInputs[f as "name" | "email" | "phone"] && (
-                <div className="mt-2 p-4 bg-white border border-gray-300 rounded-lg shadow-sm">
-                  <div className="space-y-3">
-                    <div>
-                      <label className="text-xs text-gray-500 mb-1 block font-medium">
-                        {f.toUpperCase()} FIELD LABEL
-                      </label>
-                      <input
-                        type="text"
-                        placeholder={`Enter ${f} label`}
-                        className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#331400]"
-                        defaultValue={f[0].toUpperCase() + f.slice(1)}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-gray-500 mb-1 block font-medium">
-                        PLACEHOLDER TEXT
-                      </label>
-                      <input
-                        type="text"
-                        placeholder={`Enter ${f} placeholder`}
-                        className="w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:border-[#331400]"
-                        defaultValue={`Enter your ${f}`}
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* TITLE */}
-        <div className="bg-gray-100 p-4 mb-4 border border-gray-300 rounded relative">
-          <p className="text-xs text-gray-500 mb-1 font-medium">TITLE</p>
-          <input
-            value={item.form.title}
-            onChange={(e) =>
-              setLinks((prev: any) =>
-                prev.map((x: any) =>
-                  x.id === item.id
-                    ? { ...x, form: { ...x.form, title: e.target.value } }
-                    : x
-                )
-              )
-            }
-            className="w-full bg-transparent outline-none font-medium pr-16 text-[#331400]"
-            maxLength={24}
-          />
-          <div className="absolute bottom-2 right-3 text-xs text-gray-500">
-            {item.form.title.length}/24
-          </div>
-        </div>
-
-        {/* BUTTON TEXT */}
-        <div className="bg-gray-100 p-4 mb-4 border border-gray-300 rounded relative">
-          <p className="text-xs text-gray-500 mb-1 font-medium">BUTTON TEXT</p>
-          <input
-            value={item.form.buttonText}
-            onChange={(e) =>
-              setLinks((prev: any) =>
-                prev.map((x: any) =>
-                  x.id === item.id
-                    ? { ...x, form: { ...x.form, buttonText: e.target.value } }
-                    : x
-                )
-              )
-            }
-            className="w-full bg-transparent outline-none font-medium pr-16 text-[#331400]"
-            maxLength={24}
-          />
-          <div className="absolute bottom-2 right-3 text-xs text-gray-500">
-            {item.form.buttonText.length}/24
-          </div>
-        </div>
-
-        {/* SUCCESS MESSAGE */}
-        <div className="bg-gray-100 p-4 border border-gray-300 rounded relative">
-          <p className="text-xs text-gray-500 mb-1 font-medium">
-            SUCCESS MESSAGE
-          </p>
-          <input
-            value={item.form.successMessage}
-            onChange={(e) =>
-              setLinks((prev: any) =>
-                prev.map((x: any) =>
-                  x.id === item.id
-                    ? {
-                        ...x,
-                        form: { ...x.form, successMessage: e.target.value },
-                      }
-                    : x
-                )
-              )
-            }
-            className="w-full bg-transparent outline-none font-medium pr-16 text-[#331400]"
-            maxLength={24}
-          />
-          <div className="absolute bottom-2 right-3 text-xs text-gray-500">
-            {item.form.successMessage.length}/24
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // NORMAL LINK CARD
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <LinkCard item={item} onDelete={onDelete} onEdit={onEdit} />
+    <div ref={setNodeRef} style={style} {...attributes}>
+      <LinkCard
+        item={{
+          id: item.id,
+          platform: item.platform,
+          url: item.url,
+          clicks: item.clickCount || 0,
+          customIcon: item.icon_link,
+        }}
+        onDelete={(id) => {
+          onDelete();
+        }}
+        onEdit={(e, linkItem) => {
+          if (linkItem) {
+            onEdit(item);
+          }
+        }}
+        onToggleVisibility={(e) => {
+          if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+          onToggleVisibility();
+        }}
+        isVisible={item.isVisible}
+        onIconChange={() => {}}
+        dragHandleProps={listeners}
+        dragHandleId={`drag-handle-${item.id}`}
+      />
     </div>
   );
 }

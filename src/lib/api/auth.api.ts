@@ -209,3 +209,88 @@ export const updateProfileAvatar = async (
   );
   return response.data;
 };
+
+// update a link
+export const updateLink = async (
+  linkId: string,
+  data: {
+    title?: string;
+    url?: string;
+    isVisible?: boolean;
+  }
+): Promise<{
+  success: boolean;
+  message: string;
+  data: ProfileLink;
+  statusCode: number;
+}> => {
+  const response = await apiClient.patch<{
+    success: boolean;
+    message: string;
+    data: ProfileLink;
+    statusCode: number;
+  }>(`/links/${linkId}`, data);
+  return response.data;
+};
+
+// update link with icon in form data
+export const updateLinkWithIcon = async (
+  linkId: string,
+  iconFile: File
+): Promise<{
+  success: boolean;
+  message: string;
+  data: ProfileLink;
+  statusCode: number;
+}> => {
+  const formData = new FormData();
+  formData.append('icon', iconFile);
+  const response = await apiClient.patch<{
+    success: boolean;
+    message: string;
+    data: ProfileLink;
+    statusCode: number;
+  }>(`/links/${linkId}/icon`, formData);
+  return response.data;
+};
+
+// reorder all links
+export const reorderLinks = async (
+  data: {
+    links: Array<{
+      id: string;
+      displayOrder: number;
+    }>;
+  }
+): Promise<{
+  success: boolean;
+  message: string;
+  data: ProfileLink | null;
+  statusCode: number;
+}> => {
+  const response = await apiClient.patch<{
+    success: boolean;
+    message: string;
+    data: ProfileLink | null;
+    statusCode: number;
+  }>(`/links/reorder/all`, data);
+  return response.data;
+};
+
+// delete a link
+export const deleteLink = async (
+  linkId: string
+): Promise<{
+  success: boolean;
+  message: string;
+  data: ProfileLink | null;
+  statusCode: number;
+}> => {
+  const response = await apiClient.delete<{
+    success: boolean;
+    message: string;
+    data: ProfileLink | null;
+    statusCode: number;
+  }>(`/links/${linkId}`);
+  return response.data;
+};

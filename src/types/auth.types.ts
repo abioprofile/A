@@ -91,6 +91,7 @@ export interface ProfileLink {
   clickCount: number;
   createdAt: string;
   updatedAt: string;
+  icon_link?: string;
 }
 
 // getting all links 

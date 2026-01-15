@@ -1,6 +1,6 @@
 "use client";
 
-import { FC, useState, MouseEvent, useRef } from "react";
+import { FC, useState, MouseEvent, useRef, useEffect } from "react";
 import Image from "next/image";
 import {
   TrashIcon,
@@ -45,17 +45,21 @@ type LinkItem = {
 
 type Props = {
   item: LinkItem;
-  onDelete: (id: string) => void;
-  onEdit: (item: LinkItem) => void;
+  onDelete: (id?: string) => void;
+  onEdit: (e?: MouseEvent, item?: LinkItem) => void;
+  onToggleVisibility?: (e?: MouseEvent) => void;
+  isVisible?: boolean;
   onIconChange: (
     id: string,
     iconType: "platform" | "custom",
     value: string
   ) => void;
+  dragHandleProps?: any;
+  dragHandleId?: string;
 };
 
 // Updated platformIcons with Font Awesome components - ALL IN BLACK AND WHITE
-const platformIcons: Record<string, { name: string; icon: JSX.Element }> = {
+const platformIcons: Record<string, { name: string; icon: React.ReactElement }> = {
   snapchat: { 
     name: "Snapchat", 
     icon: <FaSnapchat className="w-6 h-6 text-black" />
@@ -138,8 +142,13 @@ const platformIcons: Record<string, { name: string; icon: JSX.Element }> = {
   },
 };
 
-const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
-  const [isActive, setIsActive] = useState(true);
+const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVisibility, isVisible = true, dragHandleProps, dragHandleId }) => {
+  const [isActive, setIsActive] = useState(isVisible);
+  
+  // Sync with prop changes
+  useEffect(() => {
+    setIsActive(isVisible);
+  }, [isVisible]);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showIconDropdown, setShowIconDropdown] = useState(false);
   const [showCropModal, setShowCropModal] = useState(false);
@@ -246,33 +255,49 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
 
   // Handler for platform name click
   const handlePlatformNameClick = (e: MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    onEdit(item);
+    if (onEdit) {
+      onEdit(e, item);
+    }
   };
 
   // Handler for URL click
   const handleUrlClick = (e: MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    onEdit(item);
+    if (onEdit) {
+      onEdit(e, item);
+    }
   };
 
   // Handler for toggle button
   const handleToggleClick = (e: MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    console.log(isActive);
-    setIsActive(!isActive);
+    if (onToggleVisibility) {
+      onToggleVisibility(e);
+    } else {
+      setIsActive(!isActive);
+    }
   };
 
   // Handler for edit button
   const handleEditClick = (e: MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    onEdit(item);
+    if (onEdit) {
+      onEdit(e, item);
+    }
   };
 
   // Handler for delete button
   const handleDeleteClick = (e: MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
-    onDelete(item.id);
+    if (onDelete) {
+      onDelete(item.id);
+    }
   };
 
   // Handler for analytics button
@@ -292,8 +317,12 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
           <div className="bg-[#FAFAFC] rounded-md p-4 md:p-4 relative">
             {/* ================= TOP ROW ================= */}
             <div className="flex items-center gap-2 md:gap-3">
-              {/* Drag dots (desktop only) */}
-              <div className="hidden md:flex flex-col gap-1 cursor-grab">
+              {/* Drag dots (desktop only) - Only this area is draggable */}
+              <div 
+                id={dragHandleId}
+                className="hidden md:flex flex-col gap-1 cursor-grab"
+                {...(dragHandleProps || {})}
+              >
                 {[0, 1, 2].map((i) => (
                   <div key={i} className="flex gap-1">
                     <span className="w-1 h-1 bg-red-500 rounded-full" />
@@ -467,17 +496,27 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
 
               {/* Controls */}
               <div className="flex items-center gap-2 md:gap-4">
-                {/* Toggle */}
+                {/* Toggle - Off (left) / On (right) */}
                 <button
                   type="button"
                   onClick={handleToggleClick}
-                  className={`relative h-5 w-9 md:h-6 md:w-11 rounded-full transition ${
-                    isActive ? "bg-black" : "bg-gray-300"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  className={`relative h-5 w-9 md:h-6 md:w-11 rounded-full transition cursor-pointer ${
+                    isActive ? "bg-[#331400]" : "bg-gray-300"
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 left-0.5 h-4 w-4 md:h-5 md:w-5 bg-white rounded-full transition ${
-                      isActive ? "translate-x-4 md:translate-x-5" : ""
+                    className={`absolute top-0.5 h-4 w-4 md:h-5 md:w-5 bg-white rounded-full transition-transform duration-200 ${
+                      isActive 
+                        ? "translate-x-4 md:translate-x-5 left-0.5" // On: move to right
+                        : "translate-x-0 left-0.5" // Off: stay on left
                     }`}
                   />
                 </button>
@@ -486,7 +525,15 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
                 <button
                   type="button"
                   onClick={handleEditClick}
-                  className="hover:opacity-70 transition-opacity"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  className="hover:opacity-70 transition-opacity cursor-pointer"
                 >
                   <PencilIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
                 </button>
@@ -495,7 +542,15 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange }) => {
                 <button
                   type="button"
                   onClick={handleDeleteClick}
-                  className="hover:opacity-70 transition-opacity"
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onTouchStart={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  className="hover:opacity-70 transition-opacity cursor-pointer"
                 >
                   <TrashIcon className="h-4 w-4 md:h-5 md:w-5 text-red-500" />
                 </button>

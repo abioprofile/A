@@ -14,6 +14,10 @@ import {
   getAllLinks,
   getUserProfileByUsername,
   updateProfileAvatar,
+  updateLink,
+  updateLinkWithIcon,
+  reorderLinks,
+  deleteLink,
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -324,11 +328,14 @@ export const useUpdateProfile = () => {
 };
 
 export const useAddLinks = () => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (data: AddLinksRequest) => {
       return await addLinks(data);
     },
     onSuccess: (response: { success: boolean; message: string; data: { link: ProfileLink } }) => {
+      queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success("Links added successfully", {
         description: response.message || "Your links have been added",
       });
@@ -440,3 +447,119 @@ export const useUpdateProfileAvatar = () => {
     },
   });
 };
+
+export const useUpdateLink = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (variables: {
+      linkId: string;
+      title?: string;
+      url?: string;
+      isVisible?: boolean;
+    }) => {
+      return await updateLink(variables.linkId, {
+        title: variables.title,
+        url: variables.url,
+        isVisible: variables.isVisible,
+      });
+      },
+      onSuccess: (response: { success: boolean; message: string; data: ProfileLink, statusCode: number }) => {
+      queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      toast.success("Link updated successfully", {
+        description: response.message || "Your link has been updated",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update link. Please try again.";
+      toast.error("Failed to update link", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateLinkWithIcon = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (variables: {
+      linkId: string;
+      iconFile: File;
+    }) => {
+      return await updateLinkWithIcon(variables.linkId, variables.iconFile);
+    },
+    onSuccess: (response: { success: boolean; message: string; data: ProfileLink, statusCode: number }) => {
+      queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      toast.success("Link icon updated successfully", {
+        description: response.message || "Your link icon has been updated",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update link icon. Please try again.";
+      toast.error("Failed to update link icon", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useReorderLinks = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (variables: {
+      links: Array<{ id: string; displayOrder: number }>;
+    }) => {
+      return await reorderLinks({ links: variables.links });
+    },
+    onSuccess: (response: { success: boolean; message: string; data: ProfileLink | null, statusCode: number }) => {
+      queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      toast.success("Links reordered successfully", {
+        description: response.message || "Your links have been reordered",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to reorder links. Please try again.";
+      toast.error("Failed to reorder links", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useDeleteLink = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (variables: {
+      linkId: string;
+    }) => {
+      return await deleteLink(variables.linkId);
+    },
+    onSuccess: (response: { success: boolean; message: string; data: ProfileLink | null, statusCode: number }) => {
+      queryClient.invalidateQueries({ queryKey: ["links"] });
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      toast.success("Link deleted successfully", {
+        description: response.message || "Your link has been deleted",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to delete link. Please try again.";
+      toast.error("Failed to delete link", {
+        description: errorMessage,
+      });
+    },
+  });
+};  
