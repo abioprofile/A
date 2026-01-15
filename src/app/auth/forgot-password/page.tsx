@@ -174,7 +174,7 @@ const ForgotPassword = () => {
           className="space-y-4"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <motion.div variants={itemVariants} className="space-y-2.5">
+          <motion.div variants={itemVariants} className="space-y-2">
             <Label htmlFor="email" className="font-semibold">
               Email Address
             </Label>
