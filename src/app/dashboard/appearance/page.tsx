@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 import PhoneDisplay from "@/components/PhoneDisplay";
+import { useGetAllLinks } from "@/hooks/api/useAuth";
 import ProfileContent from "@/components/ProfileContent";
 import WallpaperSelector from "@/components/Wallpaper";
 import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
@@ -51,6 +52,18 @@ const AppearancePage: React.FC = () => {
   const handleSaveAll = () => {
     toast.success("All appearance settings saved successfully!");
   };
+   const {
+      data: linksData,
+      isLoading: linksLoading,
+      isError: linksError,
+      refetch: refetchLinks,
+    } = useGetAllLinks();
+
+  const profileLinks = linksData?.data
+      ? Array.isArray(linksData.data)
+        ? (linksData.data as ProfileLink[])
+        : []
+      : [];
 
   return (
     <section className="min-h-screen bg-[#ffffff] pt-4 px-6 relative flex flex-col">
@@ -74,6 +87,7 @@ const AppearancePage: React.FC = () => {
               fontStyle={fontStyle}
               selectedTheme={selectedTheme}
               profile={profile}
+              links={profileLinks}
             />
           </div>
         </aside>

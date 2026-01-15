@@ -6,8 +6,10 @@ import { FontStyle } from "./FontCustomizer";
 import { ProfileLink } from "@/types/auth.types";
 import { useAppSelector } from "@/stores/hooks";
 
+
 // Import Font Awesome icons
 import {
+  FaMapPin,
   FaInstagram,
   FaTiktok,
   FaPinterest,
@@ -131,7 +133,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
         {/* Profile Section */}
-        <div className="p-6 flex flex-col items-start bg-white/90 backdrop-blur-sm">
+        <div className="p-6 flex flex-col relative items-start bg-white">
           <div className="flex gap-3 items-center">
             <div className="w-[60px] h-[60px] rounded-full overflow-hidden shadow-md border border-gray-300">
               <img
@@ -164,17 +166,17 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           </p>
 
           <div className="mt-2 mb-2 flex items-center gap-1 px-2 py-1 border text-[10px] border-[#000] bg-white/70">
-            <div className="flex-shrink-0">
-              {/* Location icon - using a simple black dot as placeholder */}
-              <div className="w-3 h-3 rounded-full bg-black" />
-            </div>
-            <span 
-              className="text-[10px]  font-medium truncate max-w-[180px]"
-              title={userDataProfile?.profile?.location || "Add location"}
-            >
-              {userDataProfile?.profile?.location || "Add location"}
-            </span>
-          </div>
+  <div className="flex-shrink-0">
+    {/* Location icon from Font Awesome */}
+    <FaMapPin className="w-3 h-3 text-black" />
+  </div>
+  <span 
+    className="text-[10px] font-medium truncate max-w-[180px]"
+    title={userDataProfile?.profile?.location || "Add location"}
+  >
+    {userDataProfile?.profile?.location || "Add location"}
+  </span>
+</div>
 
           {/* Links indicator */}
           <div className="mt-4 flex absolute bottom-0 flex-col items-center ">

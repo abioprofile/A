@@ -269,7 +269,7 @@ export default function PublicProfilePage() {
                 />
 
                 {/* Screen Content */}
-                <div className="w-full h-full bg-white rounded-[38px] overflow-hidden relative">
+                <div className="w-full h-full bg-white  overflow-hidden relative">
                   {/* Background Image inside phone */}
                   <motion.div
                     initial={{ opacity: 0 }}
