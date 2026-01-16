@@ -1,11 +1,11 @@
 // components/EditModal.tsx
-'use client';
+"use client";
 
-import { FC } from 'react';
-import Modal from '@/components/ui/modal';
-import { toast } from 'sonner';
+import { FC } from "react";
+import Modal from "@/components/ui/modal";
+import { toast } from "sonner";
 // Import Framer Motion
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from "framer-motion";
 
 type EditModalProps = {
   isOpen: boolean;
@@ -25,41 +25,42 @@ const EditModal: FC<EditModalProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const form = e.currentTarget as HTMLFormElement;
-    const platform = (form.elements.namedItem('platform') as HTMLInputElement).value;
-    const url = (form.elements.namedItem('url') as HTMLInputElement).value;
-    
+    const platform = (form.elements.namedItem("platform") as HTMLInputElement)
+      .value;
+    const url = (form.elements.namedItem("url") as HTMLInputElement).value;
+
     onSave(platform, url);
-    toast.success('Link updated');
+    toast.success("Link updated");
     onClose();
   };
 
   // Animation variants
   const overlayVariants = {
     hidden: { opacity: 0 },
-    visible: { 
+    visible: {
       opacity: 1,
       transition: {
         duration: 0.2,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     },
     exit: {
       opacity: 0,
       transition: {
         duration: 0.15,
-        ease: "easeIn"
-      }
-    }
+        ease: "easeIn",
+      },
+    },
   };
 
   const modalVariants = {
-    hidden: { 
-      scale: 0.9, 
+    hidden: {
+      scale: 0.9,
       opacity: 0,
-      y: 20 
+      y: 20,
     },
-    visible: { 
-      scale: 1, 
+    visible: {
+      scale: 1,
       opacity: 1,
       y: 0,
       transition: {
@@ -67,8 +68,8 @@ const EditModal: FC<EditModalProps> = ({
         stiffness: 200,
         damping: 25,
         delay: 0.1,
-        duration: 0.3
-      }
+        duration: 0.3,
+      },
     },
     exit: {
       scale: 0.9,
@@ -76,9 +77,9 @@ const EditModal: FC<EditModalProps> = ({
       y: 20,
       transition: {
         duration: 0.15,
-        ease: "easeIn"
-      }
-    }
+        ease: "easeIn",
+      },
+    },
   };
 
   const formItemVariants = {
@@ -89,9 +90,9 @@ const EditModal: FC<EditModalProps> = ({
       transition: {
         delay: 0.2 + i * 0.1,
         duration: 0.3,
-        ease: "easeOut"
-      }
-    })
+        ease: "easeOut",
+      },
+    }),
   };
 
   const buttonVariants = {
@@ -102,8 +103,8 @@ const EditModal: FC<EditModalProps> = ({
       transition: {
         delay: 0.4,
         duration: 0.3,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     },
     hover: {
       scale: 1.02,
@@ -111,12 +112,12 @@ const EditModal: FC<EditModalProps> = ({
       transition: {
         type: "spring",
         stiffness: 400,
-        damping: 15
-      }
+        damping: 15,
+      },
     },
     tap: {
-      scale: 0.98
-    }
+      scale: 0.98,
+    },
   };
 
   return (
@@ -124,10 +125,10 @@ const EditModal: FC<EditModalProps> = ({
       <AnimatePresence mode="wait">
         {isOpen && (
           <motion.div
-            variants={overlayVariants}
+            // variants={overlayVariants}
             initial="hidden"
             animate="visible"
-            exit="exit"
+            // exit="exit"
             className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4"
           >
             <motion.div
@@ -138,7 +139,7 @@ const EditModal: FC<EditModalProps> = ({
               className="w-full md:w-[400px] bg-white p-6 rounded-lg shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <motion.h2 
+              <motion.h2
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
@@ -146,16 +147,16 @@ const EditModal: FC<EditModalProps> = ({
               >
                 Edit Link
               </motion.h2>
-              
+
               <form onSubmit={handleSubmit}>
-                <motion.div 
+                <motion.div
                   custom={0}
                   variants={formItemVariants}
                   initial="hidden"
                   animate="visible"
                   className="mb-4 md:mb-5"
                 >
-                  <motion.label 
+                  <motion.label
                     htmlFor="platform"
                     whileHover={{ scale: 1.02 }}
                     className="block text-xs md:text-sm font-bold text-[#331400] mb-2 cursor-pointer"
@@ -171,19 +172,19 @@ const EditModal: FC<EditModalProps> = ({
                     required
                     whileFocus={{
                       scale: 1.01,
-                      boxShadow: "0 0 0 2px rgba(51, 20, 0, 0.1)"
+                      boxShadow: "0 0 0 2px rgba(51, 20, 0, 0.1)",
                     }}
                   />
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   custom={1}
                   variants={formItemVariants}
                   initial="hidden"
                   animate="visible"
                   className="mb-6 md:mb-7"
                 >
-                  <motion.label 
+                  <motion.label
                     htmlFor="url"
                     whileHover={{ scale: 1.02 }}
                     className="block text-xs md:text-sm font-bold text-[#331400] mb-2 cursor-pointer"
@@ -199,12 +200,12 @@ const EditModal: FC<EditModalProps> = ({
                     required
                     whileFocus={{
                       scale: 1.01,
-                      boxShadow: "0 0 0 2px rgba(51, 20, 0, 0.1)"
+                      boxShadow: "0 0 0 2px rgba(51, 20, 0, 0.1)",
                     }}
                   />
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   variants={buttonVariants}
                   initial="hidden"
                   animate="visible"

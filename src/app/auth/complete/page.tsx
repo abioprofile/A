@@ -583,7 +583,161 @@ export default function ProfileLivePage() {
             Share
           </Button>
         </motion.div>
+        {/* Desktop Share Modal */}
+        <AnimatePresence>
+          {showShareBox && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden md:flex"
+              onClick={() => setShowShareBox(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                className="bg-white  p-8 max-w-md w-full mx-4 shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header */}
+                <div className="flex justify-between items-center mb-6">
+                  <div>
+                    <h3 className="text-2xl font-bold text-black">
+                      Share your Profile
+                    </h3>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Abio is more effective when you connect with friends!
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowShareBox(false)}
+                    className="text-gray-400 hover:text-gray-600 text-2xl"
+                  >
+                    ×
+                  </button>
+                </div>
 
+                {/* Share Link */}
+                <div className="mb-8">
+                  <p className="text-sm font-semibold text-black mb-3">
+                    Your profile link
+                  </p>
+                  <div className="flex items-center bg-[#F6F7FB] rounded-lg px-4 py-3 border border-gray-200">
+                    <input
+                      readOnly
+                      value={profileLink}
+                      className="bg-transparent w-full text-sm text-gray-700 outline-none truncate"
+                    />
+                    <button
+                      onClick={() => handleShare("copy")}
+                      className="ml-3 text-[#331400] hover:text-[#4B2E1E] transition-colors"
+                      title="Copy link"
+                    >
+                      <FaCopy className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Share Platforms */}
+                <div>
+                  <p className="text-sm font-semibold text-black mb-4">
+                    Share to platforms
+                  </p>
+                  <div className="grid grid-cols-4 gap-4">
+                    {[
+                      {
+                        platform: "whatsapp",
+                        icon: FaWhatsapp,
+                        color: "text-green-600",
+                        label: "WhatsApp",
+                      },
+                      {
+                        platform: "twitter",
+                        icon: FaXTwitter,
+                        color: "text-black",
+                        label: "X",
+                      },
+                      {
+                        platform: "facebook",
+                        icon: FaFacebook,
+                        color: "text-blue-600",
+                        label: "Facebook",
+                      },
+                      {
+                        platform: "instagram",
+                        icon: FaInstagram,
+                        color: "text-pink-600",
+                        label: "Instagram",
+                      },
+                      {
+                        platform: "pinterest",
+                        icon: FaPinterest,
+                        color: "text-red-600",
+                        label: "Pinterest",
+                      },
+                      {
+                        platform: "tiktok",
+                        icon: FaTiktok,
+                        color: "text-black",
+                        label: "TikTok",
+                      },
+                      {
+                        platform: "youtube",
+                        icon: FaYoutube,
+                        color: "text-red-600",
+                        label: "YouTube",
+                      },
+                      {
+                        platform: "snapchat",
+                        icon: FaSnapchat,
+                        color: "text-yellow-500",
+                        label: "Snapchat",
+                      },
+                    ].map(({ platform, icon: Icon, color, label }) => (
+                      <motion.button
+                        key={platform}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleShare(platform)}
+                        className="flex flex-col items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center">
+                          <Icon className={`w-6 h-6 ${color}`} />
+                        </div>
+                        <span className="text-xs font-medium text-gray-700">
+                          {label}
+                        </span>
+                      </motion.button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Quick Action Buttons */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => {
+                        handleShare("copy");
+                        setShowShareBox(false);
+                      }}
+                      className="flex-1 bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E] font-semibold py-3"
+                    >
+                      Copy Link
+                    </Button>
+                    <Button
+                      onClick={() => setShowShareBox(false)}
+                      className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-3"
+                    >
+                      Close
+                    </Button>
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {/* Slide-Up Share Box */}
         <AnimatePresence>
           {showShareBox && (

@@ -37,6 +37,7 @@ import {
 
 type LinkItem = {
   id: string;
+  title: string;
   platform: string;
   url: string;
   clicks: number;

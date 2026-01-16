@@ -563,7 +563,7 @@ export default function DashboardPage() {
 
         <motion.aside
           variants={itemVariants}
-          className="w-full md:w-[40%] h-[100vh] md:h-none -mb-20 md:mb-0 bg-[#Fff7de]"
+          className="w-full md:w-[40%] h-[100vh] overflow-y-auto md:h-none -mb-20 md:mb-0 bg-[#Fff7de]"
         >
           <SideDashboard />
 
