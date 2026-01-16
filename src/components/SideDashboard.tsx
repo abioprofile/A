@@ -67,6 +67,7 @@ export default function SideDashboard() {
 
   const profileLink = getProfileLink();
   const shareText = `Check out my Abio profile! ${profileLink}`;
+  
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
