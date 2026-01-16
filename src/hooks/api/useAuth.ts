@@ -84,6 +84,7 @@ export const useSignIn = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((state) => state.auth.user);
 
   return useMutation({
     mutationFn: async (data: SignInRequest) => {
@@ -133,6 +134,7 @@ export const useSignIn = () => {
         dispatch(setAuth({ user: response.data, token: token || null }));
       }
 
+
       // Store in localStorage
       if (typeof window !== "undefined") {
         if (token) {
@@ -149,7 +151,7 @@ export const useSignIn = () => {
         description: response.message || "Welcome back!",
       });
 
-      router.push("/auth/username");
+     currentUser?.isOnboardingCompleted ? router.push("/dashboard") : router.push("/auth/username");
     },
     onError: (error: any) => {
       // Clear any stored token on error

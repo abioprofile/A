@@ -73,7 +73,7 @@ export default function RootLayout({
           <QueryProvider>
             <AuthProvider>       
               <CartProvider>
-                {children}
+        {children}
                 <Toaster theme="light" richColors />
               </CartProvider>
             </AuthProvider>

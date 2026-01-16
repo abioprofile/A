@@ -189,8 +189,8 @@ export default function LinkList({
   const [newLink, setNewLink] = useState({
     title: "",
     url: "",
-    platform: "INSTAGRAM",
-    isVisible: true,
+    platform: "",
+    isVisible: false,
   });
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -344,6 +344,8 @@ export default function LinkList({
       console.error("Failed to add link:", error);
     }
   }, [newLink, addLinksMutation, updateLinkMutation, refetchLinks]);
+
+
 
   return (
     <>
@@ -799,9 +801,10 @@ function SortableItem({
       <LinkCard
         item={{
           id: item.id,
+          title: item.title,
           platform: item.platform,
           url: item.url,
-          clicks: item.clickCount || 0,
+          clickCount: item.clickCount || 0,
           customIcon: item.icon_link,
         }}
         onDelete={(id) => {

@@ -394,7 +394,7 @@ export default function DashboardPage() {
                   className="w-fit h-3"
                 />
                 <span className="truncate">
-                  {userData?.profile?.location || location}
+                  {userData?.profile?.location || "No location"}
                 </span>
               </motion.div>
             </motion.div>

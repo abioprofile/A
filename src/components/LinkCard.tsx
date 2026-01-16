@@ -1,7 +1,10 @@
 "use client";
 
 import { FC, useState, MouseEvent, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
+import "./LinkCard.css";
+import { useUpdateLinkWithIcon } from "@/hooks/api/useAuth";
 import {
   TrashIcon,
   PencilIcon,
@@ -40,8 +43,8 @@ type LinkItem = {
   title: string;
   platform: string;
   url: string;
-  clicks: number;
   customIcon?: string;
+  clickCount: number;
 };
 
 type Props = {
@@ -84,10 +87,6 @@ const platformIcons: Record<string, { name: string; icon: React.ReactElement }> 
   x: { 
     name: "X (Twitter)", 
     icon: <FaXTwitter className="w-6 h-6 text-black" />
-  },
-  twitter: { 
-    name: "Twitter", 
-    icon: <FaTwitter className="w-6 h-6 text-black" />
   },
   youtube: { 
     name: "YouTube", 
@@ -145,6 +144,7 @@ const platformIcons: Record<string, { name: string; icon: React.ReactElement }> 
 
 const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVisibility, isVisible = true, dragHandleProps, dragHandleId }) => {
   const [isActive, setIsActive] = useState(isVisible);
+  const updateLinkIconMutation = useUpdateLinkWithIcon();
   
   // Sync with prop changes
   useEffect(() => {
@@ -164,6 +164,47 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
   const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
+  const iconButtonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(null);
+
+  // Calculate dropdown position when opening
+  const handleToggleDropdown = (e: MouseEvent) => {
+    e.stopPropagation();
+    if (!showIconDropdown && iconButtonRef.current) {
+      const rect = iconButtonRef.current.getBoundingClientRect();
+      setDropdownPosition({
+        top: rect.bottom + window.scrollY + 8, // 8px margin (mt-2)
+        left: rect.left + window.scrollX,
+      });
+    }
+    setShowIconDropdown(!showIconDropdown);
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    if (showIconDropdown) {
+      const handleClickOutside = (e: globalThis.MouseEvent) => {
+        const target = e.target as Node;
+        // Check if click is outside both the button and the dropdown
+        const isOutsideButton = iconButtonRef.current && !iconButtonRef.current.contains(target);
+        const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(target);
+        
+        if (isOutsideButton && isOutsideDropdown) {
+          setShowIconDropdown(false);
+        }
+      };
+      // Use a small delay to allow button clicks to register first
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mousedown', handleClickOutside);
+      }, 0);
+      
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [showIconDropdown]);
 
   // Get the appropriate icon source
   const getIconElement = () => {
@@ -189,14 +230,168 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
     return <FaLink className="w-6 h-6 md:w-8 md:h-8 text-gray-500" />;
   };
 
-  const handleIconSelect = (e: MouseEvent, platform: string) => {
+  // Convert platform icon to image file using SVG to canvas
+  const createIconFile = async (platformKey: string): Promise<File> => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        // Get the icon component
+        const iconData = platformIcons[platformKey];
+        if (!iconData) {
+          reject(new Error(`Icon not found for platform: ${platformKey}`));
+          return;
+        }
+
+        // Create a temporary container to render the icon
+        const tempDiv = document.createElement("div");
+        tempDiv.style.width = "64px";
+        tempDiv.style.height = "64px";
+        tempDiv.style.display = "flex";
+        tempDiv.style.alignItems = "center";
+        tempDiv.style.justifyContent = "center";
+        tempDiv.style.backgroundColor = "white";
+        tempDiv.style.position = "fixed";
+        tempDiv.style.left = "-9999px";
+        tempDiv.style.top = "-9999px";
+        tempDiv.style.zIndex = "-9999";
+        document.body.appendChild(tempDiv);
+
+        // Use React 19's createRoot to render the icon
+        const { createRoot } = await import("react-dom/client");
+        const root = createRoot(tempDiv);
+        
+        // Render the icon with proper styling
+        root.render(
+          <div style={{ 
+            width: "64px", 
+            height: "64px", 
+            display: "flex", 
+            alignItems: "center", 
+            justifyContent: "center",
+            backgroundColor: "transparent",
+            color: "black"
+          }}>
+            {iconData.icon}
+          </div>
+        );
+
+        // Wait for React to render and SVG to load
+        await new Promise<void>(resolve => setTimeout(resolve, 300));
+
+        // Get the SVG element from the rendered icon
+        const svgElement = tempDiv.querySelector("svg") as SVGSVGElement;
+        
+        if (!svgElement) {
+          root.unmount();
+          document.body.removeChild(tempDiv);
+          reject(new Error("SVG element not found"));
+          return;
+        }
+
+        // Clone the SVG to avoid modifying the original
+        const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
+        clonedSvg.setAttribute("width", "64");
+        clonedSvg.setAttribute("height", "64");
+        const viewBox = svgElement.getAttribute("viewBox") || svgElement.getAttribute("viewbox") || "0 0 24 24";
+        clonedSvg.setAttribute("viewBox", viewBox);
+        
+        // Create SVG string
+        const svgString = new XMLSerializer().serializeToString(clonedSvg);
+        const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+        const svgUrl = URL.createObjectURL(svgBlob);
+
+        // Create an image element to load the SVG
+        const img = document.createElement("img");
+        img.crossOrigin = "anonymous";
+        
+        img.onload = () => {
+          try {
+            // Create canvas and draw the image
+            const canvas = document.createElement("canvas");
+            canvas.width = 64;
+            canvas.height = 64;
+            const ctx = canvas.getContext("2d");
+            
+            if (!ctx) {
+              URL.revokeObjectURL(svgUrl);
+              root.unmount();
+              document.body.removeChild(tempDiv);
+              reject(new Error("Could not get canvas context"));
+              return;
+            }
+
+            // Draw white background
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, 64, 64);
+            
+            // Draw the SVG image
+            ctx.drawImage(img, 0, 0, 64, 64);
+
+            // Convert canvas to blob, then to file
+            canvas.toBlob((blob) => {
+              URL.revokeObjectURL(svgUrl);
+              root.unmount();
+              document.body.removeChild(tempDiv);
+              
+              if (blob) {
+                const file = new File([blob], `${platformKey}-icon.png`, { type: "image/png" });
+                resolve(file);
+              } else {
+                reject(new Error("Failed to create icon blob"));
+              }
+            }, "image/png");
+          } catch (error) {
+            URL.revokeObjectURL(svgUrl);
+            root.unmount();
+            document.body.removeChild(tempDiv);
+            reject(error);
+          }
+        };
+
+        img.onerror = () => {
+          URL.revokeObjectURL(svgUrl);
+          root.unmount();
+          document.body.removeChild(tempDiv);
+          reject(new Error("Failed to load SVG image"));
+        };
+
+        img.src = svgUrl;
+      } catch (error) {
+        reject(error);
+      }
+    });
+  };
+
+  const handleIconSelect = async (e: MouseEvent, platform: string) => {
     e.stopPropagation();
+    e.preventDefault();
     if (platform === "custom") {
-      fileInputRef.current?.click();
       setShowIconDropdown(false);
+      // Use setTimeout to ensure dropdown closes before opening file picker
+      setTimeout(() => {
+        fileInputRef.current?.click();
+      }, 100);
     } else {
-      onIconChange(item.id, "platform", platform);
-      setShowIconDropdown(false);
+      try {
+        // Convert platform icon to file and upload
+        const iconFile = await createIconFile(platform);
+        updateLinkIconMutation.mutate(
+          { linkId: item.id, iconFile },
+          {
+            onSuccess: () => {
+              setShowIconDropdown(false);
+              // Optionally call onIconChange for local state update
+              if (onIconChange) {
+                onIconChange(item.id, "platform", platform);
+              }
+            },
+            onError: (error) => {
+              console.error("Failed to update icon:", error);
+            },
+          }
+        );
+      } catch (error) {
+        console.error("Failed to create icon file:", error);
+      }
     }
   };
 
@@ -307,15 +502,16 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
     setShowAnalytics(!showAnalytics);
   };
 
+
   return (
     <div className="w-full">
       <div className="py-2 md:py-3">
         <div
-          className={`p-[1px] md:p-[2px] ${
+          className={`p-px md:p-[2px] ${
             isActive ? "" : "border border-black"
           }`}
         >
-          <div className="bg-[#FAFAFC] shadow-lg p-4 md:p-4 relative">
+          <div className="bg-[#FAFAFC] shadow-lg p-4 md:p-4 relative" style={{ zIndex: showIconDropdown ? 1 : 'auto' }}>
             {/* ================= TOP ROW ================= */}
             <div className="flex items-center gap-2 md:gap-3">
               {/* Drag dots (desktop only) - Only this area is draggable */}
@@ -335,11 +531,9 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
               {/* Icon with Dropdown */}
               <div className="relative">
                 <button
+                  ref={iconButtonRef}
                   type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setShowIconDropdown(!showIconDropdown);
-                  }}
+                  onClick={handleToggleDropdown}
                   className="flex items-center gap-1 hover:opacity-80 transition-opacity"
                 >
                   <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
@@ -347,54 +541,86 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                   </div>
                   <ChevronDownIcon className="h-3 w-3 text-gray-500" />
                 </button>
+              </div>
 
-                {/* Icon Dropdown */}
-                {showIconDropdown && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-40"
-                      onClick={() => setShowIconDropdown(false)}
-                    />
-                    <div className="absolute left-0 top-full mt-2 z-50 bg-white overflow-scroll shadow-lg border min-w-[200px]">
-                      <div className="p-2">
-                        <h3 className="text-xs font-semibold text-gray-500 mb-2 px-2">
-                          Platform Icons
-                        </h3>
-                        <div className="grid grid-cols-3 gap-2 mb-3">
-                          {Object.entries(platformIcons)
-                            .filter(([key]) => key !== "custom")
-                            .map(([key, { name, icon }]) => (
-                              <button
-                                key={key}
-                                type="button"
-                                onClick={(e) => handleIconSelect(e, key)}
-                                className="flex flex-col items-center p-2 hover:bg-gray-50 rounded-md transition"
-                              >
-                                <div className="w-6 h-6 flex items-center justify-center mb-1">
-                                  {icon}
-                                </div>
-                                <span className="text-[10px] text-gray-600 truncate w-full text-center">
-                                  {name}
-                                </span>
-                              </button>
-                            ))}
-                        </div>
-
-                        <div className="border-t pt-2">
-                          <button
-                            type="button"
-                            onClick={(e) => handleIconSelect(e, "custom")}
-                            className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition"
-                          >
-                            <CameraIcon className="h-5 w-5 text-gray-600" />
-                            <span className="text-sm">Upload Image</span>
-                          </button>
-                        </div>
+              {/* Icon Dropdown - Rendered via Portal outside DndContext */}
+              {showIconDropdown && typeof window !== 'undefined' && dropdownPosition && createPortal(
+                <>
+                  <div
+                    className="fixed inset-0 icon-dropdown-overlay"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowIconDropdown(false);
+                    }}
+                  />
+                  <div 
+                    ref={dropdownRef}
+                    className="fixed bg-white shadow-lg border min-w-[200px] max-h-[300px] flex flex-col icon-dropdown-container"
+                    style={{
+                      top: `${dropdownPosition.top}px`,
+                      left: `${dropdownPosition.left}px`,
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  >
+                    <div className="p-2 shrink-0">
+                      <h3 className="text-xs font-semibold text-gray-500 mb-2 px-2">
+                        Platform Icons
+                      </h3>
+                    </div>
+                    <div className="overflow-y-auto overflow-x-hidden flex-1 px-2 pb-2" style={{ maxHeight: '200px' }}>
+                      <div className="grid grid-cols-3 gap-2 mb-3">
+                        {Object.entries(platformIcons)
+                          .filter(([key]) => key !== "custom")
+                          .map(([key, { name, icon }]) => (
+                            <button
+                              key={key}
+                              type="button"
+                              onMouseDown={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                              }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                e.preventDefault();
+                                console.log(key, "key - button clicked");
+                                handleIconSelect(e, key);
+                              }}
+                              className="flex flex-col items-center p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
+                            >
+                              <div className="w-6 h-6 flex items-center justify-center mb-1">
+                                {icon}
+                              </div>
+                              <span className="text-[10px] text-gray-600 truncate w-full text-center">
+                                {name}
+                              </span>
+                            </button>
+                          ))}
                       </div>
                     </div>
-                  </>
-                )}
-              </div>
+                    <div className="border-t pt-2 px-2 pb-2 shrink-0">
+                      <button
+                        type="button"
+                        onMouseDown={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          console.log("custom - button clicked");
+                          handleIconSelect(e, "custom");
+                        }}
+                        className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
+                      >
+                        <CameraIcon className="h-5 w-5 text-gray-600" />
+                        <span className="text-sm">Upload Image</span>
+                      </button>
+                    </div>
+                  </div>
+                </>,
+                document.body
+              )}
 
               {/* Hidden file input */}
               <input
@@ -412,7 +638,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                   onClick={handlePlatformNameClick}
                   className="block w-full text-left font-semibold text-[13px] md:text-[16px] truncate hover:text-gray-700 transition-colors"
                 >
-                  {item.platform}
+                  {item.title}
                 </button>
 
                 <button
@@ -492,7 +718,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                 className="flex items-center gap-1 text-[10px] md:text-[12px] text-gray-500 hover:text-gray-700 transition-colors"
               >
                 <ChartBarIcon className="h-3 w-3 md:h-4 md:w-4" />
-                {item.clicks} clicks
+                {item.clickCount} clicks
               </button>
 
               {/* Controls */}

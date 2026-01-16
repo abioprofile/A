@@ -1,0 +1,14 @@
+/* Force dropdown to always stay on top */
+.icon-dropdown-overlay {
+  z-index: 9998 !important;
+}
+
+.icon-dropdown-container {
+  z-index: 9999 !important;
+  position: absolute !important;
+}
+
+.icon-dropdown-parent {
+  z-index: 10000 !important;
+}
+
