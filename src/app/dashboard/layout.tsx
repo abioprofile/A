@@ -37,7 +37,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         
         {/* Mobile Bottom Navigation */}
         
-        <MobileBottomNav />
+        {/* <MobileBottomNav /> */}
       </SidebarProvider>
     </SidebarTitleProvider>
     </ProtectedRoute>

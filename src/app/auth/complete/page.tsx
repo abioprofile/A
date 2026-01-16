@@ -537,14 +537,17 @@ export default function ProfileLivePage() {
               variants={itemVariants}
               className="hidden md:flex w-full gap-4"
             >
-              
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+              >
                 <Button
                   onClick={() => router.push("/dashboard")}
                   className="flex-1 bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E] font-semibold py-5 transition-colors"
                 >
                   Continue Editing
                 </Button>
-              
+              </motion.div>
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}

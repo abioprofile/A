@@ -26,7 +26,7 @@ export default function AccountSettings() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto my-6 p-4">
+    <div className="max-w-6xl bg-[#FFF7DE] h-[100vh] md:bg-transparent mx-auto md:my-6 p-4">
       <h1 className="text-2xl font-bold mb-8">Security</h1>
 
       {/* Username Section */}

@@ -314,13 +314,13 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
             isActive ? "" : "border border-black"
           }`}
         >
-          <div className="bg-[#FAFAFC] rounded-md p-4 md:p-4 relative">
+          <div className="bg-[#FAFAFC] shadow-lg p-4 md:p-4 relative">
             {/* ================= TOP ROW ================= */}
             <div className="flex items-center gap-2 md:gap-3">
               {/* Drag dots (desktop only) - Only this area is draggable */}
               <div 
                 id={dragHandleId}
-                className="hidden md:flex flex-col gap-1 cursor-grab"
+                className="flex flex-col gap-1 cursor-grab"
                 {...(dragHandleProps || {})}
               >
                 {[0, 1, 2].map((i) => (
@@ -354,7 +354,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                       className="fixed inset-0 z-40"
                       onClick={() => setShowIconDropdown(false)}
                     />
-                    <div className="absolute left-0 top-full mt-2 z-50 bg-white rounded-lg shadow-lg border min-w-[200px]">
+                    <div className="absolute left-0 top-full mt-2 z-50 bg-white overflow-scroll shadow-lg border min-w-[200px]">
                       <div className="p-2">
                         <h3 className="text-xs font-semibold text-gray-500 mb-2 px-2">
                           Platform Icons

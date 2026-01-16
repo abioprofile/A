@@ -6,7 +6,6 @@ import { FontStyle } from "./FontCustomizer";
 import { ProfileLink } from "@/types/auth.types";
 import { useAppSelector } from "@/stores/hooks";
 
-
 // Import Font Awesome icons
 import {
   FaMapPin,
@@ -65,38 +64,55 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   // Platform icon mapping with Font Awesome 6 - ALL IN BLACK AND WHITE
   const getPlatformIcon = (platform: string) => {
     const platformLower = platform.toLowerCase();
-    
-    if (platformLower.includes("instagram")) return <FaInstagram className="w-5 h-5 text-black" />;
-    if (platformLower.includes("behance")) return <FaBehance className="w-5 h-5 text-black" />;
-    if (platformLower.includes("snapchat")) return <FaSnapchat className="w-5 h-5 text-black" />;
+
+    if (platformLower.includes("instagram"))
+      return <FaInstagram className="w-5 h-5 text-black" />;
+    if (platformLower.includes("behance"))
+      return <FaBehance className="w-5 h-5 text-black" />;
+    if (platformLower.includes("snapchat"))
+      return <FaSnapchat className="w-5 h-5 text-black" />;
     if (platformLower.includes("x") || platformLower.includes("twitter")) {
       if (platformLower.includes("x")) {
         return <FaXTwitter className="w-5 h-5 text-black" />;
       }
       return <FaTwitter className="w-5 h-5 text-black" />;
     }
-    if (platformLower.includes("linkedin")) return <FaLinkedinIn className="w-5 h-5 text-black" />;
-    if (platformLower.includes("facebook")) return <FaFacebook className="w-5 h-5 text-black" />;
-    if (platformLower.includes("youtube")) return <FaYoutube className="w-5 h-5 text-black" />;
-    if (platformLower.includes("tiktok")) return <FaTiktok className="w-5 h-5 text-black" />;
-    if (platformLower.includes("github")) return <FaGithub className="w-5 h-5 text-black" />;
-    if (platformLower.includes("whatsapp")) return <FaWhatsapp className="w-5 h-5 text-black" />;
-    if (platformLower.includes("pinterest")) return <FaPinterest className="w-5 h-5 text-black" />;
-    if (platformLower.includes("spotify")) return <FaSpotify className="w-5 h-5 text-black" />;
-    if (platformLower.includes("apple")) return <FaApple className="w-5 h-5 text-black" />;
-    if (platformLower.includes("google")) return <FaGoogle className="w-5 h-5 text-black" />;
-    if (platformLower.includes("amazon")) return <FaAmazon className="w-5 h-5 text-black" />;
-    if (platformLower.includes("figma")) return <FaFigma className="w-5 h-5 text-black" />;
-    if (platformLower.includes("dribbble")) return <FaDribbble className="w-5 h-5 text-black" />;
-    if (platformLower.includes("telegram")) return <FaTelegram className="w-5 h-5 text-black" />;
-    
+    if (platformLower.includes("linkedin"))
+      return <FaLinkedinIn className="w-5 h-5 text-black" />;
+    if (platformLower.includes("facebook"))
+      return <FaFacebook className="w-5 h-5 text-black" />;
+    if (platformLower.includes("youtube"))
+      return <FaYoutube className="w-5 h-5 text-black" />;
+    if (platformLower.includes("tiktok"))
+      return <FaTiktok className="w-5 h-5 text-black" />;
+    if (platformLower.includes("github"))
+      return <FaGithub className="w-5 h-5 text-black" />;
+    if (platformLower.includes("whatsapp"))
+      return <FaWhatsapp className="w-5 h-5 text-black" />;
+    if (platformLower.includes("pinterest"))
+      return <FaPinterest className="w-5 h-5 text-black" />;
+    if (platformLower.includes("spotify"))
+      return <FaSpotify className="w-5 h-5 text-black" />;
+    if (platformLower.includes("apple"))
+      return <FaApple className="w-5 h-5 text-black" />;
+    if (platformLower.includes("google"))
+      return <FaGoogle className="w-5 h-5 text-black" />;
+    if (platformLower.includes("amazon"))
+      return <FaAmazon className="w-5 h-5 text-black" />;
+    if (platformLower.includes("figma"))
+      return <FaFigma className="w-5 h-5 text-black" />;
+    if (platformLower.includes("dribbble"))
+      return <FaDribbble className="w-5 h-5 text-black" />;
+    if (platformLower.includes("telegram"))
+      return <FaTelegram className="w-5 h-5 text-black" />;
+
     // Default icon - Link icon in gray
     return <FaLink className="w-5 h-5 text-gray-500" />;
   };
 
   // Filter and sort links for display
   const displayLinks = links
-    .filter(link => link.isVisible !== false)
+    .filter((link) => link.isVisible !== false)
     .sort((a, b) => a.displayOrder - b.displayOrder)
     .slice(0, 8); // Limit to 8 links for phone display
 
@@ -137,28 +153,38 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           <div className="flex gap-3 items-center">
             <div className="w-[60px] h-[60px] rounded-full overflow-hidden shadow-md border border-gray-300">
               <img
-                src={userDataProfile?.profile?.avatarUrl || "/icons/Profile Picture.png"}
+                src={
+                  userDataProfile?.profile?.avatarUrl ||
+                  "/icons/Profile Picture.png"
+                }
                 alt="Profile"
                 className="object-cover w-full h-full"
               />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 
+              <h1
                 className="text-[16px] font-bold truncate"
                 title={userDataProfile?.name || "Your Name"}
               >
                 {userDataProfile?.name || "Your Name"}
               </h1>
-              <p 
+              <p
                 className="text-[10px] mt-1 font-medium text-gray-600 truncate"
-                title={`@${userDataProfile?.profile?.username?.toLowerCase().replace(/\s+/g, "") || "username"}`}
+                title={`@${
+                  userDataProfile?.profile?.username
+                    ?.toLowerCase()
+                    .replace(/\s+/g, "") || "username"
+                }`}
               >
-                @{userDataProfile?.profile?.username?.toLowerCase().replace(/\s+/g, "") || "username"}
+                @
+                {userDataProfile?.profile?.username
+                  ?.toLowerCase()
+                  .replace(/\s+/g, "") || "username"}
               </p>
             </div>
           </div>
 
-          <p 
+          <p
             className="mt-2 text-[12px] text-left font-semibold line-clamp-2"
             title={userDataProfile?.profile?.bio || "Add a short bio here..."}
           >
@@ -166,17 +192,17 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           </p>
 
           <div className="mt-2 mb-2 flex items-center gap-1 px-2 py-1 border text-[10px] border-[#000] bg-white/70">
-  <div className="flex-shrink-0">
-    {/* Location icon from Font Awesome */}
-    <FaMapPin className="w-3 h-3 text-black" />
-  </div>
-  <span 
-    className="text-[10px] font-medium truncate max-w-[180px]"
-    title={userDataProfile?.profile?.location || "Add location"}
-  >
-    {userDataProfile?.profile?.location || "Add location"}
-  </span>
-</div>
+            <div className="flex-shrink-0">
+              {/* Location icon from Font Awesome */}
+              <FaMapPin className="w-3 h-3 text-black" />
+            </div>
+            <span
+              className="text-[10px] font-medium truncate max-w-[180px]"
+              title={userDataProfile?.profile?.location || "Add location"}
+            >
+              {userDataProfile?.profile?.location || "Add location"}
+            </span>
+          </div>
 
           {/* Links indicator */}
           <div className="mt-4 flex absolute bottom-0 flex-col items-center ">
@@ -203,7 +229,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                     borderRadius: buttonStyle.borderRadius,
                     border: `2px solid ${buttonStyle.borderColor}`,
                     boxShadow: buttonStyle.boxShadow,
-                    textDecoration: 'none',
+                    textDecoration: "none",
                   }}
                 >
                   <span

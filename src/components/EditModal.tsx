@@ -34,10 +34,10 @@ const EditModal: FC<EditModalProps> = ({
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <div className="w-full md:w-[400px] mx-auto">
-        <h2 className="text-base md:text-lg font-semibold text-center mb-3 md:mb-4">Edit Link</h2>
+        <h2 className="text-base md:text-lg font-bold text-center mb-3 md:mb-4">Edit Link</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3 md:mb-4">
-            <label htmlFor="platform" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="platform" className="block text-xs md:text-sm font-bold text-gray-700 mb-1">
               Platform
             </label>
             <input
@@ -51,7 +51,7 @@ const EditModal: FC<EditModalProps> = ({
           </div>
 
           <div className="mb-3 md:mb-4">
-            <label htmlFor="url" className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="url" className="block text-xs md:text-sm font-bold text-gray-700 mb-1">
               URL
             </label>
             <input

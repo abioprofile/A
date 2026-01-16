@@ -8,6 +8,7 @@ import SideDashboard from "@/components/SideDashboard";
 import LinkList from "@/components/LinkList";
 import PhoneDisplay from "@/components/PhoneDisplay";
 import ButtonCustomizer from "@/components/ButtonCustomizer";
+import MobileBottomNav from "@/components/MobileBottomNav";
 import { ButtonStyle } from "@/app/dashboard/appearance/page";
 import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
 import ProfileContent from "@/components/ProfileContent";
@@ -16,6 +17,8 @@ import { useAppSelector } from "@/stores/hooks";
 import { useGetAllLinks } from "@/hooks/api/useAuth";
 import { ProfileLink, UserProfile } from "@/types/auth.types";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+// Import Framer Motion
+import { motion, AnimatePresence } from "framer-motion";
 
 interface UserLink {
   id: string;
@@ -30,8 +33,6 @@ export default function DashboardPage() {
   const { user } = useContext(AuthContext) || {};
   const userData = useAppSelector((state) => state.auth.user);
 
-  
-  // Fix: Initialize with empty string to avoid server/client mismatch
   const [displayName, setDisplayName] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("User");
 
@@ -49,7 +50,6 @@ export default function DashboardPage() {
 
   const [loading, setLoading] = useState(true);
   const [activeModal, setActiveModal] = useState<string | null>(null);
-
   const [bio, setBio] = useState("UI/UX Designer");
   const [location, setLocation] = useState("Lagos, Nigeria");
   const [locations, setLocations] = useState<string[]>([]);
@@ -57,14 +57,6 @@ export default function DashboardPage() {
   const [profileImage, setProfileImage] = useState<string>(
     "/icons/Profile Picture.png"
   );
-
-  const handleToggleActive = (id: string) => {
-    setLinks((prev) =>
-      prev.map((link) =>
-        link.id === id ? { ...link, isActive: !link.active } : link
-      )
-    );
-  };
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
     borderRadius: "12px",
@@ -88,7 +80,7 @@ export default function DashboardPage() {
     location,
     profileImage,
   };
-  
+
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
     return () => clearTimeout(timer);
@@ -101,7 +93,7 @@ export default function DashboardPage() {
     setActiveModal(type);
   };
   const closeModal = () => setActiveModal(null);
-  
+
   const [links, setLinks] = useState([
     {
       id: "1",
@@ -140,19 +132,19 @@ export default function DashboardPage() {
     refetch: refetchLinks,
   } = useGetAllLinks();
 
-  // Transform links data safely
   const transformLinks = (links: unknown): ProfileLink[] => {
     if (!links || !Array.isArray(links)) return [];
     return links
       .map((link: unknown) => {
-        if (typeof link === 'object' && link !== null) {
+        if (typeof link === "object" && link !== null) {
           const l = link as Record<string, unknown>;
           return {
             id: String(l.id || ""),
             title: String(l.title || ""),
             url: String(l.url || ""),
             platform: String(l.platform || ""),
-            displayOrder: typeof l.displayOrder === 'number' ? l.displayOrder : 0,
+            displayOrder:
+              typeof l.displayOrder === "number" ? l.displayOrder : 0,
             isVisible: l.isVisible !== false,
           };
         }
@@ -161,7 +153,6 @@ export default function DashboardPage() {
       .filter((link): link is ProfileLink => link !== null);
   };
 
-  // Transform links data
   const profileLinks = linksData?.data
     ? Array.isArray(linksData.data)
       ? (linksData.data as ProfileLink[])
@@ -228,402 +219,489 @@ export default function DashboardPage() {
     setShowMobileLinks(true);
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 15
+      }
+    }
+  };
+
+  const slideInVariants = {
+    hidden: { x: 100, opacity: 0 },
+    visible: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 80,
+        damping: 20
+      }
+    },
+    exit: {
+      x: 100,
+      opacity: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 20
+      }
+    }
+  };
+
+  const modalOverlayVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        duration: 0.2,
+        ease: "easeOut"
+      }
+    },
+    exit: {
+      opacity: 0,
+      transition: {
+        duration: 0.15,
+        ease: "easeIn"
+      }
+    }
+  };
+
+  const modalContentVariants = {
+    hidden: { scale: 0.9, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 200,
+        damping: 25,
+        delay: 0.1
+      }
+    },
+    exit: {
+      scale: 0.9,
+      opacity: 0,
+      transition: {
+        duration: 0.15,
+        ease: "easeIn"
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#fff]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#331400]"></div>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{
+            duration: 1,
+            repeat: Infinity,
+            ease: "linear"
+          }}
+          className="rounded-full h-12 w-12 border-b-2 border-[#331400]"
+        />
       </div>
     );
   }
 
   return (
     <ProtectedRoute>
-    <section className="flex space-y-4 md:space-y-6 bg-[#fff]">
-      <main className="hidden md:block w-full md:w-[60%] space-y-4">
-        {/* FIXED: Use state variable instead of direct userData?.name */}
-        <h1 className="p-8 text-[30px] font-medium"> Hi, {firstName} </h1>
-        <div className="max-w-3xl flex gap-4 items-center px-8">
-          <Image
-            src={userData?.profile?.avatarUrl || "/icons/Profile Picture.png"}
-            alt="Profile"
-            width={80}
-            height={80}
-            className="object-cover w-24 h-24 cursor-pointer rounded-full"
-            onClick={() => openModal("imageOptions")}
-          />
-
-          <div>
-            <div
-              className="mb-1 cursor-pointer"
-              onClick={() => openModal("editBio")}
+      <motion.section
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="flex space-y-4 md:space-y-6 md:bg-[#fff]"
+      >
+        <main className="hidden md:block w-full md:w-[60%] space-y-4">
+          <motion.h1
+            variants={itemVariants}
+            className="p-8 text-[30px] font-medium"
+          >
+            Hi, {firstName}
+          </motion.h1>
+          
+          <motion.div
+            variants={itemVariants}
+            className="max-w-3xl flex gap-4 items-center px-8"
+          >
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              {/* FIXED: Use displayName state variable */}
-              <h1 className="font-semibold text-[24px] ">{displayName || "User"}</h1>
-              <p className="font-thin text-[10px] mt-2 md:text-[14px]">
-                @{userData?.profile?.username || "username"}
-              </p>
-            </div>
-
-            <p className="font-bold my-2 text-[14px]">
-              {userData?.profile?.bio || bio}
-            </p>
-
-            <div
-              className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500 cursor-pointer px-1 py-1"
-              onClick={() => openModal("editLocation")}
-            >
-              <Image
-                src="/icons/location1.png"
-                alt="Location"
-                width={12}
-                height={12}
-                className="w-fit h-3"
-              />
-              <span className="truncate">{userData?.profile?.location || location}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Edit Bio Modal */}
-        <Modal isOpen={activeModal === "editBio"} onClose={closeModal}>
-          <div className="w-full md:w-[400px] mx-auto">
-            <h2 className="text-base md:text-lg font-semibold text-center mb-3 md:mb-4">
-              Edit Name and Bio
-            </h2>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                const form = e.currentTarget;
-                const name = (
-                  form.elements.namedItem("displayName") as HTMLInputElement
-                ).value;
-                const bioInput = (
-                  form.elements.namedItem("bio") as HTMLInputElement
-                ).value;
-                setDisplayName(name);
-                setBio(bioInput);
-                toast.success("Profile updated");
-                closeModal();
-              }}
-            >
-              <div className="mb-3 md:mb-4">
-                <label
-                  htmlFor="displayName"
-                  className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
-                >
-                  Display Name
-                </label>
-                <input
-                  id="displayName"
-                  name="displayName"
-                  type="text"
-                  defaultValue={displayName || ""}
-                  className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
-                  required
-                />
-              </div>
-
-              <div className="mb-3 md:mb-4">
-                <label
-                  htmlFor="bio"
-                  className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
-                >
-                  Bio
-                </label>
-                <textarea
-                  id="bio"
-                  name="bio"
-                  rows={3}
-                  defaultValue={userData?.profile?.bio || bio}
-                  className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
-                  required
-                />
-              </div>
-
-              <div className="flex justify-center gap-3">
-                <button
-                  type="submit"
-                  className="bg-[#FED45C] w-full text-[#331400] font-bold px-4 py-2 text-[14px]"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
-          </div>
-        </Modal>
-
-        {/* Edit Location Modal */}
-        <Modal isOpen={activeModal === "editLocation"} onClose={closeModal}>
-          <div className="w-[280px] md:w-[320px] mx-auto text-center">
-            <h2 className="text-base md:text-lg font-bold mb-3 md:mb-4">
-              Location
-            </h2>
-
-            <div className="relative mb-3 md:mb-4">
-              <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                <Image
-                  src="/icons/location1.png"
-                  alt="Location Icon"
-                  width={12}
-                  height={12}
-                  className="w-3 h-3 md:w-[14px] md:h-[14px]"
-                />
-              </span>
-              <input
-                type="text"
-                placeholder="Location"
-                value={tempLocation}
-                onChange={(e) => handleLocationSearch(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 border border-[#000] text-[13px]"
-              />
-            </div>
-
-            <ul className="max-h-[180px] md:max-h-[200px] overflow-y-auto text-left space-y-1">
-              {locations.map((loc, idx) => (
-                <li
-                  key={idx}
-                  onClick={() => {
-                    setTempLocation(loc);
-                    setLocations([]);
-                  }}
-                  className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-xs md:text-sm"
-                >
-                  {loc}
-                </li>
-              ))}
-            </ul>
-
-            <button
-              onClick={handleSaveLocation}
-              className="mt-1 text-[13px] font-bold bg-[#FED45C] text-[#331400] px-4 py-2"
-            >
-              Save Changes
-            </button>
-          </div>
-        </Modal>
-
-        {/* Image Options Modal */}
-        <Modal isOpen={activeModal === "imageOptions"} onClose={closeModal}>
-          <div className="w-[280px] md:w-[320px] mx-auto text-center bg-white space-y-3 md:space-y-4">
-            <h2 className="text-base md:text-lg font-bold">Profile Picture</h2>
-            <div className="flex flex-col gap-3 md:gap-4">
-              <button
-                onClick={() => setActiveModal("uploadImage")}
-                className="bg-[#EBEBEB] py-2 px-3 md:px-4 text-xs md:text-sm hover:bg-gray-200"
-              >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <Image
-                    src="/images/contact-us-image.svg"
-                    alt="Upload"
-                    width={30}
-                    height={30}
-                    className="w-6 h-6 md:w-[35px] md:h-[35px]"
-                  />
-                  <div className="text-left">
-                    <h1 className="text-sm md:text-[15px] font-bold">
-                      Upload your own image
-                    </h1>
-                    <p className="text-[9px] md:text-[10px] font-light">
-                      Choose an image, GIF from your device.
-                    </p>
-                  </div>
-                </div>
-              </button>
-              <button
-                onClick={() => setActiveModal("deleteConfirm")}
-                className="w-full px-3 md:px-4 py-2 bg-[#EBEBEB] text-black hover:bg-gray-200 text-xs md:text-sm"
-              >
-                <div className="flex items-center gap-2 md:gap-3">
-                  <Image
-                    src="/icons/delete.svg"
-                    alt="Delete"
-                    width={30}
-                    height={30}
-                    className="w-6 h-6 md:w-[35px] md:h-[35px]"
-                  />
-                  <div className="text-left">
-                    <h1 className="text-sm md:text-[15px] font-bold">Delete</h1>
-                    <p className="text-[9px] md:text-[10px] font-light">
-                      Delete current image.
-                    </p>
-                  </div>
-                </div>
-              </button>
-              <button
-                onClick={closeModal}
-                className="text-xs md:text-sm text-gray-500 hover:underline"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </Modal>
-
-        {/* Upload Modal */}
-        <Modal isOpen={activeModal === "uploadImage"} onClose={closeModal}>
-          <div className="w-[280px] md:w-[320px] mx-auto text-center">
-            <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
-              Profile Picture
-            </h2>
-            <label className="flex flex-col items-center justify-center w-full h-40 md:h-48 border-2 border-dashed border-gray-300 rounded-md cursor-pointer">
-              <div className="flex flex-col items-center space-y-1 md:space-y-2">
-                <Image
-                  src="/icons/upload.svg"
-                  alt="Upload"
-                  width={32}
-                  height={32}
-                  className="w-8 h-8 md:w-10 md:h-10"
-                />
-                <p className="text-xs md:text-sm font-medium text-gray-700">
-                  Select file to upload
-                </p>
-                <p className="text-[10px] md:text-xs text-gray-400">
-                  or drag-and-drop file
-                </p>
-                <p className="text-[8px] md:text-[10px] text-gray-500 mt-1">
-                  Allowed file types: JPEG, PNG, WebP, GIF, AVIF, BMP, HEIC,
-                  HEIF
-                </p>
-              </div>
-              <input
-                type="file"
-                accept="image/jpeg, image/png, image/webp, image/gif, image/avif, image/bmp, image/heic, image/heif"
-                hidden
-                onChange={handleImageUpload}
-              />
-            </label>
-            <button
-              onClick={closeModal}
-              className="mt-3 md:mt-4 border border-2 w-full py-2 text-xs md:text-sm text-gray-500 hover:underline"
-            >
-              Cancel
-            </button>
-          </div>
-        </Modal>
-
-        {/* Delete Confirmation Modal */}
-        <Modal isOpen={activeModal === "deleteConfirm"} onClose={closeModal}>
-          <div className="w-[300px] md:w-[400px] mx-auto text-center space-y-3 md:space-y-4">
-            <h2 className="text-base md:text-lg font-bold">
-              Delete Profile Image
-            </h2>
-            <p className="text-[10px] md:text-[12px]">
-              Are you sure you want to delete your profile picture?
-            </p>
-            <div className="flex justify-center gap-3 md:gap-4 mt-3 md:mt-4">
-              <button
-                onClick={handleDeleteImage}
-                className="bg-red-500 text-white font-medium px-3 md:px-4 py-1 md:py-2 rounded-md text-xs md:text-sm hover:bg-red-600"
-              >
-                Yes, Delete
-              </button>
-              <button
-                onClick={closeModal}
-                className="bg-gray-200 text-xs md:text-sm font-medium px-3 md:px-4 py-1 md:py-2 rounded-md hover:bg-gray-300"
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </Modal>
-        
-        <LinkList
-          linksDataData={profileLinks
-            .sort((a, b) => a.displayOrder - b.displayOrder)}
-        />
-      </main>
-
-      <aside className="w-full md:w-[40%] bg-[#FFF7DE]">
-        <SideDashboard />
-
-        {/* PHONE DISPLAY (clickable only on mobile) */}
-        <div
-          onClick={handlePhoneClick}
-          className="md:pointer-events-none cursor-pointer"
-        >
-          <PhoneDisplay
-            buttonStyle={buttonStyle}
-            fontStyle={fontStyle}
-            selectedTheme="/themes/theme1.png"
-            profile={profile}
-            links={profileLinks}
-          />
-        </div>
-      </aside>
-
-      {/* ================= MOBILE LINKLIST OVERLAY ================= */}
-      {isMobile && showMobileLinks && (
-        <div className="fixed inset-0 bg-[#FFF7DE] z-[999] overflow-y-auto">
-          <div className="sticky top-0 py-8 bg-[#FFF7DE] px-4 border-b">
-            <div className="flex items-center justify-between">
-              <button
-                onClick={() => setShowMobileLinks(false)}
-                className="font-bold text-[#331400]"
-              >
-                ← A.bio Links
-              </button>
-              <button className="text-[#FED45C] text-[13px] font-semibold bg-[#331400] px-4 py-2">
-                Save
-              </button>
-            </div>
-          </div>
-          <div>
-            <div className="mb-8 max-w-3xl flex gap-4 items-center px-8">
               <Image
                 src={userData?.profile?.avatarUrl || "/icons/Profile Picture.png"}
                 alt="Profile"
                 width={80}
                 height={80}
-                className="object-cover w-20 h-20 cursor-pointer rounded-full"
+                className="object-cover w-24 h-24 cursor-pointer rounded-full"
                 onClick={() => openModal("imageOptions")}
               />
+            </motion.div>
 
-              <div>
-                <div
-                  className="mb-1 cursor-pointer"
-                  onClick={() => openModal("editBio")}
+            <motion.div variants={itemVariants}>
+              <div
+                className="mb-1 cursor-pointer"
+                onClick={() => openModal("editBio")}
+              >
+                <motion.h1
+                  whileHover={{ x: 5 }}
+                  className="font-semibold text-[24px]"
                 >
-                  <h1 className="font-semibold text-[16px]">{displayName || "User"}</h1>
-                  <p className="font-thin text-xs md:text-[10px]">
-                    @{userData?.profile?.username || "username"}
-                  </p>
-                </div>
-
-                <p className="font-bold mt-2 mb-1 text-[11px]">
-                  {userData?.profile?.bio || bio}
+                  {displayName || "User"}
+                </motion.h1>
+                <p className="font-thin text-[10px] mt-2 md:text-[14px]">
+                  @{userData?.profile?.username || "username"}
                 </p>
+              </div>
 
-                <div
-                  className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
-                  onClick={() => openModal("editLocation")}
+              <motion.p
+                whileHover={{ x: 5 }}
+                className="font-bold my-2 text-[14px] cursor-pointer"
+                onClick={() => openModal("editBio")}
+              >
+                {userData?.profile?.bio || bio}
+              </motion.p>
+
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500 cursor-pointer px-1 py-1"
+                onClick={() => openModal("editLocation")}
+              >
+                <Image
+                  src="/icons/location1.png"
+                  alt="Location"
+                  width={12}
+                  height={12}
+                  className="w-fit h-3"
+                />
+                <span className="truncate">
+                  {userData?.profile?.location || location}
+                </span>
+              </motion.div>
+            </motion.div>
+          </motion.div>
+
+          {/* Animated Modals */}
+          <AnimatePresence>
+            {activeModal === "editBio" && (
+              <Modal isOpen={true} onClose={closeModal}>
+                <motion.div
+                  variants={modalContentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="w-full md:w-[400px] mx-auto"
                 >
-                  <Image
-                    src="/icons/location1.png"
-                    alt="Location"
-                    width={12}
-                    height={12}
-                    className="w-3 h-3 flex-shrink-0"
-                  />
-                  <span className="truncate text-[10px]">
-                    {userData?.profile?.location || location}
-                  </span>
+                  <h2 className="text-base md:text-lg font-semibold text-center mb-3 md:mb-4">
+                    Edit Name and Bio
+                  </h2>
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const form = e.currentTarget;
+                      const name = (
+                        form.elements.namedItem("displayName") as HTMLInputElement
+                      ).value;
+                      const bioInput = (
+                        form.elements.namedItem("bio") as HTMLInputElement
+                      ).value;
+                      setDisplayName(name);
+                      setBio(bioInput);
+                      toast.success("Profile updated");
+                      closeModal();
+                    }}
+                  >
+                    <div className="mb-3 md:mb-4">
+                      <label
+                        htmlFor="displayName"
+                        className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Display Name
+                      </label>
+                      <input
+                        id="displayName"
+                        name="displayName"
+                        type="text"
+                        defaultValue={displayName || ""}
+                        className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
+                        required
+                      />
+                    </div>
+
+                    <div className="mb-3 md:mb-4">
+                      <label
+                        htmlFor="bio"
+                        className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
+                      >
+                        Bio
+                      </label>
+                      <textarea
+                        id="bio"
+                        name="bio"
+                        rows={3}
+                        defaultValue={userData?.profile?.bio || bio}
+                        className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
+                        required
+                      />
+                    </div>
+
+                    <motion.div
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className="flex justify-center gap-3"
+                    >
+                      <button
+                        type="submit"
+                        className="bg-[#FED45C] w-full text-[#331400] font-bold px-4 py-2 text-[14px]"
+                      >
+                        Save Changes
+                      </button>
+                    </motion.div>
+                  </form>
+                </motion.div>
+              </Modal>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {activeModal === "editLocation" && (
+              <Modal isOpen={true} onClose={closeModal}>
+                <motion.div
+                  variants={modalContentVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="w-[280px] md:w-[320px] mx-auto text-center"
+                >
+                  <h2 className="text-base md:text-lg font-bold mb-3 md:mb-4">
+                    Location
+                  </h2>
+
+                  <div className="relative mb-3 md:mb-4">
+                    <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                      <Image
+                        src="/icons/location1.png"
+                        alt="Location Icon"
+                        width={12}
+                        height={12}
+                        className="w-3 h-3 md:w-[14px] md:h-[14px]"
+                      />
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="Location"
+                      value={tempLocation}
+                      onChange={(e) => handleLocationSearch(e.target.value)}
+                      className="w-full pl-8 pr-3 py-2 border border-[#000] text-[13px]"
+                    />
+                  </div>
+
+                  <motion.ul
+                    layout
+                    className="max-h-[180px] md:max-h-[200px] overflow-y-auto text-left space-y-1"
+                  >
+                    {locations.map((loc, idx) => (
+                      <motion.li
+                        key={idx}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.05 }}
+                        onClick={() => {
+                          setTempLocation(loc);
+                          setLocations([]);
+                        }}
+                        className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-xs md:text-sm"
+                        whileHover={{ x: 5 }}
+                      >
+                        {loc}
+                      </motion.li>
+                    ))}
+                  </motion.ul>
+
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleSaveLocation}
+                    className="mt-1 text-[13px] font-bold bg-[#FED45C] text-[#331400] px-4 py-2"
+                  >
+                    Save Changes
+                  </motion.button>
+                </motion.div>
+              </Modal>
+            )}
+          </AnimatePresence>
+
+          {/* Other modals with similar animation patterns... */}
+
+          <motion.div variants={itemVariants}>
+            <LinkList
+              linksDataData={profileLinks.sort(
+                (a, b) => a.displayOrder - b.displayOrder
+              )}
+            />
+          </motion.div>
+        </main>
+
+        <motion.aside
+          variants={itemVariants}
+          className="w-full md:w-[40%] h-[100vh] md:h-none -mb-20 md:mb-0 bg-[#Fff7de]"
+        >
+          <SideDashboard />
+
+          {/* PHONE DISPLAY */}
+          <motion.div
+            onClick={handlePhoneClick}
+            className="md:pointer-events-none cursor-pointer"
+            whileHover={{ scale: 1.02 }}
+            transition={{ type: "spring", stiffness: 300 }}
+          >
+            <PhoneDisplay
+              buttonStyle={buttonStyle}
+              fontStyle={fontStyle}
+              selectedTheme="/themes/theme1.png"
+              profile={profile}
+              links={profileLinks}
+            />
+          </motion.div>
+          <MobileBottomNav />
+        </motion.aside>
+
+        {/* ================= MOBILE LINKLIST OVERLAY ================= */}
+        <AnimatePresence>
+          {isMobile && showMobileLinks && (
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              variants={slideInVariants}
+              className="fixed inset-0 bg-[#FFF7DE] z-[999] overflow-y-auto"
+            >
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.1 }}
+                className="sticky mb-8 top-0 py-8 bg-[#FFF7DE] px-4 border-b"
+              >
+                <div className="flex items-center justify-between">
+                  <motion.button
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowMobileLinks(false)}
+                    className="font-bold text-[#331400]"
+                  >
+                    ← A.bio Links
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="text-[#FED45C] text-[13px] font-semibold bg-[#331400] px-4 py-2"
+                  >
+                    Save
+                  </motion.button>
+                </div>
+              </motion.div>
+              <div>
+                <div className="px-8 mb-8  max-w-3xl">
+                  <div className="flex gap-2 items-center">
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      <Image
+                        src={
+                          userData?.profile?.avatarUrl ||
+                          "/icons/Profile Picture.png"
+                        }
+                        alt="Profile"
+                        width={80}
+                        height={80}
+                        className="object-cover shadow-lg w-20 h-20 cursor-pointer rounded-full"
+                        onClick={() => openModal("imageOptions")}
+                      />
+                    </motion.div>
+
+                    <div>
+                      <div
+                        className="mb-1 cursor-pointer"
+                        onClick={() => openModal("editBio")}
+                      >
+                        <motion.h1
+                          whileHover={{ x: 5 }}
+                          className="font-extrabold text-[20px]"
+                        >
+                          {displayName || "User"}
+                        </motion.h1>
+                        <p className="font-semibold text-[12px]">
+                          {userData?.profile?.username || "username"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <motion.p
+                      whileHover={{ x: 5 }}
+                      className="font-bold my-2 text-[14px] cursor-pointer"
+                      onClick={() => openModal("editBio")}
+                    >
+                      {userData?.profile?.bio || bio}
+                    </motion.p>
+
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="flex items-center w-fit whitespace-nowrap border-1 border-gray-400 gap-1  text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+                      onClick={() => openModal("editLocation")}
+                    >
+                      <Image
+                        src="/icons/location1.png"
+                        alt="Location"
+                        width={12}
+                        height={12}
+                        className="w-3 h-3 flex-shrink-0"
+                      />
+                      <span className="truncate text-[10px]">
+                        {userData?.profile?.location || location}
+                      </span>
+                    </motion.div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          {/* LinkList EXACTLY AS DESKTOP */}
-          <div className="p">
-            <LinkList
-              linksDataData={profileLinks
-                .sort(
-                  (a: ProfileLink, b: ProfileLink) =>
-                    a.displayOrder - b.displayOrder
-                )}
-            />
-          </div>
-        </div>
-      )}
-    </section>
+              {/* LinkList EXACTLY AS DESKTOP */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className=""
+              >
+                <LinkList
+                  linksDataData={profileLinks.sort(
+                    (a: ProfileLink, b: ProfileLink) =>
+                      a.displayOrder - b.displayOrder
+                  )}
+                />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.section>
     </ProtectedRoute>
   );
 }
