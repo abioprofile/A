@@ -132,7 +132,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     selectedTheme.startsWith("blob:") || selectedTheme.startsWith("/themes/");
 
   return (
-    <div className="relative w-[340px] h-[60vh] md:h-[650px] mx-auto border-[6px] border-black overflow-hidden bg-white shadow-lg ">
+    <div className="relative w-full max-w-[350px] h-[70vh] md:h-[650px] mx-auto border-[6px] border-black  overflow-hidden bg-white shadow-lg md:shadow-xl">
       {/* Background */}
       {isImage ? (
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -207,29 +207,27 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           {/* Links indicator */}
           <div className="mt-4 flex absolute bottom-0 flex-col items-center ">
             <FaLink className="w-4 h-4 text-black" />
-            {/* <span className="text-[9px] font-medium text-gray-700">
-               Links
-            </span> */}
             <div className="h-[2px] w-6 bg-red-500 rounded " />
           </div>
         </div>
 
-        {/* Links/Buttons Section */}
-        <div className="flex-1 p-4 overflow-y-auto">
+        {/* Links/Buttons Section - Fixed with proper scrolling */}
+        <div className="flex-1 p-4 overflow-y-auto custom-scrollbar">
           {displayLinks.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-full overflow-y-auto pb-2">
               {displayLinks.map((link, index) => (
                 <a
                   key={link.id || index}
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center gap-3 font-semibold px-4 py-3 relative overflow-hidden rounded-lg hover:opacity-90 transition-opacity active:scale-[0.98]"
+                  className="w-full flex items-center gap-3 font-semibold px-4 py-3 relative overflow-hidden rounded-lg hover:opacity-90 transition-opacity active:scale-[0.98] break-words"
                   style={{
                     borderRadius: buttonStyle.borderRadius,
                     border: `2px solid ${buttonStyle.borderColor}`,
                     boxShadow: buttonStyle.boxShadow,
                     textDecoration: "none",
+                    minHeight: "48px",
                   }}
                 >
                   <span
@@ -241,13 +239,13 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                   ></span>
 
                   <span
-                    className="relative flex items-center gap-3 text-sm"
+                    className="relative flex items-center gap-3 text-sm w-full"
                     style={textStyle}
                   >
                     <div className="flex-shrink-0 flex items-center justify-center w-5 h-5">
                       {getPlatformIcon(link.platform)}
                     </div>
-                    <span className="truncate">
+                    <span className="truncate overflow-ellipsis break-words max-w-[calc(100%-2rem)]">
                       {link.title || link.platform}
                     </span>
                   </span>
