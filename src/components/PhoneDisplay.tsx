@@ -132,7 +132,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     selectedTheme.startsWith("blob:") || selectedTheme.startsWith("/themes/");
 
   return (
-    <div className="relative w-full max-w-[350px] h-[70vh] md:h-[650px] mx-auto border-[3px] md:border-[6px] border-black  overflow-hidden bg-white shadow-lg md:shadow-xl">
+    <div className="relative w-full max-w-[300px] md:max-w-[350px] h-[67vh] md:h-[650px] mx-auto border-[3px] md:border-[6px] border-black  overflow-hidden bg-white shadow-lg md:shadow-xl">
       {/* Background */}
       {isImage ? (
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -206,15 +206,27 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 
           {/* Links indicator */}
           <div className="mt-4 flex absolute bottom-0 flex-col items-center ">
-            <span className="text-[11px]">Link</span>
+            <span className="text-[11px]">Links</span>
             <div className="h-[2px] w-6 bg-red-500 rounded " />
           </div>
         </div>
 
         {/* Links/Buttons Section - Fixed with proper scrolling */}
-        <div className="flex-1 p-4 overflow-y-auto custom-scrollbar">
+        <div
+          className="flex-1 p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+          style={{
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
           {displayLinks.length > 0 ? (
-            <div className="space-y-3 max-h-full overflow-y-auto pb-2">
+            <div
+              className="space-y-3 max-h-full overflow-y-auto pb-2 [&::-webkit-scrollbar]:hidden"
+              style={{
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
               {displayLinks.map((link, index) => (
                 <a
                   key={link.id || index}
