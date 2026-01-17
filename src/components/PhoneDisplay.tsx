@@ -206,7 +206,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 
           {/* Links indicator */}
           <div className="mt-4 flex absolute bottom-0 flex-col items-center ">
-            <FaLink className="w-4 h-4 text-black" />
+            <span className="text-[11px]">Link</span>
             <div className="h-[2px] w-6 bg-red-500 rounded " />
           </div>
         </div>
