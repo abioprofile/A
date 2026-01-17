@@ -67,7 +67,6 @@ export default function SideDashboard() {
 
   const profileLink = getProfileLink();
   const shareText = `Check out my Abio profile! ${profileLink}`;
-  
 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
@@ -165,7 +164,7 @@ export default function SideDashboard() {
       link.download = `abio-qr-${userData?.profile?.username || "profile"}.png`;
       link.href = dataUrl;
       link.click();
-      
+
       toast.success("QR code downloaded!");
     } catch (error) {
       console.error("Error downloading QR code:", error);
@@ -215,12 +214,12 @@ export default function SideDashboard() {
   return (
     <>
       {/* MOBILE TOP BAR */}
-      <div className="md:hidden mt-6">
-        <div className="px-8 py-3 mb-6">
+      <div className="md:hidden sticky top-0 z-10 bg-[#Fff7de] w-full">
+        <div className="px-8 py-3 mb-2">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-extrabold mb-1 text-[20px]">
-                {userData?.name || "User"}
+               Hi, {userData?.name || "User"}
               </p>
               <p className="text-[12px] font-semibold text-gray-600 truncate">
                 {formatLink(profileLink)}
@@ -321,9 +320,8 @@ export default function SideDashboard() {
                 fgColor="#000000"
                 // renderAs="canvas" // Use canvas for better download quality
               />
-              
+
               {/* Logo overlay in center */}
-              
             </div>
           </div>
 

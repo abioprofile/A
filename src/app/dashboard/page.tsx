@@ -227,8 +227,8 @@ export default function DashboardPage() {
       transition: {
         staggerChildren: 0.1,
         delayChildren: 0.2,
-      },
-    },
+      }
+    }
   };
 
   const itemVariants = {
@@ -239,9 +239,9 @@ export default function DashboardPage() {
       transition: {
         type: "spring",
         stiffness: 100,
-        damping: 15,
-      },
-    },
+        damping: 15
+      }
+    }
   };
 
   const slideInVariants = {
@@ -252,8 +252,8 @@ export default function DashboardPage() {
       transition: {
         type: "spring",
         stiffness: 80,
-        damping: 20,
-      },
+        damping: 20
+      }
     },
     exit: {
       x: 100,
@@ -261,9 +261,9 @@ export default function DashboardPage() {
       transition: {
         type: "spring",
         stiffness: 100,
-        damping: 20,
-      },
-    },
+        damping: 20
+      }
+    }
   };
 
   const modalOverlayVariants = {
@@ -272,16 +272,16 @@ export default function DashboardPage() {
       opacity: 1,
       transition: {
         duration: 0.2,
-        ease: "easeOut",
-      },
+        ease: "easeOut"
+      }
     },
     exit: {
       opacity: 0,
       transition: {
         duration: 0.15,
-        ease: "easeIn",
-      },
-    },
+        ease: "easeIn"
+      }
+    }
   };
 
   const modalContentVariants = {
@@ -293,17 +293,17 @@ export default function DashboardPage() {
         type: "spring",
         stiffness: 200,
         damping: 25,
-        delay: 0.1,
-      },
+        delay: 0.1
+      }
     },
     exit: {
       scale: 0.9,
       opacity: 0,
       transition: {
         duration: 0.15,
-        ease: "easeIn",
-      },
-    },
+        ease: "easeIn"
+      }
+    }
   };
 
   if (loading) {
@@ -314,7 +314,7 @@ export default function DashboardPage() {
           transition={{
             duration: 1,
             repeat: Infinity,
-            ease: "linear",
+            ease: "linear"
           }}
           className="rounded-full h-12 w-12 border-b-2 border-[#331400]"
         />
@@ -337,16 +337,17 @@ export default function DashboardPage() {
           >
             Hi, {firstName}
           </motion.h1>
-
+          
           <motion.div
             variants={itemVariants}
             className="max-w-3xl flex gap-4 items-center px-8"
           >
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Image
-                src={
-                  userData?.profile?.avatarUrl || "/icons/Profile Picture.png"
-                }
+                src={userData?.profile?.avatarUrl || "/icons/Profile Picture.png"}
                 alt="Profile"
                 width={80}
                 height={80}
@@ -418,9 +419,7 @@ export default function DashboardPage() {
                       e.preventDefault();
                       const form = e.currentTarget;
                       const name = (
-                        form.elements.namedItem(
-                          "displayName"
-                        ) as HTMLInputElement
+                        form.elements.namedItem("displayName") as HTMLInputElement
                       ).value;
                       const bioInput = (
                         form.elements.namedItem("bio") as HTMLInputElement
