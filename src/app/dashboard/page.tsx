@@ -18,7 +18,7 @@ import { useGetAllLinks } from "@/hooks/api/useAuth";
 import { ProfileLink, UserProfile } from "@/types/auth.types";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 // Import Framer Motion
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 interface UserLink {
   id: string;
@@ -220,7 +220,7 @@ export default function DashboardPage() {
   };
 
   // Animation variants
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -231,7 +231,7 @@ export default function DashboardPage() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -244,7 +244,7 @@ export default function DashboardPage() {
     }
   };
 
-  const slideInVariants = {
+  const slideInVariants: Variants = {
     hidden: { x: 100, opacity: 0 },
     visible: {
       x: 0,
@@ -266,7 +266,7 @@ export default function DashboardPage() {
     }
   };
 
-  const modalOverlayVariants = {
+  const modalOverlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -284,7 +284,7 @@ export default function DashboardPage() {
     }
   };
 
-  const modalContentVariants = {
+  const modalContentVariants: Variants = {
     hidden: { scale: 0.9, opacity: 0 },
     visible: {
       scale: 1,

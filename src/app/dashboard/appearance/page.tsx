@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
 import PhoneDisplay from "@/components/PhoneDisplay";
@@ -29,6 +29,13 @@ export interface ButtonStyle {
 const AppearancePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  // Swipe handling
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 50;
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
     borderRadius: "12px",
@@ -76,64 +83,119 @@ const AppearancePage: React.FC = () => {
     setIsSheetOpen(false);
   };
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === overlayRef.current) handleCloseSheet();
+  };
+
+  // Swipe to close
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientY);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientY);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    if (touchStart - touchEnd < -minSwipeDistance) {
+      handleCloseSheet();
+    }
+  };
+
+  // ESC key close
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isSheetOpen) handleCloseSheet();
+    };
+    window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
+  }, [isSheetOpen]);
+
+  // Prevent body scroll
+  useEffect(() => {
+    document.body.style.overflow = isSheetOpen ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [isSheetOpen]);
+
   const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
   return (
-    <section className="min-h-screen bg-[#Fff7de] md:bg-white pt-4 px-4 md:px-6 pb-24 flex flex-col relative">
-      {/* Desktop Save Button*/}
+    <section className="min-h-screen bg-[#FFF7DE] md:bg-white pt-4 px-4 md:px-6 pb-24 flex flex-col relative">
+      {/* Desktop Save */}
       <div className="hidden md:flex justify-end mb-6">
         <button
           onClick={handleSaveAll}
-          className="bg-[#FED45C] font-bold text-black px-6 py-2 text-sm"
+          className="bg-[#FED45C] font-bold px-6 py-2 text-sm"
         >
           Save Changes
         </button>
       </div>
 
-      {/*Mobile Save Button*/}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#Fff7de] border-b px-4 py-3 flex justify-end">
-        <button
-          onClick={handleSaveAll}
-          className="bg-[#FED45C] font-bold text-black px-4 py-2 text-sm"
-        >
-          Save
-        </button>
+      {/* Mobile Save */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 border-b px-4  mt-4 mb-8 ">
+        <div className="">
+          <div className="flex items-center justify-between">
+            <button
+              // onClick={() => setShowMobileLinks(false)}
+              className="font-bold text-[#331400]"
+            >
+              ← Appearance
+            </button>
+            <button className="text-[#FED45C] text-[11px] font-semibold bg-[#331400] px-6 py-1">
+              Save
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Main Layout*/}
+      {/* Main Layout */}
       <div className="flex flex-1 gap-8 mt-16 md:mt-0">
-        {/* ---------- Phone Display (ALL SCREENS) ---------- */}
-        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center">
-          <div className="w-full max-w-[360px] md:max-w-[400px]">
-            <PhoneDisplay
-              buttonStyle={buttonStyle}
-              fontStyle={fontStyle}
-              selectedTheme={selectedTheme}
-              profile={profile}
-              links={profileLinks}
-            />
+        {/* Phone Preview */}
+        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center items-start">
+          <div
+            className="relative w-full max-w-[360px] md:max-w-[420px]
+                       transition-transform duration-300
+                       ease-[cubic-bezier(.2,.8,.2,1)]
+                       origin-top"
+            style={{
+              transform: isSheetOpen
+                ? "scale(0.82) translateY(-24px)"
+                : "scale(1.05) translateY(0)",
+            }}
+          >
+            <div className=" overflow-hidden">
+              <PhoneDisplay
+                buttonStyle={buttonStyle}
+                fontStyle={fontStyle}
+                selectedTheme={selectedTheme}
+                profile={profile}
+                links={profileLinks}
+              />
+            </div>
           </div>
         </aside>
 
-        {/* ---------- Editor (DESKTOP ONLY) ---------- */}
-        <div className="hidden md:flex flex-1 flex-col min-w-0">
-          {/* Desktop Tabs */}
-          <div className="flex gap-20 border-b border-gray-200">
-            {menuItems.map((item, index) => (
+        {/* Desktop Editor */}
+        <div className="hidden md:flex flex-1 flex-col">
+          <div className="flex gap-20 border-b">
+            {menuItems.map((item, i) => (
               <button
                 key={item}
-                onClick={() => setActiveTab(index)}
-                className="px-2 py-3 text-sm font-bold relative"
+                onClick={() => setActiveTab(i)}
+                className="py-3 font-bold relative"
               >
                 {item}
-                {activeTab === index && (
+                {activeTab === i && (
                   <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-red-500" />
                 )}
               </button>
             ))}
           </div>
 
-          {/* Tab Content */}
           <div className="mt-6">
             {activeTab === 0 && (
               <ProfileContent
@@ -141,7 +203,6 @@ const AppearancePage: React.FC = () => {
                 initialData={profile}
               />
             )}
-
             {activeTab === 1 && (
               <ButtonAndFontTabs
                 buttonStyle={buttonStyle}
@@ -150,14 +211,12 @@ const AppearancePage: React.FC = () => {
                 setFontStyle={setFontStyle}
               />
             )}
-
             {activeTab === 2 && (
               <ThemeSelector
                 selectedTheme={selectedTheme}
                 setSelectedTheme={setSelectedTheme}
               />
             )}
-
             {activeTab === 3 && (
               <WallpaperSelector
                 selectedTheme={selectedTheme}
@@ -168,40 +227,30 @@ const AppearancePage: React.FC = () => {
         </div>
       </div>
 
-      {/*  Mobile Slide-up Sheet*/}
-      {/* Overlay - Only show when sheet is open */}
+      {/* Mobile Overlay */}
       {isSheetOpen && (
-        <div 
-          className="md:hidden fixed inset-0 rounded-t-4xl shadow-2xl bg-opacity-50 z-40 transition-opacity duration-300"
-          onClick={handleCloseSheet}
+        <div
+          ref={overlayRef}
+          className="md:hidden fixed inset-0  z-40"
+          onClick={handleOverlayClick}
         />
       )}
-      
-      {/* Sheet Content */}
-      <div 
-        className={`md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-4xl shadow-2xl shadow-[#000] z-50 transition-transform duration-300 ease-out ${
-          isSheetOpen ? "translate-y-0" : "translate-y-full"
-        }`}
+
+      {/* Mobile Sheet */}
+      <div
+        ref={sheetRef}
+        className={`md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-4xl z-50
+          transition-transform duration-300 ease-out
+          ${isSheetOpen ? "translate-y-0" : "translate-y-full"}`}
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
       >
-        {/* Sheet Header - Fixed */}
-        <div className="px-6 pt-4 pb-2 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold">
-              {menuItems[activeTab]}
-            </h3>
-            <button 
-              onClick={handleCloseSheet}
-              className="p-2 text-gray-500 hover:text-gray-700"
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
         </div>
 
-        {/* Sheet Body with smooth scrolling */}
-        <div className="h-[calc(80vh-60px)] overflow-y-auto overscroll-contain">
+        <div className="h-[calc(80vh-300px)] overflow-y-auto">
           <div className="px-6 py-4">
             {activeTab === 0 && (
               <ProfileContent
@@ -209,7 +258,6 @@ const AppearancePage: React.FC = () => {
                 initialData={profile}
               />
             )}
-
             {activeTab === 1 && (
               <ButtonAndFontTabs
                 buttonStyle={buttonStyle}
@@ -218,14 +266,12 @@ const AppearancePage: React.FC = () => {
                 setFontStyle={setFontStyle}
               />
             )}
-
             {activeTab === 2 && (
               <ThemeSelector
                 selectedTheme={selectedTheme}
                 setSelectedTheme={setSelectedTheme}
               />
             )}
-
             {activeTab === 3 && (
               <WallpaperSelector
                 selectedTheme={selectedTheme}
@@ -236,7 +282,7 @@ const AppearancePage: React.FC = () => {
         </div>
       </div>
 
-      {/*  Mobile Bottom Navigation */}
+      {/* Mobile Bottom Nav */}
       <AppearanceBottomNav
         activeTab={activeTab}
         setActiveTab={handleTabClick}
