@@ -352,81 +352,99 @@ export default function ProfileLivePage() {
             {/* Background Circle (Desktop Only) */}
             <motion.div
               variants={circleVariants}
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:block w-[400px] h-[400px] bg-[#331400] rounded-full"
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:block w-[600px] h-[600px] bg-[#331400] rounded-full"
             />
 
-            {/* Profile Card */}
+            {/* Profile Card - Same size as PhoneDisplay */}
             <motion.div
               variants={cardVariants}
               whileHover="hover"
-              className="relative bg-white border-8 md:border-[8px] border-black overflow-hidden shadow-lg z-10 w-full md:w-4/5 lg:w-3/4"
-              style={{ borderRadius: "0px" }}
+              className="relative w-full max-w-[300px] md:max-w-[350px] h-[60vh] md:h-[650px] mx-auto border-[3px] md:border-[6px] border-black overflow-hidden bg-white shadow-lg md:shadow-xl z-10"
             >
-              <div className="p-4 md:p-6 flex flex-col items-start">
-                {/* Profile Info */}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.5 }}
-                  className="flex items-center gap-3 mb-4"
-                >
-                  <Avatar className="w-14 h-14 md:w-16 md:h-16 shadow-md">
-                    <AvatarImage
-                      src={userData.avatarUrl || "/avatar-placeholder.png"}
-                      alt={
-                        userData.displayName || userData.username || "Profile"
-                      }
-                      className="object-cover"
-                    />
-                    <AvatarFallback>
-                      {(userData.displayName || userData.username || "U")
-                        .charAt(0)
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
+              {/* Background with Image */}
+              <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+                <img
+                  src="/themes/theme1.png"
+                  alt="Background"
+                  className="w-full h-full object-cover"
+                />
+              </div>
 
-                  <div>
-                    <h2 className="font-bold text-sm md:text-[14px] text-[#2C1C0D]">
-                      {userData.name ||
-                        userData.displayName ||
-                        userData.username ||
-                        "User"}
-                    </h2>
-                    <p className="text-xs md:text-[10px] text-[#5C4C3B] mb-1">
-                      @{userData.username || "username"}
+              {/* Content */}
+              <div className="relative z-10 h-full flex flex-col">
+                <div className="p-6 flex flex-col relative items-start bg-white">
+                  {/* Profile Info */}
+                  <motion.div
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="flex items-center gap-3 mb-4"
+                  >
+                    <Avatar className="w-14 h-14 md:w-16 md:h-16 shadow-md">
+                      <AvatarImage
+                        src={userData.avatarUrl || "/avatar-placeholder.png"}
+                        alt={
+                          userData.displayName || userData.username || "Profile"
+                        }
+                        className="object-cover"
+                      />
+                      <AvatarFallback>
+                        {(userData.displayName || userData.username || "U")
+                          .charAt(0)
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    <div>
+                      <h2 className="font-bold text-sm md:text-[14px] text-[#2C1C0D]">
+                        {userData.name ||
+                          userData.displayName ||
+                          userData.username ||
+                          "User"}
+                      </h2>
+                      <p className="text-xs md:text-[10px] text-[#5C4C3B] mb-1">
+                        @{userData.username || "username"}
+                      </p>
+                    </div>
+                  </motion.div>
+
+                  {/* Bio + Location */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.6 }}
+                    className="w-full text-left"
+                  >
+                    <p className="text-xs md:text-[11px] text-[#3A2B20] mb-3">
+                      {userData.bio || "No bio added yet."}
                     </p>
+                    {userData.location && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 0.7 }}
+                        className="inline-flex items-center gap-1 px-3 py-1 border border-[#C8C0B5] text-xs text-[#5C4C3B] mb-6 "
+                      >
+                        <FaMapMarkerAlt className="w-3 h-3" />
+                        <span>{userData.location}</span>
+                      </motion.div>
+                    )}
+                  </motion.div>
+
+                  {/* Links indicator */}
+                  <div className="mt-4 flex absolute bottom-0 flex-col items-center ">
+                    <span className="text-[11px]">Links</span>
+                    <div className="h-[2px] w-6 bg-red-500 rounded " />
                   </div>
-                </motion.div>
+                </div>
 
-                {/* Bio + Location */}
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="w-full text-left"
-                >
-                  <p className="text-xs md:text-[11px] text-[#3A2B20] mb-3">
-                    {userData.bio || "No bio added yet."}
-                  </p>
-                  {userData.location && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.7 }}
-                      className="inline-flex items-center gap-1 px-3 py-1 border border-[#C8C0B5] text-xs text-[#5C4C3B] mb-6 "
-                    >
-                      <FaMapMarkerAlt className="w-3 h-3" />
-                      <span>{userData.location}</span>
-                    </motion.div>
-                  )}
-                </motion.div>
-
-                {/* Links */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="bg-[#F5F5F5] p-3 md:p-4 w-full space-y-3 md:space-y-4 "
+                {/* Links/Buttons Section - Fixed with proper scrolling */}
+                <div
+                  className="flex-1 p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden space-y-3 md:space-y-4"
+                  style={{
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                  }}
                 >
                   {linksLoading ? (
                     <div className="flex items-center justify-center py-4">
@@ -463,21 +481,16 @@ export default function ProfileLivePage() {
                           a.displayOrder - b.displayOrder
                       )
                       .map((link: UserLink, index: number) => (
-                        <motion.a
+                        <a
                           key={link.id}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.9 + index * 0.1 }}
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          className="flex items-center gap-2 bg-white px-3 py-2 font-medium text-xs md:text-sm shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer "
+                          className="w-full flex items-center gap-3 font-semibold px-4 py-3 relative overflow-hidden  hover:opacity-90 transition-opacity active:scale-[0.98] break-words bg-white border-2 border-black"
                         >
                           {getPlatformIcon(link.platform)}
                           <span className="truncate">{link.title}</span>
-                        </motion.a>
+                        </a>
                       ))
                   ) : (
                     <motion.p
@@ -489,7 +502,7 @@ export default function ProfileLivePage() {
                       No links added yet.
                     </motion.p>
                   )}
-                </motion.div>
+                </div>
               </div>
             </motion.div>
           </motion.div>
@@ -497,7 +510,7 @@ export default function ProfileLivePage() {
           {/* Right Side — Share Section */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col justify-center items-center md:items-start text-center md:text-left max-w-md"
+            className="flex flex-col md:pl-20 justify-center items-center md:items-start text-center md:text-left max-w-md"
           >
             <motion.h1
               variants={itemVariants}

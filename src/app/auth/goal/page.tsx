@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -9,14 +11,17 @@ import { useUpdateProfile } from "@/hooks/api/useAuth";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useAppSelector } from "@/stores/hooks";
+import { Zap, Users, ShoppingCart, Link2, Compass } from "lucide-react";
 
-
+const MotionButton = motion(Button);
 
 const SelectGoalPage = () => {
   const router = useRouter();
   const currentUser = useAppSelector((state) => state.auth.user);
   const [isMounted, setIsMounted] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState<string | null>(currentUser?.profile?.goals?.[0] || null);
+  const [selectedGoal, setSelectedGoal] = useState<string | null>(
+    currentUser?.profile?.goals?.[0] || null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const updateProfileMutation = useUpdateProfile();
 
@@ -24,12 +29,25 @@ const SelectGoalPage = () => {
   const existingGoal = currentUser?.profile?.goals?.[0];
   const isOwnGoal = selectedGoal === existingGoal;
 
-  const goals: string[] = [
-    "Grow My Brand",
-    "Promote My Content",
-    "Sell Products/Services",
-    "Share all my Links",
-    "Just Exploring",
+  const goals = [
+    {
+      id: "grow-brand",
+      title: "Creator",
+      description: "Grow my following and social media presence.",
+      icon: Zap,
+    },
+    {
+      id: "share-links",
+      title: "Personal",
+      description: "Share links with friends and acquaintances.",
+      icon: Users,
+    },
+    {
+      id: "sell-products",
+      title: "Business",
+      description: "Grow my business and build customer retention.",
+      icon: ShoppingCart,
+    },
   ];
 
   useEffect(() => {
@@ -55,7 +73,7 @@ const SelectGoalPage = () => {
 
     // For new/changed goals, call the mutation
     setIsSubmitting(true);
-    
+
     try {
       updateProfileMutation.mutate(
         {
@@ -158,6 +176,18 @@ const SelectGoalPage = () => {
     },
   };
 
+  const logoVariants: Variants = {
+    hidden: { opacity: 0, x: -20 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.34, 1.56, 0.64, 1],
+      },
+    },
+  };
+
   const continueButtonVariants: Variants = {
     disabled: {
       scale: 1,
@@ -197,162 +227,174 @@ const SelectGoalPage = () => {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="flex flex-col bg-[#FEF4EA] items-center justify-between min-h-screen p-5"
+        className="flex flex-col bg-[#FEF4EA] items-center justify-center min-h-screen p-5 md:p-8 relative"
       >
-        {/* Main content */}
-        <div className="flex flex-col items-center justify-center flex-grow w-full max-w-xl">
-          <motion.div 
-            variants={itemVariants}
-            className="text-center space-y-4 mb-8"
-          >
-            <motion.h1 
-              className="text-3xl lg:text-4xl font-bold text-[#331400]"
-              whileHover={{ scale: 1.02 }}
+        {/* Logo - Top Left */}
+        <motion.div
+          variants={logoVariants}
+          className="absolute top-6 left-6 md:top-8 md:left-8"
+        >
+          <Link href="/" className="flex items-end gap-1 group">
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               transition={{ duration: 0.2 }}
             >
-              What best describes your goal for using Abio?Helps us personalize your experience.
+              <Image
+                src="/icons/A.Bio.png"
+                alt="A.Bio Logo"
+                width={48}
+                height={48}
+                priority
+                className="cursor-pointer select-none"
+              />
+            </motion.div>
+            <span className="text-[#331400] text-3xl font-bold">bio</span>
+          </Link>
+        </motion.div>
+
+        {/* Main content */}
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl">
+          {/* Title Section */}
+          <motion.div
+            variants={itemVariants}
+            className="text-center space-y-3 mb-12 max-w-xl"
+          >
+            <motion.h1 className="text-3xl md:text-4xl font-bold text-[#1a1a1a] leading-tight">
+              What best <br className="hidden" /> describes your goal{" "}
+              <br className="hidden" /> for using Abio?
             </motion.h1>
-            <motion.p 
+            <motion.p
               variants={itemVariants}
-              className="text-[#666464] text-sm lg:text-[14px] font-semibold"
+              className="text-[#666666] text-base md:text-lg"
             >
-              What brings you to A.bio?
+              Helps us personalize your experience.
             </motion.p>
           </motion.div>
 
-          <motion.div 
+          {/* Goal Cards */}
+          <motion.div
             variants={itemVariants}
-            className="max-w-md w-full mx-auto"
+            className="w-full max-w-xl space-y-4 mb-8"
           >
-            <div className="space-y-4 mb-8">
-              {goals.map((goal, index) => {
-                const isSelected = selectedGoal === goal;
+            {goals.map((goal, index) => {
+              const isSelected = selectedGoal === goal.title;
+              const Icon = goal.icon;
 
-                return (
-                  <motion.div
-                    key={goal}
-                    custom={index}
-                    variants={itemVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ delay: index * 0.1 }}
+              return (
+                <motion.div
+                  key={goal.id}
+                  custom={index}
+                  variants={itemVariants}
+                  initial="hidden"
+                  animate="visible"
+                  transition={{ delay: index * 0.1 }}
+                >
+                  <motion.button
+                    onClick={() => setSelectedGoal(goal.title)}
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={cn(
+                      "w-full p-6  text-left transition-all duration-200 border-2 flex items-center gap-4",
+                      isSelected
+                        ? "bg-white border-black shadow-lg"
+                        : "bg-white border-white hover:shadow-md"
+                    )}
                   >
-                    <motion.div
-                      variants={goalButtonVariants}
-                      initial="unselected"
-                      animate={isSelected ? "selected" : "unselected"}
-                      whileHover="hover"
-                      whileTap="tap"
-                      onClick={() => setSelectedGoal(goal)}
+                    {/* Icon Section */}
+                    <div
                       className={cn(
-                        "w-full h-12 md:h-16 px-6 rounded-none flex items-center justify-between cursor-pointer border",
-                        isSelected
-                          ? "bg-[#D9D9D9] border-[#331400]"
-                          : "bg-white border-gray-300"
+                        "flex-shrink-0 w-12 h-12  flex items-center justify-center text-2xl",
+                        isSelected ? "bg-yellow-300" : "bg-gray-100"
                       )}
                     >
-                      <span className="font-semibold text-[#331400]">
-                        {goal}
-                      </span>
+                      <Icon size={24} className="text-gray-800" />
+                    </div>
 
-                      <AnimatePresence>
-                        {isSelected && (
-                          <motion.div
-                            key={`check-${goal}`}
-                            variants={checkmarkVariants}
-                            initial="hidden"
-                            animate="visible"
-                            exit="exit"
-                          >
+                    {/* Text Section */}
+                    <div className="flex-1">
+                      <h3 className="font-bold text-lg text-gray-900">
+                        {goal.title}
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {goal.description}
+                      </p>
+                    </div>
+
+                    {/* Checkmark */}
+                    <AnimatePresence>
+                      {isSelected && (
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <div className="w-6 h-6 bg-gray-900 rounded-full flex items-center justify-center flex-shrink-0">
                             <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="16"
-                              height="16"
+                              className="w-4 h-4 text-white"
                               viewBox="0 0 24 24"
                               fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
                             >
-                              <circle cx="12" cy="12" r="12" fill="#000000" />
-                              <path
-                                d="M17 8L10.5 14.5L7 11"
-                                stroke="white"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
+                              <path d="M5 12l5 5L19 7" />
                             </svg>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  </motion.div>
-                );
-              })}
-            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.button>
+                </motion.div>
+              );
+            })}
+          </motion.div>
 
-            <motion.div
-              variants={continueButtonVariants}
-              initial="disabled"
-              animate={selectedGoal ? "enabled" : "disabled"}
-              whileHover={selectedGoal ? "hover" : {}}
-              whileTap={selectedGoal ? "tap" : {}}
+          {/* Continue Button */}
+          <motion.div variants={itemVariants} className="w-full max-w-xl">
+            <MotionButton
               onClick={handleSubmit}
+              disabled={!selectedGoal}
+              whileHover={selectedGoal ? { scale: 1.02 } : {}}
+              whileTap={selectedGoal ? { scale: 0.98 } : {}}
               className={cn(
-                "w-full h-12 text-black shadow-[4px_4px_0px_0px_#000000] font-semibold rounded-none flex items-center justify-center gap-2 cursor-pointer",
-                !selectedGoal && "cursor-not-allowed opacity-50"
+                "w-full py-4 px-6 font-bold text-lg  transition-all duration-200 flex items-center justify-center gap-2",
+                selectedGoal
+                  ? "bg-yellow-400 text-black hover:shadow-lg cursor-pointer"
+                  : "bg-gray-300 text-gray-600 cursor-not-allowed opacity-50"
               )}
             >
-              {(isSubmitting || updateProfileMutation.isPending) && !isOwnGoal ? (
+              {(isSubmitting || updateProfileMutation.isPending) &&
+              !isOwnGoal ? (
                 <motion.div
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                  className="flex items-center gap-2"
                 >
-                  <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full" />
-                  
+                  <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full" />
                 </motion.div>
               ) : (
                 <>
-                  <span>Continue</span>
-                  <motion.div
-                    animate={{ x: selectedGoal ? 5 : 0 }}
+                  <span>Next</span>
+                  <motion.span
+                    animate={{ x: selectedGoal ? 4 : 0 }}
                     transition={{ duration: 0.2 }}
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M5 12h14" />
-                      <path d="m12 5 7 7-7 7" />
-                    </svg>
-                  </motion.div>
+                    →
+                  </motion.span>
                 </>
               )}
-            </motion.div>
+            </MotionButton>
           </motion.div>
         </div>
 
         {/* Footer */}
-        <motion.footer 
+        <motion.footer
           variants={itemVariants}
-          className="w-full flex items-center justify-between gap-2 py-4 md:px-20 text-sm text-[#331400] mt-8"
+          className="absolute bottom-8 right-8"
         >
-          <motion.p
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            © 2025 Abio
-          </motion.p>
-
           <motion.a
             href="/privacy-policy"
-            className="hover:text-[#000000] transition-colors"
+            className="text-gray-600 hover:text-gray-900 transition-colors text-sm font-medium"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
           >

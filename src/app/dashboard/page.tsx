@@ -306,21 +306,21 @@ export default function DashboardPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#fff]">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{
-            duration: 1,
-            repeat: Infinity,
-            ease: "linear"
-          }}
-          className="rounded-full h-12 w-12 border-b-2 border-[#331400]"
-        />
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex items-center justify-center min-h-screen bg-[#fff]">
+  //       <motion.div
+  //         animate={{ rotate: 360 }}
+  //         transition={{
+  //           duration: 1,
+  //           repeat: Infinity,
+  //           ease: "linear"
+  //         }}
+  //         className="rounded-full h-12 w-12 border-b-2 border-[#331400]"
+  //       />
+  //     </div>
+  //   );
+  // }
 
   return (
     <ProtectedRoute>
