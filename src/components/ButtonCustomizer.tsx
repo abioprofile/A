@@ -14,10 +14,10 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
     {/* Corner */}
 <div>
 
-  <div className="flex w-3/4 gap-12 mt-2">
+  <div className="flex  md:w-3/4 gap-12 mt-2">
     <button
       onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '0px' }))}
-      className="flex-1 flex flex-col items-center gap-1 text-[10px] py-3 bg-[#D9D9D9]"
+      className="flex-1 flex flex-col items-center gap-1 text-[10px]  py-3 bg-[#D9D9D9]"
     >
       <Image 
         src="/icons/sharpedge.svg" 

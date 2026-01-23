@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 
 import PhoneDisplay from "@/components/PhoneDisplay";
@@ -11,6 +11,17 @@ import ThemeSelector from "@/components/ThemeSelector";
 import ButtonAndFontTabs from "@/components/ButtonAndFontTabs";
 import AppearanceBottomNav from "@/components/AppearanceBottomNav";
 import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
+
+/* ----------------------------------
+   Shadcn UI Imports
+-----------------------------------*/
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 /* ----------------------------------
    Shared interfaces
@@ -29,13 +40,6 @@ export interface ButtonStyle {
 const AppearancePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
-  const sheetRef = useRef<HTMLDivElement>(null);
-  const overlayRef = useRef<HTMLDivElement>(null);
-
-  // Swipe handling
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const minSwipeDistance = 50;
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
     borderRadius: "12px",
@@ -83,48 +87,10 @@ const AppearancePage: React.FC = () => {
     setIsSheetOpen(false);
   };
 
-  const handleOverlayClick = (e: React.MouseEvent) => {
-    if (e.target === overlayRef.current) handleCloseSheet();
-  };
-
-  // Swipe to close
-  const onTouchStart = (e: React.TouchEvent) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientY);
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientY);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    if (touchStart - touchEnd < -minSwipeDistance) {
-      handleCloseSheet();
-    }
-  };
-
-  // ESC key close
-  useEffect(() => {
-    const onEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isSheetOpen) handleCloseSheet();
-    };
-    window.addEventListener("keydown", onEsc);
-    return () => window.removeEventListener("keydown", onEsc);
-  }, [isSheetOpen]);
-
-  // Prevent body scroll
-  useEffect(() => {
-    document.body.style.overflow = isSheetOpen ? "hidden" : "auto";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, [isSheetOpen]);
-
   const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
   return (
-    <section className="min-h-screen bg-[#FFF7DE] md:bg-white pt-4 px-4 md:px-6 pb-24 flex flex-col relative">
+    <section className="min-h-screen bg-[#FFF7DE] md:bg-white md:pt-4 px-4 md:px-6 md:pb-24 flex flex-col relative">
       {/* Desktop Save */}
       <div className="hidden md:flex justify-end mb-6">
         <button
@@ -136,13 +102,10 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Mobile Save */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 border-b px-4  mt-4 mb-8 ">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#FFF7DE] px-4 py-3 mb-8">
         <div className="">
           <div className="flex items-center justify-between">
-            <button
-              // onClick={() => setShowMobileLinks(false)}
-              className="font-bold text-[#331400]"
-            >
+            <button className="font-bold text-[#331400]">
               ← Appearance
             </button>
             <button className="text-[#FED45C] text-[11px] font-semibold bg-[#331400] px-6 py-1">
@@ -167,7 +130,7 @@ const AppearancePage: React.FC = () => {
                 : "scale(1.05) translateY(0)",
             }}
           >
-            <div className=" overflow-hidden">
+            <div className="overflow-hidden">
               <PhoneDisplay
                 buttonStyle={buttonStyle}
                 fontStyle={fontStyle}
@@ -227,62 +190,57 @@ const AppearancePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Overlay */}
-      {isSheetOpen && (
-        <div
-          ref={overlayRef}
-          className="md:hidden fixed inset-0  z-40"
-          onClick={handleOverlayClick}
-        />
-      )}
-
       {/* Mobile Sheet */}
-      <div
-        ref={sheetRef}
-        className={`md:hidden fixed bottom-0 left-0 right-0 bg-white rounded-t-4xl z-50
-          transition-transform duration-300 ease-out
-          ${isSheetOpen ? "translate-y-0" : "translate-y-full"}`}
-        onTouchStart={onTouchStart}
-        onTouchMove={onTouchMove}
-        onTouchEnd={onTouchEnd}
-      >
-        <div className="flex justify-center pt-3 pb-2">
-          <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
-        </div>
+      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+        <SheetContent
+          side="bottom"
+          className="h-[50vh] rounded-t-4xl shadow-2xl p-0 overflow-hidden"
+        >
+          <div className="h-full flex flex-col">
+            {/* Sheet Header with handle */}
+            <SheetHeader className="px-6 pt-4 pb-2">
+              <div className="flex justify-center">
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
+              </div>
+              <SheetTitle className="sr-only">
+                {menuItems[activeTab]} Settings
+              </SheetTitle>
+            </SheetHeader>
 
-        <div className="h-[calc(80vh-300px)] overflow-y-auto">
-          <div className="px-6 py-4">
-            {activeTab === 0 && (
-              <ProfileContent
-                onProfileUpdate={setProfile}
-                initialData={profile}
-              />
-            )}
-            {activeTab === 1 && (
-              <ButtonAndFontTabs
-                buttonStyle={buttonStyle}
-                setButtonStyle={setButtonStyle}
-                fontStyle={fontStyle}
-                setFontStyle={setFontStyle}
-              />
-            )}
-            {activeTab === 2 && (
-              <ThemeSelector
-                selectedTheme={selectedTheme}
-                setSelectedTheme={setSelectedTheme}
-              />
-            )}
-            {activeTab === 3 && (
-              <WallpaperSelector
-                selectedTheme={selectedTheme}
-                setSelectedTheme={setSelectedTheme}
-              />
-            )}
+            {/* Sheet Content */}
+            <div className="flex-1 overflow-y-auto px-2 py-4">
+              {activeTab === 0 && (
+                <ProfileContent
+                  onProfileUpdate={setProfile}
+                  initialData={profile}
+                />
+              )}
+              {activeTab === 1 && (
+                <ButtonAndFontTabs
+                  buttonStyle={buttonStyle}
+                  setButtonStyle={setButtonStyle}
+                  fontStyle={fontStyle}
+                  setFontStyle={setFontStyle}
+                />
+              )}
+              {activeTab === 2 && (
+                <ThemeSelector
+                  selectedTheme={selectedTheme}
+                  setSelectedTheme={setSelectedTheme}
+                />
+              )}
+              {activeTab === 3 && (
+                <WallpaperSelector
+                  selectedTheme={selectedTheme}
+                  setSelectedTheme={setSelectedTheme}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      </div>
+        </SheetContent>
+      </Sheet>
 
-      {/* Mobile Bottom Nav */}
+      {/* Mobile Bottom Nav - This triggers the sheet */}
       <AppearanceBottomNav
         activeTab={activeTab}
         setActiveTab={handleTabClick}

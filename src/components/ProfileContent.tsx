@@ -1,7 +1,7 @@
-'use client';
+"use client";
 import Image from "next/image";
-import { useState, useRef, useEffect, useCallback } from 'react';
-import { MapPin } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from "react";
+import { MapPin } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import DeleteModal from "@/components/DeleteModal";
 import { toast } from "sonner";
@@ -31,15 +31,24 @@ interface ProfileContentProps {
   initialData?: Partial<ProfileData>;
 }
 
-const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) => {
+const ProfileContent = ({
+  onProfileUpdate,
+  initialData,
+}: ProfileContentProps) => {
   // Ensure default profile image path points to public/icons/Profile-Picture.png
   const defaultProfileImage = "/icons/Profile-Picture.png";
 
-  const [profileImage, setProfileImage] = useState<string>(initialData?.profileImage || defaultProfileImage);
-  const [profileIcon, setProfileIcon] = useState<string | null>(initialData?.profileIcon || null);
-  const [displayName, setDisplayName] = useState(initialData?.displayName || '');
-  const [bio, setBio] = useState(initialData?.bio || '');
-  const [location, setLocation] = useState(initialData?.location || '');
+  const [profileImage, setProfileImage] = useState<string>(
+    initialData?.profileImage || defaultProfileImage,
+  );
+  const [profileIcon, setProfileIcon] = useState<string | null>(
+    initialData?.profileIcon || null,
+  );
+  const [displayName, setDisplayName] = useState(
+    initialData?.displayName || "",
+  );
+  const [bio, setBio] = useState(initialData?.bio || "");
+  const [location, setLocation] = useState(initialData?.location || "");
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -53,7 +62,8 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
       if (initialData.displayName) setDisplayName(initialData.displayName);
       if (initialData.bio) setBio(initialData.bio);
       if (initialData.location) setLocation(initialData.location);
-      if (initialData.profileIcon !== undefined) setProfileIcon(initialData.profileIcon);
+      if (initialData.profileIcon !== undefined)
+        setProfileIcon(initialData.profileIcon);
     }
   }, [initialData]);
 
@@ -69,7 +79,14 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
       location: debouncedLocation,
       profileIcon,
     });
-  }, [profileImage, debouncedDisplayName, debouncedBio, debouncedLocation, profileIcon, onProfileUpdate]);
+  }, [
+    profileImage,
+    debouncedDisplayName,
+    debouncedBio,
+    debouncedLocation,
+    profileIcon,
+    onProfileUpdate,
+  ]);
 
   useEffect(() => {
     updateProfile();
@@ -78,7 +95,10 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
   const openModal = (type: string) => setActiveModal(type);
   const closeModal = () => setActiveModal(null);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, type: "image" | "icon") => {
+  const handleImageUpload = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: "image" | "icon",
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -105,30 +125,36 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
   return (
     <div className="space-y-2 p-6 flex flex-col items-center gap-2">
       {/* Profile Image Section */}
-      <div className="flex justify-between mb-8 items-center w-full">
+      <div className="flex justify-between md:mb-8 items-center w-full">
         <div className="relative w-20 h-20 rounded-full border border-gray-300 overflow-hidden">
           <Image
             src={profileImage || defaultProfileImage}
             alt="Profile"
             fill
-            sizes="80px"
-            className="object-cover"
+            sizes="60px"
+            className="object-cover rounded-full"
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).src = defaultProfileImage;
             }}
           />
           {profileIcon && (
             <div className="absolute bottom-0 right-0 bg-white rounded-full p-1 border shadow-sm">
-              <Image src={profileIcon} alt="icon" width={16} height={16} className="object-contain" />
+              <Image
+                src={profileIcon}
+                alt="icon"
+                width={16}
+                height={16}
+                className="object-contain rounded-full"
+              />
             </div>
           )}
         </div>
 
         {/* Upload & Delete Buttons */}
-        <div className="flex flex-col space-y-2 mt-2">
+        <div className="flex flex-row md:flex-col gap-2 md:gap-0 md:space-y-2 mt-2">
           <button
             onClick={() => openModal("imageOptions")}
-            className="bg-black text-white text-[13px] px-4 py-[6px]  cursor-pointer transition hover:opacity-90"
+            className="bg-black text-white text-[12px] px-4 py-[6px]  cursor-pointer transition hover:opacity-90"
           >
             Upload Image
           </button>
@@ -143,7 +169,10 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
 
       {/* Display Name */}
       <div className="w-full flex flex-col gap-1">
-        <label htmlFor="displayName" className="text-left text-[12px] font-semibold">
+        <label
+          htmlFor="displayName"
+          className="text-left text-[12px] font-semibold"
+        >
           Display Name
         </label>
         <input
@@ -156,34 +185,36 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
         />
       </div>
 
-     {/* Bio */}
-<div className="w-full flex flex-col gap-1">
-  <label htmlFor="bio" className="text-left text-[12px] font-semibold">
-    Bio
-  </label>
-  <textarea
-    id="bio"
-    value={bio}
-    onChange={(e) => {
-      const words = e.target.value.trim().split(/\s+/);
-      if (words.length <= 15) {
-        setBio(e.target.value);
-      } else {
-        toast.error("Your bio can only contain up to 15 words.");
-      }
-    }}
-    className="w-full border border-[#000] px-3 py-2 bg-transparent text-[12px] h-24 text-gray-800"
-    placeholder="Tell us about yourself (max 15 words)..."
-  />
-  <p className="text-[11px] text-gray-500 text-right">
-    {bio.trim() === "" ? 0 : bio.trim().split(/\s+/).length}/15 words
-  </p>
-</div>
-
+      {/* Bio */}
+      <div className="w-full flex flex-col gap-1">
+        <label htmlFor="bio" className="text-left text-[12px] font-semibold">
+          Bio
+        </label>
+        <textarea
+          id="bio"
+          value={bio}
+          onChange={(e) => {
+            const words = e.target.value.trim().split(/\s+/);
+            if (words.length <= 15) {
+              setBio(e.target.value);
+            } else {
+              toast.error("Your bio can only contain up to 15 words.");
+            }
+          }}
+          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[12px] h-10 md:h-24 text-gray-800"
+          placeholder="Tell us about yourself (max 15 words)..."
+        />
+        <p className="text-[11px] hidden md:block text-gray-500 text-right">
+          {bio.trim() === "" ? 0 : bio.trim().split(/\s+/).length}/15 words
+        </p>
+      </div>
 
       {/* Location */}
       <div className="w-full flex flex-col gap-1">
-        <label htmlFor="location" className="text-left text-[12px] font-semibold">
+        <label
+          htmlFor="location"
+          className="text-left text-[12px] font-semibold"
+        >
           Location
         </label>
         <div className="flex items-center border border-black px-3 py-2 bg-transparent">
@@ -202,7 +233,9 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
       {/* --- MODALS --- */}
       <Modal isOpen={activeModal === "imageOptions"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center bg-white space-y-3 md:space-y-4">
-          <h2 className="text-base md:text-lg font-bold text-[#331400]">Profile Picture</h2>
+          <h2 className="text-base md:text-lg font-bold text-[#331400]">
+            Profile Picture
+          </h2>
           <div className="flex flex-col gap-3 md:gap-4">
             <button
               onClick={() => setActiveModal("uploadImage")}
@@ -235,10 +268,19 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
       {/* Upload Image */}
       <Modal isOpen={activeModal === "uploadImage"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center">
-          <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Profile Picture</h2>
+          <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+            Profile Picture
+          </h2>
           <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 cursor-pointer">
-            <Image src="/icons/upload.svg" alt="Upload" width={32} height={32} />
-            <p className="text-xs md:text-sm font-medium text-gray-700">Select file to upload</p>
+            <Image
+              src="/icons/upload.svg"
+              alt="Upload"
+              width={32}
+              height={32}
+            />
+            <p className="text-xs md:text-sm font-medium text-gray-700">
+              Select file to upload
+            </p>
             <input
               ref={imageInputRef}
               type="file"
@@ -259,10 +301,19 @@ const ProfileContent = ({ onProfileUpdate, initialData }: ProfileContentProps) =
       {/* Upload Icon */}
       <Modal isOpen={activeModal === "uploadIcon"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center">
-          <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">Upload Icon</h2>
+          <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+            Upload Icon
+          </h2>
           <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 cursor-pointer">
-            <Image src="/icons/upload.svg" alt="Upload Icon" width={32} height={32} />
-            <p className="text-xs md:text-sm font-medium text-gray-700">Select icon file</p>
+            <Image
+              src="/icons/upload.svg"
+              alt="Upload Icon"
+              width={32}
+              height={32}
+            />
+            <p className="text-xs md:text-sm font-medium text-gray-700">
+              Select icon file
+            </p>
             <input
               ref={iconInputRef}
               type="file"
