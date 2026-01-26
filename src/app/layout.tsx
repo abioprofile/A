@@ -2,12 +2,11 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import { Inter } from "next/font/google";
-import localFont from "next/font/local"; 
+import localFont from "next/font/local";
 import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { ReduxProvider } from "@/providers/ReduxProvider";
-
 
 export const metadata: Metadata = {
   title: "A official website",
@@ -19,7 +18,6 @@ const inter = Inter({
   weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
-
 
 const satoshi = localFont({
   src: [
@@ -43,8 +41,8 @@ const satoshi = localFont({
   display: "swap",
 });
 
-const monumentExtended = localFont ({
-  src:[
+const monumentExtended = localFont({
+  src: [
     {
       path: "../fonts/MonumentExtended-Regular.otf",
       weight: "400",
@@ -56,9 +54,9 @@ const monumentExtended = localFont ({
       style: "normal",
     },
   ],
-  variable: "--font-monumentExtended", 
+  variable: "--font-monumentExtended",
   display: "swap",
-})
+});
 
 export default function RootLayout({
   children,
@@ -66,14 +64,14 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.className} ${satoshi.variable} ${monumentExtended.variable}`} 
+      className={`${inter.className} ${satoshi.variable} ${monumentExtended.variable}`}
     >
       <body className="max-[320px]:text-sm antialiased">
         <ReduxProvider>
           <QueryProvider>
-            <AuthProvider>       
+            <AuthProvider>
               <CartProvider>
-        {children}
+                {children}
                 <Toaster theme="light" richColors />
               </CartProvider>
             </AuthProvider>
@@ -83,4 +81,3 @@ export default function RootLayout({
     </html>
   );
 }
-

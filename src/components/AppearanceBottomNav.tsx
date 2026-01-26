@@ -14,22 +14,10 @@ interface AppearanceBottomNavProps {
 }
 
 const menuItems = [
-  { 
-    label: "Profile", 
-    icon: FaUser 
-  },
-  { 
-    label: "Style", 
-    icon: FaPalette 
-  },
-  { 
-    label: "Theme", 
-    icon: FaPuzzlePiece 
-  },
-  { 
-    label: "Wallpaper", 
-    icon: FaImage 
-  },
+  { label: "Profile", icon: FaUser },
+  { label: "Style", icon: FaPalette },
+  { label: "Theme", icon: FaPuzzlePiece },
+  { label: "Wallpaper", icon: FaImage },
 ];
 
 const AppearanceBottomNav: React.FC<AppearanceBottomNavProps> = ({
@@ -37,26 +25,35 @@ const AppearanceBottomNav: React.FC<AppearanceBottomNavProps> = ({
   setActiveTab,
 }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 md:hidden">
-      <div className="flex justify-around items-center h-20 px-2">
+    <nav className="fixed bottom-4 left-1/2 z-50 md:hidden -translate-x-1/2">
+      <div className="flex items-center justify-between gap-10 px-10 h-16 bg-white  shadow-lg border border-gray-200">
         {menuItems.map((item, index) => {
           const IconComponent = item.icon;
+
           return (
             <button
               key={item.label}
               onClick={() => setActiveTab(index)}
-              className={`flex flex-col items-center justify-center text-xs font-medium transition-colors ${
+              className={`flex flex-col items-center justify-center text-xs transition-all ${
                 activeTab === index
                   ? "text-black"
                   : "text-gray-400"
               }`}
             >
-              <IconComponent className={`w-6 h-6 mb-1 ${
-                activeTab === index 
-                  ? "text-red-500" 
-                  : "text-gray-500"
-              }`} />
-              <span className={activeTab === index ? "text-black font-semibold" : "text-gray-500"}>
+              <IconComponent
+                className={`w-5 h-5 mb-2 transition-colors ${
+                  activeTab === index
+                    ? "text-red-500"
+                    : "text-gray-400"
+                }`}
+              />
+              <span
+                className={`${
+                  activeTab === index
+                    ? "font-semibold text-black"
+                    : "text-gray-500"
+                }`}
+              >
                 {item.label}
               </span>
             </button>

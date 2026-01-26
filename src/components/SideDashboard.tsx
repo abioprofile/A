@@ -384,7 +384,7 @@ export default function SideDashboard() {
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
             >
-              <div className="bg-white shadow-2xl h-auto max-h-[85vh] overflow-y-auto rounded-lg">
+              <div className="bg-white shadow-2xl h-auto max-h-[85vh] overflow-y-auto ">
                 {/* Header */}
                 <div className="p-4 md:p-6 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-lg">
                   <div className="flex justify-end mb-2">

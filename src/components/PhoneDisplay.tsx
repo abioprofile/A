@@ -132,7 +132,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     selectedTheme.startsWith("blob:") || selectedTheme.startsWith("/themes/");
 
   return (
-    <div className="relative w-full max-w-[340px] md:max-w-[370px] h-[67vh] md:h-[650px] mx-auto border-[3px] md:border-[6px] border-black  overflow-hidden bg-white shadow-lg md:shadow-xl">
+    <div className="relative w-full max-w-[300px] md:max-w-[370px] h-[67vh] md:h-[650px] mx-auto border-[3px] md:border-[6px] border-black  overflow-hidden bg-white shadow-lg md:shadow-xl">
       {/* Background */}
       {isImage ? (
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">

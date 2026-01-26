@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-
+import { ChevronLeft } from "lucide-react";
 import PhoneDisplay from "@/components/PhoneDisplay";
 import { useGetAllLinks } from "@/hooks/api/useAuth";
 import ProfileContent from "@/components/ProfileContent";
@@ -11,10 +11,6 @@ import ThemeSelector from "@/components/ThemeSelector";
 import ButtonAndFontTabs from "@/components/ButtonAndFontTabs";
 import AppearanceBottomNav from "@/components/AppearanceBottomNav";
 import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
-
-/* ----------------------------------
-   Shadcn UI Imports
------------------------------------*/
 import {
   Sheet,
   SheetContent,
@@ -23,20 +19,17 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 
-/* ----------------------------------
-   Shared interfaces
------------------------------------*/
+/* Shared interfaces*/
 export interface ButtonStyle {
   borderRadius: string;
   backgroundColor: string;
   borderColor: string;
   opacity: number;
   boxShadow: string;
+  shadowColor?: string;
 }
 
-/* ----------------------------------
-   Appearance Page
------------------------------------*/
+/* Appearance Page*/
 const AppearancePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<number>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
@@ -90,7 +83,7 @@ const AppearancePage: React.FC = () => {
   const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
   return (
-    <section className="min-h-screen bg-[#FFF7DE] md:bg-white md:pt-4 px-4 md:px-6 md:pb-24 flex flex-col relative">
+    <section className="min-h-screen bg-[#FFF7DE]  md:bg-white md:pt-4 px-4 md:px-6 md:pb-24 flex flex-col relative">
       {/* Desktop Save */}
       <div className="hidden md:flex justify-end mb-6">
         <button
@@ -102,21 +95,22 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Mobile Save */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#FFF7DE] px-4 py-3 mb-8">
+      {/* <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#FFF7DE] px-4 py-3 mb-8">
         <div className="">
           <div className="flex items-center justify-between">
-            <button className="font-bold text-[#331400]">
-              ← Appearance
+            <button className="font-extrabold text-[20px] text-[#331400]">
+              <ChevronLeft className="inline mr-2" />
+              Appearance
             </button>
-            <button className="text-[#FED45C] text-[11px] font-semibold bg-[#331400] px-6 py-1">
+            <button className="text-[#FED45C] text-[11px] font-semibold bg-[#331400] px-[20px] py-[12px]">
               Save
             </button>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Layout */}
-      <div className="flex flex-1 gap-8 mt-16 md:mt-0">
+      <div className="flex flex-1 gap-8  md:mt-0">
         {/* Phone Preview */}
         <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center items-start">
           <div
@@ -159,7 +153,7 @@ const AppearancePage: React.FC = () => {
             ))}
           </div>
 
-          <div className="mt-6">
+          <div className="md:mt-6">
             {activeTab === 0 && (
               <ProfileContent
                 onProfileUpdate={setProfile}
@@ -194,21 +188,27 @@ const AppearancePage: React.FC = () => {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent
           side="bottom"
-          className="h-[50vh] rounded-t-4xl shadow-2xl p-0 overflow-hidden"
+          className={`rounded-t-4xl shadow-2xl p-0 overflow-hidden transition-all duration-300 ${
+            activeTab === 2 || activeTab === 3 ? "h-[35vh]" : "h-[50vh]"
+          }`}
         >
           <div className="h-full flex flex-col">
             {/* Sheet Header with handle */}
-            <SheetHeader className="px-6 pt-4 pb-2">
-              <div className="flex justify-center">
+            <div className="flex flex-col">
+              <div className="flex justify-center pt-3 ">
                 <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
               </div>
-              <SheetTitle className="sr-only">
-                {menuItems[activeTab]} Settings
-              </SheetTitle>
-            </SheetHeader>
+              <SheetHeader className="">
+                <div className="flex items-center justify-between">
+                  <SheetTitle className="text-lg font-semibold">
+                    {menuItems[activeTab]}
+                  </SheetTitle>
+                </div>
+              </SheetHeader>
+            </div>
 
             {/* Sheet Content */}
-            <div className="flex-1 overflow-y-auto px-2 py-4">
+            <div className="flex-1 overflow-y-auto px-2 md:py-4">
               {activeTab === 0 && (
                 <ProfileContent
                   onProfileUpdate={setProfile}

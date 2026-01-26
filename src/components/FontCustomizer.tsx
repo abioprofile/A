@@ -246,9 +246,9 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
   return (
     <>
       {/* ========== MOBILE VIEW ========== */}
-      <div className="md:hidden w-full border-t border-black bg-white">
+      <div className="md:hidden w-full bg-white">
         {/* font style tiles */}
-        <div className="grid grid-cols-5 gap-2 px-4 py-3">
+        {/* <div className="grid grid-cols-5 gap-2 px-4 py-3">
           {FONT_STYLES.map((f) => (
             <button
               key={f.id}
@@ -268,39 +268,9 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
               {f.label}
             </button>
           ))}
-        </div>
-
-        {/* color palette */}
-        <div className="px-4 py-3 border-t border-black">
-          {/* <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-medium">Color</span>
-            <div 
-              className="w-4 h-4 rounded-full border border-gray-300"
-              style={{ backgroundColor: fontStyle.fillColor }}
-            />
-          </div> */}
-          <div className="overflow-x-auto pb-2">
-            <div className="flex gap-2 min-w-max">
-              {COLORS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => handleColorSelect(c)}
-                  className={clsx(
-                    "w-10 h-10  border-1 transition-transform hover:scale-110",
-                    fontStyle.fillColor === c
-                      ? "ring-2 ring-offset-2 ring-black border-white"
-                      : "border-gray-300",
-                  )}
-                  style={{ backgroundColor: c }}
-                  aria-label={`Select color ${c}`}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-
+        </div> */}
         {/* font selector */}
-        <div className="px-4 py-3 border-t border-black">
+        <div className="px-4 py-3 mb-8 ">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium">Font Family</span>
             {/* <span 
@@ -310,7 +280,8 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
               {selectedFont.label}
             </span> */}
           </div>
-          <div className="overflow-x-auto pb-2">
+          <div className="overflow-x-auto  scrollbar-hide ">
+            
             <div className="flex gap-2 min-w-max">
               {fonts.slice(0, 27).map((font) => (
                 <button
@@ -326,6 +297,31 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
                 >
                   {font.label}
                 </button>
+              ))}
+            </div>
+          </div>
+        </div>
+        {/* color palette */}
+        <div className="px-4 ">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-xs font-medium">Color</span>
+            
+          </div>
+          <div className="overflow-x-auto pb-2 scrollbar-hide ">
+            <div className="flex gap-2 min-w-max">
+              {COLORS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => handleColorSelect(c)}
+                  className={clsx(
+                    "w-14 h-14  border-1 transition-transform hover:scale-110",
+                    fontStyle.fillColor === c
+                      ? "ring-2 ring-offset-2 ring-black border-white"
+                      : "border-gray-300",
+                  )}
+                  style={{ backgroundColor: c }}
+                  aria-label={`Select color ${c}`}
+                />
               ))}
             </div>
           </div>
