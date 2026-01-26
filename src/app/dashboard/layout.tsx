@@ -24,7 +24,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </div>
 
             {/* Main content area */}
-            <div className="flex-1 bg-[#fffff] md:min-h-screen overflow-y-auto pb-24 md:pb-0">
+            <div className="flex-1 bg-[#fffff] md:min-h-screen md:overflow-y-auto  md:pb-0">
               {/* {showTopNav && <DashboardTopNav />} */}
               <AuthProvider>
                 <div className="">{children}</div>

@@ -17,7 +17,7 @@ import { useAppSelector } from "@/stores/hooks";
 import { useGetAllLinks } from "@/hooks/api/useAuth";
 import { ProfileLink, UserProfile } from "@/types/auth.types";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
-// Import Framer Motion
+import { ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 interface UserLink {
@@ -599,20 +599,21 @@ export default function DashboardPage() {
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                className="sticky mb-8 top-0 py-8 bg-[#FFF7DE] px-4 border-b"
+                className="sticky mb top-0 py-8 bg-[#FFF7DE] px-4 border-b"
               >
                 <div className="flex items-center justify-between">
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowMobileLinks(false)}
-                    className="font-bold text-[#331400]"
+                    className="font-extrabold text-[19px] text-[#331400]"
                   >
-                    ← A.bio Links
+                    <ChevronLeft className="inline mr-2" />
+                    Abio Links
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="text-[#FED45C] text-[13px] font-semibold bg-[#331400] px-4 py-2"
+                    className="text-[#331400] text-[13px] shadow-[4px_4px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2"
                   >
                     Save
                   </motion.button>

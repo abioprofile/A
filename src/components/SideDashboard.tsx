@@ -54,7 +54,7 @@ interface SharePlatform {
 export default function SideDashboard() {
   const router = useRouter();
   const userData = useAppSelector(
-    (state) => state.auth.user
+    (state) => state.auth.user,
   ) as UserData | null;
 
   const getProfileLink = (): string => {
@@ -109,22 +109,22 @@ export default function SideDashboard() {
     const shareUrls: Record<string, string> = {
       whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText)}`,
       twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        shareText
+        shareText,
       )}`,
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        profileLink
+        profileLink,
       )}&quote=${encodeURIComponent(shareText)}`,
       instagram: `https://www.instagram.com/?url=${encodeURIComponent(
-        profileLink
+        profileLink,
       )}`,
       pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(
-        profileLink
+        profileLink,
       )}&description=${encodeURIComponent(shareText)}`,
       tiktok: `https://www.tiktok.com/share?url=${encodeURIComponent(
-        profileLink
+        profileLink,
       )}`,
       email: `mailto:?subject=Check out my Abio profile&body=${encodeURIComponent(
-        shareText
+        shareText,
       )}`,
       copy: profileLink,
     };
@@ -214,12 +214,12 @@ export default function SideDashboard() {
   return (
     <>
       {/* MOBILE TOP BAR */}
-      <div className="md:hidden sticky top-0 z-10 bg-[#Fff7de] w-full">
+      <div className="md:hidden sticky mb-8 top-0 z-10 bg-[#Fff7de] w-full">
         <div className="px-8 py-3 mb-2">
           <div className="flex items-center justify-between">
             <div>
               <p className="font-extrabold mb-1 text-[20px]">
-               Hi, {userData?.name || "User"}
+                Hi, {userData?.name || "User"}
               </p>
               <p className="text-[12px] font-semibold text-gray-600 truncate">
                 {formatLink(profileLink)}
@@ -299,7 +299,15 @@ export default function SideDashboard() {
 
       {/* QR MODAL */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="relative bg-white rounded-2xl p-6 pt-12 text-center w-[320px] mx-auto">
+        <div className="relative bg-white rounded-2xl  text-center w-[320px] mx-auto">
+          <div className="flex justify-end mb-2">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0 ml-2"
+            >
+              <XIcon className="w-5 h-5 text-gray-500" />
+            </button>
+          </div>
           {/* Title */}
           <h2 className="text-lg font-bold">Here is your code!!!</h2>
 
@@ -325,14 +333,6 @@ export default function SideDashboard() {
             </div>
           </div>
 
-          {/* Profile link below QR */}
-          <div className="mb-6 p-3 bg-gray-50 rounded-lg">
-            <p className="text-xs text-gray-500 mb-1">Profile Link</p>
-            <p className="text-sm font-medium text-gray-800 truncate">
-              {profileLink}
-            </p>
-          </div>
-
           {/* Actions */}
           <div className="flex justify-center gap-10">
             {/* Share */}
@@ -343,7 +343,7 @@ export default function SideDashboard() {
               }}
               className="flex flex-col items-center gap-1 text-xs text-gray-700"
             >
-              <div className="w-10 h-10 bg-[#3B1F0E] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#3B1F0E] flex items-center justify-center">
                 <Share2Icon className="w-5 h-5 text-white" />
               </div>
               Share
@@ -354,7 +354,7 @@ export default function SideDashboard() {
               onClick={downloadQRCode}
               className="flex flex-col items-center gap-1 text-xs text-gray-700"
             >
-              <div className="w-10 h-10 bg-[#3B1F0E] rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-[#3B1F0E]  flex items-center justify-center">
                 <DownloadIcon className="w-5 h-5 text-white" />
               </div>
               Download
@@ -384,9 +384,9 @@ export default function SideDashboard() {
               transition={{ type: "spring", stiffness: 300, damping: 25 }}
               className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
             >
-              <div className="bg-white shadow-2xl h-auto max-h-[85vh] overflow-y-auto ">
+              <div className="bg-white  ">
                 {/* Header */}
-                <div className="p-4 md:p-6 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-lg">
+                <div className="p-4  md:p-6 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-lg">
                   <div className="flex justify-end mb-2">
                     <button
                       onClick={() => setIsShareModalOpen(false)}
@@ -453,7 +453,7 @@ export default function SideDashboard() {
                             {label}
                           </span>
                         </button>
-                      )
+                      ),
                     )}
                   </div>
                 </div>

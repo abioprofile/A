@@ -358,7 +358,7 @@ export default function LinkList({
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="md:max-w-3xl mx-auto px-6 md:px-0 md:bg-white py-[2px] flex flex-col h-[calc(100vh-320px)] md:h-[calc(100vh-290px)]"
+          className="md:max-w-3xl mx-auto px-6 md:px-0 md:bg-white py-[2px] flex flex-col h-[calc(100vh-350px)] md:h-[calc(100vh-290px)]"
         >
           {/* STACK LIST */}
           <div className="flex-1 overflow-y-auto">
