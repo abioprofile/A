@@ -14,7 +14,7 @@ const MobileBottomNav = () => {
     <div className="relative z-50 md:hidden">
       {/* WHITE BOTTOM NAV */}
       <nav className="fixed bottom-1 left-0 right-0  border-t-1 border-black  z-50">
-        <div className="flex justify-around items-center pt-1 px-2">
+        <div className="flex justify-around items-center  px-2">
           {sidebarNav.map((item) => {
             const isActive = pathname === item.url;
 
@@ -22,7 +22,7 @@ const MobileBottomNav = () => {
               <Link
                 key={item.url}
                 href={item.url}
-                className={`flex flex-col items-center justify-center gap-1.5 py-2 px-3 rounded-lg transition-all ${
+                className={`flex flex-col items-center justify-center gap-1.5 pt-2 px-3 rounded-lg transition-all ${
                   isActive
                     ? "text-[#331400]"
                     : "text-gray-500 hover:text-gray-700"
@@ -31,8 +31,8 @@ const MobileBottomNav = () => {
                 <Image
                   src={item.icon}
                   alt={item.title}
-                  width={25}
-                  height={25}
+                  width={20}
+                  height={20}
                   style={{
                     filter: isActive
                       ? "invert(27%) sepia(97%) saturate(7293%) hue-rotate(0deg) brightness(106%) contrast(106%)"
