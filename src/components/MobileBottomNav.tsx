@@ -31,8 +31,8 @@ const MobileBottomNav = () => {
                 <Image
                   src={item.icon}
                   alt={item.title}
-                  width={20}
-                  height={20}
+                  width={23}
+                  height={23}
                   style={{
                     filter: isActive
                       ? "invert(27%) sepia(97%) saturate(7293%) hue-rotate(0deg) brightness(106%) contrast(106%)"
