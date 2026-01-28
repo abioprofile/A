@@ -291,7 +291,7 @@ export default function LinkList({
     },
     [updateLinkMutation, refetchLinks]
   );
-
+  
   // Handle edit
   const handleEdit = useCallback(
     async (link: ProfileLink, title: string, url: string) => {
@@ -310,7 +310,7 @@ export default function LinkList({
     [updateLinkMutation, refetchLinks]
   );
 
-  // Handle add link
+ 
   const handleAddLink = useCallback(async () => {
     if (!newLink.title.trim() || !newLink.url.trim()) {
       toast.error("Please fill in all fields");

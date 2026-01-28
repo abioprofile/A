@@ -219,4 +219,126 @@ export const dropdownLinks = [
   { label: "Edit Image", action: "editImage", icon: ImageIcon },
   { label: "Edit Name and Bio", action: "editBio", icon: PencilLineIcon },
   { label: "Location", action: "editLocation", icon: MapPinIcon },
-];
+];  
+
+export const MENU = {
+  "DON JULIO": [
+    { name: "Don Julio Blanco", price: "₦600,000" },
+    { name: "Don Julio Respasado", price: "₦600,000" },
+    { name: "Don Julio 1942", price: "₦1,300,000" },
+    { name: "Don Julio 1942 Magnum", price: "₦2,600,000" },
+  ],
+  "TEQUILA": [
+    { name: "Volcan XA", price: "₦1,000,000" },
+    { name: "Clase Azul", price: "₦1,300,000" },
+    { name: "Clase Azul Magnum", price: "₦2,500,000" },
+    { name: "Clase Mescal Green", price: "₦2,600,000" },
+    { name: "Clase Azul Mescal Gold", price: "₦2,400,000" },
+    { name: "Clase Azul Mescal", price: "₦2,300,000" },
+    { name: "Clase Azul Anejo", price: "₦2,600,000" },
+    { name: "Casamigo 75CL", price: "₦800,000" },
+    { name: "Casamigo 1LTR", price: "₦900,000" },
+    { name: "Casamigo Magnum", price: "₦2,500,000" },
+    { name: "Komos Rosa", price: "₦700,000" },
+    { name: "Komos Resavo", price: "₦1,350,000" },
+    { name: "Olmeca Gold", price: "₦100,000" },
+  ],
+
+  "COGNAC": [
+    { name: "Martell Blue Swift", price: "₦350,000" },
+    { name: "Martell XO", price: "₦1,000,000" },
+    { name: "Martell XXO", price: "₦1,400,000" },
+    { name: "Hennessy VSOP", price: "₦350,000" },
+    { name: "Hennessy XO", price: "₦1,100,000" },
+    { name: "Hennessy Paradis", price: "₦5,000,000" },
+    { name: "Remy VSOP", price: "₦350,000" },
+    { name: "Remy Martin 1738", price: "₦360,000" },
+    { name: "Remy Martin XO", price: "₦1,000,000" },
+    { name: "Remy Martin Louis XIII", price: "₦12,500,000" },
+  ],
+
+  "ROSE CHAMPAGNE": [
+    { name: "Veuve Clicquot Rosé", price: "₦350,000" },
+    { name: "Moët Brut", price: "₦300,000" },
+    { name: "Veuve Brut", price: "₦400,000" },
+    { name: "Veuve Rich", price: "₦450,000" },
+    { name: "Ruinart Rosé", price: "₦450,000" },
+    { name: "Laurent Perrier Rosé", price: "₦450,000" },
+    { name: "Canard Duchéné", price: "₦200,000" },
+  ],
+
+  "VODKA": [
+    { name: "Belvedere", price: "₦200,000" },
+    { name: "Ciroc", price: "₦350,000" },
+  ],
+
+  "VINTAGE BLANCE CHAMPAIGNES": [
+    { name: "Don Perignon Rosé", price: "₦1,700,000" },
+    { name: "Don Perignon Brut", price: "₦1,300,000" },
+    { name: "Cristal Brut 75CL", price: "₦1,300,000" },
+    { name: "Cristal Rosé 75CL", price: "₦1,700,000" },
+    { name: "Cristal Magnum", price: "₦2,400,000" },
+    { name: "Laurent Perrier G.S", price: "₦1,300,000" },
+    { name: "Ace of Spade Brut", price: "₦1,400,000" },
+    { name: "Ace of Spade Rosé", price: "₦1,700,000" },
+  ],
+
+  "NON VINATGE BLANCE CHAMPAGNE": [
+    { name: "GH Mumm Brut", price: "₦235,000" },
+    { name: "GH Mumm Demi-Sec", price: "₦280,000" },
+    { name: "Moet Brut", price: "₦300,000" },
+    { name: "Moet Nectar Imperial", price: "₦350,000" },
+    { name: "Moet Ice Imperial", price: "₦400,000" },
+    { name: "Veuve Clicquot Brut", price: "₦400,000" },
+    { name: "Veuve Clicquot Rich", price: "₦450,000" },
+    { name: "Ruinart Brut", price: "₦300,000" },
+    { name: "Ruinart Blanc de Blanc", price: "₦470,000" },
+    { name: "Laurent Perrier La Brut", price: "₦300,000" },
+    { name: "Laurent Perrier Demi-Sec", price: "₦350,000" },
+  ],
+
+  "BLENDED WHISKEY": [
+    { name: "Blue Label", price: "₦1,300,000" },
+    { name: "Black Label", price: "₦200,000" },
+    { name: "Chivas XV", price: "₦250,000" },
+    { name: "Chivas 18YRS", price: "₦300,000" },
+    { name: "Chivas 25YRS", price: "₦1,100,000" },
+    { name: "Hibiki Harmony", price: "₦750,000" },
+  ],
+
+  "SINGLE MALT WHISKEY": [
+    { name: "Glenmorangie Signet", price: "₦800,000" },
+    { name: "Glenmorangie Original", price: "₦365,000" },
+    { name: "Glenfiddich 18YRS", price: "₦400,000" },
+    { name: "Glenfiddich 21YRS", price: "₦1,000,000" },
+    { name: "Glenfiddich 23YRS", price: "₦1,300,000" },
+    { name: "Glenfiddich 26YRS", price: "₦2,600,000" },
+    { name: "Glenfiddich 30YRS", price: "₦5,000,000" },
+  ],
+
+  "SOFT DRINKS": [
+    { name: "Coke", price: "₦3,000" },
+    { name: "Water", price: "₦3,000" },
+    { name: "Soda Water", price: "₦3,500" },
+    { name: "Tonic Water", price: "₦3,500" },
+    { name: "Cranberry Juice", price: "₦25,000" },
+    { name: "Orange Juice", price: "₦20,000" },
+    { name: "Apple Juice", price: "₦20,000" },
+    { name: "Small Voss/Fiji Water", price: "₦7,000" },
+    { name: "Big Voss/Fiji Water", price: "₦12,000" },
+  ],
+
+  "ENERGY DRINKS": [
+    { name: "Red Bull", price: "₦6,000" },
+  ],
+  "GIN": [
+    { name: "Monkey47", price: "₦200,000" },
+    { name: "Gin Mare", price: "₦200,000" },
+    { name: "Hendrick", price: "₦250,000" },
+  ],
+  "OTHERS": [
+    { name: "Cocktail", price: "₦30,000" },
+    { name: "Wine", price: "₦160,000" },
+    { name: "Small Vape", price: "₦120,000" },
+  ],
+}
