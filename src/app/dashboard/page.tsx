@@ -613,7 +613,7 @@ export default function DashboardPage() {
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="text-[#331400] text-[13px] shadow-[4px_4px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2"
+                    className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2"
                   >
                     Save
                   </motion.button>

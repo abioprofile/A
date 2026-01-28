@@ -15,7 +15,13 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetClose,
+} from "@/components/ui/sheet";
 import LinkCard from "./LinkCard";
 import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
@@ -64,15 +70,15 @@ export default function LinkList({
       transition: {
         staggerChildren: 0.08,
         delayChildren: 0.1,
-      }
-    }
+      },
+    },
   };
 
   const itemVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 20,
-      scale: 0.95 
+      scale: 0.95,
     },
     visible: {
       opacity: 1,
@@ -81,8 +87,8 @@ export default function LinkList({
       transition: {
         type: "spring",
         stiffness: 100,
-        damping: 15
-      }
+        damping: 15,
+      },
     },
     exit: {
       opacity: 0,
@@ -90,8 +96,8 @@ export default function LinkList({
       scale: 0.9,
       transition: {
         duration: 0.2,
-        ease: "easeIn"
-      }
+        ease: "easeIn",
+      },
     },
     drag: {
       scale: 1.05,
@@ -99,9 +105,9 @@ export default function LinkList({
       transition: {
         type: "spring",
         stiffness: 200,
-        damping: 20
-      }
-    }
+        damping: 20,
+      },
+    },
   };
 
   const modalOverlayVariants = {
@@ -110,23 +116,23 @@ export default function LinkList({
       opacity: 1,
       transition: {
         duration: 0.2,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     },
     exit: {
       opacity: 0,
       transition: {
         duration: 0.15,
-        ease: "easeIn"
-      }
-    }
+        ease: "easeIn",
+      },
+    },
   };
 
   const modalContentVariants = {
-    hidden: { 
-      scale: 0.9, 
+    hidden: {
+      scale: 0.9,
       opacity: 0,
-      y: 20 
+      y: 20,
     },
     visible: {
       scale: 1,
@@ -136,8 +142,8 @@ export default function LinkList({
         type: "spring",
         stiffness: 200,
         damping: 25,
-        delay: 0.1
-      }
+        delay: 0.1,
+      },
     },
     exit: {
       scale: 0.9,
@@ -145,9 +151,9 @@ export default function LinkList({
       y: 20,
       transition: {
         duration: 0.15,
-        ease: "easeIn"
-      }
-    }
+        ease: "easeIn",
+      },
+    },
   };
 
   const slideInVariants = {
@@ -158,8 +164,8 @@ export default function LinkList({
         type: "spring",
         stiffness: 80,
         damping: 20,
-        mass: 0.8
-      }
+        mass: 0.8,
+      },
     },
     exit: {
       x: "100%",
@@ -167,9 +173,9 @@ export default function LinkList({
         type: "spring",
         stiffness: 100,
         damping: 20,
-        mass: 0.8
-      }
-    }
+        mass: 0.8,
+      },
+    },
   };
 
   // Update linksData when prop changes
@@ -184,7 +190,7 @@ export default function LinkList({
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [editItem, setEditItem] = useState<ProfileLink | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  
+
   // Add link form state
   const [newLink, setNewLink] = useState({
     title: "",
@@ -194,7 +200,7 @@ export default function LinkList({
   });
 
   const sensors = useSensors(useSensor(PointerSensor));
-  
+
   // Hooks
   const addLinksMutation = useAddLinks();
   const updateLinkMutation = useUpdateLink();
@@ -206,10 +212,10 @@ export default function LinkList({
     async ({ active, over }: { active: any; over: any }) => {
       if (active.id !== over?.id) {
         const oldIndex = linksData.findIndex(
-          (i: ProfileLink) => i.id === active.id
+          (i: ProfileLink) => i.id === active.id,
         );
         const newIndex = linksData.findIndex(
-          (i: ProfileLink) => i.id === over?.id
+          (i: ProfileLink) => i.id === over?.id,
         );
 
         if (oldIndex === -1 || newIndex === -1) return;
@@ -232,7 +238,7 @@ export default function LinkList({
         }
       }
     },
-    [linksData, reorderLinksMutation]
+    [linksData, reorderLinksMutation],
   );
 
   // Handle delete
@@ -247,7 +253,7 @@ export default function LinkList({
         console.error("Failed to delete link:", error);
       }
     },
-    [deleteLinkMutation, refetchLinks]
+    [deleteLinkMutation, refetchLinks],
   );
 
   // Handle toggle visibility
@@ -261,15 +267,15 @@ export default function LinkList({
         // Optimistically update local state
         setLinksData((prev) =>
           prev.map((l) =>
-            l.id === link.id ? { ...l, isVisible: !l.isVisible } : l
-          )
+            l.id === link.id ? { ...l, isVisible: !l.isVisible } : l,
+          ),
         );
         await refetchLinks();
       } catch (error) {
         console.error("Failed to toggle visibility:", error);
       }
     },
-    [updateLinkMutation, refetchLinks]
+    [updateLinkMutation, refetchLinks],
   );
 
   // Handle edit
@@ -287,7 +293,7 @@ export default function LinkList({
         console.error("Failed to update link:", error);
       }
     },
-    [updateLinkMutation, refetchLinks]
+    [updateLinkMutation, refetchLinks],
   );
 
   // Handle add link
@@ -322,7 +328,8 @@ export default function LinkList({
         await refetchLinks();
         const updatedLinks = await refetchLinks();
         if (updatedLinks.data?.data && updatedLinks.data.data.length > 0) {
-          const lastLink = updatedLinks.data.data[updatedLinks.data.data.length - 1];
+          const lastLink =
+            updatedLinks.data.data[updatedLinks.data.data.length - 1];
           await updateLinkMutation.mutateAsync({
             linkId: lastLink.id,
             isVisible: false,
@@ -345,8 +352,6 @@ export default function LinkList({
     }
   }, [newLink, addLinksMutation, updateLinkMutation, refetchLinks]);
 
-
-
   return (
     <>
       <DndContext
@@ -354,7 +359,7 @@ export default function LinkList({
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
-        <motion.div 
+        <motion.div
           initial="hidden"
           animate="visible"
           variants={containerVariants}
@@ -375,9 +380,9 @@ export default function LinkList({
                       initial="hidden"
                       animate="visible"
                       exit="exit"
-                      whileHover={{ 
+                      whileHover={{
                         y: -2,
-                        transition: { duration: 0.2 }
+                        transition: { duration: 0.2 },
                       }}
                       layout
                       layoutId={item.id}
@@ -469,44 +474,176 @@ export default function LinkList({
         )}
       </AnimatePresence>
 
-      {/* ADD LINK MODAL - MOBILE */}
+     {/* ADD LINK SHEET - MOBILE */}
+<Sheet open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+  <SheetContent
+    side="bottom"
+    className="bg-[#FFF7DE] border-none md:hidden flex flex-col p-0 h-auto max-h-[90vh] overflow-y-auto"
+  >
+    <SheetHeader className="sr-only">
+      <SheetTitle>Add Link</SheetTitle>
+    </SheetHeader>
+    
+    {/* Remove the custom sticky header and use Sheet's built-in */}
+    <div className="sticky top-0 bg-[#FFF7DE] px-4 pt-6 pb-4 border-b border-[#E6D9B9]">
+      <div className="flex items-center gap-2">
+        <SheetClose className="flex items-center gap-2 font-bold text-[#331400] text-lg">
+          ← Add Link
+        </SheetClose>
+      </div>
+    </div>
+
+    <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4">
+      <div>
+        <label className="block text-[14px] font-bold text-[#331400] mb-2">
+          Title
+        </label>
+        <Input
+          value={newLink.title}
+          onChange={(e) =>
+            setNewLink({ ...newLink, title: e.target.value })
+          }
+          placeholder="e.g., Instagram"
+          className="w-full bg-white border-[#4B2E1E]"
+        />
+      </div>
+
+      <div>
+        <label className="block text-[14px] font-bold text-[#331400] mb-2">
+          URL
+        </label>
+        <Input
+          value={newLink.url}
+          onChange={(e) =>
+            setNewLink({ ...newLink, url: e.target.value })
+          }
+          placeholder="https://instagram.com/username"
+          className="w-full bg-white border-[#4B2E1E]"
+        />
+      </div>
+
+      <div>
+        <label className="block text-[14px] font-bold text-[#331400] mb-2">
+          Platform
+        </label>
+        <select
+          value={newLink.platform}
+          onChange={(e) =>
+            setNewLink({ ...newLink, platform: e.target.value })
+          }
+          className="w-full border border-[#4B2E1E] bg-white text-[12px] text-[#4B2E1E] px-3 py-2 rounded"
+        >
+          {PLATFORMS.map((platform) => (
+            <option key={platform} className="text-[12px]" value={platform}>
+              {platform}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex items-center justify-between pt-2">
+        <label className="text-[14px] font-bold text-[#331400]">
+          Visible
+        </label>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setNewLink({ ...newLink, isVisible: !newLink.isVisible });
+          }}
+          className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
+            newLink.isVisible ? "bg-[#331400]" : "bg-gray-300"
+          }`}
+        >
+          <span
+            className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${
+              newLink.isVisible ? "translate-x-6" : ""
+            }`}
+          />
+        </button>
+      </div>
+
+      <Button
+        onClick={(e) => {
+          e.stopPropagation();
+          handleAddLink();
+        }}
+        disabled={addLinksMutation.isPending}
+        className="w-full bg-[#FED45C] text-[#331400] font-semibold mt-4 hover:bg-[#e6c04a]"
+      >
+        {addLinksMutation.isPending ? (
+          <span className="flex items-center gap-2">
+            <motion.span
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
+            />
+            Adding...
+          </span>
+        ) : (
+          "Add Link"
+        )}
+      </Button>
+      
+      <SheetClose asChild>
+        <Button
+          variant="outline"
+          className="w-full border-[#4B2E1E] text-[#331400] mt-2 hover:bg-[#F5F0E1]"
+        >
+          Cancel
+        </Button>
+      </SheetClose>
+    </div>
+  </SheetContent>
+</Sheet>
+
+      {/* ADD LINK MODAL - DESKTOP */}
       <AnimatePresence>
         {isAddModalOpen && (
-          <>
+          <motion.div
+            key="desktop-add-modal"
+            variants={modalOverlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="hidden md:flex fixed inset-0 bg-black/40 items-center justify-center z-50"
+          >
             <motion.div
-              key="mobile-add-modal"
-              variants={slideInVariants}
+              variants={modalContentVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col"
+              className="bg-white w-full max-w-lg p-6 shadow-lg relative"
             >
-              <motion.div
-                initial={{ y: -20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.1 }}
-                className="sticky top-0 flex items-center justify-between px-4 mb-8 py-8 border-b bg-[#FFF7DE]"
+              <motion.button
+                whileHover={{ rotate: 90 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsAddModalOpen(false);
+                }}
+                className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
               >
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsAddModalOpen(false);
-                  }}
-                  className="flex items-center gap-2 font-bold text-[#331400]"
-                >
-                  ← Add Link
-                </motion.button>
-              </motion.div>
+                <X className="w-6 h-6" />
+              </motion.button>
+
+              <motion.h2
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="text-2xl font-bold mb-6 text-[#331400]"
+              >
+                Add New Link
+              </motion.h2>
 
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="flex-1 overflow-y-auto px-4 py-6 space-y-4"
+                className="space-y-4"
               >
                 <div>
-                  <label className="block text-[14px] font-bold text-[#331400] mb-2">
+                  <label className="block text-sm font-medium text-[#331400] mb-2">
                     Title
                   </label>
                   <Input
@@ -520,7 +657,7 @@ export default function LinkList({
                 </div>
 
                 <div>
-                  <label className="block text-[14px] font-bold text-[#331400] mb-2">
+                  <label className="block text-sm font-medium text-[#331400] mb-2">
                     URL
                   </label>
                   <Input
@@ -534,7 +671,7 @@ export default function LinkList({
                 </div>
 
                 <div>
-                  <label className="block text-[14px] font-bold text-[#331400] mb-2">
+                  <label className="block text-sm font-medium text-[#331400] mb-2">
                     Platform
                   </label>
                   <select
@@ -542,10 +679,10 @@ export default function LinkList({
                     onChange={(e) =>
                       setNewLink({ ...newLink, platform: e.target.value })
                     }
-                    className="w-full border border-[#4B2E1E] bg-transparent text-[12px] text-[#4B2E1E] px-3 py-2 "
+                    className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] px-3 py-2 rounded"
                   >
                     {PLATFORMS.map((platform) => (
-                      <option key={platform} className="text-[12px]" value={platform}>
+                      <option key={platform} value={platform}>
                         {platform}
                       </option>
                     ))}
@@ -556,7 +693,7 @@ export default function LinkList({
                   whileHover={{ x: 5 }}
                   className="flex items-center justify-between"
                 >
-                  <label className="text-[14px] font-bold text-[#331400]">
+                  <label className="text-sm font-medium text-[#331400]">
                     Visible
                   </label>
                   <button
@@ -592,7 +729,11 @@ export default function LinkList({
                       <span className="flex items-center gap-2">
                         <motion.span
                           animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
                           className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
                         />
                         Adding...
@@ -604,151 +745,7 @@ export default function LinkList({
                 </motion.div>
               </motion.div>
             </motion.div>
-
-            {/* ADD LINK MODAL - DESKTOP */}
-            <motion.div
-              key="desktop-add-modal"
-              variants={modalOverlayVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="hidden md:flex fixed inset-0 bg-black/40 items-center justify-center z-50"
-            >
-              <motion.div
-                variants={modalContentVariants}
-                initial="hidden"
-                animate="visible"
-                exit="exit"
-                className="bg-white w-full max-w-lg p-6 shadow-lg relative"
-              >
-                <motion.button
-                  whileHover={{ rotate: 90 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setIsAddModalOpen(false);
-                  }}
-                  className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
-                >
-                  <X className="w-6 h-6" />
-                </motion.button>
-
-                <motion.h2
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-2xl font-bold mb-6 text-[#331400]"
-                >
-                  Add New Link
-                </motion.h2>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="space-y-4"
-                >
-                  <div>
-                    <label className="block text-sm font-medium text-[#331400] mb-2">
-                      Title
-                    </label>
-                    <Input
-                      value={newLink.title}
-                      onChange={(e) =>
-                        setNewLink({ ...newLink, title: e.target.value })
-                      }
-                      placeholder="e.g., Instagram"
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#331400] mb-2">
-                      URL
-                    </label>
-                    <Input
-                      value={newLink.url}
-                      onChange={(e) =>
-                        setNewLink({ ...newLink, url: e.target.value })
-                      }
-                      placeholder="https://instagram.com/username"
-                      className="w-full"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-[#331400] mb-2">
-                      Platform
-                    </label>
-                    <select
-                      value={newLink.platform}
-                      onChange={(e) =>
-                        setNewLink({ ...newLink, platform: e.target.value })
-                      }
-                      className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] px-3 py-2 "
-                    >
-                      {PLATFORMS.map((platform) => (
-                        <option key={platform} value={platform}>
-                          {platform}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <motion.div
-                    whileHover={{ x: 5 }}
-                    className="flex items-center justify-between"
-                  >
-                    <label className="text-sm font-medium text-[#331400]">
-                      Visible
-                    </label>
-                    <button
-                      type="button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setNewLink({ ...newLink, isVisible: !newLink.isVisible });
-                      }}
-                      className={`relative w-12 h-6 rounded-full transition-all duration-300 ${
-                        newLink.isVisible ? "bg-[#331400]" : "bg-gray-300"
-                      }`}
-                    >
-                      <motion.span
-                        animate={{ x: newLink.isVisible ? 24 : 0 }}
-                        className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow-md"
-                      />
-                    </button>
-                  </motion.div>
-
-                  <motion.div
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddLink();
-                      }}
-                      disabled={addLinksMutation.isPending}
-                      className="w-full bg-[#FED45C] text-[#331400] font-semibold mt-4"
-                    >
-                      {addLinksMutation.isPending ? (
-                        <span className="flex items-center gap-2">
-                          <motion.span
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="inline-block w-4 h-4 border-2 border-current border-t-transparent rounded-full"
-                          />
-                          Adding...
-                        </span>
-                      ) : (
-                        "Add Link"
-                      )}
-                    </Button>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
@@ -766,8 +763,14 @@ function SortableItem({
   onEdit: (item: ProfileLink) => void;
   onToggleVisibility: () => void;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: item.id });
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: item.id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -790,12 +793,12 @@ function SortableItem({
           scale: 1,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
           zIndex: 1,
-        }
+        },
       }}
       transition={{
         type: "spring",
         stiffness: 200,
-        damping: 20
+        damping: 20,
       }}
     >
       <LinkCard
