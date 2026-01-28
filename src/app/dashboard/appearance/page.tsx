@@ -79,21 +79,27 @@ const AppearancePage: React.FC = () => {
   const [history, setHistory] = useState<AppState[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
-  const getCurrentState = useCallback((): AppState => ({
-    buttonStyle,
-    fontStyle,
-    selectedTheme,
-    profile,
-  }), [buttonStyle, fontStyle, selectedTheme, profile]);
+  const getCurrentState = useCallback(
+    (): AppState => ({
+      buttonStyle,
+      fontStyle,
+      selectedTheme,
+      profile,
+    }),
+    [buttonStyle, fontStyle, selectedTheme, profile],
+  );
 
-  const addToHistory = useCallback((newState: AppState) => {
-    setHistory((prev) => {
-      const newHistory = prev.slice(0, historyIndex + 1);
-      newHistory.push(newState);
-      return newHistory;
-    });
-    setHistoryIndex((prev) => prev + 1);
-  }, [historyIndex]);
+  const addToHistory = useCallback(
+    (newState: AppState) => {
+      setHistory((prev) => {
+        const newHistory = prev.slice(0, historyIndex + 1);
+        newHistory.push(newState);
+        return newHistory;
+      });
+      setHistoryIndex((prev) => prev + 1);
+    },
+    [historyIndex],
+  );
 
   const undo = useCallback(() => {
     if (historyIndex > 0) {
@@ -130,16 +136,19 @@ const AppearancePage: React.FC = () => {
   }, [addToHistory, getCurrentState]);
 
   // Memoize the profile update handler to prevent infinite loops
-  const handleProfileUpdate = useCallback((updatedProfile: {
-    profileImage: string;
-    displayName: string;
-    bio: string;
-    location: string;
-    profileIcon?: string | null;
-  }) => {
-    setProfile(updatedProfile);
-    handleStateChange();
-  }, [handleStateChange]);
+  const handleProfileUpdate = useCallback(
+    (updatedProfile: {
+      profileImage: string;
+      displayName: string;
+      bio: string;
+      location: string;
+      profileIcon?: string | null;
+    }) => {
+      setProfile(updatedProfile);
+      handleStateChange();
+    },
+    [handleStateChange],
+  );
 
   const { data: linksData } = useGetAllLinks();
 
@@ -169,7 +178,7 @@ const AppearancePage: React.FC = () => {
   const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
   return (
-    <section className="min-h-screen bg-[#FFF7DE]  md:bg-white md:pt-4 px-4 md:px-6 md:pb-24 flex flex-col relative">
+    <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen  md:bg-white md:pt-4 px-4 md:px-6 md:pb-24 flex flex-col relative">
       {/* Desktop Save */}
       <div className="hidden md:flex justify-end mb-4 ">
         <button
@@ -182,7 +191,7 @@ const AppearancePage: React.FC = () => {
 
       {/* Mobile Save with Undo/Redo */}
       <div className="md:hidden">
-        <div className="flex items-center px-2 py-3 justify-between mb-4">
+        <div className="flex items-center px-2 py-3 justify-between mb-3">
           <button
             onClick={handleBackClick}
             className="font-extrabold text-[20px] text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
