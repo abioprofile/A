@@ -88,9 +88,6 @@ export const useSignIn = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const currentUser = useAppSelector((state) => state.auth.user);
-
-  console.log(currentUser?.isOnboardingCompleted, "completed?");
 
   return useMutation({
     mutationFn: async (data: SignInRequest) => {
@@ -156,7 +153,7 @@ export const useSignIn = () => {
         description: response.message || "Welcome back!",
       });
 
-      if (currentUser?.isOnboardingCompleted === true) {
+      if (response.data?.isOnboardingCompleted === true) {
         router.push("/dashboard");
       } else {
         router.push("/auth/username");

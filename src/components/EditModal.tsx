@@ -30,8 +30,7 @@ const EditModal: FC<EditModalProps> = ({
     const url = (form.elements.namedItem("url") as HTMLInputElement).value;
 
     onSave(platform, url);
-    toast.success("Link updated");
-    onClose();
+
   };
 
   // Animation variants
@@ -136,7 +135,7 @@ const EditModal: FC<EditModalProps> = ({
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="w-full md:w-[400px] bg-white p-6 rounded-lg shadow-xl"
+              className="w-full md:w-[400px] bg-white p-6 shadow-xl"
               onClick={(e) => e.stopPropagation()}
             >
               <motion.h2
@@ -161,7 +160,7 @@ const EditModal: FC<EditModalProps> = ({
                     whileHover={{ scale: 1.02 }}
                     className="block text-xs md:text-sm font-bold text-[#331400] mb-2 cursor-pointer"
                   >
-                    Platform
+                    Title
                   </motion.label>
                   <motion.input
                     id="platform"
