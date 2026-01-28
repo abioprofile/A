@@ -4,13 +4,16 @@ import { useState, useEffect, useCallback } from "react";
 import {
   DndContext,
   closestCenter,
-  PointerSensor,
+  MouseSensor,
+  TouchSensor,
+  KeyboardSensor,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
+  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -199,8 +202,24 @@ export default function LinkList({
     isVisible: false,
   });
 
-  const sensors = useSensors(useSensor(PointerSensor));
 
+  const sensors = useSensors(
+    useSensor(MouseSensor, {
+      activationConstraint: {
+        distance: 10,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+  
   // Hooks
   const addLinksMutation = useAddLinks();
   const updateLinkMutation = useUpdateLink();
@@ -466,7 +485,7 @@ export default function LinkList({
                     handleEdit(editItem, platform, url);
                   }
                 }}
-                initialPlatform={editItem?.platform || ""}
+                initialPlatform={editItem?.title || ""}
                 initialUrl={editItem?.url || ""}
               />
             </motion.div>

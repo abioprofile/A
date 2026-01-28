@@ -65,7 +65,11 @@ export const useSignUp = () => {
           response.message || "Please check your email to verify your account",
       });
 
-      router.push(`/auth/verification?prev=register&email=${encodeURIComponent(response.data.email)}`);
+      router.push(
+        `/auth/verification?prev=register&email=${encodeURIComponent(
+          response.data.email
+        )}`
+      );
     },
     onError: (error: any) => {
       const errorMessage =
@@ -84,7 +88,6 @@ export const useSignIn = () => {
   const queryClient = useQueryClient();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const currentUser = useAppSelector((state) => state.auth.user);
 
   return useMutation({
     mutationFn: async (data: SignInRequest) => {
@@ -134,7 +137,6 @@ export const useSignIn = () => {
         dispatch(setAuth({ user: response.data, token: token || null }));
       }
 
-
       // Store in localStorage
       if (typeof window !== "undefined") {
         if (token) {
@@ -151,7 +153,11 @@ export const useSignIn = () => {
         description: response.message || "Welcome back!",
       });
 
-     currentUser?.isOnboardingCompleted ? router.push("/dashboard") : router.push("/auth/username");
+      if (response.data?.isOnboardingCompleted === true) {
+        router.push("/dashboard");
+      } else {
+        router.push("/auth/username");
+      }
     },
     onError: (error: any) => {
       // Clear any stored token on error
@@ -178,14 +184,16 @@ export const useVerifyOtp = () => {
       return await verifyEmail(data.token);
     },
     onSuccess: (response: VerifyOtpResponse) => {
-      
       if (response.data) {
-        dispatch(setAuth({ user: response.data.user, token: response.data.token }));
+        dispatch(
+          setAuth({ user: response.data.user, token: response.data.token })
+        );
         localStorage.setItem("auth_token", response.data.token);
         localStorage.setItem("user_data", JSON.stringify(response.data.user));
         router.push("/auth/username");
         toast.success("Email verified successfully", {
-          description: response.message || "Please set your username to continue",
+          description:
+            response.message || "Please set your username to continue",
         });
       }
     },
@@ -229,12 +237,20 @@ export const useForgotPassword = () => {
     mutationFn: async (data: ForgotPasswordFormData) => {
       return await forgotPassword(data.email);
     },
-    onSuccess: (response: { status: string; message: string }, variables: ForgotPasswordFormData) => {
+    onSuccess: (
+      response: { status: string; message: string },
+      variables: ForgotPasswordFormData
+    ) => {
       if (response.status === "success") {
         toast.success("OTP code sent to email", {
-          description: response.message || "Please check your email for OTP code",
+          description:
+            response.message || "Please check your email for OTP code",
         });
-        router.push(`/auth/verification?prev=forgot-password&email=${encodeURIComponent(variables.email)}`);
+        router.push(
+          `/auth/verification?prev=forgot-password&email=${encodeURIComponent(
+            variables.email
+          )}`
+        );
       }
     },
     onError: (error: any) => {
@@ -249,18 +265,24 @@ export const useForgotPassword = () => {
   });
 };
 
-export const useCheckUsername = (username: string, options?: { enabled?: boolean }) => {
+export const useCheckUsername = (
+  username: string,
+  options?: { enabled?: boolean }
+) => {
   return useQuery({
-    queryKey: ['username', username],
+    queryKey: ["username", username],
     queryFn: async () => {
-      return await usernameAvailability(username)
+      return await usernameAvailability(username);
     },
-    enabled: options?.enabled !== undefined ? options.enabled : (!!username && username.trim().length > 0),
+    enabled:
+      options?.enabled !== undefined
+        ? options.enabled
+        : !!username && username.trim().length > 0,
     // Prevent refetching if query is disabled
     refetchOnMount: false,
     refetchOnWindowFocus: false,
-  })
-}
+  });
+};
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
@@ -289,8 +311,8 @@ export const useUpdateProfile = () => {
         dispatch(updateUser(updatedUser));
 
         // Update localStorage
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('user_data', JSON.stringify(updatedUser));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user_data", JSON.stringify(updatedUser));
         }
       }
 
@@ -335,7 +357,11 @@ export const useAddLinks = () => {
     mutationFn: async (data: AddLinksRequest) => {
       return await addLinks(data);
     },
-    onSuccess: (response: { success: boolean; message: string; data: { link: ProfileLink } }) => {
+    onSuccess: (response: {
+      success: boolean;
+      message: string;
+      data: { link: ProfileLink };
+    }) => {
       queryClient.invalidateQueries({ queryKey: ["links"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success("Links added successfully", {
@@ -375,7 +401,7 @@ export const useCurrentUser = () => {
     queryFn: async () => {
       const response = await getCurrentUser();
       const user = response.data;
-      
+
       // Update Redux store with fresh user data
       dispatch(updateUser(user));
 
@@ -383,7 +409,7 @@ export const useCurrentUser = () => {
       if (typeof window !== "undefined") {
         localStorage.setItem("user_data", JSON.stringify(user));
       }
-      
+
       return user;
     },
     enabled:
@@ -408,7 +434,7 @@ export const useUpdateProfileAvatar = () => {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.user);
-  
+
   return useMutation({
     mutationFn: async (avatarFile: File) => {
       return await updateProfileAvatar(avatarFile);
@@ -424,16 +450,16 @@ export const useUpdateProfileAvatar = () => {
           },
         };
         dispatch(updateUser(updatedUser));
-        
+
         // Update localStorage
         if (typeof window !== "undefined") {
           localStorage.setItem("user_data", JSON.stringify(updatedUser));
         }
       }
-      
+
       // Invalidate and refetch user queries
       queryClient.invalidateQueries({ queryKey: ["user"] });
-      
+
       toast.success("Profile avatar updated successfully", {
         description: response.message || "Your profile avatar has been updated",
       });
@@ -464,8 +490,13 @@ export const useUpdateLink = () => {
         url: variables.url,
         isVisible: variables.isVisible,
       });
-      },
-      onSuccess: (response: { success: boolean; message: string; data: ProfileLink, statusCode: number }) => {
+    },
+    onSuccess: (response: {
+      success: boolean;
+      message: string;
+      data: ProfileLink;
+      statusCode: number;
+    }) => {
       queryClient.invalidateQueries({ queryKey: ["links"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success("Link updated successfully", {
@@ -487,13 +518,15 @@ export const useUpdateLink = () => {
 export const useUpdateLinkWithIcon = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (variables: {
-      linkId: string;
-      iconFile: File;
-    }) => {
+    mutationFn: async (variables: { linkId: string; iconFile: File }) => {
       return await updateLinkWithIcon(variables.linkId, variables.iconFile);
     },
-    onSuccess: (response: { success: boolean; message: string; data: ProfileLink, statusCode: number }) => {
+    onSuccess: (response: {
+      success: boolean;
+      message: string;
+      data: ProfileLink;
+      statusCode: number;
+    }) => {
       queryClient.invalidateQueries({ queryKey: ["links"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success("Link icon updated successfully", {
@@ -520,7 +553,12 @@ export const useReorderLinks = () => {
     }) => {
       return await reorderLinks({ links: variables.links });
     },
-    onSuccess: (response: { success: boolean; message: string; data: ProfileLink | null, statusCode: number }) => {
+    onSuccess: (response: {
+      success: boolean;
+      message: string;
+      data: ProfileLink | null;
+      statusCode: number;
+    }) => {
       queryClient.invalidateQueries({ queryKey: ["links"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success("Links reordered successfully", {
@@ -542,12 +580,15 @@ export const useReorderLinks = () => {
 export const useDeleteLink = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (variables: {
-      linkId: string;
-    }) => {
+    mutationFn: async (variables: { linkId: string }) => {
       return await deleteLink(variables.linkId);
     },
-    onSuccess: (response: { success: boolean; message: string; data: ProfileLink | null, statusCode: number }) => {
+    onSuccess: (response: {
+      success: boolean;
+      message: string;
+      data: ProfileLink | null;
+      statusCode: number;
+    }) => {
       queryClient.invalidateQueries({ queryKey: ["links"] });
       queryClient.invalidateQueries({ queryKey: ["user"] });
       toast.success("Link deleted successfully", {
@@ -564,4 +605,4 @@ export const useDeleteLink = () => {
       });
     },
   });
-};  
+};
