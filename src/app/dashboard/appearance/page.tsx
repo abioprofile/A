@@ -372,7 +372,7 @@ const AppearancePage: React.FC = () => {
         </SheetContent>
       </Sheet>
 
-      {/* Mobile Bottom Nav - This triggers the sheet */}
+      {/* Mobile Bottom Nav */}
       <AppearanceBottomNav
         activeTab={activeTab}
         setActiveTab={handleTabClick}
