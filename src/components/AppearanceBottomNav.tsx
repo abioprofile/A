@@ -25,8 +25,8 @@ const AppearanceBottomNav: React.FC<AppearanceBottomNavProps> = ({
   setActiveTab,
 }) => {
   return (
-    <nav className="fixed bottom-4 left-10 right-10 z-50 md:hidden">
-      <div className="flex items-center justify-between gap-10 px-8 h-16 bg-white shadow-2xl border border-gray-200 ">
+    <nav className="fixed bottom-2 left-10 right-10 z-50 md:hidden">
+      <div className="flex justify-between bg-white px-8 py-3 ">
         {menuItems.map((item, index) => {
           const IconComponent = item.icon;
 
