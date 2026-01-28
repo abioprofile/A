@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronLeft, RotateCcw, RotateCw } from "lucide-react";
 import PhoneDisplay from "@/components/PhoneDisplay";
@@ -38,6 +39,7 @@ interface AppState {
     displayName: string;
     bio: string;
     location: string;
+    profileIcon?: string | null;
   };
 }
 
@@ -47,7 +49,7 @@ const AppearancePage: React.FC = () => {
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
-    borderRadius: "12px",
+    borderRadius: "0px",
     backgroundColor: "#ffffff",
     borderColor: "#000000",
     opacity: 1,
@@ -69,29 +71,30 @@ const AppearancePage: React.FC = () => {
     displayName: "",
     bio: "",
     location: "",
+    profileIcon: null as string | null,
   });
 
   // Undo/Redo state
   const [history, setHistory] = useState<AppState[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
 
-  const getCurrentState = (): AppState => ({
+  const getCurrentState = useCallback((): AppState => ({
     buttonStyle,
     fontStyle,
     selectedTheme,
     profile,
-  });
+  }), [buttonStyle, fontStyle, selectedTheme, profile]);
 
-  const addToHistory = (newState: AppState) => {
+  const addToHistory = useCallback((newState: AppState) => {
     setHistory((prev) => {
       const newHistory = prev.slice(0, historyIndex + 1);
       newHistory.push(newState);
       return newHistory;
     });
     setHistoryIndex((prev) => prev + 1);
-  };
+  }, [historyIndex]);
 
-  const undo = () => {
+  const undo = useCallback(() => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
       const previousState = history[newIndex];
@@ -104,9 +107,9 @@ const AppearancePage: React.FC = () => {
     } else {
       toast.error("Nothing to undo");
     }
-  };
+  }, [history, historyIndex]);
 
-  const redo = () => {
+  const redo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1;
       const nextState = history[newIndex];
@@ -119,11 +122,23 @@ const AppearancePage: React.FC = () => {
     } else {
       toast.error("Nothing to redo");
     }
-  };
+  }, [history, historyIndex]);
 
-  const handleStateChange = () => {
+  const handleStateChange = useCallback(() => {
     addToHistory(getCurrentState());
-  };
+  }, [addToHistory, getCurrentState]);
+
+  // Memoize the profile update handler to prevent infinite loops
+  const handleProfileUpdate = useCallback((updatedProfile: {
+    profileImage: string;
+    displayName: string;
+    bio: string;
+    location: string;
+    profileIcon?: string | null;
+  }) => {
+    setProfile(updatedProfile);
+    handleStateChange();
+  }, [handleStateChange]);
 
   const { data: linksData } = useGetAllLinks();
 
@@ -135,6 +150,10 @@ const AppearancePage: React.FC = () => {
 
   const handleSaveAll = () => {
     toast.success("All appearance settings saved successfully!");
+  };
+  const router = useRouter();
+  const handleBackClick = () => { 
+    router.back();
   };
 
   const handleTabClick = (index: number) => {
@@ -154,7 +173,7 @@ const AppearancePage: React.FC = () => {
       <div className="hidden md:flex justify-end mb-4 ">
         <button
           onClick={handleSaveAll}
-          className="bg-[#FED45C] cursor-pointer font-bold px-6 py-2 text-sm"
+          className="bg-[#FED45C] shadow-[2px_2px_0px_0px_#000000] cursor-pointer font-bold px-6 py-2 text-sm"
         >
           Save Changes
         </button>
@@ -162,8 +181,8 @@ const AppearancePage: React.FC = () => {
 
       {/* Mobile Save with Undo/Redo */}
       <div className="md:hidden">
-        <div className="flex items-center px-2 py-3 justify-between mb-8">
-          <button className="font-extrabold text-[20px] text-[#331400]">
+        <div className="flex items-center px-2 py-3 justify-between mb-4">
+          <button onClick={handleBackClick} className="font-extrabold text-[20px] text-[#331400]">
             <ChevronLeft className="inline mr-2" />
             Appearance
           </button>
@@ -186,7 +205,7 @@ const AppearancePage: React.FC = () => {
             </button>
             <button
               onClick={handleSaveAll}
-              className="text-[#331400] text-[13px] shadow-[4px_4px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2"
+              className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2"
             >
               Save
             </button>
@@ -238,13 +257,10 @@ const AppearancePage: React.FC = () => {
             ))}
           </div>
 
-          <div className="md:mt-6">
+          <div className="md:mt-6 md:max-w-3xl">
             {activeTab === 0 && (
               <ProfileContent
-                onProfileUpdate={(updatedProfile) => {
-                  setProfile(updatedProfile);
-                  handleStateChange();
-                }}
+                onProfileUpdate={handleProfileUpdate}
                 initialData={profile}
               />
             )}
@@ -288,7 +304,7 @@ const AppearancePage: React.FC = () => {
       <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
         <SheetContent
           side="bottom"
-          className={`rounded-t-4xl shadow-2xl p-0 overflow-hidden transition-all duration-300 ${
+          className={`shadow-2xl p-0 overflow-hidden transition-all duration-300 ${
             activeTab === 2 || activeTab === 3 ? "h-[35vh]" : "h-[50vh]"
           }`}
         >
@@ -311,10 +327,7 @@ const AppearancePage: React.FC = () => {
             <div className="flex-1 overflow-y-auto px-2 md:py-4">
               {activeTab === 0 && (
                 <ProfileContent
-                  onProfileUpdate={(updatedProfile) => {
-                    setProfile(updatedProfile);
-                    handleStateChange();
-                  }}
+                  onProfileUpdate={handleProfileUpdate}
                   initialData={profile}
                 />
               )}

@@ -13,8 +13,8 @@ const MobileBottomNav = () => {
     /* FULL SCREEN RED BACKGROUND */
     <div className="relative z-50 md:hidden">
       {/* WHITE BOTTOM NAV */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-black/10 shadow-2xl shadow-black/60 z-50">
-        <div className="flex justify-around items-center h-14 px-2 py-3">
+      <nav className="fixed bottom-2 left-0 right-0  border-t-1 border-black  z-50">
+        <div className="flex justify-around items-center h-16 px-2 py-3">
           {sidebarNav.map((item) => {
             const isActive = pathname === item.url;
 
@@ -31,12 +31,12 @@ const MobileBottomNav = () => {
                 <Image
                   src={item.icon}
                   alt={item.title}
-                  width={20}
-                  height={20}
+                  width={25}
+                  height={25}
                   style={{
                     filter: isActive
-                      ? "invert(25%) sepia(98%) saturate(7300%) hue-rotate(355deg) brightness(98%) contrast(100%)"
-                      : "invert(50%)",
+                      ? "invert(27%) sepia(97%) saturate(7293%) hue-rotate(0deg) brightness(106%) contrast(106%)"
+                      : "invert(17%) sepia(31%) saturate(542%) hue-rotate(2deg) brightness(92%) contrast(88%)",
                   }}
                 />
                 <span className="text-[10px] font-semibold whitespace-nowrap">

@@ -214,7 +214,7 @@ export default function SideDashboard() {
   return (
     <>
       {/* MOBILE TOP BAR */}
-      <div className="md:hidden sticky mb-8 top-0 z-10 bg-[#Fff7de] w-full">
+      <div className="md:hidden sticky mb-8 top-4 z-10 bg-[#Fff7de] w-full">
         <div className="px-8 py-3 mb-2">
           <div className="flex items-center justify-between">
             <div>

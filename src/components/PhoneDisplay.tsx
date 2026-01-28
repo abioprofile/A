@@ -5,6 +5,7 @@ import { ButtonStyle } from "../app/dashboard/appearance/page";
 import { FontStyle } from "./FontCustomizer";
 import { ProfileLink } from "@/types/auth.types";
 import { useAppSelector } from "@/stores/hooks";
+import Image from "next/image";
 
 // Import Font Awesome icons
 import {
@@ -132,7 +133,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     selectedTheme.startsWith("blob:") || selectedTheme.startsWith("/themes/");
 
   return (
-    <div className="relative w-full max-w-[300px] md:max-w-[370px] h-[67vh] md:h-[650px] mx-auto border-[3px] md:border-[6px] border-black  overflow-hidden bg-white shadow-lg md:shadow-xl">
+    <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[70vh] md:h-[600px] mx-auto  border-[2px]  border-black overflow-hidden bg-white shadow-2xl">
       {/* Background */}
       {isImage ? (
         <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
@@ -149,9 +150,9 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
         {/* Profile Section */}
-        <div className="p-6 flex flex-col relative items-start bg-white">
+        <div className="p-4  flex flex-col relative items-start bg-white">
           <div className="flex gap-3 items-center">
-            <div className="w-[60px] h-[60px] rounded-full overflow-hidden shadow-md border border-gray-300">
+            <div className="w-[50px] h-[50px] rounded-full overflow-hidden shadow-md border border-gray-300">
               <img
                 src={
                   userDataProfile?.profile?.avatarUrl ||
@@ -163,13 +164,13 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
             </div>
             <div className="flex-1 min-w-0">
               <h1
-                className="text-[16px] font-bold truncate"
+                className="text-[14px] font-bold truncate"
                 title={userDataProfile?.name || "Your Name"}
               >
                 {userDataProfile?.name || "Your Name"}
               </h1>
               <p
-                className="text-[10px] mt-1 font-medium text-gray-600 truncate"
+                className="text-[10px] mt- font-medium text-gray-600 truncate"
                 title={`@${
                   userDataProfile?.profile?.username
                     ?.toLowerCase()
@@ -185,19 +186,25 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           </div>
 
           <p
-            className="mt-2 text-[12px] text-left font-semibold line-clamp-2"
+            className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
             title={userDataProfile?.profile?.bio || "Add a short bio here..."}
           >
             {userDataProfile?.profile?.bio || "Add a short bio here..."}
           </p>
 
-          <div className="mt-2 mb-2 flex items-center gap-1 px-2 py-1 border text-[10px] border-[#000] bg-white/70">
+          <div className="mt-2 mb-2 flex items-center  p-[2px] border text-[10px] border-[#4e4e4e] bg-white/70">
             <div className="flex-shrink-0">
               {/* Location icon from Font Awesome */}
-              <FaMapPin className="w-3 h-3 text-black" />
+              <Image
+                src="/icons/location1.png"
+                alt="Location"
+                width={10}
+                height={10}
+                className="w-fit h-2"
+              />
             </div>
             <span
-              className="text-[10px] font-medium truncate max-w-[180px]"
+              className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]"
               title={userDataProfile?.profile?.location || "Add location"}
             >
               {userDataProfile?.profile?.location || "Add location"}
@@ -206,14 +213,14 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 
           {/* Links indicator */}
           <div className="mt-4 flex absolute bottom-0 flex-col items-center ">
-            <span className="text-[11px]">Links</span>
-            <div className="h-[2px] w-6 bg-red-500 rounded " />
+            <span className="text-[9px] font-medium">Links</span>
+            <div className="h-[3px] absolute -bottom-[2px] w-6 bg-red-500  " />
           </div>
         </div>
 
         {/* Links/Buttons Section - Fixed with proper scrolling */}
         <div
-          className="flex-1 p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden"
+          className="flex-1 py-4 px-6 overflow-y-auto [&::-webkit-scrollbar]:hidden"
           style={{
             scrollbarWidth: "none",
             msOverflowStyle: "none",
@@ -221,7 +228,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
         >
           {displayLinks.length > 0 ? (
             <div
-              className="space-y-3 max-h-full overflow-y-auto pb-2 [&::-webkit-scrollbar]:hidden"
+              className="space-y-3 max-h-full  pb-2 [&::-webkit-scrollbar]:hidden"
               style={{
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
@@ -233,17 +240,17 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center gap-3 font-semibold px-4 py-3 relative overflow-hidden rounded-lg hover:opacity-90 transition-opacity active:scale-[0.98] break-words"
+                  className="w-full flex items-center gap-3 font-semibold px-4 py-2  relative overflow-hidden rounded-lg hover:opacity-90 transition-opacity active:scale-[0.98] break-words"
                   style={{
                     borderRadius: buttonStyle.borderRadius,
                     border: `2px solid ${buttonStyle.borderColor}`,
                     boxShadow: buttonStyle.boxShadow,
                     textDecoration: "none",
-                    minHeight: "48px",
+                    minHeight: "30px",
                   }}
                 >
                   <span
-                    className="absolute inset-0"
+                    className="absolute  inset-0 "
                     style={{
                       backgroundColor: buttonStyle.backgroundColor,
                       opacity: buttonStyle.opacity,
@@ -254,7 +261,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                     className="relative flex items-center gap-3 text-sm w-full"
                     style={textStyle}
                   >
-                    <div className="flex-shrink-0 flex items-center justify-center w-5 h-5">
+                    <div className="flex-shrink-0 flex items-center justify-center w-4 h-4">
                       {getPlatformIcon(link.platform)}
                     </div>
                     <span className="truncate overflow-ellipsis break-words max-w-[calc(100%-2rem)]">

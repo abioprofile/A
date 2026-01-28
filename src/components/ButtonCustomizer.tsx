@@ -1,6 +1,6 @@
 'use client';
 import Image from "next/image";
-import React from 'react';
+import React, { useState } from 'react';
 import { ButtonStyle } from '../app/dashboard/appearance/page';
 
 interface ButtonCustomizerProps {
@@ -22,6 +22,9 @@ const COLORS = [
 ];
 
 const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setButtonStyle }) => {
+  const [showMobileFillPicker, setShowMobileFillPicker] = useState(false);
+  const [showMobileStrokePicker, setShowMobileStrokePicker] = useState(false);
+
   return (
     <>
       {/* MOBILE VIEW */}
@@ -79,13 +82,8 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
           {/* Fill Color */}
           <div className="flex items-center justify-between mb-2">
             <label className="block text-[12px] font-semibold">Fill</label>
-            {/* <label className="relative cursor-pointer">
-              <div 
-                className="w-8 h-8 rounded border-2 border-gray-300 flex items-center justify-center bg-white"
-                style={{ backgroundColor: buttonStyle.backgroundColor }}
-              >
-                <span className="text-[8px] text-gray-400">+</span>
-              </div>
+            <label className="relative cursor-pointer">
+             
               <input
                 type="color"
                 value={buttonStyle.backgroundColor}
@@ -93,10 +91,34 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 className="hidden"
                 aria-label="Custom fill color picker"
               />
-            </label> */}
+            </label>
           </div>
           <div className="overflow-x-auto pb-2 scrollbar-hide mb-4">
             <div className="flex gap-2 min-w-max">
+              {/* Color picker button - First box */}
+              <label className="relative cursor-pointer w-10 h-10 flex-shrink-0">
+                <div 
+                  className="w-full h-full border-2 border-gray-300 flex items-center justify-center transition-transform hover:scale-110"
+                  style={{
+                    background: 'linear-gradient(45deg, #FF0000, #FF9900, #FFFF00, #00FF00, #00FFFF, #0000FF, #9900FF, #FF00FF)',
+                    borderColor: showMobileFillPicker ? '#000' : '#ccc',
+                    boxShadow: showMobileFillPicker ? '0 0 0 2px #fff, 0 0 0 4px #000' : 'none'
+                  }}
+                >
+                  <span className="text-[12px] font-bold text-white">+</span>
+                </div>
+                <input
+                  type="color"
+                  value={buttonStyle.backgroundColor}
+                  onChange={e => setButtonStyle(s => ({ ...s, backgroundColor: e.target.value }))}
+                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                  onClick={() => setShowMobileFillPicker(true)}
+                  onBlur={() => setShowMobileFillPicker(false)}
+                  aria-label="Custom fill color picker"
+                />
+              </label>
+              
+              {/* Rest of the color swatches */}
               {COLORS.map((c) => (
                 <button
                   key={`fill-${c}`}
@@ -112,44 +134,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               ))}
             </div>
           </div>
-
-          {/* Stroke Color */}
-          <div className="flex items-center justify-between mb-2">
-            <label className="block text-[12px] font-semibold">Stroke</label>
-            {/* <label className="relative cursor-pointer">
-              <div 
-                className="w-8 h-8 rounded border-2 border-gray-300 flex items-center justify-center bg-white"
-                style={{ backgroundColor: buttonStyle.borderColor }}
-              >
-                <span className="text-[8px] text-gray-400">+</span>
-              </div>
-              <input
-                type="color"
-                value={buttonStyle.borderColor}
-                onChange={e => setButtonStyle(s => ({ ...s, borderColor: e.target.value }))}
-                className="hidden"
-                aria-label="Custom stroke color picker"
-              />
-            </label> */}
-          </div>
-          <div className="overflow-x-auto pb-2 scrollbar-hide mb-4">
-            <div className="flex gap-2 min-w-max">
-              {COLORS.map((c) => (
-                <button
-                  key={`stroke-${c}`}
-                  onClick={() => setButtonStyle(s => ({ ...s, borderColor: c }))}
-                  className="w-10 h-10 border-2 transition-transform hover:scale-110 flex-shrink-0"
-                  style={{
-                    backgroundColor: c,
-                    borderColor: buttonStyle.borderColor === c ? '#000' : '#ccc',
-                    boxShadow: buttonStyle.borderColor === c ? '0 0 0 2px #fff, 0 0 0 4px #000' : 'none'
-                  }}
-                  aria-label={`Select stroke color ${c}`}
-                />
-              ))}
-            </div>
-          </div>
-
+          
           {/* Opacity (background only) */}
           <div className="mt-4">
             <label className="block text-[12px] font-semibold mb-2">Opacity</label>
@@ -171,6 +156,62 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               <span className="text-sm font-medium w-12 text-center">
                 {Math.round(buttonStyle.opacity * 50)}%
               </span>
+            </div>
+          </div>
+          
+          {/* Stroke Color */}
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-[12px] font-semibold">Stroke</label>
+            <label className="relative cursor-pointer">
+              
+              <input
+                type="color"
+                value={buttonStyle.borderColor}
+                onChange={e => setButtonStyle(s => ({ ...s, borderColor: e.target.value }))}
+                className="hidden"
+                aria-label="Custom stroke color picker"
+              />
+            </label>
+          </div>
+          <div className="overflow-x-auto pb-2 scrollbar-hide mb-4">
+            <div className="flex gap-2 min-w-max">
+              {/* Color picker button - First box */}
+              <label className="relative cursor-pointer w-10 h-10 flex-shrink-0">
+                <div 
+                  className="w-full h-full border-2 border-gray-300 flex items-center justify-center transition-transform hover:scale-110"
+                  style={{
+                    background: 'linear-gradient(45deg, #FF0000, #FF9900, #FFFF00, #00FF00, #00FFFF, #0000FF, #9900FF, #FF00FF)',
+                    borderColor: showMobileStrokePicker ? '#000' : '#ccc',
+                    boxShadow: showMobileStrokePicker ? '0 0 0 2px #fff, 0 0 0 4px #000' : 'none'
+                  }}
+                >
+                  <span className="text-[12px] font-bold text-white">+</span>
+                </div>
+                <input
+                  type="color"
+                  value={buttonStyle.borderColor}
+                  onChange={e => setButtonStyle(s => ({ ...s, borderColor: e.target.value }))}
+                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                  onClick={() => setShowMobileStrokePicker(true)}
+                  onBlur={() => setShowMobileStrokePicker(false)}
+                  aria-label="Custom stroke color picker"
+                />
+              </label>
+              
+              {/* Rest of the color swatches */}
+              {COLORS.map((c) => (
+                <button
+                  key={`stroke-${c}`}
+                  onClick={() => setButtonStyle(s => ({ ...s, borderColor: c }))}
+                  className="w-10 h-10 border-2 transition-transform hover:scale-110 flex-shrink-0"
+                  style={{
+                    backgroundColor: c,
+                    borderColor: buttonStyle.borderColor === c ? '#000' : '#ccc',
+                    boxShadow: buttonStyle.borderColor === c ? '0 0 0 2px #fff, 0 0 0 4px #000' : 'none'
+                  }}
+                  aria-label={`Select stroke color ${c}`}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -196,17 +237,17 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               None
             </button>
 
-            {/* Soft Shadow */}
+            {/* Soft Shadow - 50% opacity (80 in hex) */}
             <button
               onClick={() =>
                 setButtonStyle(s => ({
                   ...s,
-                  boxShadow: `2px 2px 6px ${s.shadowColor || '#000000'}33`,
+                  boxShadow: `2px 2px 6px ${s.shadowColor || '#000000'}80`,
                 }))
               }
               className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
               style={{
-                boxShadow: `2px 2px 6px ${buttonStyle.shadowColor || '#000000'}33`
+                boxShadow: `2px 2px 6px ${buttonStyle.shadowColor || '#000000'}80`
               }}
             >
               <Image
@@ -218,7 +259,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               Soft Shadow
             </button>
 
-            {/* Hard Shadow */}
+            {/* Hard Shadow - 100% opacity (no alpha channel) */}
             <button
               onClick={() =>
                 setButtonStyle(s => ({
@@ -237,7 +278,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 width={20}
                 height={20}
               />
-              Hard Shadow
+              Hard Shadow11
             </button>
           </div>
 
@@ -252,7 +293,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                     const currentShadow = buttonStyle.boxShadow;
                     if (currentShadow && currentShadow !== 'none') {
                       if (currentShadow.includes('2px 2px 6px')) {
-                        setButtonStyle(s => ({ ...s, shadowColor: c, boxShadow: `2px 2px 6px ${c}33` }));
+                        setButtonStyle(s => ({ ...s, shadowColor: c, boxShadow: `2px 2px 6px ${c}80` }));
                       } else if (currentShadow.includes('4px 4px 0px')) {
                         setButtonStyle(s => ({ ...s, shadowColor: c, boxShadow: `4px 4px 0px 0px ${c}` }));
                       }
@@ -337,7 +378,6 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 setButtonStyle(s => ({ ...s, backgroundColor: e.target.value }))
               }
             />
-            <span className="text-[12px] bg-[#ECECED] border border-[#000] w-full pl-2 py-[5px]">{buttonStyle.backgroundColor}</span>
           </div>
 
           {/* Stroke Color */}
@@ -351,7 +391,6 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 setButtonStyle(s => ({ ...s, borderColor: e.target.value }))
               }
             />
-            <span className="text-[12px] bg-[#ECECED] border border-[#000] w-full pl-2 py-[5px]">{buttonStyle.borderColor}</span>
           </div>
 
           {/* Opacity (background only) */}
@@ -400,16 +439,16 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               None
             </button>
 
-            {/* Soft Shadow */}
+            {/* Soft Shadow - 50% opacity (80 in hex) */}
             <button
               onClick={() =>
                 setButtonStyle(s => ({
                   ...s,
-                  boxShadow: `2px 2px 6px ${s.shadowColor || '#000000'}33`,
+                  boxShadow: `2px 2px 6px ${s.shadowColor || '#000000'}80`,
                 }))
               }
               style={{
-                boxShadow: `2px 2px 6px ${buttonStyle.shadowColor || '#000000'}33`
+                boxShadow: `2px 2px 6px ${buttonStyle.shadowColor || '#000000'}80`
               }}
               className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
             >
@@ -422,16 +461,16 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               Soft Shadow
             </button>
 
-            {/* Hard Shadow */}
+            {/* Hard Shadow - 100% opacity (no alpha channel) */}
             <button
               onClick={() =>
                 setButtonStyle(s => ({
                   ...s,
-                  boxShadow: `4px 4px 0px 0px ${s.shadowColor || '#000000'}`,
+                  boxShadow: `0px 0px 0px 0px ${s.shadowColor || '#000000'}`,
                 }))
               }
               style={{
-                boxShadow: `4px 4px 0px 0px ${buttonStyle.shadowColor || '#000000'}`
+                boxShadow: `0px 0px 0px 0px ${buttonStyle.shadowColor || '#000000'}`
               }}
               className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
             >
@@ -459,7 +498,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                   let newShadow = currentShadow;
                   if (currentShadow && currentShadow !== 'none') {
                     if (currentShadow.includes('2px 2px 6px')) {
-                      newShadow = `2px 2px 6px ${newColor}33`;
+                      newShadow = `2px 2px 6px ${newColor}80`; // Changed 33 to 80
                     } else if (currentShadow.includes('4px 4px 0px')) {
                       newShadow = `4px 4px 0px 0px ${newColor}`;
                     }

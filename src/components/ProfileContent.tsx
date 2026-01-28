@@ -1,22 +1,10 @@
 "use client";
 import Image from "next/image";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { MapPin } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import DeleteModal from "@/components/DeleteModal";
 import { toast } from "sonner";
-
-// Debounce hook to prevent too many updates
-function useDebounce<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState<T>(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(handler);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
 
 interface ProfileData {
   profileImage: string;
@@ -51,6 +39,7 @@ const ProfileContent = ({
   const [location, setLocation] = useState(initialData?.location || "");
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDirty, setIsDirty] = useState(false);
 
   const imageInputRef = useRef<HTMLInputElement>(null);
   const iconInputRef = useRef<HTMLInputElement>(null);
@@ -58,39 +47,37 @@ const ProfileContent = ({
   // Update internal state when initialData changes
   useEffect(() => {
     if (initialData) {
-      if (initialData.profileImage) setProfileImage(initialData.profileImage);
-      if (initialData.displayName) setDisplayName(initialData.displayName);
-      if (initialData.bio) setBio(initialData.bio);
-      if (initialData.location) setLocation(initialData.location);
-      if (initialData.profileIcon !== undefined)
-        setProfileIcon(initialData.profileIcon);
+      // Only update if data actually changed
+      const hasChanged =
+        initialData.profileImage !== profileImage ||
+        initialData.displayName !== displayName ||
+        initialData.bio !== bio ||
+        initialData.location !== location ||
+        initialData.profileIcon !== profileIcon;
+
+      if (hasChanged) {
+        if (initialData.profileImage) setProfileImage(initialData.profileImage);
+        if (initialData.displayName) setDisplayName(initialData.displayName);
+        if (initialData.bio) setBio(initialData.bio);
+        if (initialData.location) setLocation(initialData.location);
+        if (initialData.profileIcon !== undefined)
+          setProfileIcon(initialData.profileIcon);
+        setIsDirty(false); // Reset dirty flag when getting new data from parent
+      }
     }
   }, [initialData]);
 
-  const debouncedDisplayName = useDebounce(displayName, 300);
-  const debouncedBio = useDebounce(bio, 300);
-  const debouncedLocation = useDebounce(location, 300);
-
-  const updateProfile = useCallback(() => {
+  const handleSave = () => {
     onProfileUpdate({
       profileImage,
-      displayName: debouncedDisplayName,
-      bio: debouncedBio,
-      location: debouncedLocation,
+      displayName,
+      bio,
+      location,
       profileIcon,
     });
-  }, [
-    profileImage,
-    debouncedDisplayName,
-    debouncedBio,
-    debouncedLocation,
-    profileIcon,
-    onProfileUpdate,
-  ]);
-
-  useEffect(() => {
-    updateProfile();
-  }, [updateProfile]);
+    setIsDirty(false);
+    toast.success("Profile updated!");
+  };
 
   const openModal = (type: string) => setActiveModal(type);
   const closeModal = () => setActiveModal(null);
@@ -111,6 +98,7 @@ const ProfileContent = ({
       toast.success("Profile image uploaded successfully!");
     }
 
+    setIsDirty(true);
     closeModal();
     e.target.value = "";
   };
@@ -119,7 +107,28 @@ const ProfileContent = ({
     setProfileImage(defaultProfileImage);
     setProfileIcon(null);
     toast.success("Profile image deleted");
+    setIsDirty(true);
     setShowDeleteModal(false);
+  };
+
+  const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDisplayName(e.target.value);
+    setIsDirty(true);
+  };
+
+  const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const words = e.target.value.trim().split(/\s+/);
+    if (words.length <= 15) {
+      setBio(e.target.value);
+      setIsDirty(true);
+    } else {
+      toast.error("Your bio can only contain up to 15 words.");
+    }
+  };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLocation(e.target.value);
+    setIsDirty(true);
   };
 
   return (
@@ -154,13 +163,13 @@ const ProfileContent = ({
         <div className="flex flex-row md:flex-col gap-2 md:gap-0 md:space-y-2 mt-2">
           <button
             onClick={() => openModal("imageOptions")}
-            className="bg-black text-white text-[12px] px-4 py-[6px]  cursor-pointer transition hover:opacity-90"
+            className="bg-black text-white text-[12px] px-4 py-[6px] cursor-pointer transition hover:opacity-90"
           >
             Upload Image
           </button>
           <button
             onClick={() => setShowDeleteModal(true)}
-            className="border border-black text-[12px] text-red-600 px-4 py-[6px]  transition hover:bg-red-50"
+            className="border border-black text-[12px] text-red-600 px-4 py-[6px] transition hover:bg-red-50"
           >
             Delete
           </button>
@@ -179,7 +188,7 @@ const ProfileContent = ({
           id="displayName"
           type="text"
           value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
+          onChange={handleDisplayNameChange}
           className="w-full border border-black px-3 py-2 text-[12px] bg-transparent"
           placeholder="Enter your display name"
         />
@@ -193,14 +202,7 @@ const ProfileContent = ({
         <textarea
           id="bio"
           value={bio}
-          onChange={(e) => {
-            const words = e.target.value.trim().split(/\s+/);
-            if (words.length <= 15) {
-              setBio(e.target.value);
-            } else {
-              toast.error("Your bio can only contain up to 15 words.");
-            }
-          }}
+          onChange={handleBioChange}
           className="w-full border border-[#000] px-3 py-2 bg-transparent text-[12px] h-10 md:h-24 text-gray-800"
           placeholder="Tell us about yourself (max 15 words)..."
         />
@@ -224,11 +226,14 @@ const ProfileContent = ({
             type="text"
             placeholder="Add your location"
             value={location}
-            onChange={(e) => setLocation(e.target.value)}
+            onChange={handleLocationChange}
             className="flex-1 placeholder:text-[12px] bg-transparent outline-none text-[12px] text-gray-800"
           />
         </div>
       </div>
+
+      {/* Save Button */}
+      
 
       {/* --- MODALS --- */}
       <Modal isOpen={activeModal === "imageOptions"} onClose={closeModal}>
