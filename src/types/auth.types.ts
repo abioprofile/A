@@ -129,3 +129,18 @@ export interface AddLinksRequest {
   url: string;
   platform: string;
 }
+
+interface WaitlistData {
+  id: string,
+  email: string,
+  createdAt: string,
+  updatedAt: string,
+  name: string
+}
+
+export interface WaitlistRequest {
+  success: boolean,
+  message: string,
+  data: WaitlistData[],
+  statusCode: number
+}

@@ -18,6 +18,8 @@ import {
   updateLinkWithIcon,
   reorderLinks,
   deleteLink,
+  createWaitlist,
+  getWaitlist,
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -82,6 +84,8 @@ export const useSignUp = () => {
     },
   });
 };
+
+
 
 // Sign in mutation
 export const useSignIn = () => {
@@ -604,5 +608,50 @@ export const useDeleteLink = () => {
         description: errorMessage,
       });
     },
+  });
+};
+
+
+export const useCreateWaitlist = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: { email: string; name: string }) => {
+      return await createWaitlist(data);
+    },
+    onSuccess: (response: {
+      success: boolean;
+      message: string;
+      data: {
+        id: string;
+        email: string;
+        createdAt: string;
+        updatedAt: string;
+        name: string;
+      };
+      statusCode: number;
+    }) => {
+      toast.success("Successfully joined waitlist");
+      queryClient.invalidateQueries({ queryKey: ["waitlist"] });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to join waitlist. Please try again.";
+      toast.error("Failed to join waitlist", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useGetWaitlist = () => {
+  return useQuery({
+    queryKey: ["waitlist"],
+    queryFn: async () => {
+      return await getWaitlist();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 };

@@ -11,6 +11,7 @@ import {
   AllLinksResponse,
   UserProfile,
   VerifyOtpResponse,
+  WaitlistRequest,
 } from "@/types/auth.types";
 
 // Sign up API
@@ -200,11 +201,11 @@ export const updateProfileAvatar = async (
 ): Promise<UpdateProfileResponse> => {
   const formData = new FormData();
   formData.append('avatar', avatarFile);
-  
+
   // The interceptor will handle removing Content-Type for FormData
   // so the browser can set it with the correct boundary
   const response = await apiClient.patch<UpdateProfileResponse>(
-    "/user/profile/avatar", 
+    "/user/profile/avatar",
     formData
   );
   return response.data;
@@ -294,3 +295,35 @@ export const deleteLink = async (
   }>(`/links/${linkId}`);
   return response.data;
 };
+
+export const createWaitlist = async (data: {email: string, name: string}): Promise<{
+  success: boolean;
+  message: string;
+  data: {
+    id: string,
+    email: string,
+    createdAt: string,
+    updatedAt: string,
+    name: string
+  };
+  statusCode: number;
+}> => {
+  const response = await apiClient.post<{
+    success: boolean;
+    message: string;
+    data: {
+      id: string,
+      email: string,
+      createdAt: string,
+      updatedAt: string,
+      name: string
+    };
+    statusCode: number;
+  }>('/waitlist', data);
+  return response.data
+}
+
+export const getWaitlist = async () : Promise<WaitlistRequest> => {
+  const response = await apiClient.get<WaitlistRequest>('/waitlist/jzI27AUJTCKU');
+  return response.data
+}

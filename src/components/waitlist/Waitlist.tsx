@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { toast, Toaster } from "sonner";
+import { useCreateWaitlist, useGetWaitlist } from "@/hooks/api/useAuth";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -58,8 +59,16 @@ const Counter = ({ target, duration = 2000, suffix = "" }: CounterProps) => {
 const Waitlist = () => {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [waitlistCount, setWaitlistCount] = useState(1000); // 👈 Start from 1000
+  const [waitlistCount, setWaitlistCount] = useState(0); 
+
+  const { data: waitlistData } = useGetWaitlist();
+  const { mutate: joinWaitlist, isPending } = useCreateWaitlist();
+
+  useEffect(() => {
+    if (waitlistData?.data) {
+      setWaitlistCount(waitlistData.data.length);
+    }
+  }, [waitlistData]);
 
   const sectionRef = useRef<HTMLElement>(null);
   const stepsRef = useRef<(HTMLDivElement | null)[]>([]);
@@ -76,11 +85,6 @@ const Waitlist = () => {
     }
   };
 
-  // TODO: Uncomment and type your postFetch function
-  // const postFetch = async (url: string, data: { name: string; email: string }): Promise<any> => {
-  //   // Implement your fetch logic here
-  // };
-
   // ✅ Increment count on success
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,28 +93,15 @@ const Waitlist = () => {
       return toast.error("Please fill in all fields.");
     }
 
-    setLoading(true);
-    try {
-      // TODO: Uncomment when postFetch is implemented
-      // const result = await postFetch("/waitlist", { name, email });
-
-      // if (typeof result === "string") {
-      //   return toast.error(result);
-      // }
-
-      // Mock success for now
-      toast.success("You've been added to the waitlist 🎉");
-
-      // ✅ Increment count after successful join
-      setWaitlistCount((prev) => prev + 1);
-
-      setEmail("");
-      setName("");
-    } catch (error) {
-      toast.error("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+    joinWaitlist(
+      { name, email },
+      {
+        onSuccess: () => {
+          setEmail("");
+          setName("");
+        },
+      }
+    );
   };
 
   // GSAP animation
@@ -206,12 +197,12 @@ const Waitlist = () => {
           {/* Submit Button */}
           <button
             type="submit"
-            disabled={loading}
+            disabled={isPending}
             className={`bg-[#FED45C] shadow-[3px_3px_0px_0px_#000000] text-[#FF0000] px-4 py-3 font-semibold transition-opacity ${
-              loading ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"
+              isPending ? "opacity-70 cursor-not-allowed" : "hover:opacity-90"
             }`}
           >
-            {loading ? "Joining..." : "Join Waitlist"}
+            {isPending ? "Joining..." : "Join Waitlist"}
           </button>
         </form>
 
