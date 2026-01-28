@@ -45,7 +45,8 @@ interface AppState {
 
 /* Appearance Page*/
 const AppearancePage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<number>(0);
+  const router = useRouter();
+  const [activeTab, setActiveTab] = useState<number | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
@@ -151,8 +152,8 @@ const AppearancePage: React.FC = () => {
   const handleSaveAll = () => {
     toast.success("All appearance settings saved successfully!");
   };
-  const router = useRouter();
-  const handleBackClick = () => { 
+
+  const handleBackClick = () => {
     router.back();
   };
 
@@ -182,8 +183,11 @@ const AppearancePage: React.FC = () => {
       {/* Mobile Save with Undo/Redo */}
       <div className="md:hidden">
         <div className="flex items-center px-2 py-3 justify-between mb-4">
-          <button onClick={handleBackClick} className="font-extrabold text-[20px] text-[#331400]">
-            <ChevronLeft className="inline mr-2" />
+          <button
+            onClick={handleBackClick}
+            className="font-extrabold text-[20px] text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
+          >
+            <ChevronLeft className="inline" />
             Appearance
           </button>
           <div className="flex items-center gap-2">
@@ -317,7 +321,7 @@ const AppearancePage: React.FC = () => {
               <SheetHeader className="">
                 <div className="flex items-center justify-between">
                   <SheetTitle className="text-lg font-semibold">
-                    {menuItems[activeTab]}
+                    {activeTab !== null ? menuItems[activeTab] : ""}
                   </SheetTitle>
                 </div>
               </SheetHeader>
