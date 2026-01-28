@@ -2,7 +2,6 @@ import axios, { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from 'ax
 
 // Get API base URL from environment variables
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-console.log('API_BASE_URL:', API_BASE_URL); // Temporary debug log
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({

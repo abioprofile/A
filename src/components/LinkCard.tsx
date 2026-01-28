@@ -583,7 +583,6 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                               onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                console.log(key, "key - button clicked");
                                 handleIconSelect(e, key);
                               }}
                               className="flex flex-col items-center p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
