@@ -5,6 +5,8 @@ import { MapPin } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import DeleteModal from "@/components/DeleteModal";
 import { toast } from "sonner";
+import { useAppSelector } from "@/stores/hooks";
+import { useUpdateProfileAvatar } from "@/hooks/api/useAuth";
 
 interface ProfileData {
   profileImage: string;
@@ -25,9 +27,13 @@ const ProfileContent = ({
 }: ProfileContentProps) => {
   // Ensure default profile image path points to public/icons/Profile-Picture.png
   const defaultProfileImage = "/icons/Profile-Picture.png";
+  const userData = useAppSelector((state) => state.auth.user);
+
+
+  const { mutate: updateAvatar, isPending: isUploadingAvatar } = useUpdateProfileAvatar();
 
   const [profileImage, setProfileImage] = useState<string>(
-    initialData?.profileImage || defaultProfileImage,
+    userData?.profile?.avatarUrl || defaultProfileImage,
   );
   const [profileIcon, setProfileIcon] = useState<string | null>(
     initialData?.profileIcon || null,
@@ -89,18 +95,43 @@ const ProfileContent = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const imageUrl = URL.createObjectURL(file);
     if (type === "icon") {
+      const imageUrl = URL.createObjectURL(file);
       setProfileIcon(imageUrl);
       toast.success("Icon uploaded successfully!");
+      onProfileUpdate({
+        profileImage,
+        displayName,
+        bio,
+        location,
+        profileIcon: imageUrl,
+      });
+      setIsDirty(true);
+      closeModal();
+      e.target.value = "";
     } else {
-      setProfileImage(imageUrl);
-      toast.success("Profile image uploaded successfully!");
+      updateAvatar(file, {
+        onSuccess: (response) => {
+          if (response.data?.avatarUrl) {
+            setProfileImage(response.data.avatarUrl);
+            onProfileUpdate({
+              profileImage: response.data.avatarUrl,
+              displayName,
+              bio,
+              location,
+              profileIcon,
+            });
+            toast.success("Profile image uploaded successfully!");
+          }
+          closeModal();
+          e.target.value = "";
+        },
+        onError: () => {
+          toast.error("Failed to upload profile image");
+          e.target.value = "";
+        }
+      });
     }
-
-    setIsDirty(true);
-    closeModal();
-    e.target.value = "";
   };
 
   const handleDeleteImage = () => {
@@ -112,23 +143,47 @@ const ProfileContent = ({
   };
 
   const handleDisplayNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDisplayName(e.target.value);
+    const newVal = e.target.value;
+    setDisplayName(newVal);
     setIsDirty(true);
+    onProfileUpdate({
+      profileImage,
+      displayName: newVal,
+      bio,
+      location,
+      profileIcon,
+    });
   };
 
   const handleBioChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const words = e.target.value.trim().split(/\s+/);
     if (words.length <= 15) {
-      setBio(e.target.value);
+      const newVal = e.target.value;
+      setBio(newVal);
       setIsDirty(true);
+      onProfileUpdate({
+        profileImage,
+        displayName,
+        bio: newVal,
+        location,
+        profileIcon,
+      });
     } else {
       toast.error("Your bio can only contain up to 15 words.");
     }
   };
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(e.target.value);
+    const newVal = e.target.value;
+    setLocation(newVal);
     setIsDirty(true);
+    onProfileUpdate({
+      profileImage,
+      displayName,
+      bio,
+      location: newVal,
+      profileIcon,
+    });
   };
 
   return (
@@ -137,7 +192,7 @@ const ProfileContent = ({
       <div className="flex justify-between md:mb-8 items-center w-full">
         <div className="relative w-20 h-20 rounded-full border border-gray-300 overflow-hidden">
           <Image
-            src={profileImage || defaultProfileImage}
+            src={userData?.profile?.avatarUrl || defaultProfileImage}
             alt="Profile"
             fill
             sizes="60px"
@@ -167,12 +222,12 @@ const ProfileContent = ({
           >
             Upload Image
           </button>
-          <button
+          {/* <button
             onClick={() => setShowDeleteModal(true)}
             className="border border-black text-[12px] text-red-600 px-4 py-[6px] transition hover:bg-red-50"
           >
             Delete
-          </button>
+          </button> */}
         </div>
       </div>
 
@@ -276,21 +331,31 @@ const ProfileContent = ({
           <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
             Profile Picture
           </h2>
-          <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 cursor-pointer">
-            <Image
-              src="/icons/upload.svg"
-              alt="Upload"
-              width={32}
-              height={32}
-            />
-            <p className="text-xs md:text-sm font-medium text-gray-700">
-              Select file to upload
-            </p>
+          <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 ${isUploadingAvatar ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+            {isUploadingAvatar ? (
+               <div className="flex flex-col items-center">
+                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
+                 <p className="text-xs md:text-sm font-medium text-gray-700">Uploading...</p>
+               </div>
+            ) : (
+              <>
+                <Image
+                  src="/icons/upload.svg"
+                  alt="Upload"
+                  width={32}
+                  height={32}
+                />
+                <p className="text-xs md:text-sm font-medium text-gray-700">
+                  Select file to upload
+                </p>
+              </>
+            )}
             <input
               ref={imageInputRef}
               type="file"
               hidden
               accept="image/*"
+              disabled={isUploadingAvatar}
               onChange={(e) => handleImageUpload(e, "image")}
             />
           </label>

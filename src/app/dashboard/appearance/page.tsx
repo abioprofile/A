@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { ChevronLeft, RotateCcw, RotateCw } from "lucide-react";
 import PhoneDisplay from "@/components/PhoneDisplay";
-import { useGetAllLinks } from "@/hooks/api/useAuth";
+import { useGetAllLinks, useUpdateProfile } from "@/hooks/api/useAuth";
+import { useAppSelector } from "@/stores/hooks";
 import ProfileContent from "@/components/ProfileContent";
 import WallpaperSelector from "@/components/Wallpaper";
 import ThemeSelector from "@/components/ThemeSelector";
@@ -39,14 +40,17 @@ interface AppState {
     displayName: string;
     bio: string;
     location: string;
-    profileIcon?: string | null;
+    profileIcon: string | null;
   };
 }
 
 /* Appearance Page*/
 const AppearancePage: React.FC = () => {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<number | null>(null);
+  const userData = useAppSelector((state) => state.auth.user);
+  const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateProfile();
+
+  const [activeTab, setActiveTab] = useState<number | null>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
@@ -68,12 +72,25 @@ const AppearancePage: React.FC = () => {
     useState<string>("/themes/theme1.png");
 
   const [profile, setProfile] = useState({
-    profileImage: "/icons/Profile Picture.png",
-    displayName: "",
-    bio: "",
-    location: "",
+    profileImage: userData?.profile?.avatarUrl || "/icons/Profile Picture.png",
+    displayName: userData?.profile?.displayName || "",
+    bio: userData?.profile?.bio || "",
+    location: userData?.profile?.location || "",
     profileIcon: null as string | null,
   });
+
+  // Sync profile with Redux user data on load
+  useEffect(() => {
+    if (userData?.profile) {
+      setProfile((prev) => ({
+        ...prev,
+        profileImage: userData.profile.avatarUrl || prev.profileImage,
+        displayName: prev.displayName || userData.profile.displayName || "",
+        bio: prev.bio || userData.profile.bio || "",
+        location: prev.location || userData.profile.location || "",
+      }));
+    }
+  }, [userData]);
 
   // Undo/Redo state
   const [history, setHistory] = useState<AppState[]>([]);
@@ -144,7 +161,10 @@ const AppearancePage: React.FC = () => {
       location: string;
       profileIcon?: string | null;
     }) => {
-      setProfile(updatedProfile);
+      setProfile({
+        ...updatedProfile,
+        profileIcon: updatedProfile.profileIcon ?? null,
+      });
       handleStateChange();
     },
     [handleStateChange],
@@ -159,7 +179,22 @@ const AppearancePage: React.FC = () => {
     : [];
 
   const handleSaveAll = () => {
-    toast.success("All appearance settings saved successfully!");
+    updateProfile(
+      {
+        displayName: profile.displayName,
+        bio: profile.bio,
+        location: profile.location,
+      },
+      {
+        onSuccess: () => {
+          // toast is handled by the hook
+          toast.success("All appearance settings saved successfully!");
+        },
+        onError: () => {
+          toast.error("Failed to save settings");
+        }
+      }
+    );
   };
 
   const handleBackClick = () => {
@@ -183,9 +218,10 @@ const AppearancePage: React.FC = () => {
       <div className="hidden md:flex justify-end mb-4 ">
         <button
           onClick={handleSaveAll}
-          className="bg-[#FED45C] shadow-[2px_2px_0px_0px_#000000] cursor-pointer font-bold px-6 py-2 text-sm"
+          disabled={isUpdatingProfile}
+          className="bg-[#FED45C] shadow-[2px_2px_0px_0px_#000000] cursor-pointer font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Save Changes
+          {isUpdatingProfile ? "Saving..." : "Save Changes"}
         </button>
       </div>
 
@@ -218,9 +254,10 @@ const AppearancePage: React.FC = () => {
             </button>
             <button
               onClick={handleSaveAll}
-              className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2"
+              disabled={isUpdatingProfile}
+              className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50"
             >
-              Save
+              {isUpdatingProfile ? "Saving..." : "Save"}
             </button>
           </div>
         </div>
@@ -383,7 +420,7 @@ const AppearancePage: React.FC = () => {
 
       {/* Mobile Bottom Nav */}
       <AppearanceBottomNav
-        activeTab={activeTab}
+        activeTab={activeTab ?? 0}
         setActiveTab={handleTabClick}
       />
     </section>
