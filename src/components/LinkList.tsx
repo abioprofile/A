@@ -35,7 +35,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 // Import Framer Motion
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 // Suggested platforms
 const PLATFORMS = [
@@ -60,7 +60,7 @@ export default function LinkList({
   const { refetch: refetchLinks } = useGetAllLinks();
 
   // Animation variants
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -71,7 +71,7 @@ export default function LinkList({
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { 
       opacity: 0, 
       y: 20,
@@ -107,7 +107,7 @@ export default function LinkList({
     }
   };
 
-  const modalOverlayVariants = {
+  const modalOverlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -125,7 +125,7 @@ export default function LinkList({
     }
   };
 
-  const modalContentVariants = {
+  const modalContentVariants: Variants = {
     hidden: { 
       scale: 0.9, 
       opacity: 0,
@@ -153,7 +153,7 @@ export default function LinkList({
     }
   };
 
-  const slideInVariants = {
+  const slideInVariants: Variants = {
     hidden: { x: "100%" },
     visible: {
       x: 0,
@@ -789,10 +789,13 @@ function SortableItem({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+ const style = {
+  transform: transform
+    ? `translate3d(${transform.x}px, ${transform.y}px, 0)${transform.scaleX ? ` scaleX(${transform.scaleX})` : ''}${transform.scaleY ? ` scaleY(${transform.scaleY})` : ''}`
+    : undefined,
+  transition,
+};
+
 
   return (
     <motion.div

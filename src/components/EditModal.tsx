@@ -5,7 +5,7 @@ import { FC } from "react";
 import Modal from "@/components/ui/modal";
 import { toast } from "sonner";
 // Import Framer Motion
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
 
 type EditModalProps = {
   isOpen: boolean;
@@ -34,7 +34,7 @@ const EditModal: FC<EditModalProps> = ({
   };
 
   // Animation variants
-  const overlayVariants = {
+  const overlayVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -52,7 +52,7 @@ const EditModal: FC<EditModalProps> = ({
     },
   };
 
-  const modalVariants = {
+  const modalVariants: Variants = {
     hidden: {
       scale: 0.9,
       opacity: 0,
@@ -81,7 +81,7 @@ const EditModal: FC<EditModalProps> = ({
     },
   };
 
-  const formItemVariants = {
+  const formItemVariants: Variants = {
     hidden: { opacity: 0, x: -20 },
     visible: (i: number) => ({
       opacity: 1,
@@ -94,7 +94,7 @@ const EditModal: FC<EditModalProps> = ({
     }),
   };
 
-  const buttonVariants = {
+  const buttonVariants: Variants = {
     hidden: { opacity: 0, y: 10 },
     visible: {
       opacity: 1,

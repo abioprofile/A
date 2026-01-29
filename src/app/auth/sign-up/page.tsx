@@ -165,46 +165,35 @@ const SignUp = () => {
       {/* Logo Section */}
       <motion.div
         variants={logoVariants}
-        className="px-4 py-10 md:px-20 md:pt-8 md:pb-4"
+        className="px-4 pt-4 md:px-20 md:pt-8 md:pb-4"
       >
-        <Link href="/" className="flex items-end gap-1 group">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Image
-              src="/icons/A.Bio.png"
-              alt="A.Bio Logo"
-              width={48}
-              height={48}
-              priority
-              className="cursor-pointer select-none"
-            />
-          </motion.div>
-            <span className="text-[#331400] text-3xl font-bold">bio</span>
-         
+        <Link href="/" className="flex items-center mr-20 gap-1 group">
+          <Image
+            src="/icons/A.Bio.png"
+            alt="A.Bio Logo"
+            width={28}
+            height={28}
+            priority
+            className="cursor-pointer select-none transition-transform group-hover:scale-105"
+          />
+          <span className="font-bold text-xl md:text-2xl text-black tracking-wide">
+            bio
+          </span>
         </Link>
       </motion.div>
-      
+
       {/* Centered Form Container */}
       <div className="flex-1 flex items-center justify-center p-4">
-        <motion.div
-          variants={formVariants}
-          className="w-full max-w-md"
-        >
-          <motion.div 
-            variants={itemVariants}
-            className="mb-6 text-center"
-          >
-            <motion.h1 
-              className="text-3xl md:text-3xl  font-extrabold mb-6 bg-[#331400] text-transparent bg-clip-text"
+        <motion.div variants={formVariants} className="w-full max-w-md">
+          <motion.div variants={itemVariants} className="mb-6 text-center">
+            <motion.h1
+              className="text-2xl md:text-3xl  font-extrabold mb-2 bg-[#331400] text-transparent bg-clip-text"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
               Join Abio
             </motion.h1>
-            <motion.p 
+            <motion.p
               variants={itemVariants}
               className="text-[#666464] capitalize text-sm lg:text-[14px] font-medium"
             >
@@ -341,17 +330,21 @@ const SignUp = () => {
                   </motion.p>
                 )}
               </AnimatePresence>
-              <motion.p 
+              <motion.p
                 variants={itemVariants}
                 className="text-[10px] text-gray-800"
               >
-                Must be at least 8 characters with uppercase, lowercase, number, and special character
+                Must be at least 8 characters with uppercase, lowercase, number,
+                and special character
               </motion.p>
             </motion.div>
 
             {/* Confirm Password */}
             <motion.div variants={itemVariants} className="space-y-2">
-              <Label htmlFor="passwordConfirm" className="font-semibold text-sm">
+              <Label
+                htmlFor="passwordConfirm"
+                className="font-semibold text-sm"
+              >
                 Confirm Password
               </Label>
               <motion.div
@@ -384,7 +377,11 @@ const SignUp = () => {
                       exit={{ rotate: 90, opacity: 0 }}
                       transition={{ duration: 0.2 }}
                     >
-                      {showConfirmPassword ? <Eye size={18} /> : <EyeOff size={18} />}
+                      {showConfirmPassword ? (
+                        <Eye size={18} />
+                      ) : (
+                        <EyeOff size={18} />
+                      )}
                     </motion.div>
                   </AnimatePresence>
                 </motion.button>
@@ -417,13 +414,15 @@ const SignUp = () => {
                   className="w-full h-10 bg-[#FED45C] text-[#331400] text-sm font-semibold hover:bg-[#fecf4a] transition-colors"
                   disabled={isSubmitting || signUpMutation.isPending}
                 >
-                  {isSubmitting || signUpMutation.isPending ? "Creating Account..." : "Create Account"}
+                  {isSubmitting || signUpMutation.isPending
+                    ? "Creating Account..."
+                    : "Create Account"}
                 </Button>
               </motion.div>
             </motion.div>
 
             {/* OR Divider */}
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="flex items-center gap-3"
             >
@@ -440,7 +439,7 @@ const SignUp = () => {
             </motion.div>
 
             {/* Social Buttons */}
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="grid grid-cols-2 gap-3"
             >
@@ -449,18 +448,18 @@ const SignUp = () => {
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
               >
-                <Button 
+                <Button
                   type="button"
-                  variant="outline" 
+                  variant="outline"
                   className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
                   disabled={isSubmitting || signUpMutation.isPending}
                 >
-                  <Image 
-                    src="/assets/icons/auth/apple.svg" 
-                    alt="apple icon" 
-                    width={16} 
-                    height={16} 
-                    priority 
+                  <Image
+                    src="/assets/icons/auth/apple.svg"
+                    alt="apple icon"
+                    width={16}
+                    height={16}
+                    priority
                   />
                   Apple
                 </Button>
@@ -470,18 +469,18 @@ const SignUp = () => {
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
               >
-                <Button 
+                <Button
                   type="button"
-                  variant="outline" 
+                  variant="outline"
                   className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
                   disabled={isSubmitting || signUpMutation.isPending}
                 >
-                  <Image 
-                    src="/assets/icons/auth/google.svg" 
-                    alt="google icon" 
-                    width={16} 
-                    height={16} 
-                    priority 
+                  <Image
+                    src="/assets/icons/auth/google.svg"
+                    alt="google icon"
+                    width={16}
+                    height={16}
+                    priority
                   />
                   Google
                 </Button>
@@ -489,10 +488,7 @@ const SignUp = () => {
             </motion.div>
 
             {/* Redirect to Sign In */}
-            <motion.div 
-              variants={itemVariants}
-              className="text-center pt-2"
-            >
+            <motion.div variants={itemVariants} className="text-center pt-2">
               <motion.p
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -503,8 +499,8 @@ const SignUp = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Link 
-                    href="/auth/sign-in" 
+                  <Link
+                    href="/auth/sign-in"
                     className="text-[#EA2228] font-semibold hover:underline"
                   >
                     Sign In
@@ -515,16 +511,13 @@ const SignUp = () => {
           </motion.form>
 
           {/* Privacy Policy */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             className="mt-8 pt-4  text-center md:text-right"
           >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <Link 
-                href="/privacy-policy" 
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/privacy-policy"
                 className="text-[12px] font-semibold hover:underline"
               >
                 Privacy Policy

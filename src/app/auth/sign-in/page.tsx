@@ -10,7 +10,10 @@ import { Eye, EyeOff } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema, type SignInFormData } from "@/lib/validations/auth.schema";
+import {
+  signInSchema,
+  type SignInFormData,
+} from "@/lib/validations/auth.schema";
 import { useSignIn } from "@/hooks/api/useAuth";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { clearAuth } from "@/stores/slices/auth.slice";
@@ -167,43 +170,33 @@ const SignIn = () => {
         variants={logoVariants}
         className="px-4 pt-4  md:px-20 md:pt-8 md:pb-4"
       >
-        <Link href="/" className="flex items-end gap-1 group">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-          >
-            <Image
-              src="/icons/A.Bio.png"
-              alt="A.Bio Logo"
-              width={48}
-              height={48}
-              priority
-              className="cursor-pointer select-none"
-            />
-          </motion.div>
-          <span className="text-[#331400] text-3xl font-bold">bio</span>
+        <Link href="/" className="flex items-center mr-20 gap-1 group">
+          <Image
+            src="/icons/A.Bio.png"
+            alt="A.Bio Logo"
+            width={28}
+            height={28}
+            priority
+            className="cursor-pointer select-none transition-transform group-hover:scale-105"
+          />
+          <span className="font-bold text-xl md:text-2xl text-black tracking-wide">
+            bio
+          </span>
         </Link>
       </motion.div>
-      
+
       {/* Centered Form Container */}
       <div className="flex-1 flex items-center justify-center p-4">
-        <motion.div
-          variants={formVariants}
-          className="w-full max-w-md"
-        >
-          <motion.div 
-            variants={itemVariants}
-            className="mb-6 text-center"
-          >
-            <motion.h1 
-              className="text-3xl md:text-3xl font-extrabold mb-1 md:mb-4 bg-[#331400] text-transparent bg-clip-text"
+        <motion.div variants={formVariants} className="w-full max-w-md">
+          <motion.div variants={itemVariants} className="mb-6 text-center">
+            <motion.h1
+              className="text-2xl md:text-3xl font-extrabold mb-1 md:mb-4 bg-[#331400] text-transparent bg-clip-text"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
               Welcome Back!
             </motion.h1>
-            <motion.p 
+            <motion.p
               variants={itemVariants}
               className="text-[#666464] text-sm lg:text-[14px] font-medium"
             >
@@ -302,10 +295,7 @@ const SignIn = () => {
               </AnimatePresence>
             </motion.div>
 
-            <motion.div 
-              variants={itemVariants}
-              className="text-right"
-            >
+            <motion.div variants={itemVariants} className="text-right">
               <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -330,12 +320,14 @@ const SignIn = () => {
                   disabled={isSubmitting || signInMutation.isPending}
                   className="w-full h-10 bg-[#FED45C] text-[#331400] text-sm font-semibold hover:bg-[#FED45C]/90"
                 >
-                  {isSubmitting || signInMutation.isPending ? "Logging in..." : "Login"}
+                  {isSubmitting || signInMutation.isPending
+                    ? "Logging in..."
+                    : "Login"}
                 </Button>
               </motion.div>
             </motion.div>
 
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="flex items-center gap-3"
             >
@@ -351,7 +343,7 @@ const SignIn = () => {
               <Separator className="flex-1" />
             </motion.div>
 
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="grid grid-cols-2 gap-3"
             >
@@ -360,7 +352,10 @@ const SignIn = () => {
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
               >
-                <Button variant="outline" className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full">
+                <Button
+                  variant="outline"
+                  className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
+                >
                   <Image
                     src="/assets/icons/auth/apple.svg"
                     alt="apple icon"
@@ -375,7 +370,10 @@ const SignIn = () => {
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
               >
-                <Button variant="outline" className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full">
+                <Button
+                  variant="outline"
+                  className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
+                >
                   <Image
                     src="/assets/icons/auth/google.svg"
                     alt="google icon"
@@ -387,10 +385,7 @@ const SignIn = () => {
               </motion.div>
             </motion.div>
 
-            <motion.div 
-              variants={itemVariants}
-              className="text-center pt-2"
-            >
+            <motion.div variants={itemVariants} className="text-center pt-2">
               <motion.p
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -413,14 +408,11 @@ const SignIn = () => {
           </motion.form>
 
           {/* Privacy Policy */}
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             className="mt-8 pt-4  text-center md:text-right"
           >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-            > 
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/privacy-policy"
                 className="text-[12px] font-semibold hover:underline"

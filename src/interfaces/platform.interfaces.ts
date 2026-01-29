@@ -1,5 +1,5 @@
 export interface PlatformInterface {
-    id: number
+    id:string
     name: string
     icon: string
     color?: string
