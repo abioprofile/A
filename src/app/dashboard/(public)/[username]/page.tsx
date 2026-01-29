@@ -109,7 +109,7 @@ export default function PublicProfilePage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#FEF4EA]">
       {/* Phone container */}
-      <div className="relative w-[320px] h-[580px] border-[6px] border-black bg-white overflow-hidden shadow-xl">
+      <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto border-[2px]  border-black overflow-hidden bg-white shadow-2xl">
         {/* ===== TOP PROFILE CARD ===== */}
         <div className="bg-white p-5">
           <div className="flex items-center gap-3">

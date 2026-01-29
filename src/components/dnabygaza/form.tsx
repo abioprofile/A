@@ -75,7 +75,7 @@ export default function DnaFormV1() {
         onSubmit={submit}
         className="p-3 bg-[#000000]/35 backdrop-blur-md space-y-4 text-center border border-white/10"
       >
-        <h2 className="text-lg font-semibold text-white tracking-wide">
+        <h2 className="text-[14px] font-semibold text-white tracking-wide">
           DNA Checkup
         </h2>
 
@@ -85,38 +85,38 @@ export default function DnaFormV1() {
           value={name}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
           placeholder="Full Name"
-          className="w-full p-3 bg-white/10 border border-white/70 text-sm placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000]"
+          className="w-full p-2 bg-white/10 border border-white/70 text-[10px] placeholder:text-[10px] placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000]"
           required
           disabled={status === 'loading'}
         />
 
         {/* DOB */}
         <div className="text-left">
-          <label className="text-xs text-white mb-1 block">Date of Birth</label>
+          <label className="text-[10px] text-white mb-1 block">Date of Birth</label>
           <input
-            type="text"
+            type="date"
             value={dob}
             onChange={handleDOBChange}
             placeholder="DD/MM"
             maxLength={5}
             pattern="\d{2}/\d{2}"
-            className="w-full p-3 bg-white/10 border border-white/70 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] placeholder-gray-300"
+            className="w-full p-2 bg-white/10 border text-[10px] border-white/70 placeholder:text-[10px] text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] placeholder-gray-300"
             required
             disabled={status === 'loading'}
           />
-          <p className="text-xs text-gray-400 mt-1">Format: DD/MM (e.g., 15/05 for May 15th)</p>
+          {/* <p className="text-[9px] text-gray-400 mt-1">Format: DD/MM (e.g., 15/05 for May 15th)</p> */}
         </div>
 
         {/* Phone number */}
         <div className="text-left">
-          <label className="text-xs text-white mb-1 block">Phone Number</label>
+          <label className="text-[10px] text-white mb-1 block">Phone Number</label>
           <input
             type="tel"
             value={phone}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPhone(e.target.value)}
             placeholder="+234"
             pattern="^\+?[\d\s\-\(\)]+$"
-            className="w-full p-3 bg-white/10 border border-white/70 text-sm placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000]"
+            className="w-full p-2 bg-white/10 border border-white/70 text-[10px] placeholder:text-[10px] placeholder-gray-300 text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000]"
             required
             disabled={status === 'loading'}
           />
@@ -125,7 +125,7 @@ export default function DnaFormV1() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="w-full p-3 bg-white text-black font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+          className="w-full p-2 bg-white text-[10px] text-black font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
         >
           {status === 'loading' ? 'Submitting...' : 'Submit'}
         </button>
