@@ -574,20 +574,20 @@ export default function PublicProfilePage() {
                     />
                   )}
                 </button>
-                <button 
-                  onClick={() => setActiveTab('menu')}
-                  className="relative flex flex-col items-center pb-2 group"
-                >
-                  <span className={`text-[9px] font-medium transition-colors ${activeTab === 'menu' ? 'text-black' : 'text-gray-400'}`}>
-                    Menu
-                  </span>
-                  {activeTab === 'menu' && (
-                    <motion.div 
-                      layoutId="activeTabMobile"
-                      className="h-[3px] absolute bottom-0 w-6 bg-red-500" 
-                    />
-                  )}
-                </button>
+                {userData?.username === "dnabygaza" && <button 
+                      onClick={() => setActiveTab('menu')}
+                      className="relative flex flex-col items-center pb-2 group"
+                    >
+                      <span className={`text-[9px] font-medium transition-colors ${activeTab === 'menu' ? 'text-black' : 'text-gray-400'}`}>
+                        Menu
+                      </span>
+                      {activeTab === 'menu' && (
+                        <motion.div 
+                          layoutId="activeTabDesktop"
+                          className="h-[3px] absolute bottom-0 w-6 bg-red-500" 
+                        />
+                      )}
+                    </button>}
               </div>
             </motion.div>
 
@@ -635,9 +635,9 @@ export default function PublicProfilePage() {
                       </motion.p>
                     )}
                   </AnimatePresence>
-                  <div>
-                    <DnaFormV1 />
-                  </div>
+                  {userData?.username === "dnabygaza" &&     <div>
+                        <DnaFormV1 />
+                      </div>}
                 </>
               ) : (
                 <motion.div
