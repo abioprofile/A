@@ -5,9 +5,9 @@ export default function VisitorLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className="min-h-screen flex bg-[#FEF4EA] flex-col">
-            <NavBar />
-            <div className="flex-1 ">
+        <div className="">
+            {/* <NavBar /> */}
+            <div className=" ">
                 {children}
             </div>
         </div>
