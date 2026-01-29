@@ -385,7 +385,7 @@ const SignIn = () => {
               </motion.div>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="text-center pt-2">
+            {/* <motion.div variants={itemVariants} className="text-center pt-2">
               <motion.p
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -404,7 +404,7 @@ const SignIn = () => {
                   </Link>
                 </motion.span>
               </motion.p>
-            </motion.div>
+            </motion.div> */}
           </motion.form>
 
           {/* Privacy Policy */}
