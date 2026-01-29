@@ -196,8 +196,6 @@ export default function LinkList({
     isVisible: false,
   });
 
-  console.log(editItem, 'edit item')
-
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
