@@ -156,16 +156,7 @@ const UsernamePage = () => {
     },
   };
 
-  const inputVariants: Variants = {
-    focus: {
-      scale: 1.02,
-      transition: { duration: 0.2 },
-    },
-    blur: {
-      scale: 1,
-      transition: { duration: 0.2 },
-    },
-  };
+
 
   const submitButtonVariants: Variants = {
     hover: {
@@ -271,12 +262,7 @@ const UsernamePage = () => {
               onSubmit={handleSubmit}
               className="w-full space-y-4 lg:max-w-fit relative"
             >
-              <motion.div
-                variants={inputVariants}
-                whileFocus="focus"
-                animate="blur"
-                className="relative w-full"
-              >
+              <div className="relative w-full">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 font-semibold text-lg text-[#4B2E1E] select-none pointer-events-none">
                   abio.site/
                 </span>
@@ -287,7 +273,7 @@ const UsernamePage = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter unique username"
-                  className="pl-[100px] pr-12 h-10 text-[14px] placeholder:text-[12px] font-medium placeholder:font-medium placeholder:text-gray-500"
+                  className="pl-[100px] pr-12 h-10 text-base md:text-[14px] placeholder:text-[12px] font-medium placeholder:font-medium placeholder:text-gray-500"
                   aria-label="Username"
                   autoComplete="off"
                 />
@@ -354,7 +340,7 @@ const UsernamePage = () => {
                     </motion.button>
                   )}
                 </AnimatePresence>
-              </motion.div>
+              </div>
 
               {/* Status message */}
               <AnimatePresence mode="wait">
@@ -465,7 +451,7 @@ const UsernamePage = () => {
         </motion.footer>
       </motion.div>
     </ProtectedRoute>
-  );
+     );
 };
 
 export default UsernamePage;

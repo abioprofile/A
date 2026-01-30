@@ -82,16 +82,7 @@ const ResetPassword = () => {
     },
   };
 
-  const inputVariants: Variants = {
-    focus: {
-      scale: 1.02,
-      transition: { duration: 0.2 },
-    },
-    blur: {
-      scale: 1,
-      transition: { duration: 0.2 },
-    },
-  };
+
 
   const buttonHoverVariants: Variants = {
     hover: {
@@ -175,23 +166,18 @@ const ResetPassword = () => {
             <Label htmlFor="new_password" className="font-semibold">
               New Password
             </Label>
-            <motion.div
-              variants={inputVariants}
-              whileFocus="focus"
-              animate="blur"
-              className="relative"
-            >
+            <div className="relative">
               <Input
                 id="new_password"
                 
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
                 placeholder="Enter new password"
-                className="h-12 w-full pr-10 border-1 border-[#331400]"
+                className="h-12 w-full pr-10 text-base md:text-sm border-1 border-[#331400]"
                 disabled={isSubmitting}
               />
               
-            </motion.div>
+            </div>
           </motion.div>
 
           {/* Confirm New Password */}
@@ -202,23 +188,17 @@ const ResetPassword = () => {
             <Label htmlFor="confirm_new_password" className="font-semibold">
               Confirm New Password
             </Label>
-            <motion.div
-              variants={inputVariants}
-              whileFocus="focus"
-              animate="blur"
-              className="relative"
-            >
+            <div className="relative">
               <Input
                 id="confirm_new_password"
                 
                 value={confirmNewPassword}
                 onChange={(e) => setConfirmNewPassword(e.target.value)}
                 placeholder="Re-enter your password"
-                className="h-12 w-full pr-10 border-1 border-[#331400]"
+                className="h-12 w-full pr-10 text-base md:text-sm border-1 border-[#331400]"
                 disabled={isSubmitting}
               />
-              
-            </motion.div>
+            </div>
           </motion.div>
 
           <motion.div variants={itemVariants} className="space-y-3">

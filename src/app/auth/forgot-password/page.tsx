@@ -73,16 +73,7 @@ const ForgotPassword = () => {
     },
   };
 
-  const inputVariants: Variants = {
-    focus: {
-      scale: 1.02,
-      transition: { duration: 0.2 },
-    },
-    blur: {
-      scale: 1,
-      transition: { duration: 0.2 },
-    },
-  };
+
 
   const buttonHoverVariants: Variants = {
     hover: {
@@ -178,19 +169,15 @@ const ForgotPassword = () => {
             <Label htmlFor="email" className="font-semibold">
               Email Address
             </Label>
-            <motion.div
-              variants={inputVariants}
-              whileFocus="focus"
-              animate="blur"
-            >
+            <div>
               <Input
                 id="email"
                 type="email"
                 {...register("email")}
                 placeholder="Enter your email address"
-                className="h-12 w-full  border-1 border-[#331400] "
+                className="h-12 w-full text-base md:text-sm border-1 border-[#331400] "
               />
-            </motion.div>
+            </div>
             <AnimatePresence mode="wait">
               {errors.email && (
                 <motion.p

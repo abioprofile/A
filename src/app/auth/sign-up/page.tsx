@@ -12,7 +12,7 @@ import { useSignUp } from "@/hooks/api/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { SignUpFormData, signUpSchema } from "@/lib/validations/auth.schema";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence,  } from "framer-motion";
 
 const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,7 +36,7 @@ const SignUp = () => {
     setIsMounted(true);
   }, []);
 
-  const containerVariants: Variants = {
+  const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -48,7 +48,7 @@ const SignUp = () => {
     },
   };
 
-  const itemVariants: Variants = {
+  const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
@@ -60,7 +60,7 @@ const SignUp = () => {
     },
   };
 
-  const logoVariants: Variants = {
+  const logoVariants = {
     hidden: { opacity: 0, x: -20 },
     visible: {
       opacity: 1,
@@ -72,7 +72,7 @@ const SignUp = () => {
     },
   };
 
-  const formVariants: Variants = {
+  const formVariants = {
     hidden: { opacity: 0, scale: 0.95 },
     visible: {
       opacity: 1,
@@ -84,18 +84,7 @@ const SignUp = () => {
     },
   };
 
-  const inputVariants: Variants = {
-    focus: {
-      scale: 1.02,
-      transition: { duration: 0.2 },
-    },
-    blur: {
-      scale: 1,
-      transition: { duration: 0.2 },
-    },
-  };
-
-  const buttonHoverVariants: Variants = {
+  const buttonHoverVariants = {
     hover: {
       scale: 1.03,
       transition: {
@@ -111,7 +100,7 @@ const SignUp = () => {
     },
   };
 
-  const socialButtonHoverVariants: Variants = {
+  const socialButtonHoverVariants = {
     hover: {
       scale: 1.02,
       backgroundColor: "rgba(0, 0, 0, 0.05)",
@@ -122,7 +111,7 @@ const SignUp = () => {
     },
   };
 
-  const errorVariants: Variants = {
+  const errorVariants = {
     hidden: { opacity: 0, height: 0 },
     visible: {
       opacity: 1,
@@ -142,13 +131,19 @@ const SignUp = () => {
     },
   };
 
-  const eyeButtonVariants: Variants = {
+  const eyeButtonVariants = {
     tap: {
       scale: 0.9,
       transition: {
         duration: 0.1,
       },
     },
+  };
+
+  const eyeIconVariants = {
+    hidden: { rotate: -90, opacity: 0 },
+    visible: { rotate: 0, opacity: 1 },
+    exit: { rotate: 90, opacity: 0 },
   };
 
   if (!isMounted) {
@@ -187,7 +182,7 @@ const SignUp = () => {
         <motion.div variants={formVariants} className="w-full max-w-md">
           <motion.div variants={itemVariants} className="mb-6 text-center">
             <motion.h1
-              className="text-2xl md:text-3xl  font-extrabold mb-2 bg-[#331400] text-transparent bg-clip-text"
+              className="text-2xl md:text-3xl font-extrabold mb-2 bg-[#331400] text-transparent bg-clip-text"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -205,35 +200,37 @@ const SignUp = () => {
             variants={itemVariants}
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-4 w-full"
+            noValidate
           >
             {/* Name */}
             <motion.div variants={itemVariants} className="space-y-2">
               <Label htmlFor="name" className="font-semibold text-sm">
                 Name
               </Label>
-              <motion.div
-                variants={inputVariants}
-                whileFocus="focus"
-                animate="blur"
-              >
+              <div>
                 <Input
                   id="name"
                   type="text"
                   placeholder="Name"
-                  className="h-10 text-sm placeholder:text-sm border-1 border-[#000]"
+                  className="h-10 text-base md:text-sm placeholder:text-sm border border-[#000] focus:border-[#FED45C] focus:ring-1 focus:ring-[#FED45C] outline-none"
+                  style={{ fontSize: "16px" }}
                   {...register("name")}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || signUpMutation.isPending}
+                  aria-invalid={errors.name ? "true" : "false"}
+                  aria-describedby={errors.name ? "name-error" : undefined}
                 />
-              </motion.div>
+              </div>
               <AnimatePresence mode="wait">
                 {errors.name && (
                   <motion.p
                     key="name-error"
+                    id="name-error"
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                     variants={errorVariants}
-                    className="text-[10px] text-red-500 overflow-hidden"
+                    className="text-xs text-red-500 overflow-hidden"
+                    role="alert"
                   >
                     {errors.name.message}
                   </motion.p>
@@ -246,29 +243,30 @@ const SignUp = () => {
               <Label htmlFor="email" className="font-semibold text-sm">
                 Email Address
               </Label>
-              <motion.div
-                variants={inputVariants}
-                whileFocus="focus"
-                animate="blur"
-              >
+              <div>
                 <Input
                   id="email"
                   type="email"
                   placeholder="Email"
-                  className="h-10 text-sm placeholder:text-sm border-1 border-[#000]"
+                  className="h-10 text-sm placeholder:text-sm border border-[#000] focus:border-[#FED45C] focus:ring-1 focus:ring-[#FED45C] outline-none"
+                  style={{ fontSize: "16px" }}
                   {...register("email")}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || signUpMutation.isPending}
+                  aria-invalid={errors.email ? "true" : "false"}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
-              </motion.div>
+              </div>
               <AnimatePresence mode="wait">
                 {errors.email && (
                   <motion.p
                     key="email-error"
+                    id="email-error"
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                     variants={errorVariants}
-                    className="text-[10px] text-red-500 overflow-hidden"
+                    className="text-xs text-red-500 overflow-hidden"
+                    role="alert"
                   >
                     {errors.email.message}
                   </motion.p>
@@ -281,50 +279,52 @@ const SignUp = () => {
               <Label htmlFor="password" className="font-semibold text-sm">
                 Password
               </Label>
-              <motion.div
-                variants={inputVariants}
-                whileFocus="focus"
-                animate="blur"
-                className="relative"
-              >
+              <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  className="h-10 pr-10 text-sm placeholder:text-sm border-1 border-[#000]"
+                  className="h-10 pr-10 text-base md:text-sm placeholder:text-sm border border-[#000] focus:border-[#FED45C] focus:ring-1 focus:ring-[#FED45C] outline-none"
+                  style={{ fontSize: "16px" }}
                   placeholder="Password"
                   {...register("password")}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || signUpMutation.isPending}
+                  aria-invalid={errors.password ? "true" : "false"}
+                  aria-describedby={errors.password ? "password-error" : undefined}
                 />
                 <motion.button
                   type="button"
                   variants={eyeButtonVariants}
                   whileTap="tap"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || signUpMutation.isPending}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={showPassword ? "eye-off" : "eye"}
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={eyeIconVariants}
                       transition={{ duration: 0.2 }}
                     >
                       {showPassword ? <Eye size={18} /> : <EyeOff size={18} />}
                     </motion.div>
                   </AnimatePresence>
                 </motion.button>
-              </motion.div>
+              </div>
               <AnimatePresence mode="wait">
                 {errors.password && (
                   <motion.p
                     key="password-error"
+                    id="password-error"
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                     variants={errorVariants}
-                    className="text-[10px] text-red-500 overflow-hidden"
+                    className="text-xs text-red-500 overflow-hidden"
+                    role="alert"
                   >
                     {errors.password.message}
                   </motion.p>
@@ -332,7 +332,7 @@ const SignUp = () => {
               </AnimatePresence>
               <motion.p
                 variants={itemVariants}
-                className="text-[10px] text-gray-800"
+                className="text-xs text-gray-600"
               >
                 Must be at least 8 characters with uppercase, lowercase, number,
                 and special character
@@ -347,34 +347,34 @@ const SignUp = () => {
               >
                 Confirm Password
               </Label>
-              <motion.div
-                variants={inputVariants}
-                whileFocus="focus"
-                animate="blur"
-                className="relative"
-              >
+              <div className="relative">
                 <Input
                   id="passwordConfirm"
                   type={showConfirmPassword ? "text" : "password"}
-                  className="h-10 pr-10 text-sm placeholder:text-sm border-1 border-[#000]"
+                  className="h-10 pr-10 text-base md:text-sm placeholder:text-sm border border-[#000] focus:border-[#FED45C] focus:ring-1 focus:ring-[#FED45C] outline-none"
+                  style={{ fontSize: "16px" }}
                   placeholder="Confirm Password"
                   {...register("passwordConfirm")}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || signUpMutation.isPending}
+                  aria-invalid={errors.passwordConfirm ? "true" : "false"}
+                  aria-describedby={errors.passwordConfirm ? "passwordConfirm-error" : undefined}
                 />
                 <motion.button
                   type="button"
                   variants={eyeButtonVariants}
                   whileTap="tap"
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || signUpMutation.isPending}
+                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
                       key={showConfirmPassword ? "eye-off" : "eye"}
-                      initial={{ rotate: -90, opacity: 0 }}
-                      animate={{ rotate: 0, opacity: 1 }}
-                      exit={{ rotate: 90, opacity: 0 }}
+                      initial="hidden"
+                      animate="visible"
+                      exit="exit"
+                      variants={eyeIconVariants}
                       transition={{ duration: 0.2 }}
                     >
                       {showConfirmPassword ? (
@@ -385,16 +385,18 @@ const SignUp = () => {
                     </motion.div>
                   </AnimatePresence>
                 </motion.button>
-              </motion.div>
+              </div>
               <AnimatePresence mode="wait">
                 {errors.passwordConfirm && (
                   <motion.p
                     key="passwordConfirm-error"
+                    id="passwordConfirm-error"
                     initial="hidden"
                     animate="visible"
                     exit="exit"
                     variants={errorVariants}
-                    className="text-[10px] text-red-500 overflow-hidden"
+                    className="text-xs text-red-500 overflow-hidden"
+                    role="alert"
                   >
                     {errors.passwordConfirm.message}
                   </motion.p>
@@ -413,6 +415,7 @@ const SignUp = () => {
                   type="submit"
                   className="w-full h-10 bg-[#FED45C] text-[#331400] text-sm font-semibold hover:bg-[#fecf4a] transition-colors"
                   disabled={isSubmitting || signUpMutation.isPending}
+                  aria-label="Create account"
                 >
                   {isSubmitting || signUpMutation.isPending
                     ? "Creating Account..."
@@ -453,13 +456,15 @@ const SignUp = () => {
                   variant="outline"
                   className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
                   disabled={isSubmitting || signUpMutation.isPending}
+                  aria-label="Sign up with Apple"
                 >
                   <Image
                     src="/assets/icons/auth/apple.svg"
-                    alt="apple icon"
+                    alt="Apple icon"
                     width={16}
                     height={16}
                     priority
+                    className="select-none"
                   />
                   Apple
                 </Button>
@@ -474,13 +479,15 @@ const SignUp = () => {
                   variant="outline"
                   className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
                   disabled={isSubmitting || signUpMutation.isPending}
+                  aria-label="Sign up with Google"
                 >
                   <Image
                     src="/assets/icons/auth/google.svg"
-                    alt="google icon"
+                    alt="Google icon"
                     width={16}
                     height={16}
                     priority
+                    className="select-none"
                   />
                   Google
                 </Button>
@@ -501,7 +508,8 @@ const SignUp = () => {
                 >
                   <Link
                     href="/auth/sign-in"
-                    className="text-[#EA2228] font-semibold hover:underline"
+                    className="text-[#EA2228] font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-[#EA2228] focus:ring-offset-2 rounded px-1"
+                    tabIndex={0}
                   >
                     Sign In
                   </Link>
@@ -513,12 +521,13 @@ const SignUp = () => {
           {/* Privacy Policy */}
           <motion.div
             variants={itemVariants}
-            className="mt-8 pt-4  text-center md:text-right"
+            className="mt-8 pt-4 text-center md:text-right"
           >
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/privacy-policy"
-                className="text-[12px] font-semibold hover:underline"
+                className="text-xs font-medium text-gray-600 hover:text-gray-900 hover:underline transition-colors focus:outline-none focus:ring-2 focus:ring-[#331400] focus:ring-offset-2 rounded px-1"
+                tabIndex={0}
               >
                 Privacy Policy
               </Link>

@@ -151,19 +151,7 @@ const OTPVerificationContent = () => {
     },
   };
 
-  const otpSlotVariants: Variants = {
-    hidden: { opacity: 0, scale: 0.5, rotateX: 90 },
-    visible: (i: number) => ({
-      opacity: 1,
-      scale: 1,
-      rotateX: 0,
-      transition: {
-        delay: 0.3 + i * 0.05,
-        duration: 0.3,
-        ease: [0.34, 1.56, 0.64, 1],
-      },
-    }),
-  };
+
 
   const errorVariants: Variants = {
     hidden: { opacity: 0, height: 0 },
@@ -239,17 +227,12 @@ const OTPVerificationContent = () => {
                   >
                     {Array.from({ length: 6 }).map((_, index) => (
                       <InputOTPGroup key={index}>
-                        <motion.div
-                          custom={index}
-                          variants={otpSlotVariants}
-                          initial="hidden"
-                          animate="visible"
-                        >
+                        <div>
                           <InputOTPSlot
                             index={index}
-                            className="border border-[#000] size-10 md:size-12 text-center text-lg font-semibold transition-all duration-200 hover:border-[#331400] hover:scale-105 focus-within:border-[#331400] focus-within:scale-105"
+                            className="border border-[#000] size-10 md:size-12 text-center text-lg font-semibold transition-all duration-200 hover:border-[#331400] focus-within:border-[#331400]"
                           />
-                        </motion.div>
+                        </div>
                       </InputOTPGroup>
                     ))}
                   </InputOTP>
