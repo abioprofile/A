@@ -244,7 +244,7 @@ const ProfileContent = ({
           type="text"
           value={displayName}
           onChange={handleDisplayNameChange}
-          className="w-full border border-black px-3 py-2 text-[12px] bg-transparent"
+          className="w-full border border-black px-3 py-2 text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] bg-transparent"
           placeholder="Enter your display name"
         />
       </div>
@@ -258,7 +258,7 @@ const ProfileContent = ({
           id="bio"
           value={bio}
           onChange={handleBioChange}
-          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[12px] h-10 md:h-24 text-gray-800"
+          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] h-10 md:h-24 text-gray-800"
           placeholder="Tell us about yourself (max 15 words)..."
         />
         <p className="text-[11px] hidden md:block text-gray-500 text-right">
@@ -282,7 +282,7 @@ const ProfileContent = ({
             placeholder="Add your location"
             value={location}
             onChange={handleLocationChange}
-            className="flex-1 placeholder:text-[12px] bg-transparent outline-none text-base md:text-[12px] text-gray-800"
+            className="flex-1 bg-transparent outline-none text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] text-gray-800"
           />
         </div>
       </div>
