@@ -288,7 +288,7 @@ export default function PublicProfilePage() {
                   className="absolute inset-0"
                 >
                   <Image
-                    src="/themes/theme6.png"
+                    src="/themes/theme7.jpg"
                     alt="background"
                     fill
                     className="object-cover"
@@ -441,15 +441,15 @@ export default function PublicProfilePage() {
                               <motion.a
                                 key={link.id}
                                 variants={linkItemVariants}
-                                initial="initial"
-                                animate="animate"
+                                // initial="initial"
+                                // animate="animate"
                                 whileHover="hover"
                                 custom={index}
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
-                                      bg-black text-white shadow-xl
+                                     bg-white/30 backdrop-blur-md text-white shadow-xl
                                       hover:translate-y-[2px]
                                       transition-all cursor-pointer"
                               >
@@ -521,7 +521,7 @@ export default function PublicProfilePage() {
             className="fixed inset-0"
           >
             <Image
-              src="/themes/theme6.png"
+              src="/themes/theme7.jpg"
               alt="background"
               fill
               className="object-cover"
@@ -538,7 +538,7 @@ export default function PublicProfilePage() {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/90 p-4 backdrop-blur-sm"
+              className="bg-white/80 p-4 backdrop-blur-md"
             >
               <div className="flex items-center gap-3">
                 {/* Avatar */}
@@ -654,19 +654,19 @@ export default function PublicProfilePage() {
                         )
                         .map((link: UserLink, index: number) => (
                           <motion.a
-                            key={link.id}
-                            initial={{ x: -30, opacity: 0 }}
-                            animate={{ x: 0, opacity: 1 }}
-                            transition={{
-                              delay: 0.3 + index * 0.1,
-                              type: "spring",
-                            }}
+                              // key={link.id}
+                              // initial={{ x: -30, opacity: 0 }}
+                              // animate={{ x: 0, opacity: 1 }}
+                              // transition={{
+                              //   delay: 0.3 + index * 0.1,
+                              //   type: "spring",
+                              // }}
                             whileHover={{ scale: 1.03, y: -2 }}
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
-                                      bg-black text-white shadow-xl
+                                      bg-white/30 backdrop-blur-md text-white shadow-xl
                                       hover:translate-y-[2px]
                                       transition-all cursor-pointer"
                           >
