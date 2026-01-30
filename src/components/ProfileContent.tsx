@@ -282,7 +282,7 @@ const ProfileContent = ({
             placeholder="Add your location"
             value={location}
             onChange={handleLocationChange}
-            className="flex-1 placeholder:text-[12px] bg-transparent outline-none text-[12px] text-gray-800"
+            className="flex-1 placeholder:text-[12px] bg-transparent outline-none text-base md:text-[12px] text-gray-800"
           />
         </div>
       </div>
