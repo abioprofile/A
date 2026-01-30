@@ -95,17 +95,6 @@ const SignIn = () => {
     },
   };
 
-  const inputVariants: Variants = {
-    focus: {
-      scale: 1.02,
-      transition: { duration: 0.2 },
-    },
-    blur: {
-      scale: 1,
-      transition: { duration: 0.2 },
-    },
-  };
-
   const buttonHoverVariants: Variants = {
     hover: {
       scale: 1.03,
@@ -190,7 +179,7 @@ const SignIn = () => {
         <motion.div variants={formVariants} className="w-full max-w-md">
           <motion.div variants={itemVariants} className="mb-6 text-center">
             <motion.h1
-              className="text-2xl md:text-3xl font-extrabold mb-1 md:mb-4 bg-[#331400] text-transparent bg-clip-text"
+              className="text-2xl md:text-3xl font-extrabold mb-1 md:mb-4 text-[#331400]"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -213,19 +202,15 @@ const SignIn = () => {
               <Label htmlFor="email" className="font-semibold text-sm">
                 Email Address
               </Label>
-              <motion.div
-                variants={inputVariants}
-                whileFocus="focus"
-                animate="blur"
-              >
+              <div>
                 <Input
                   id="email"
                   type="email"
                   placeholder="Email"
-                  className="h-10 text-sm placeholder:text-sm border-1 border-[#331400]"
+                  className="h-10 text-base md:text-sm placeholder:text-sm border-1 border-[#331400]"
                   {...register("email")}
                 />
-              </motion.div>
+              </div>
               <AnimatePresence>
                 {errors.email && (
                   <motion.p
@@ -246,17 +231,12 @@ const SignIn = () => {
               <Label htmlFor="password" className="font-semibold text-sm">
                 Password
               </Label>
-              <motion.div
-                variants={inputVariants}
-                whileFocus="focus"
-                animate="blur"
-                className="relative"
-              >
+              <div className="relative">
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="h-10 pr-10 text-sm placeholder:text-sm border-1 border-[#331400]"
+                  className="h-10 pr-10 text-base md:text-sm placeholder:text-sm border-1 border-[#331400]"
                   {...register("password")}
                 />
                 <motion.button
@@ -265,6 +245,7 @@ const SignIn = () => {
                   whileTap="tap"
                   className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                   onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -278,7 +259,7 @@ const SignIn = () => {
                     </motion.div>
                   </AnimatePresence>
                 </motion.button>
-              </motion.div>
+              </div>
               <AnimatePresence>
                 {errors.password && (
                   <motion.p
@@ -359,8 +340,8 @@ const SignIn = () => {
                   <Image
                     src="/assets/icons/auth/apple.svg"
                     alt="apple icon"
-                    width={16}
-                    height={16}
+                    width={20}
+                    height={20}
                   />
                   Apple
                 </Button>
@@ -377,15 +358,15 @@ const SignIn = () => {
                   <Image
                     src="/assets/icons/auth/google.svg"
                     alt="google icon"
-                    width={16}
-                    height={16}
+                    width={20}
+                    height={20}
                   />
                   Google
                 </Button>
               </motion.div>
             </motion.div>
 
-            {/* <motion.div variants={itemVariants} className="text-center pt-2">
+            <motion.div variants={itemVariants} className="text-center pt-2">
               <motion.p
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
@@ -404,18 +385,18 @@ const SignIn = () => {
                   </Link>
                 </motion.span>
               </motion.p>
-            </motion.div> */}
+            </motion.div>
           </motion.form>
 
           {/* Privacy Policy */}
           <motion.div
             variants={itemVariants}
-            className="mt-8 pt-4  text-center md:text-right"
+            className="mt-8 pt-4 text-center"
           >
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/privacy-policy"
-                className="text-[12px] font-semibold hover:underline"
+                className="text-[12px] font-semibold hover:underline text-[#666464]"
               >
                 Privacy Policy
               </Link>
