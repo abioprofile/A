@@ -1,10 +1,21 @@
 "use client";
 
-  // Import useState
+// Import useState
 import { useRef, useState, JSX } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import { FaInstagram, FaTiktok, FaPinterest, FaTwitter, FaCopy, FaWhatsapp, FaXTwitter, FaFacebook, FaSnapchat, FaYoutube } from "react-icons/fa6";
+import {
+  FaInstagram,
+  FaTiktok,
+  FaPinterest,
+  FaTwitter,
+  FaCopy,
+  FaWhatsapp,
+  FaXTwitter,
+  FaFacebook,
+  FaSnapchat,
+  FaYoutube,
+} from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUserProfileByUsername } from "@/hooks/api/useAuth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -43,7 +54,11 @@ const platformIcons: Record<string, JSX.Element> = {
 
 const getPlatformIcon = (platform: string) => {
   const normalizedPlatform = platform.toUpperCase();
-  return platformIcons[normalizedPlatform] || platformIcons[platform.toLowerCase()] || platformIcons[platform] || <FaCopy className="w-4 h-4" />;
+  return (
+    platformIcons[normalizedPlatform] ||
+    platformIcons[platform.toLowerCase()] ||
+    platformIcons[platform] || <FaCopy className="w-4 h-4" />
+  );
 };
 
 // Animation variants
@@ -53,23 +68,23 @@ const pageVariants: Variants = {
     opacity: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
+      ease: "easeOut",
+    },
   },
   exit: {
     opacity: 0,
     transition: {
       duration: 0.3,
-      ease: "easeIn"
-    }
-  }
+      ease: "easeIn",
+    },
+  },
 };
 
 const phoneContainerVariants: Variants = {
   initial: {
     scale: 0.9,
     opacity: 0,
-    y: 20
+    y: 20,
   },
   animate: {
     scale: 1,
@@ -79,9 +94,9 @@ const phoneContainerVariants: Variants = {
       type: "spring",
       stiffness: 100,
       damping: 15,
-      delay: 0.2
-    }
-  }
+      delay: 0.2,
+    },
+  },
 };
 
 const profileCardVariants: Variants = {
@@ -93,9 +108,9 @@ const profileCardVariants: Variants = {
       type: "spring",
       stiffness: 100,
       damping: 15,
-      delay: 0.4
-    }
-  }
+      delay: 0.4,
+    },
+  },
 };
 
 const linkItemVariants: Variants = {
@@ -104,11 +119,11 @@ const linkItemVariants: Variants = {
     x: 0,
     opacity: 1,
     transition: {
-      delay: 0.5 + (i * 0.1),
+      delay: 0.5 + i * 0.1,
       type: "spring",
       stiffness: 100,
-      damping: 15
-    }
+      damping: 15,
+    },
   }),
   hover: {
     y: -2,
@@ -116,9 +131,9 @@ const linkItemVariants: Variants = {
     transition: {
       type: "spring",
       stiffness: 400,
-      damping: 15
-    }
-  }
+      damping: 15,
+    },
+  },
 };
 
 const blurSideVariants: Variants = {
@@ -127,15 +142,15 @@ const blurSideVariants: Variants = {
     opacity: 1,
     transition: {
       duration: 0.8,
-      delay: 0.3
-    }
-  }
+      delay: 0.3,
+    },
+  },
 };
 
 export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
-  const usernameData = useAppSelector((state) => state.auth.user)
+  const usernameData = useAppSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState<"links" | "menu">("links");
 
   // Fetch user profile by username
@@ -143,7 +158,7 @@ export default function PublicProfilePage() {
     data: profileData,
     isLoading: profileLoading,
     isError: profileError,
-    error: profileErrorData
+    error: profileErrorData,
   } = useUserProfileByUsername(username);
 
   // Get links from profile data (profileData already includes links)
@@ -190,12 +205,12 @@ export default function PublicProfilePage() {
 
   // Error state
   if (profileError || !profileData?.data) {
-    const errorMessage = profileErrorData instanceof Error
-      ? profileErrorData.message
-      : "Profile not found";
+    const errorMessage =
+      profileErrorData instanceof Error
+        ? profileErrorData.message
+        : "Profile not found";
 
     return (
-
       <motion.div
         key="error"
         initial={{ opacity: 0 }}
@@ -212,7 +227,8 @@ export default function PublicProfilePage() {
             {errorMessage}
           </motion.p>
           <p className="text-gray-600 text-sm">
-            The profile you&apos;re looking for doesn&apos;t exist or is not available.
+            The profile you&apos;re looking for doesn&apos;t exist or is not
+            available.
           </p>
         </div>
       </motion.div>
@@ -228,7 +244,6 @@ export default function PublicProfilePage() {
     avatarUrl: profile.avatarUrl || undefined,
     links,
   };
-
 
   return (
     <AnimatePresence mode="wait">
@@ -250,22 +265,19 @@ export default function PublicProfilePage() {
             className="fixed left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
           />
 
-          {/* Center Phone Container */}
+          {/* Center Phone Container - FIXED WIDTH */}
           <motion.div
             variants={phoneContainerVariants}
             initial="initial"
             animate="animate"
-            className="relative z-20 mx-auto"
+            className="relative z-20 mx-auto w-[300px]" // Fixed width added here
           >
             {/* Phone Frame */}
             <motion.div
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto border-[2px]  border-black overflow-hidden bg-white shadow-2xl"
+              className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl" // w-full to fill container
             >
-
-
-
               {/* Screen Content */}
               <div className="w-full h-full bg-white overflow-hidden relative flex flex-col">
                 {/* Background Image inside phone */}
@@ -276,7 +288,7 @@ export default function PublicProfilePage() {
                   className="absolute inset-0"
                 >
                   <Image
-                    src="/themes/theme5.png"
+                    src="/themes/theme6.png"
                     alt="background"
                     fill
                     className="object-cover"
@@ -302,16 +314,24 @@ export default function PublicProfilePage() {
                     {/* Avatar */}
                     <motion.div
                       whileHover={{ scale: 1.1 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 15,
+                      }}
                     >
                       <Avatar className="w-[56px] h-[56px] border">
                         <AvatarImage
-                          src={userData.avatarUrl || "/icons/Profile Picture.png"}
+                          src={
+                            userData.avatarUrl || "/icons/Profile Picture.png"
+                          }
                           alt={userData.name || userData.username || "Profile"}
                           className="object-cover"
                         />
                         <AvatarFallback>
-                          {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
+                          {(userData.name || userData.username || "U")
+                            .charAt(0)
+                            .toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                     </motion.div>
@@ -322,8 +342,12 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
                     >
-                      <p className="font-bold text-[14px]">{userData?.name || userData?.username || "User"}</p>
-                      <p className="text-[10px] text-gray-500">@{userData.username || "username"}</p>
+                      <p className="font-bold text-[14px]">
+                        {userData?.name || userData?.username || "User"}
+                      </p>
+                      <p className="text-[10px] text-gray-500">
+                        @{userData.username || "username"}
+                      </p>
                     </motion.div>
                   </motion.div>
 
@@ -351,57 +375,68 @@ export default function PublicProfilePage() {
                       <span className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]">
                         {userData.location}
                       </span>
-
                     </motion.div>
                   )}
 
                   {/* Tab Switcher */}
                   <div className="mt-4 flex absolute bottom-0 gap-8">
-                    <button 
-                      onClick={() => setActiveTab('links')}
+                    <button
+                      onClick={() => setActiveTab("links")}
                       className="relative flex flex-col items-center pb-2 group"
                     >
-                      <span className={`text-[9px] font-medium transition-colors ${activeTab === 'links' ? 'text-black' : 'text-gray-400'}`}>
+                      <span
+                        className={`text-[9px] font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}
+                      >
                         Links
                       </span>
-                      {activeTab === 'links' && (
-                        <motion.div 
+                      {activeTab === "links" && (
+                        <motion.div
                           layoutId="activeTabDesktop"
-                          className="h-[3px] absolute bottom-0 w-6 bg-red-500" 
+                          className="h-[3px] absolute bottom-0 w-6 bg-red-500"
                         />
                       )}
                     </button>
-                   {userData?.username === "dnabygaza" && <button 
-                      onClick={() => setActiveTab('menu')}
-                      className="relative flex flex-col items-center pb-2 group"
-                    >
-                      <span className={`text-[9px] font-medium transition-colors ${activeTab === 'menu' ? 'text-black' : 'text-gray-400'}`}>
-                        Menu
-                      </span>
-                      {activeTab === 'menu' && (
-                        <motion.div 
-                          layoutId="activeTabDesktop"
-                          className="h-[3px] absolute bottom-0 w-6 bg-red-500" 
-                        />
-                      )}
-                    </button>}
+                    {userData?.username === "dnabygaza" && (
+                      <button
+                        onClick={() => setActiveTab("menu")}
+                        className="relative flex flex-col items-center pb-2 group"
+                      >
+                        <span
+                          className={`text-[9px] font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-gray-400"}`}
+                        >
+                          Menu
+                        </span>
+                        {activeTab === "menu" && (
+                          <motion.div
+                            layoutId="activeTabDesktop"
+                            className="h-[3px] absolute bottom-0 w-6 bg-red-500"
+                          />
+                        )}
+                      </button>
+                    )}
                   </div>
                 </motion.div>
 
                 {/* ===== BUTTONS ===== */}
-                <div className="relative z-20 px-6 pt-4 pb-6 space-y-3 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
+                <div
+                  className="relative z-20 px-6 pt-4 pb-6 space-y-3 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
                   style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
                   }}
                 >
-                  {activeTab === 'links' ? (
+                  {activeTab === "links" ? (
                     <>
                       <AnimatePresence>
                         {links.length > 0 ? (
                           links
-                            .filter((link: UserLink) => link.isVisible !== false)
-                            .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
+                            .filter(
+                              (link: UserLink) => link.isVisible !== false,
+                            )
+                            .sort(
+                              (a: UserLink, b: UserLink) =>
+                                a.displayOrder - b.displayOrder,
+                            )
                             .map((link: UserLink, index: number) => (
                               <motion.a
                                 key={link.id}
@@ -413,14 +448,17 @@ export default function PublicProfilePage() {
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center gap-3 px-4 py-2 font-medium text-sm
-                                          bg-white/70 border-2 border-black rounded-xl
-                                          shadow-[0_5px_0_#fff/70] hover:shadow-[0_3px_0_#fff]
-                                          transition-shadow cursor-pointer relative z-20"
+                                className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
+                                      bg-black text-white shadow-xl
+                                      hover:translate-y-[2px]
+                                      transition-all cursor-pointer"
                               >
                                 <motion.span
                                   whileHover={{ rotate: 10 }}
-                                  transition={{ type: "spring", stiffness: 300 }}
+                                  transition={{
+                                    type: "spring",
+                                    stiffness: 300,
+                                  }}
                                 >
                                   {getPlatformIcon(link.platform)}
                                 </motion.span>
@@ -438,9 +476,11 @@ export default function PublicProfilePage() {
                           </motion.p>
                         )}
                       </AnimatePresence>
-                 {userData?.username === "dnabygaza" &&     <div>
-                        <DnaFormV1 />
-                      </div>}
+                      {userData?.username === "dnabygaza" && (
+                        <div>
+                          <DnaFormV1 />
+                        </div>
+                      )}
                     </>
                   ) : (
                     <motion.div
@@ -453,8 +493,6 @@ export default function PublicProfilePage() {
                     </motion.div>
                   )}
                 </div>
-
-
               </div>
             </motion.div>
           </motion.div>
@@ -483,7 +521,7 @@ export default function PublicProfilePage() {
             className="fixed inset-0"
           >
             <Image
-              src="/themes/theme5.png"
+              src="/themes/theme6.png"
               alt="background"
               fill
               className="object-cover"
@@ -500,7 +538,7 @@ export default function PublicProfilePage() {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/90 p-3 backdrop-blur-sm"
+              className="bg-white/90 p-4 backdrop-blur-sm"
             >
               <div className="flex items-center gap-3">
                 {/* Avatar */}
@@ -516,7 +554,9 @@ export default function PublicProfilePage() {
                       className="object-cover"
                     />
                     <AvatarFallback>
-                      {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
+                      {(userData.name || userData.username || "U")
+                        .charAt(0)
+                        .toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </motion.div>
@@ -527,8 +567,12 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <p className="font-bold text-[14px] capitalize mb-1">{userData?.name || userData?.username || "User"}</p>
-                  <p className="text-[10px] text-gray-500">@{userData.username || "username"}</p>
+                  <p className="font-bold text-[16px] capitalize mb-1">
+                    {userData?.name || userData?.username || "User"}
+                  </p>
+                  <p className="text-[13px] text-gray-500">
+                    @{userData.username || "username"}
+                  </p>
                 </motion.div>
               </div>
 
@@ -538,7 +582,7 @@ export default function PublicProfilePage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
-                  className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
+                  className="mt-2 text-[13px] text-left font-semibold line-clamp-2"
                 >
                   {userData.bio}
                 </motion.p>
@@ -550,68 +594,79 @@ export default function PublicProfilePage() {
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6, type: "spring" }}
-                  className="inline-flex items-center gap-1 mt-2 border px-2 py-[2px] text-[10px] mb-4 bg-white/80"
+                  className="inline-flex items-center gap-1 mt-3 border px-2 py-[2px] text-[10px] mb-6 bg-white/80"
                 >
                   <FaMapMarkerAlt className="w-3 h-3" />
                   {userData.location}
                 </motion.div>
               )}
 
-
               {/* Tab Switcher */}
               <div className="mt-4 flex absolute bottom-0 gap-8">
-                <button 
-                  onClick={() => setActiveTab('links')}
+                <button
+                  onClick={() => setActiveTab("links")}
                   className="relative flex flex-col items-center pb-2 group"
                 >
-                  <span className={`text-[9px] font-medium transition-colors ${activeTab === 'links' ? 'text-black' : 'text-gray-400'}`}>
+                  <span
+                    className={`text-[11px] font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}
+                  >
                     Links
                   </span>
-                  {activeTab === 'links' && (
-                    <motion.div 
+                  {activeTab === "links" && (
+                    <motion.div
                       layoutId="activeTabMobile"
-                      className="h-[3px] absolute bottom-0 w-6 bg-red-500" 
+                      className="h-[3px] absolute bottom-0 w-6 bg-red-500"
                     />
                   )}
                 </button>
-                {userData?.username === "dnabygaza" && <button 
-                      onClick={() => setActiveTab('menu')}
-                      className="relative flex flex-col items-center pb-2 group"
+                {userData?.username === "dnabygaza" && (
+                  <button
+                    onClick={() => setActiveTab("menu")}
+                    className="relative flex flex-col items-center pb-2 group"
+                  >
+                    <span
+                      className={`text-[11px] font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-gray-400"}`}
                     >
-                      <span className={`text-[9px] font-medium transition-colors ${activeTab === 'menu' ? 'text-black' : 'text-gray-400'}`}>
-                        Menu
-                      </span>
-                      {activeTab === 'menu' && (
-                        <motion.div 
-                          layoutId="activeTabDesktop"
-                          className="h-[3px] absolute bottom-0 w-6 bg-red-500" 
-                        />
-                      )}
-                    </button>}
+                      Menu
+                    </span>
+                    {activeTab === "menu" && (
+                      <motion.div
+                        layoutId="activeTabDesktop"
+                        className="h-[3px] absolute bottom-0 w-6 bg-red-500"
+                      />
+                    )}
+                  </button>
+                )}
               </div>
             </motion.div>
 
             {/* ===== BUTTONS ===== */}
-            <div className="px-6 pt-4 pb-6 space-y-3 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden">
-              {activeTab === 'links' ? (
+            <div className="px-10 pt-6 pb-6 space-y-4 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden">
+              {activeTab === "links" ? (
                 <>
                   <AnimatePresence>
                     {links.length > 0 ? (
                       links
                         .filter((link: UserLink) => link.isVisible !== false)
-                        .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
+                        .sort(
+                          (a: UserLink, b: UserLink) =>
+                            a.displayOrder - b.displayOrder,
+                        )
                         .map((link: UserLink, index: number) => (
                           <motion.a
                             key={link.id}
                             initial={{ x: -30, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            transition={{ delay: 0.3 + (index * 0.1), type: "spring" }}
+                            transition={{
+                              delay: 0.3 + index * 0.1,
+                              type: "spring",
+                            }}
                             whileHover={{ scale: 1.03, y: -2 }}
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3 font-medium text-sm
-                                      bg-white/70 border-2 border-black rounded-xl
+                            className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
+                                      bg-black text-white shadow-xl
                                       hover:translate-y-[2px]
                                       transition-all cursor-pointer"
                           >
@@ -621,7 +676,9 @@ export default function PublicProfilePage() {
                             >
                               {getPlatformIcon(link.platform)}
                             </motion.span>
-                            <span className="truncate font-bold">{link.title}</span>
+                            <span className="truncate font-bold">
+                              {link.title}
+                            </span>
                           </motion.a>
                         ))
                     ) : (
@@ -635,9 +692,11 @@ export default function PublicProfilePage() {
                       </motion.p>
                     )}
                   </AnimatePresence>
-                  {userData?.username === "dnabygaza" &&     <div>
-                        <DnaFormV1 />
-                      </div>}
+                  {userData?.username === "dnabygaza" && (
+                    <div>
+                      <DnaFormV1 />
+                    </div>
+                  )}
                 </>
               ) : (
                 <motion.div
@@ -650,7 +709,6 @@ export default function PublicProfilePage() {
                 </motion.div>
               )}
             </div>
-
           </div>
         </motion.div>
       </motion.div>
