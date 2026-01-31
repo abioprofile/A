@@ -54,12 +54,10 @@ const EditModal: FC<EditModalProps> = ({
 
   const modalVariants: Variants = {
     hidden: {
-      scale: 0.9,
       opacity: 0,
       y: 20,
     },
     visible: {
-      scale: 1,
       opacity: 1,
       y: 0,
       transition: {
@@ -71,7 +69,6 @@ const EditModal: FC<EditModalProps> = ({
       },
     },
     exit: {
-      scale: 0.9,
       opacity: 0,
       y: 20,
       transition: {
@@ -106,7 +103,6 @@ const EditModal: FC<EditModalProps> = ({
       },
     },
     hover: {
-      scale: 1.02,
       boxShadow: "0 4px 12px rgba(254, 212, 92, 0.3)",
       transition: {
         type: "spring",
@@ -115,7 +111,6 @@ const EditModal: FC<EditModalProps> = ({
       },
     },
     tap: {
-      scale: 0.98,
     },
   };
 
@@ -157,7 +152,6 @@ const EditModal: FC<EditModalProps> = ({
                 >
                   <motion.label
                     htmlFor="platform"
-                    whileHover={{ scale: 1.02 }}
                     className="block text-xs md:text-sm font-bold text-[#331400] mb-2 cursor-pointer"
                   >
                     Title
@@ -167,7 +161,7 @@ const EditModal: FC<EditModalProps> = ({
                     name="platform"
                     type="text"
                     defaultValue={initialPlatform}
-                    className="w-full border border-2 border-[#331400]/20  px-3 py-2.5 text-sm md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
+                    className="w-full border border-2 border-[#331400]/20  px-3 py-2.5 text-base md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
                     required
                     
                   />
@@ -182,7 +176,6 @@ const EditModal: FC<EditModalProps> = ({
                 >
                   <motion.label
                     htmlFor="url"
-                    whileHover={{ scale: 1.02 }}
                     className="block text-xs md:text-sm font-bold text-[#331400] mb-2 cursor-pointer"
                   >
                     URL
@@ -192,7 +185,7 @@ const EditModal: FC<EditModalProps> = ({
                     name="url"
                     type="url"
                     defaultValue={initialUrl}
-                    className="w-full border border-2 border-[#331400]/20  px-3 py-2.5 text-sm md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
+                    className="w-full border border-2 border-[#331400]/20  px-3 py-2.5 text-base md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
                     required
                     
                   />
@@ -231,8 +224,6 @@ const EditModal: FC<EditModalProps> = ({
                   <motion.button
                     type="button"
                     onClick={onClose}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
                     className="text-xs md:text-sm text-gray-500 hover:text-[#331400] transition-colors duration-200"
                   >
                     Cancel
