@@ -162,17 +162,14 @@ const EditModal: FC<EditModalProps> = ({
                   >
                     Title
                   </motion.label>
-                  <motion.input
+                  <input
                     id="platform"
                     name="platform"
                     type="text"
                     defaultValue={initialPlatform}
-                    className="w-full border border-2 border-[#331400]/20 rounded-md px-3 py-2.5 text-sm md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
+                    className="w-full border border-2 border-[#331400]/20  px-3 py-2.5 text-sm md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
                     required
-                    whileFocus={{
-                      scale: 1.01,
-                      boxShadow: "0 0 0 2px rgba(51, 20, 0, 0.1)",
-                    }}
+                    
                   />
                 </motion.div>
 
@@ -190,17 +187,14 @@ const EditModal: FC<EditModalProps> = ({
                   >
                     URL
                   </motion.label>
-                  <motion.input
+                  <input
                     id="url"
                     name="url"
                     type="url"
                     defaultValue={initialUrl}
-                    className="w-full border border-2 border-[#331400]/20 rounded-md px-3 py-2.5 text-sm md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
+                    className="w-full border border-2 border-[#331400]/20  px-3 py-2.5 text-sm md:text-base transition-all duration-200 focus:border-[#331400] focus:outline-none focus:ring-1 focus:ring-[#331400]/20"
                     required
-                    whileFocus={{
-                      scale: 1.01,
-                      boxShadow: "0 0 0 2px rgba(51, 20, 0, 0.1)",
-                    }}
+                    
                   />
                 </motion.div>
 
@@ -215,7 +209,7 @@ const EditModal: FC<EditModalProps> = ({
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    className="bg-[#FED45C] w-full text-[#331400] px-4 py-3 text-sm md:text-[14px] font-bold rounded-md transition-all duration-200 relative overflow-hidden group"
+                    className="bg-[#FED45C] w-full text-[#331400] px-4 py-3 text-sm md:text-[14px] font-bold  transition-all duration-200 relative overflow-hidden group"
                   >
                     {/* Button shine effect */}
                     <motion.span
