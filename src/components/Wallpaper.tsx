@@ -1,15 +1,35 @@
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Upload, X, ChevronDown } from "lucide-react";
+import { Upload, X } from "lucide-react";
+import type { FillGradientWallpaperConfig } from "@/types/appearance.types";
+
+const WALLPAPER_AMOUNT_FILL = 0.5;
+const WALLPAPER_AMOUNT_GRADIENT_START = 0.5;
+const WALLPAPER_AMOUNT_GRADIENT_END = 0.5;
+
+function isValidHexColor(s: string): boolean {
+  return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(s);
+}
+
+function toValidHex(s: string, fallback: string): string {
+  return isValidHexColor(s) ? s : fallback;
+}
 
 interface WallpaperSelectorProps {
   selectedTheme: string;
   setSelectedTheme: (theme: string) => void;
+  initialWallpaperConfig?: FillGradientWallpaperConfig | null;
+  onWallpaperChange?: (payload: {
+    wallpaperConfig: FillGradientWallpaperConfig | null;
+    imageFile: File | null;
+  }) => void;
 }
 
 export default function WallpaperSelector({
   selectedTheme,
   setSelectedTheme,
+  initialWallpaperConfig,
+  onWallpaperChange,
 }: WallpaperSelectorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
@@ -17,28 +37,89 @@ export default function WallpaperSelector({
   const contentRef = useRef<HTMLDivElement>(null);
   const [dragStart, setDragStart] = useState(0);
   const [translate, setTranslate] = useState(0);
-  const [velocity, setVelocity] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const blobUrlRef = useRef<string | null>(null);
 
   const [themeType, setThemeType] = useState<"fill" | "gradient" | "image">(
     selectedTheme.startsWith("gradient")
       ? "gradient"
       : selectedTheme.startsWith("fill")
-      ? "fill"
-      : "image"
+        ? "fill"
+        : "image"
   );
   const [fillColor, setFillColor] = useState("#000000");
   const [gradientStart, setGradientStart] = useState("#0f0f0f");
   const [gradientEnd, setGradientEnd] = useState("#dddddd");
 
+  const onWallpaperChangeRef = useRef(onWallpaperChange);
+  onWallpaperChangeRef.current = onWallpaperChange;
+  const lastSyncedInitialRef = useRef<string | null>(null);
+
+  // Sync from server config only once per distinct config (avoids loop when parent re-renders)
+  useEffect(() => {
+    if (!initialWallpaperConfig) return;
+    const key = JSON.stringify(initialWallpaperConfig);
+    if (lastSyncedInitialRef.current === key) return;
+    lastSyncedInitialRef.current = key;
+    const bg = initialWallpaperConfig.backgroundColor;
+    if (!Array.isArray(bg) || bg.length === 0) return;
+    if (initialWallpaperConfig.type === "fill" && bg[0]) {
+      setFillColor(toValidHex(bg[0].color, "#000000"));
+      setThemeType("fill");
+    }
+    if (initialWallpaperConfig.type === "gradient" && bg.length >= 2) {
+      setGradientStart(toValidHex(bg[0].color, "#0f0f0f"));
+      setGradientEnd(toValidHex(bg[1].color, "#dddddd"));
+      setThemeType("gradient");
+    }
+  }, [initialWallpaperConfig]);
+
+  // Update preview string when fill/gradient colors change
   useEffect(() => {
     if (themeType === "fill") {
       setSelectedTheme(`fill:${fillColor}`);
     } else if (themeType === "gradient") {
       setSelectedTheme(`gradient:${gradientStart}:${gradientEnd}`);
     }
-  }, [fillColor, gradientStart, gradientEnd, themeType]);
+  }, [themeType, fillColor, gradientStart, gradientEnd, setSelectedTheme]);
+
+  // Notify parent of current wallpaper payload — only when values change, use ref for callback
+  useEffect(() => {
+    const cb = onWallpaperChangeRef.current;
+    if (!cb) return;
+    if (themeType === "fill") {
+      cb({
+        wallpaperConfig: {
+          type: "fill",
+          backgroundColor: [
+            { color: toValidHex(fillColor, "#000000"), amount: WALLPAPER_AMOUNT_FILL },
+          ],
+        },
+        imageFile: null,
+      });
+    } else if (themeType === "gradient") {
+      cb({
+        wallpaperConfig: {
+          type: "gradient",
+          backgroundColor: [
+            {
+              color: toValidHex(gradientStart, "#0f0f0f"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_START,
+            },
+            {
+              color: toValidHex(gradientEnd, "#dddddd"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_END,
+            },
+          ],
+        },
+        imageFile: null,
+      });
+    } else {
+      cb({ wallpaperConfig: null, imageFile });
+    }
+  }, [themeType, fillColor, gradientStart, gradientEnd, imageFile]);
 
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     if (!showModal) return;
@@ -46,7 +127,6 @@ export default function WallpaperSelector({
     setIsAnimating(false);
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     setDragStart(clientY);
-    setVelocity(0);
   };
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
@@ -98,8 +178,38 @@ export default function WallpaperSelector({
 
   const handleSelectType = (type: "fill" | "gradient" | "image") => {
     setThemeType(type);
-    if (type === "fill") setSelectedTheme(`fill:${fillColor}`);
-    else if (type === "gradient") setSelectedTheme(`gradient:${gradientStart}:${gradientEnd}`);
+    if (type === "fill") {
+      setSelectedTheme(`fill:${fillColor}`);
+      setImageFile(null);
+      onWallpaperChange?.({
+        wallpaperConfig: {
+          type: "fill",
+          backgroundColor: [
+            { color: toValidHex(fillColor, "#000000"), amount: WALLPAPER_AMOUNT_FILL },
+          ],
+        },
+        imageFile: null,
+      });
+    } else if (type === "gradient") {
+      setSelectedTheme(`gradient:${gradientStart}:${gradientEnd}`);
+      setImageFile(null);
+      onWallpaperChange?.({
+        wallpaperConfig: {
+          type: "gradient",
+          backgroundColor: [
+            {
+              color: toValidHex(gradientStart, "#0f0f0f"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_START,
+            },
+            {
+              color: toValidHex(gradientEnd, "#dddddd"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_END,
+            },
+          ],
+        },
+        imageFile: null,
+      });
+    }
   };
 
   const isSelected = (type: string) => {
@@ -109,13 +219,24 @@ export default function WallpaperSelector({
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      setThemeType("image");
-      setSelectedTheme(imageUrl);
-      setShowModal(false);
-    }
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return;
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    const imageUrl = URL.createObjectURL(file);
+    blobUrlRef.current = imageUrl;
+    setImageFile(file);
+    setThemeType("image");
+    setSelectedTheme(imageUrl);
+    setShowModal(false);
+    onWallpaperChange?.({ wallpaperConfig: null, imageFile: file });
+    e.target.value = "";
   };
+
+  useEffect(() => {
+    return () => {
+      if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    };
+  }, []);
 
   return (
     <>
@@ -257,8 +378,9 @@ export default function WallpaperSelector({
           >
             {/* Upload Option */}
             <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full flex items-center gap-3 p-4 border-2 border-gray-300  active:bg-gray-50 hover:border-gray-400 transition-all"
+              className="w-full flex items-center gap-3 p-4 border-2 border-gray-300 active:bg-gray-50 hover:border-gray-400 transition-all cursor-pointer"
             >
               <div className="w-12 h-12   flex items-center justify-center flex-shrink-0">
                 <Upload className="w-6 h-6 " />

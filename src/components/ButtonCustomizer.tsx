@@ -278,7 +278,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 width={20}
                 height={20}
               />
-              Hard Shadow11
+              Hard Shadow
             </button>
           </div>
 

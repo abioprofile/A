@@ -21,7 +21,7 @@ const ButtonAndFontTabs: React.FC<Props> = ({
 
   return (
     <div className="bg-white shadow-sm  p-6">
-      {/* Sub-tabs under Buttons */}
+      {/* Sub-tabs under Style */}
       <div className="flex justify-center items-center -mt-6 md:mt-0 md:justify-start mb-4">
         <button
           onClick={() => setSubTab('corner')}

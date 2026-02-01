@@ -2,23 +2,36 @@
 
 import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronLeft, RotateCcw, RotateCw } from "lucide-react";
 import PhoneDisplay from "@/components/PhoneDisplay";
-import { useGetAllLinks, useUpdateProfile } from "@/hooks/api/useAuth";
+import {
+  useGetAllLinks,
+  useGetSettings,
+  useUpdateProfile,
+  useUpdateAppearanceAll,
+} from "@/hooks/api/useAuth";
 import { useAppSelector } from "@/stores/hooks";
+import type {
+  AppearancePayload,
+  AppearanceResponse,
+  CornerConfig,
+  FillGradientWallpaperConfig,
+  FontConfig,
+  WallpaperConfig as BackendWallpaperConfig,
+} from "@/types/appearance.types";
 import ProfileContent from "@/components/ProfileContent";
 import WallpaperSelector from "@/components/Wallpaper";
 import ThemeSelector from "@/components/ThemeSelector";
 import ButtonAndFontTabs from "@/components/ButtonAndFontTabs";
 import AppearanceBottomNav from "@/components/AppearanceBottomNav";
-import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
+import  { FontStyle } from "@/components/FontCustomizer";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
 } from "@/components/ui/sheet";
 
 /* Shared interfaces*/
@@ -31,6 +44,121 @@ export interface ButtonStyle {
   shadowColor?: string;
 }
 
+/** Map UI button style to API CornerConfig for save */
+function buttonStyleToCornerConfig(style: ButtonStyle): CornerConfig {
+  const type: CornerConfig["type"] =
+    style.borderRadius === "0px"
+      ? "sharp"
+      : style.borderRadius === "9999px" || style.borderRadius === "50%"
+        ? "round"
+        : "curved";
+  const shadowSize =
+    style.boxShadow === "none" || !style.boxShadow
+      ? "soft"
+      : style.boxShadow.includes("4px 4px 0px")
+        ? "hard"
+        : "soft";
+  return {
+    type,
+    opacity: style.opacity,
+    fillColor: style.backgroundColor,
+    shadowSize,
+    shadowColor: style.shadowColor ?? "#000000",
+    strokeColor: style.borderColor,
+  };
+}
+
+/** Map API CornerConfig to UI ButtonStyle (for initial load from settings) */
+function cornerConfigToButtonStyle(c: CornerConfig): ButtonStyle {
+  const borderRadius =
+    c.type === "sharp" ? "0px" : c.type === "round" ? "9999px" : "12px";
+  const boxShadow =
+    c.shadowSize === "hard"
+      ? `4px 4px 0px 0px ${c.shadowColor}`
+      : `2px 2px 6px ${c.shadowColor}80`;
+  return {
+    borderRadius,
+    backgroundColor: c.fillColor,
+    borderColor: c.strokeColor,
+    opacity: c.opacity,
+    boxShadow: c.shadowSize === "soft" && !c.shadowColor ? "none" : boxShadow,
+    shadowColor: c.shadowColor,
+  };
+}
+
+/** Map API FontConfig to UI FontStyle (for initial load from settings) */
+function fontConfigToFontStyle(f: FontConfig): FontStyle {
+  return {
+    fontFamily: f.name || "Poppins",
+    fillColor: f.fillColor ?? "#000000",
+    strokeColor: (f as { strokeColor?: string }).strokeColor ?? "none",
+    opacity: 100,
+  };
+}
+
+/**
+ * Backend expects a single font name (letters, numbers, hyphens only).
+ * UI fontFamily can be a CSS stack like "'Merriweather', 'Merriweather Fallback'".
+ * Extract the primary name and sanitize for the API.
+ */
+function fontFamilyToApiName(fontFamily: string): string {
+  const first = fontFamily.split(",")[0].trim().replace(/^['"]|['"]$/g, "");
+  return first.replace(/[^a-zA-Z0-9-]/g, "") || "Poppins";
+}
+
+/** Backend expects valid color values; UI may use "none" for no stroke. Map to valid hex. */
+function toValidColor(value: string | undefined | null, fallback: string): string {
+  const v = (value ?? "").trim().toLowerCase();
+  if (!v || v === "none" || v === "transparent") return fallback;
+  return value!.trim();
+}
+
+/** Map UI FontStyle to API FontConfig for save */
+function fontStyleToFontConfig(s: FontStyle): FontConfig {
+  return {
+    name: fontFamilyToApiName(s.fontFamily),
+    fillColor: toValidColor(s.fillColor, "#000000"),
+    strokeColor: toValidColor(s.strokeColor, "#00000000"),
+  };
+}
+
+/** Default amount for wallpaper backgroundColor when not from backend (design didn't account for it). */
+const WALLPAPER_DEFAULT_AMOUNT = 100;
+
+/** Build FillGradientWallpaperConfig from backend wallpaper_config (for restore/sync). */
+function wallpaperConfigFromBackend(
+  w: BackendWallpaperConfig | undefined | null
+): FillGradientWallpaperConfig | null {
+  if (!w || (w.type !== "fill" && w.type !== "gradient")) return null;
+  const bg = (w as { backgroundColor?: Array<{ color: string; amount: number }> }).backgroundColor;
+  if (!Array.isArray(bg) || bg.length === 0) return null;
+  const withAmount = bg.map((item) => ({
+    color: typeof item?.color === "string" ? item.color : "#000000",
+    amount:
+      typeof item?.amount === "number" && item.amount >= 0
+        ? item.amount
+        : WALLPAPER_DEFAULT_AMOUNT,
+  }));
+  return { type: w.type, backgroundColor: withAmount };
+}
+
+/** Build selectedTheme string from backend wallpaper_config for preview. */
+function selectedThemeFromWallpaper(
+  w: BackendWallpaperConfig | undefined | null
+): string | null {
+  if (!w) return null;
+  const bg = (w as { backgroundColor?: Array<{ color: string }> }).backgroundColor;
+  if (w.type === "fill" && Array.isArray(bg) && bg[0]) {
+    return `fill:${bg[0].color}`;
+  }
+  if (w.type === "gradient" && Array.isArray(bg) && bg.length >= 2) {
+    return `gradient:${bg[0].color}:${bg[1].color}`;
+  }
+  const img = (w as { image?: { url: string } }).image;
+  if (w.type === "image" && img?.url) return img.url;
+  return null;
+}
+
 interface AppState {
   buttonStyle: ButtonStyle;
   fontStyle: FontStyle;
@@ -40,15 +168,19 @@ interface AppState {
     displayName: string;
     bio: string;
     location: string;
-    profileIcon: string | null;
+    profileIcon?: string | null;
   };
 }
 
 /* Appearance Page*/
 const AppearancePage: React.FC = () => {
   const router = useRouter();
+  const queryClient = useQueryClient();
   const userData = useAppSelector((state) => state.auth.user);
+  const { data: settingsData } = useGetSettings();
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateProfile();
+  const { mutateAsync: updateAppearanceAllAsync, isPending: isSavingAll } =
+    useUpdateAppearanceAll();
 
   const [activeTab, setActiveTab] = useState<number | null>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
@@ -71,13 +203,46 @@ const AppearancePage: React.FC = () => {
   const [selectedTheme, setSelectedTheme] =
     useState<string>("/themes/theme1.png");
 
+  const [wallpaperConfig, setWallpaperConfig] =
+    useState<FillGradientWallpaperConfig | null>(null);
+  const [wallpaperImageFile, setWallpaperImageFile] = useState<File | null>(null);
+  /** Only set from settings load / restore — never from WallpaperSelector, to avoid effect loop */
+  const [initialWallpaperFromServer, setInitialWallpaperFromServer] =
+    useState<FillGradientWallpaperConfig | null>(null);
+
   const [profile, setProfile] = useState({
     profileImage: userData?.profile?.avatarUrl || "/icons/Profile Picture.png",
-    displayName: userData?.profile?.displayName || "",
+    displayName: userData?.name || "User",
     bio: userData?.profile?.bio || "",
     location: userData?.profile?.location || "",
     profileIcon: null as string | null,
   });
+
+  const [settingsSynced, setSettingsSynced] = useState(false);
+
+  // Sync local state from fetched settings (once when settings load)
+  useEffect(() => {
+    const payload = settingsData?.data;
+    if (!payload || settingsSynced) return;
+    if (payload.corner_config) {
+      setButtonStyle(cornerConfigToButtonStyle(payload.corner_config));
+    }
+    if (payload.font_config) {
+      setFontStyle(fontConfigToFontStyle(payload.font_config));
+    }
+    if (payload.selected_theme != null) {
+      setSelectedTheme(payload.selected_theme);
+    }
+    const wp = wallpaperConfigFromBackend(payload.wallpaper_config);
+    if (wp) {
+      setWallpaperConfig(wp);
+      setWallpaperImageFile(null);
+      setInitialWallpaperFromServer(wp);
+    }
+    const themeFromWallpaper = selectedThemeFromWallpaper(payload.wallpaper_config);
+    if (themeFromWallpaper != null) setSelectedTheme(themeFromWallpaper);
+    setSettingsSynced(true);
+  }, [settingsData?.data, settingsSynced]);
 
   // Sync profile with Redux user data on load
   useEffect(() => {
@@ -85,7 +250,7 @@ const AppearancePage: React.FC = () => {
       setProfile((prev) => ({
         ...prev,
         profileImage: userData.profile.avatarUrl || prev.profileImage,
-        displayName: prev.displayName || userData.profile.displayName || "",
+        displayName: prev.displayName || userData.name || "User",
         bio: prev.bio || userData.profile.bio || "",
         location: prev.location || userData.profile.location || "",
       }));
@@ -161,13 +326,22 @@ const AppearancePage: React.FC = () => {
       location: string;
       profileIcon?: string | null;
     }) => {
-      setProfile({
-        ...updatedProfile,
-        profileIcon: updatedProfile.profileIcon ?? null,
-      });
+      setProfile(updatedProfile);
       handleStateChange();
     },
     [handleStateChange],
+  );
+
+  const handleWallpaperChange = useCallback(
+    (payload: {
+      wallpaperConfig: FillGradientWallpaperConfig | null;
+      imageFile: File | null;
+    }) => {
+      setWallpaperConfig(payload.wallpaperConfig ?? null);
+      setWallpaperImageFile(payload.imageFile ?? null);
+      handleStateChange();
+    },
+    [handleStateChange]
   );
 
   const { data: linksData } = useGetAllLinks();
@@ -178,24 +352,53 @@ const AppearancePage: React.FC = () => {
       : []
     : [];
 
-  const handleSaveAll = () => {
-    updateProfile(
-      {
-        displayName: profile.displayName,
-        bio: profile.bio,
-        location: profile.location,
-      },
-      {
-        onSuccess: () => {
-          // toast is handled by the hook
-          toast.success("All appearance settings saved successfully!");
-        },
-        onError: () => {
-          toast.error("Failed to save settings");
-        }
+  /** Restore local state from server payload (e.g. after a failed save) */
+  const restoreFromPayload = useCallback((payload: AppearancePayload) => {
+    if (payload.corner_config) {
+      setButtonStyle(cornerConfigToButtonStyle(payload.corner_config));
+    }
+    if (payload.font_config) {
+      setFontStyle(fontConfigToFontStyle(payload.font_config));
+    }
+    if (payload.selected_theme != null) {
+      setSelectedTheme(payload.selected_theme);
+    }
+    const wp = wallpaperConfigFromBackend(payload.wallpaper_config);
+    setWallpaperConfig(wp ?? null);
+    setWallpaperImageFile(null);
+    if (wp) setInitialWallpaperFromServer(wp);
+    const themeFromWallpaper = selectedThemeFromWallpaper(payload.wallpaper_config);
+    if (themeFromWallpaper != null) setSelectedTheme(themeFromWallpaper);
+  }, []);
+
+  const handleSaveAll = useCallback(async () => {
+    try {
+      await updateAppearanceAllAsync({
+        cornerConfig: buttonStyleToCornerConfig(buttonStyle),
+        fontConfig: fontStyleToFontConfig(fontStyle),
+        wallpaperConfig: wallpaperImageFile ? null : wallpaperConfig ?? undefined,
+        wallpaperImageFile: wallpaperImageFile ?? undefined,
+      });
+    } catch {
+      try {
+        await queryClient.refetchQueries({ queryKey: ["settings"] });
+      } catch {
+        // Refetch failed (e.g. offline); restore from cache if available
       }
-    );
-  };
+      const res = queryClient.getQueryData<AppearanceResponse>(["settings"]);
+      if (res?.data) {
+        restoreFromPayload(res.data);
+      }
+    }
+  }, [
+    buttonStyle,
+    fontStyle,
+    wallpaperConfig,
+    wallpaperImageFile,
+    updateAppearanceAllAsync,
+    queryClient,
+    restoreFromPayload,
+  ]);
 
   const handleBackClick = () => {
     router.back();
@@ -217,11 +420,12 @@ const AppearancePage: React.FC = () => {
       {/* Desktop Save */}
       <div className="hidden md:flex justify-end mb-4 ">
         <button
+          type="button"
           onClick={handleSaveAll}
-          disabled={isUpdatingProfile}
-          className="bg-[#FED45C] shadow-[2px_2px_0px_0px_#000000] cursor-pointer font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isSavingAll}
+          className="bg-[#FED45C] shadow-[2px_2px_0px_0px_#000000] font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isUpdatingProfile ? "Saving..." : "Save Changes"}
+          {isSavingAll ? "Saving…" : "Save Changes"}
         </button>
       </div>
 
@@ -253,11 +457,12 @@ const AppearancePage: React.FC = () => {
               <RotateCw size={18} />
             </button>
             <button
+              type="button"
               onClick={handleSaveAll}
-              disabled={isUpdatingProfile}
-              className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50"
+              disabled={isSavingAll}
+              className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isUpdatingProfile ? "Saving..." : "Save"}
+              {isSavingAll ? "Saving…" : "Save"}
             </button>
           </div>
         </div>
@@ -344,6 +549,8 @@ const AppearancePage: React.FC = () => {
                   setSelectedTheme(newTheme);
                   handleStateChange();
                 }}
+                initialWallpaperConfig={initialWallpaperFromServer}
+                onWallpaperChange={handleWallpaperChange}
               />
             )}
           </div>
@@ -411,6 +618,8 @@ const AppearancePage: React.FC = () => {
                     setSelectedTheme(newTheme);
                     handleStateChange();
                   }}
+                  initialWallpaperConfig={initialWallpaperFromServer}
+                  onWallpaperChange={handleWallpaperChange}
                 />
               )}
             </div>
@@ -420,7 +629,7 @@ const AppearancePage: React.FC = () => {
 
       {/* Mobile Bottom Nav */}
       <AppearanceBottomNav
-        activeTab={activeTab ?? 0}
+        activeTab={activeTab || 0} // default to profile tab if no tab is selected
         setActiveTab={handleTabClick}
       />
     </section>

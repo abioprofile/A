@@ -98,7 +98,7 @@ export default function PublicProfilePage() {
 
   const profile = profileData.data;
   const userData = {
-    name: profile.displayName || undefined,
+    name: profile.user.name || undefined,
     username: profile.username || undefined,
     bio: profile.bio || undefined,
     location: profile.location || undefined,
@@ -117,17 +117,17 @@ export default function PublicProfilePage() {
             <Avatar className="w-[56px] h-[56px] border">
               <AvatarImage
                 src={userData.avatarUrl || "/icons/Profile Picture.png"}
-                alt={userData.name || userData.username || "Profile"}
+                alt={userData.name || "Profile"}
                 className="object-cover"
               />
               <AvatarFallback>
-                {(userData.name || userData.username || "U").charAt(0).toUpperCase()}
+                {(userData.name || "U").charAt(0).toUpperCase()}
               </AvatarFallback>
             </Avatar>
 
             {/* Name */}
             <div>
-              <p className="font-bold text-sm">{userData.name || userData.username || "User"}</p>
+              <p className="font-bold text-sm">{userData.name || "User"}</p>
               <p className="text-xs text-gray-500">@{userData.username || "username"}</p>
             </div>
           </div>

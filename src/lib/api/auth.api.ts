@@ -12,7 +12,9 @@ import {
   UserProfile,
   VerifyOtpResponse,
   WaitlistRequest,
-} from "@/types/auth.types";
+  DisplayConfig,
+  } from "@/types/auth.types";
+import { AppearanceResponse, CornerConfig, FillGradientWallpaperConfig, FontConfig, ImageWallpaperConfig, WallpaperConfig } from "@/types/appearance.types";
 
 // Sign up API
 export const signUp = async (data: SignUpRequest): Promise<AuthResponse> => {
@@ -167,12 +169,15 @@ export const getUserProfileByUsername = async (
     id: string;
     userId: string;
     username: string;
-    displayName: string | null;
     bio: string | null;
     location: string | null;
     avatarUrl: string | null;
     isPublic: boolean;
     links: ProfileLink[];
+    user: {
+      name: string;
+    };
+    display: DisplayConfig;
   };
   statusCode: number;
 }> => {
@@ -183,12 +188,15 @@ export const getUserProfileByUsername = async (
       id: string;
       userId: string;
       username: string;
-      displayName: string | null;
       bio: string | null;
       location: string | null;
       avatarUrl: string | null;
       isPublic: boolean;
       links: ProfileLink[];
+      user: {
+        name: string;
+      };
+      display: DisplayConfig;
     };
     statusCode: number;
   }>(`/user/${username}`);
@@ -325,5 +333,52 @@ export const createWaitlist = async (data: {email: string, name: string}): Promi
 
 export const getWaitlist = async () : Promise<WaitlistRequest> => {
   const response = await apiClient.get<WaitlistRequest>('/waitlist/jzI27AUJTCKU');
+  return response.data
+}
+
+export const getSettings = async () : Promise<AppearanceResponse> => {
+  const response = await apiClient.get<AppearanceResponse>('/user/preferences');
+  return response.data
+}
+
+export const updateAppearanceCorners = async (
+  data: CornerConfig,
+  signal?: AbortSignal
+): Promise<AppearanceResponse> => {
+  const response = await apiClient.put<AppearanceResponse>(
+    "/user/preferences/corners",
+    data,
+    { signal }
+  );
+  return response.data;
+};
+
+export const updateAppearanceFont = async (
+  data: FontConfig,
+  signal?: AbortSignal
+): Promise<AppearanceResponse> => {
+  const response = await apiClient.put<AppearanceResponse>(
+    "/user/preferences/fonts",
+    data,
+    { signal }
+  );
+  return response.data;
+};
+
+export const updateAppearanceWallpaper = async (
+  data: FillGradientWallpaperConfig,
+  signal?: AbortSignal
+) : Promise<AppearanceResponse> => {
+  const response = await apiClient.put<AppearanceResponse>('/user/preferences/background', data, { signal });
+  return response.data
+}
+
+export const updateAppearanceImage = async (
+  data: ImageWallpaperConfig,
+    signal?: AbortSignal
+) : Promise<AppearanceResponse> => {
+  const formData = new FormData();
+  formData.append('image', data.image);
+  const response = await apiClient.put<AppearanceResponse>('/user/preferences/background', formData, { signal });
   return response.data
 }

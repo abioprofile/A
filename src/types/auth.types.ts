@@ -22,16 +22,52 @@ export interface UserWithoutProfile extends Omit<User, 'profile'> {
 
 export interface UserProfile {
   id: string;
+  userId: string;
   username: string | null;
-  displayName: string | null;
   bio: string | null;
   location: string | null;
-  goals: string[];
+  goals?: string[];
   avatarUrl: string | null;
   isPublic: boolean;
   createdAt: string;
   updatedAt: string;
   links?: ProfileLink[];
+  user: {
+    name: string;
+  };
+  display: DisplayConfig;
+}
+
+export interface DisplayConfig {
+  id: string;
+  userId: string;
+  profileId: string;
+  selected_theme: string | null;
+  font_config: {
+    name: string;
+    fillColor: string;
+  };
+  corner_config: {
+    type: string;
+    opacity: number;
+    fillColor: string;
+    shadowSize: string;
+    shadowColor: string;
+    strokeColor: string;
+  };
+  wallpaper_config: {
+    type: string;
+    image: {
+      url: string;
+      publicId: string;
+    };
+    backgroundColor: Array<{
+      color: string;
+      amount: number;
+    }>;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AuthResponse {

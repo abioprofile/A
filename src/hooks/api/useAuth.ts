@@ -20,6 +20,11 @@ import {
   deleteLink,
   createWaitlist,
   getWaitlist,
+  getSettings,
+  updateAppearanceFont,
+  updateAppearanceCorners,
+  updateAppearanceWallpaper,
+  updateAppearanceImage,
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -40,6 +45,7 @@ import {
   VerifyOtpFormData,
   ForgotPasswordFormData,
 } from "@/lib/validations/auth.schema";
+import { AppearanceResponse, CornerConfig, FillGradientWallpaperConfig, FontConfig, ImageWallpaperConfig, WallpaperConfig } from "@/types/appearance.types";
 
 // Sign up mutation
 export const useSignUp = () => {
@@ -653,5 +659,156 @@ export const useGetWaitlist = () => {
       return await getWaitlist();
     },
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useGetSettings = () => {
+  return useQuery({
+    queryKey: ["settings"],
+    queryFn: async () => {
+      return await getSettings();
+    },
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useUpdateAppearanceCorners = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: CornerConfig) => {
+      return await updateAppearanceCorners(data);
+    },
+    onSuccess: (response: AppearanceResponse) => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update appearance corners. Please try again.";
+      toast.error("Failed to update appearance corners", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateAppearanceFont = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: FontConfig) => {
+      return await updateAppearanceFont(data);
+    },
+    onSuccess: (response: AppearanceResponse) => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update appearance font. Please try again.";
+      toast.error("Failed to update appearance font", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+/** Update corners + font in one go. Both requests use the same AbortSignal; if one fails, the other is aborted so neither "goes through" from the client. */
+export type UpdateAppearanceAllVariables = {
+  cornerConfig: CornerConfig;
+  fontConfig: FontConfig;
+  wallpaperConfig?: FillGradientWallpaperConfig | null;
+  wallpaperImageFile?: File | null;
+};
+
+export const useUpdateAppearanceAll = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      cornerConfig,
+      fontConfig,
+      wallpaperConfig,
+      wallpaperImageFile,
+    }: UpdateAppearanceAllVariables) => {
+      const ac = new AbortController();
+      const signal = ac.signal;
+      const promises: Promise<unknown>[] = [
+        updateAppearanceCorners(cornerConfig, signal),
+        updateAppearanceFont(fontConfig, signal),
+      ];
+      if (wallpaperConfig != null) {
+        promises.push(updateAppearanceWallpaper(wallpaperConfig, signal));
+      }
+      if (wallpaperImageFile != null) {
+        promises.push(
+          updateAppearanceImage({ type: "image", image: wallpaperImageFile }, signal)
+        );
+      }
+      try {
+        await Promise.all(promises);
+        return {};
+      } catch (e) {
+        ac.abort();
+        throw e;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+      toast.success("Appearance saved", {
+        description: "Your appearance settings have been updated.",
+      });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Some settings could not be saved. No changes were applied.";
+      toast.error("Save failed", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateAppearanceWallpaper = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: FillGradientWallpaperConfig) => {
+      return await updateAppearanceWallpaper(data);
+    },
+    onSuccess: (response: AppearanceResponse) => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to update appearance wallpaper. Please try again.";
+      toast.error("Failed to update appearance wallpaper", {
+        description: errorMessage,
+      });
+    },
+  });
+};
+
+export const useUpdateAppearanceImage = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: ImageWallpaperConfig) => {
+      return await updateAppearanceImage(data);
+    },
+    onSuccess: (response: AppearanceResponse) => {
+      queryClient.invalidateQueries({ queryKey: ["settings"] });
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+          "Failed to update appearance image. Please try again.";
+      toast.error("Failed to update appearance image", {
+        description: errorMessage,
+      });
+    },
   });
 };
