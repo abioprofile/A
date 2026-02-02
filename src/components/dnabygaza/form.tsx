@@ -8,10 +8,19 @@ export default function DnaFormV1() {
   const [phone, setPhone] = useState<string>('')
   const [dob, setDob] = useState<string>('') // Date of Birth as DD/MM
   const [status, setStatus] = useState<FormStatus>('idle')
+  const [dobError, setDobError] = useState<string>('')
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
+    
+    // Validate DOB before submitting
+    if (!validateDOBFormat(dob)) {
+      setDobError('Please enter a valid date in DD/MM format')
+      return
+    }
+    
     setStatus('loading')
+    setDobError('')
     
     try {
       const res = await fetch('https://sheetdb.io/api/v1/02p8r1kfblerq', {
@@ -33,6 +42,7 @@ export default function DnaFormV1() {
         setName('')
         setPhone('')
         setDob('')
+        setDobError('')
         
         // Reset success message after 3 seconds
         setTimeout(() => {
@@ -47,25 +57,93 @@ export default function DnaFormV1() {
     }
   }
 
-  // Helper function to validate DOB format (DD/MM)
-  const validateDOB = (value: string): boolean => {
-    if (value.length > 5) return false // DD/MM is max 5 characters including slash
-    
-    // Allow only numbers and slash
-    const regex = /^[0-9/]*$/
+  // Strict DOB validation
+  const validateDOBFormat = (value: string): boolean => {
+    // Check if format is exactly DD/MM
+    const regex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])$/
     return regex.test(value)
   }
 
-  const handleDOBChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
+  // Validate if date is valid (e.g., not 31/02)
+  const isValidDate = (day: number, month: number): boolean => {
+    // Check month range
+    if (month < 1 || month > 12) return false
     
-    if (!validateDOB(value)) return
+    // Days in each month
+    const daysInMonth = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+    
+    // Check day range for the given month
+    return day >= 1 && day <= daysInMonth[month - 1]
+  }
+
+  const handleDOBChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value
+    
+    // Remove any non-digit characters except slash
+    value = value.replace(/[^0-9/]/g, '')
+    
+    // Don't allow more than 5 characters
+    if (value.length > 5) return
     
     // Auto-format as DD/MM
-    if (value.length === 2 && dob.length === 1) {
-      setDob(value + '/')
-    } else {
+    if (value.length === 2 && dob.length <= 2) {
+      // When user types 2 digits, auto-add slash
+      if (value.length === 2 && !value.includes('/')) {
+        // Validate first two digits as day (01-31)
+        const day = parseInt(value)
+        if (day < 1 || day > 31) {
+          setDobError('Day must be between 01 and 31')
+          setDob(value)
+          return
+        }
+        setDobError('')
+        setDob(value + '/')
+        return
+      }
+    }
+    
+    // Handle backspace deletion
+    if (value.length === 2 && dob.length === 3) {
+      // User deleted the slash
       setDob(value)
+      return
+    }
+    
+    // Validate as user types
+    if (value.includes('/') && value.length >= 4) {
+      const parts = value.split('/')
+      if (parts.length === 2) {
+        const day = parseInt(parts[0])
+        const month = parseInt(parts[1])
+        
+        // Validate day (01-31)
+        if (day < 1 || day > 31) {
+          setDobError('Day must be between 01 and 31')
+        }
+        // Validate month (01-12)
+        else if (month < 1 || month > 12) {
+          setDobError('Month must be between 01 and 12')
+        }
+        // Validate specific date (e.g., not 31/02)
+        else if (!isValidDate(day, month)) {
+          setDobError(`Invalid date: ${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')} doesn't exist`)
+        }
+        else {
+          setDobError('')
+        }
+      }
+    } else if (value.length === 0) {
+      setDobError('')
+    }
+    
+    setDob(value)
+  }
+
+  const handleDOBBlur = () => {
+    if (dob.length === 5 && !validateDOBFormat(dob)) {
+      setDobError('Please enter a valid date in DD/MM format (e.g., 15/05)')
+    } else if (dob.length > 0 && dob.length < 5) {
+      setDobError('Please complete the date in DD/MM format')
     }
   }
 
@@ -94,17 +172,24 @@ export default function DnaFormV1() {
         <div className="text-left">
           <label className="text-[10px] text-white mb-1 block">Date of Birth</label>
           <input
-            type="date"
+            type="text"
             value={dob}
             onChange={handleDOBChange}
+            onBlur={handleDOBBlur}
             placeholder="DD/MM"
             maxLength={5}
             pattern="\d{2}/\d{2}"
-            className="w-full p-2 bg-white/10 border text-[10px] border-white/70 placeholder:text-[10px] text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] placeholder-gray-300"
+            className={`w-full p-2 bg-white/10 border text-[10px] border-white/70 placeholder:text-[10px] text-white focus:outline-none focus:ring-2 focus:ring-[#FF0000] placeholder-gray-300 ${
+              dobError ? 'border-red-500' : ''
+            }`}
             required
             disabled={status === 'loading'}
           />
-          {/* <p className="text-[9px] text-gray-400 mt-1">Format: DD/MM (e.g., 15/05 for May 15th)</p> */}
+          {dobError ? (
+            <p className="text-[9px] text-red-400 mt-1">{dobError}</p>
+          ) : (
+            <p className="text-[9px] text-gray-400 mt-1">Format: DD/MM (e.g., 15/05 for May 15th)</p>
+          )}
         </div>
 
         {/* Phone number */}
@@ -124,8 +209,8 @@ export default function DnaFormV1() {
 
         <button
           type="submit"
-          disabled={status === 'loading'}
-          className="w-full p-2 bg-white text-[10px] text-black font-semibold transition active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
+          disabled={status === 'loading' || !!dobError}
+          className="w-full p-2 bg-white text-[10px] text-black font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100"
         >
           {status === 'loading' ? 'Submitting...' : 'Submit'}
         </button>
