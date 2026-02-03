@@ -48,6 +48,7 @@ const PLATFORMS = [
   "YOUTUBE",
   "LINKEDIN",
   "GITHUB",
+  "WHATSAPP",
   "CUSTOM",
 ] as const;
 

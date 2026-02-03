@@ -145,24 +145,17 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                 transition={{ duration: 0.3 }}
             >
                 <motion.div 
-                    className="bg-white p-5 md:p-6 pt-5 lg:pt-10 relative h-[7rem] lg:h-[12rem]"
+                    className="bg-white p-4 relative h-[9rem]"
                     variants={contentVariants}
                 >
                     {/* Animated link icon */}
                     <motion.div 
-                        className="absolute -bottom-[2px] left-5 md:left-10 flex flex-col items-center space-y-1"
+                        className="absolute -bottom-[2px] left-4 flex flex-col items-center "
                         variants={linkIconVariants}
                         initial="initial"
                         whileHover="hover"
                     >
-                        <Image
-                            src="/icons/link.svg"
-                            alt="link icon"
-                            priority
-                            width={20}
-                            height={20}
-                            className="size-3 lg:size-5"
-                        />
+                        <span className="text-[11px] font-medium">Links</span>
                         <motion.div 
                             className="w-6 h-1 bg-red-500 shadow-[0_2px_2px_rgba(0,0,0,0.3)] rounded-sm"
                             animate={{
@@ -178,7 +171,7 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                     
                     {/* Profile section with avatar animation */}
                     <motion.div 
-                        className="flex items-center gap-2 lg:gap-4 mb- lg:mb-3"
+                        className="flex items-center gap-3 "
                         variants={itemVariants}
                     >
                         <motion.div
@@ -186,7 +179,7 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                             initial="initial"
                             whileHover="hover"
                         >
-                            <Avatar className="size-10 md:size-12 lg:size-16 shadow-lg">
+                            <Avatar className="size-12  ">
                                 <AvatarImage src={profile.avatar || ""} alt={profile.name} />
                                 <AvatarFallback>
                                     <motion.span
@@ -200,7 +193,7 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                             </Avatar>
                         </motion.div>
                         <motion.div variants={itemVariants}>
-                            <h3 className="font-bold text-[8px] md:text-[16px]" style={{ fontFamily: style.fontFamily }}>
+                            <h3 className="font-bold text-[14px]" style={{ fontFamily: style.fontFamily }}>
                                 {profile.name}
                             </h3>
                             <motion.p 
@@ -215,7 +208,7 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                     </motion.div>
                     
                     <motion.p 
-                        className="text-[6px] md:text-[10px] md:mb-2 font-semibold" 
+                        className="text-[10px] mt-2 font-semibold" 
                         style={{ fontFamily: style.fontFamily }}
                         variants={itemVariants}
                     >
@@ -223,14 +216,14 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                     </motion.p>
 
                     <motion.div 
-                        className="items-center border-1 border-[#000] gap-1 px-1 inline-flex mb-2 md:mb-0"
+                        className="items-center p-[2px] border text-[10px] border-[#4e4e4e] gap-1 inline-flex mt-2 bg-white/70 mb-2"
                         variants={itemVariants}
                         whileHover={{ 
                             scale: 1.05,
                             backgroundColor: "rgba(0,0,0,0.05)"
                         }}
                     >
-                        <MapPin className="size-2 lg:size-3" />
+                        <MapPin className="size-2" />
                         <span style={{ fontFamily: style.fontFamily }} className="text-[6px] md:text-[9px] text-[#000] font-medium">
                             {profile.location}
                         </span>
