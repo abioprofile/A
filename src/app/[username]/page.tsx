@@ -288,7 +288,11 @@ export default function PublicProfilePage() {
                   className="absolute inset-0"
                 >
                   <Image
-                    src="/themes/theme7.jpg"
+                    src={
+                      userData?.username === "ootn"
+                        ? "/themes/ootn.jpeg"
+                        : "/themes/theme7.jpg"
+                    }
                     alt="background"
                     fill
                     className="object-cover"
@@ -521,7 +525,11 @@ export default function PublicProfilePage() {
             className="fixed inset-0"
           >
             <Image
-              src="/themes/theme7.jpg"
+              src={
+                userData?.username === "ootn"
+                  ? "/themes/ootn.jpeg"
+                  : "/themes/theme7.jpg"
+              }
               alt="background"
               fill
               className="object-cover"
@@ -655,12 +663,12 @@ export default function PublicProfilePage() {
                         .map((link: UserLink, index: number) => (
                           <motion.a
                             key={link.id}
-                              // initial={{ x: -30, opacity: 0 }}
-                              // animate={{ x: 0, opacity: 1 }}
-                              // transition={{
-                              //   delay: 0.3 + index * 0.1,
-                              //   type: "spring",
-                              // }}
+                            // initial={{ x: -30, opacity: 0 }}
+                            // animate={{ x: 0, opacity: 1 }}
+                            // transition={{
+                            //   delay: 0.3 + index * 0.1,
+                            //   type: "spring",
+                            // }}
                             whileHover={{ scale: 1.03, y: -2 }}
                             href={link.url}
                             target="_blank"
