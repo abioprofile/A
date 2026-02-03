@@ -298,8 +298,11 @@ export default function PublicProfilePage() {
                     className="object-cover"
                     priority
                   />
-                  {/* Overlay to ensure content is readable */}
-                  <div className="absolute inset-0" />
+
+                  {/* Conditional overlay */}
+                  {userData?.username === "ootn" && (
+                    <div className="absolute inset-0 bg-black/65" />
+                  )}
                 </motion.div>
 
                 {/* ===== TOP PROFILE CARD ===== */}
@@ -347,8 +350,11 @@ export default function PublicProfilePage() {
                       transition={{ delay: 0.7 }}
                     >
                       <p className="font-bold text-[14px]">
-                        {userData?.name || userData?.username || "User"}
+                        {userData?.username === "ootn"
+                          ? "one of those nights"
+                          : userData?.name || userData?.username || "User"}
                       </p>
+
                       <p className="text-[10px] text-gray-500">
                         @{userData.username || "username"}
                       </p>
@@ -535,8 +541,11 @@ export default function PublicProfilePage() {
               className="object-cover"
               priority
             />
-            {/* Overlay to ensure content is readable */}
-            <div className="absolute inset-0" />
+
+            {/* Conditional overlay */}
+            {userData?.username === "ootn" && (
+              <div className="absolute inset-0 bg-black/65" />
+            )}
           </motion.div>
 
           {/* Mobile Content */}
@@ -575,8 +584,10 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <p className="font-bold text-[16px] capitalize mb-1">
-                    {userData?.name || userData?.username || "User"}
+                  <p className="font-bold text-[14px]">
+                    {userData?.username === "ootn"
+                      ? "one of those nights"
+                      : userData?.name || userData?.username || "User"}
                   </p>
                   <p className="text-[13px] text-gray-500">
                     @{userData.username || "username"}
@@ -663,12 +674,6 @@ export default function PublicProfilePage() {
                         .map((link: UserLink, index: number) => (
                           <motion.a
                             key={link.id}
-                            // initial={{ x: -30, opacity: 0 }}
-                            // animate={{ x: 0, opacity: 1 }}
-                            // transition={{
-                            //   delay: 0.3 + index * 0.1,
-                            //   type: "spring",
-                            // }}
                             whileHover={{ scale: 1.03, y: -2 }}
                             href={link.url}
                             target="_blank"
