@@ -4,20 +4,9 @@
 import { useRef, useState, JSX } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import {
-  FaInstagram,
-  FaTiktok,
-  FaPinterest,
-  FaTwitter,
-  FaCopy,
-  FaWhatsapp,
-  FaXTwitter,
-  FaFacebook,
-  FaSnapchat,
-  FaYoutube,
-} from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUserProfileByUsername } from "@/hooks/api/useAuth";
+import { getPlatformIcon } from "@/components/PlatformIcon";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/stores/hooks";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
@@ -32,34 +21,6 @@ interface UserLink {
   displayOrder: number;
   isVisible: boolean;
 }
-
-const platformIcons: Record<string, JSX.Element> = {
-  INSTAGRAM: <FaInstagram className="w-4 h-4" />,
-  TIKTOK: <FaTiktok className="w-4 h-4" />,
-  PINTEREST: <FaPinterest className="w-4 h-4" />,
-  TWITTER: <FaTwitter className="w-4 h-4" />,
-  FACEBOOK: <FaFacebook className="w-4 h-4" />,
-  SNAPCHAT: <FaSnapchat className="w-4 h-4" />,
-  YOUTUBE: <FaYoutube className="w-4 h-4" />,
-  WHATSAPP: <FaWhatsapp className="w-4 h-4" />,
-  X: <FaXTwitter className="w-4 h-4" />,
-  snapchat: <FaSnapchat className="w-4 h-4" />,
-  facebook: <FaFacebook className="w-4 h-4" />,
-  youtube: <FaYoutube className="w-4 h-4" />,
-  instagram: <FaInstagram className="w-4 h-4" />,
-  tiktok: <FaTiktok className="w-4 h-4" />,
-  twitter: <FaTwitter className="w-4 h-4" />,
-  "Custom Platform": <FaCopy className="w-4 h-4" />,
-};
-
-const getPlatformIcon = (platform: string) => {
-  const normalizedPlatform = platform.toUpperCase();
-  return (
-    platformIcons[normalizedPlatform] ||
-    platformIcons[platform.toLowerCase()] ||
-    platformIcons[platform] || <FaCopy className="w-4 h-4" />
-  );
-};
 
 // Animation variants
 const pageVariants: Variants = {
@@ -174,6 +135,9 @@ export default function PublicProfilePage() {
     isVisible: link.isVisible,
   }));
 
+
+
+
   // Loading state
   if (profileLoading) {
     return (
@@ -237,13 +201,73 @@ export default function PublicProfilePage() {
 
   const profile = profileData.data;
   const userData = {
-    name: profile.displayName || undefined,
+    name: profile.user.name || undefined,
     username: profile.username || undefined,
     bio: profile.bio || undefined,
     location: profile.location || undefined,
     avatarUrl: profile.avatarUrl || undefined,
     links,
-  };
+  }
+
+  const profileDisplay = profileData.data.display;
+
+  // Derive display styles from profileDisplay (font_config, corner_config, wallpaper_config, selected_theme)
+  const fc = profileDisplay?.font_config;
+  const cc = profileDisplay?.corner_config;
+  const wc = profileDisplay?.wallpaper_config;
+  const selectedTheme = profileDisplay?.selected_theme ?? null;
+
+  const fontStyle = fc
+    ? {
+        fontFamily: fc.name || "Poppins",
+        color: fc.fillColor ?? "#000000",
+        ...((fc as { strokeColor?: string }).strokeColor &&
+        (fc as { strokeColor?: string }).strokeColor !== "none"
+          ? {
+              WebkitTextStroke: `1px ${(fc as { strokeColor?: string }).strokeColor}`,
+              paintOrder: "stroke fill" as const,
+            }
+          : {}),
+      }
+    : undefined;
+
+  const buttonStyle = cc
+    ? {
+        borderRadius:
+          cc.type === "sharp"
+            ? 0
+            : cc.type === "round"
+              ? "9999px"
+              : "12px",
+        backgroundColor: cc.fillColor ?? "#ffffff",
+        opacity: cc.opacity ?? 1,
+        boxShadow:
+          cc.shadowSize === "hard"
+            ? `4px 4px 0px 0px ${cc.shadowColor}`
+            : cc.shadowColor
+              ? `2px 2px 6px ${cc.shadowColor}80`
+              : "none",
+        border: `2px solid ${cc.strokeColor ?? "#000000"}`,
+      }
+    : undefined;
+
+  // Background: for non-ootn use display config; ootn branch is unchanged below
+  const bgFillColors =
+    wc?.type === "fill" &&
+    Array.isArray(wc.backgroundColor) &&
+    wc.backgroundColor.length > 0
+      ? wc.backgroundColor
+      : null;
+  const backgroundFillCss =
+    bgFillColors?.length === 1
+      ? bgFillColors[0].color
+      : bgFillColors && bgFillColors.length >= 2
+        ? `linear-gradient(${bgFillColors.map((c) => c.color).join(", ")})`
+        : null;
+  const backgroundImageSrc =
+    selectedTheme && typeof selectedTheme === "string"
+      ? selectedTheme
+      : "/themes/theme7.jpg";
 
   return (
     <AnimatePresence mode="wait">
@@ -287,21 +311,31 @@ export default function PublicProfilePage() {
                   transition={{ delay: 0.5 }}
                   className="absolute inset-0"
                 >
-                  <Image
-                    src={
-                      userData?.username === "ootn"
-                        ? "/themes/ootn.jpeg"
-                        : "/themes/theme7.jpg"
-                    }
-                    alt="background"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-
-                  {/* Conditional overlay */}
-                  {userData?.username === "ootn" && (
-                    <div className="absolute inset-0 bg-black/65" />
+                  {userData?.username === "ootn" ? (
+                    <>
+                      <Image
+                        src="/themes/ootn.jpeg"
+                        alt="background"
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                      {/* Conditional overlay */}
+                      <div className="absolute inset-0 bg-black/65" />
+                    </>
+                  ) : backgroundFillCss ? (
+                    <div
+                      className="absolute inset-0"
+                      style={{ background: backgroundFillCss }}
+                    />
+                  ) : (
+                    <Image
+                      src={backgroundImageSrc}
+                      alt="background"
+                      fill
+                      className="object-cover"
+                      priority
+                    />
                   )}
                 </motion.div>
 
@@ -348,6 +382,7 @@ export default function PublicProfilePage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
+                      // style={fontStyle}
                     >
                       <p className="font-bold text-[14px]">
                         {userData?.username === "ootn"
@@ -368,6 +403,7 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ delay: 0.8 }}
                       className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
+                      // style={fontStyle}
                     >
                       {userData.bio}
                     </motion.p>
@@ -451,17 +487,22 @@ export default function PublicProfilePage() {
                               <motion.a
                                 key={link.id}
                                 variants={linkItemVariants}
-                                // initial="initial"
-                                // animate="animate"
                                 whileHover="hover"
                                 custom={index}
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
-                                     bg-white/30 backdrop-blur-md text-white shadow-xl
-                                      hover:translate-y-[2px]
-                                      transition-all cursor-pointer"
+                                className="w-full flex items-center gap-3 px-4 py-3 font-bold text-sm
+                                     backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
+                                style={{
+                                  ...(buttonStyle ?? {
+                                    backgroundColor: "rgba(255,255,255,0.3)",
+                                    borderRadius: 12,
+                                    border: "1px solid rgba(255,255,255,0.5)",
+                                  }),
+                                  ...fontStyle,
+                                  color: fontStyle?.color ?? "#fff",
+                                }}
                               >
                                 <motion.span
                                   whileHover={{ rotate: 10 }}
@@ -470,7 +511,7 @@ export default function PublicProfilePage() {
                                     stiffness: 300,
                                   }}
                                 >
-                                  {getPlatformIcon(link.platform)}
+                                  {getPlatformIcon(link.platform, "w-4 h-4")}
                                 </motion.span>
                                 <span className="truncate">{link.title}</span>
                               </motion.a>
@@ -530,21 +571,31 @@ export default function PublicProfilePage() {
             transition={{ duration: 0.5 }}
             className="fixed inset-0"
           >
-            <Image
-              src={
-                userData?.username === "ootn"
-                  ? "/themes/ootn.jpeg"
-                  : "/themes/theme7.jpg"
-              }
-              alt="background"
-              fill
-              className="object-cover"
-              priority
-            />
-
-            {/* Conditional overlay */}
-            {userData?.username === "ootn" && (
-              <div className="absolute inset-0 bg-black/65" />
+            {userData?.username === "ootn" ? (
+              <>
+                <Image
+                  src="/themes/ootn.jpeg"
+                  alt="background"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                {/* Conditional overlay */}
+                <div className="absolute inset-0 bg-black/65" />
+              </>
+            ) : backgroundFillCss ? (
+              <div
+                className="absolute inset-0"
+                style={{ background: backgroundFillCss }}
+              />
+            ) : (
+              <Image
+                src={backgroundImageSrc}
+                alt="background"
+                fill
+                className="object-cover"
+                priority
+              />
             )}
           </motion.div>
 
@@ -583,6 +634,7 @@ export default function PublicProfilePage() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
+                  // style={fontStyle}
                 >
                   <p className="font-bold text-[14px]">
                     {userData?.username === "ootn"
@@ -602,6 +654,7 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
                   className="mt-2 text-[13px] text-left font-semibold line-clamp-2"
+                  // style={fontStyle}
                 >
                   {userData.bio}
                 </motion.p>
@@ -678,16 +731,23 @@ export default function PublicProfilePage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
-                                      bg-white/30 backdrop-blur-md text-white shadow-xl
-                                      hover:translate-y-[2px]
-                                      transition-all cursor-pointer"
+                            className="w-full flex items-center gap-3 px-4 py-3 font-bold text-sm
+                                      backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
+                            style={{
+                              ...(buttonStyle ?? {
+                                backgroundColor: "rgba(255,255,255,0.3)",
+                                borderRadius: 12,
+                                border: "1px solid rgba(255,255,255,0.5)",
+                              }),
+                              ...fontStyle,
+                              color: fontStyle?.color ?? "#fff",
+                            }}
                           >
                             <motion.span
                               whileHover={{ rotate: 10 }}
                               transition={{ type: "spring", stiffness: 300 }}
                             >
-                              {getPlatformIcon(link.platform)}
+                              {getPlatformIcon(link.platform, "w-4 h-4")}
                             </motion.span>
                             <span className="truncate font-bold">
                               {link.title}

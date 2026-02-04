@@ -1,4 +1,4 @@
-import { Platform } from "@/interfaces/platform.interfaces";
+import { PlatformInterface as Platform } from "@/interfaces/platform.interfaces";
 import { LinkItem, ProfileInfo, TemplateConfig } from "@/interfaces/template.interface";
 import {ImageIcon, PencilLineIcon, MapPinIcon} from "lucide-react";
 

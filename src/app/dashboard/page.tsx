@@ -9,12 +9,10 @@ import LinkList from "@/components/LinkList";
 import PhoneDisplay from "@/components/PhoneDisplay";
 import ButtonCustomizer from "@/components/ButtonCustomizer";
 import MobileBottomNav from "@/components/MobileBottomNav";
-import { ButtonStyle } from "@/app/dashboard/appearance/page";
-import FontCustomizer, { FontStyle } from "@/components/FontCustomizer";
 import ProfileContent from "@/components/ProfileContent";
 import { AuthContext, User } from "@/context/AuthContext";
 import { useAppSelector } from "@/stores/hooks";
-import { useGetAllLinks } from "@/hooks/api/useAuth";
+import { usePhoneDisplayProps } from "@/hooks/usePhoneDisplayProps";
 import { ProfileLink, UserProfile } from "@/types/auth.types";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { ChevronLeft } from "lucide-react";
@@ -58,28 +56,13 @@ export default function DashboardPage() {
     "/icons/Profile Picture.png"
   );
 
-  const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
-    borderRadius: "12px",
-    backgroundColor: "#EAEAEA",
-    borderColor: "#000000",
-    opacity: 1,
-    boxShadow: "none",
-  });
-
-  const [fontStyle, setFontStyle] = useState<FontStyle>({
-    fontFamily: "Poppins",
-    fillColor: "#000000",
-    strokeColor: "#ff0000",
-    opacity: 100,
-  });
-
-  const profile = {
-    displayName: user?.name || "User",
-    userName: user?.username || "username",
-    bio,
-    location,
-    profileImage,
-  };
+  const {
+    buttonStyle,
+    fontStyle,
+    selectedTheme,
+    profile: phoneProfile,
+    links: profileLinks,
+  } = usePhoneDisplayProps();
 
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 2000);
@@ -93,71 +76,6 @@ export default function DashboardPage() {
     setActiveModal(type);
   };
   const closeModal = () => setActiveModal(null);
-
-  const [links, setLinks] = useState([
-    {
-      id: "1",
-      platform: "Instagram",
-      url: "https://www.instagram.com/davidosh",
-      clicks: 0,
-      active: true,
-    },
-    {
-      id: "2",
-      platform: "Behance",
-      url: "https://www.behance.net/davidosh",
-      clicks: 0,
-      active: true,
-    },
-    {
-      id: "3",
-      platform: "Snapchat",
-      url: "https://www.snapchat.com/add/davidosh",
-      clicks: 0,
-      active: true,
-    },
-    {
-      id: "4",
-      platform: "X",
-      url: "https://x.com/davidosh",
-      clicks: 0,
-      active: true,
-    },
-  ]);
-
-  const {
-    data: linksData,
-    isLoading: linksLoading,
-    isError: linksError,
-    refetch: refetchLinks,
-  } = useGetAllLinks();
-
-  const transformLinks = (links: unknown): ProfileLink[] => {
-    if (!links || !Array.isArray(links)) return [];
-    return links
-      .map((link: unknown) => {
-        if (typeof link === "object" && link !== null) {
-          const l = link as Record<string, unknown>;
-          return {
-            id: String(l.id || ""),
-            title: String(l.title || ""),
-            url: String(l.url || ""),
-            platform: String(l.platform || ""),
-            displayOrder:
-              typeof l.displayOrder === "number" ? l.displayOrder : 0,
-            isVisible: l.isVisible !== false,
-          };
-        }
-        return null;
-      })
-      .filter((link): link is ProfileLink => link !== null);
-  };
-
-  const profileLinks = linksData?.data
-    ? Array.isArray(linksData.data)
-      ? (linksData.data as ProfileLink[])
-      : []
-    : [];
 
   const handleLocationSearch = async (query: string) => {
     setTempLocation(query);
@@ -577,8 +495,8 @@ export default function DashboardPage() {
             <PhoneDisplay
               buttonStyle={buttonStyle}
               fontStyle={fontStyle}
-              selectedTheme="/themes/theme1.png"
-              profile={profile}
+              selectedTheme={selectedTheme}
+              profile={phoneProfile}
               links={profileLinks}
             />
           </motion.div>

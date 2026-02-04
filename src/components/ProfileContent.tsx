@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
-import { MapPin } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import DeleteModal from "@/components/DeleteModal";
 import { toast } from "sonner";
 import { useAppSelector } from "@/stores/hooks";
 import { useUpdateProfileAvatar } from "@/hooks/api/useAuth";
+import { LocationInput } from "@/components/LocationInput";
 
 interface ProfileData {
   profileImage: string;
@@ -173,8 +173,7 @@ const ProfileContent = ({
     }
   };
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVal = e.target.value;
+  const handleLocationChange = (newVal: string) => {
     setLocation(newVal);
     setIsDirty(true);
     onProfileUpdate({
@@ -266,26 +265,15 @@ const ProfileContent = ({
         </p>
       </div>
 
-      {/* Location */}
-      <div className="w-full flex flex-col gap-1">
-        <label
-          htmlFor="location"
-          className="text-left text-[12px] font-semibold"
-        >
-          Location
-        </label>
-        <div className="flex items-center border border-black px-3 py-2 bg-transparent">
-          <MapPin className="mr-1 w-4 h-4 text-gray-700" />
-          <input
-            id="location"
-            type="text"
-            placeholder="Add your location"
-            value={location}
-            onChange={handleLocationChange}
-            className="flex-1 bg-transparent outline-none text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] text-gray-800"
-          />
-        </div>
-      </div>
+      {/* Location (reusable: search + select from dropdown) */}
+      <LocationInput
+        id="location"
+        label="Location"
+        value={location}
+        onChange={handleLocationChange}
+        placeholder="Search for a location"
+        className="w-full flex flex-col gap-1"
+      />
 
       {/* Save Button */}
       

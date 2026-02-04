@@ -1,3 +1,13 @@
+/** UI state for button/corner styling (preview); maps to CornerConfig for API. */
+export interface ButtonStyle {
+  borderRadius: string;
+  backgroundColor: string;
+  borderColor: string;
+  opacity: number;
+  boxShadow: string;
+  shadowColor?: string;
+}
+
 export interface CornerConfig {
     type: 'sharp' | 'round' | 'curved';
     opacity: number;

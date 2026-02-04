@@ -1,4 +1,4 @@
-import { Platform } from "@/interfaces/platform.interfaces"
+import { PlatformInterface as Platform } from "@/interfaces/platform.interfaces"
 import { create } from "zustand"
 import { createJSONStorage, persist } from "zustand/middleware"
 

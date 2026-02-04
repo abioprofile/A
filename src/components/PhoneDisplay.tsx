@@ -7,30 +7,8 @@ import { ProfileLink } from "@/types/auth.types";
 import { useAppSelector } from "@/stores/hooks";
 import Image from "next/image";
 
-// Import Font Awesome icons
-import {
-  FaMapPin,
-  FaInstagram,
-  FaTiktok,
-  FaPinterest,
-  FaTwitter,
-  FaLinkedinIn,
-  FaBehance,
-  FaLink,
-  FaWhatsapp,
-  FaXTwitter,
-  FaFacebook,
-  FaSnapchat,
-  FaYoutube,
-  FaGithub,
-  FaSpotify,
-  FaApple,
-  FaGoogle,
-  FaAmazon,
-  FaFigma,
-  FaDribbble,
-  FaTelegram,
-} from "react-icons/fa6";
+import { FaLink } from "react-icons/fa6";
+import { getPlatformIcon } from "./PlatformIcon";
 
 interface PhoneDisplayProps {
   buttonStyle: ButtonStyle;
@@ -43,6 +21,7 @@ interface PhoneDisplayProps {
     bio?: string;
     location?: string;
   };
+  phoneDisplayLoading: boolean;
   links?: ProfileLink[];
 }
 
@@ -51,6 +30,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   fontStyle,
   selectedTheme,
   profile,
+  phoneDisplayLoading,
   links = [],
 }) => {
   const userDataProfile = useAppSelector((state) => state.auth.user);
@@ -60,55 +40,6 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     color: fontStyle.fillColor,
     opacity: fontStyle.opacity / 100,
     WebkitTextStroke: `1px ${fontStyle.strokeColor}`,
-  };
-
-  // Platform icon mapping with Font Awesome 6 - ALL IN BLACK AND WHITE
-  const getPlatformIcon = (platform: string) => {
-    const platformLower = platform.toLowerCase();
-
-    if (platformLower.includes("instagram"))
-      return <FaInstagram className="w-5 h-5 text-black" />;
-    if (platformLower.includes("behance"))
-      return <FaBehance className="w-5 h-5 text-black" />;
-    if (platformLower.includes("snapchat"))
-      return <FaSnapchat className="w-5 h-5 text-black" />;
-    if (platformLower.includes("x") || platformLower.includes("twitter")) {
-      if (platformLower.includes("x")) {
-        return <FaXTwitter className="w-5 h-5 text-black" />;
-      }
-      return <FaTwitter className="w-5 h-5 text-black" />;
-    }
-    if (platformLower.includes("linkedin"))
-      return <FaLinkedinIn className="w-5 h-5 text-black" />;
-    if (platformLower.includes("facebook"))
-      return <FaFacebook className="w-5 h-5 text-black" />;
-    if (platformLower.includes("youtube"))
-      return <FaYoutube className="w-5 h-5 text-black" />;
-    if (platformLower.includes("tiktok"))
-      return <FaTiktok className="w-5 h-5 text-black" />;
-    if (platformLower.includes("github"))
-      return <FaGithub className="w-5 h-5 text-black" />;
-    if (platformLower.includes("whatsapp"))
-      return <FaWhatsapp className="w-5 h-5 text-black" />;
-    if (platformLower.includes("pinterest"))
-      return <FaPinterest className="w-5 h-5 text-black" />;
-    if (platformLower.includes("spotify"))
-      return <FaSpotify className="w-5 h-5 text-black" />;
-    if (platformLower.includes("apple"))
-      return <FaApple className="w-5 h-5 text-black" />;
-    if (platformLower.includes("google"))
-      return <FaGoogle className="w-5 h-5 text-black" />;
-    if (platformLower.includes("amazon"))
-      return <FaAmazon className="w-5 h-5 text-black" />;
-    if (platformLower.includes("figma"))
-      return <FaFigma className="w-5 h-5 text-black" />;
-    if (platformLower.includes("dribbble"))
-      return <FaDribbble className="w-5 h-5 text-black" />;
-    if (platformLower.includes("telegram"))
-      return <FaTelegram className="w-5 h-5 text-black" />;
-
-    // Default icon - Link icon in gray
-    return <FaLink className="w-5 h-5 text-gray-500" />;
   };
 
   // Filter and sort links for display
@@ -129,23 +60,11 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     };
   }
 
-  const isImage =
-    selectedTheme.startsWith("blob:") || selectedTheme.startsWith("/themes/");
-
   return (
     <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto  border-[2px]  border-black overflow-hidden bg-white shadow-2xl">
-      {/* Background */}
-      {isImage ? (
-        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-          <img
-            src={selectedTheme}
-            alt="Background"
-            className="w-full h-full object-cover"
-          />
-        </div>
-      ) : (
+
         <div className="absolute inset-0 pointer-events-none" style={bgStyle} />
-      )}
+
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
@@ -219,7 +138,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
         </div>
 
         {/* Links/Buttons Section - Fixed with proper scrolling */}
-        <div
+        {!phoneDisplayLoading ?  <div
           className="flex-1 py-4 px-6 overflow-y-auto [&::-webkit-scrollbar]:hidden"
           style={{
             scrollbarWidth: "none",
@@ -261,7 +180,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                     className="relative flex items-center gap-3 text-sm w-full"
                     style={textStyle}
                   >
-                    <div className="flex-shrink-0 flex items-center justify-center w-4 h-4">
+                    <div>
                       {getPlatformIcon(link.platform)}
                     </div>
                     <span className="truncate overflow-ellipsis break-words max-w-[calc(100%-2rem)]">
@@ -282,7 +201,13 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
               </p>
             </div>
           )}
+        </div> : // 
+        <div className="flex-1 flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#331400] mx-auto mb-4"></div>
+
         </div>
+        }
+       
       </div>
     </div>
   );

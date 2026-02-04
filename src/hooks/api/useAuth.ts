@@ -714,49 +714,101 @@ export const useUpdateAppearanceFont = () => {
   });
 };
 
-/** Update corners + font in one go. Both requests use the same AbortSignal; if one fails, the other is aborted so neither "goes through" from the client. */
+/** Update corners + font (+ optional profile + avatar) in one go. If any request fails, others are aborted so changes are all-or-nothing. */
 export type UpdateAppearanceAllVariables = {
   cornerConfig: CornerConfig;
   fontConfig: FontConfig;
   wallpaperConfig?: FillGradientWallpaperConfig | null;
   wallpaperImageFile?: File | null;
+  /** When provided, profile (displayName, bio, location) is updated together with appearance. */
+  profile?: UpdateProfileRequest | null;
+  /** When provided, profile avatar is updated together with appearance. */
+  profileAvatarFile?: File | null;
 };
 
 export const useUpdateAppearanceAll = () => {
   const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((state) => state.auth.user);
+
   return useMutation({
     mutationFn: async ({
       cornerConfig,
       fontConfig,
       wallpaperConfig,
       wallpaperImageFile,
+      profile: profilePayload,
+      profileAvatarFile,
     }: UpdateAppearanceAllVariables) => {
       const ac = new AbortController();
       const signal = ac.signal;
-      const promises: Promise<unknown>[] = [
+      const appearancePromises: Promise<unknown>[] = [
         updateAppearanceCorners(cornerConfig, signal),
         updateAppearanceFont(fontConfig, signal),
       ];
       if (wallpaperConfig != null) {
-        promises.push(updateAppearanceWallpaper(wallpaperConfig, signal));
+        appearancePromises.push(updateAppearanceWallpaper(wallpaperConfig, signal));
       }
       if (wallpaperImageFile != null) {
-        promises.push(
+        appearancePromises.push(
           updateAppearanceImage({ type: "image", image: wallpaperImageFile }, signal)
         );
       }
+
+      const profilePromise = profilePayload
+        ? updateProfileApi(profilePayload)
+        : null;
+      const avatarPromise = profileAvatarFile
+        ? updateProfileAvatar(profileAvatarFile)
+        : null;
+
+      const allPromises: Promise<unknown>[] = [
+        ...appearancePromises,
+        ...(profilePromise ? [profilePromise] : []),
+        ...(avatarPromise ? [avatarPromise] : []),
+      ];
+
       try {
-        await Promise.all(promises);
-        return {};
+        const results = await Promise.all(allPromises);
+        let profileResponse: UpdateProfileResponse | null = null;
+        let avatarResponse: UpdateProfileResponse | null = null;
+        let i = appearancePromises.length;
+        if (profilePromise) {
+          profileResponse = results[i] as UpdateProfileResponse;
+          i += 1;
+        }
+        if (avatarPromise) avatarResponse = results[i] as UpdateProfileResponse;
+        return { profileResponse, avatarResponse };
       } catch (e) {
         ac.abort();
         throw e;
       }
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
-      toast.success("Appearance saved", {
-        description: "Your appearance settings have been updated.",
+      const hadProfile = variables.profile != null;
+      const hadAvatar = variables.profileAvatarFile != null;
+      if (hadProfile || hadAvatar) {
+        queryClient.invalidateQueries({ queryKey: ["user"] });
+        const response = (data as { profileResponse?: UpdateProfileResponse | null; avatarResponse?: UpdateProfileResponse | null }).profileResponse
+          ?? (data as { avatarResponse?: UpdateProfileResponse | null }).avatarResponse;
+        if (currentUser && response?.data) {
+          const updatedUser: User = {
+            ...currentUser,
+            profile: {
+              ...currentUser.profile,
+              ...response.data,
+            },
+          };
+          dispatch(updateUser(updatedUser));
+          if (typeof window !== "undefined") {
+            localStorage.setItem("user_data", JSON.stringify(updatedUser));
+          }
+        }
+      }
+      const saved = [hadProfile && "profile", hadAvatar && "avatar", "appearance"].filter(Boolean);
+      toast.success("Saved", {
+        description: saved.length > 1 ? `Updated ${saved.join(" and ")}.` : "Your settings have been updated.",
       });
     },
     onError: (error: any) => {
