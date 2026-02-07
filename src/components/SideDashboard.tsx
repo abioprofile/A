@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Link from "next/link";
 import Modal from "@/components/ui/modal";
 import { toast } from "sonner";
 import {
@@ -13,10 +14,14 @@ import {
   XIcon,
   MailIcon,
   LinkIcon,
+  Settings,
+  LogOut,
+  Moon,
+  CreditCard,
   LucideIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/stores/hooks";
+import {useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   FaFacebook,
   FaTwitter,
@@ -26,10 +31,12 @@ import {
   FaTiktok,
   FaYoutube,
   FaSnapchat,
-  IconType,
 } from "react-icons/fa6";
+import type { IconType } from "react-icons";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { clearAuth } from "@/stores/slices/auth.slice";
+import { useQueryClient } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { toPng } from "html-to-image";
 
@@ -67,15 +74,34 @@ export default function SideDashboard() {
 
   const profileLink = getProfileLink();
   const shareText = `Check out my Abio profile! ${profileLink}`;
-
+  const [showMenu, setShowMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [showAccountSettings, setShowAccountSettings] =
     useState<boolean>(false);
   const [twoStepEnabled, setTwoStepEnabled] = useState<boolean>(false);
-
+  const menuItems = [
+    // { icon: User, label: "Profile", href: "/profile" },
+    { icon: CreditCard, label: "Billing", href: "/dashboard/Billing" },
+    // { icon: Bell, label: "Notifications", href: "/notifications" },
+    { icon: Settings, label: "Account Settings", href: "/dashboard/AccountSettings" },
+    { icon: Moon, label: "Light Mode", action: "toggle-theme" },
+  ];
   // Ref for QR code download
+  const dispatch = useAppDispatch();
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
+  const handleLogout = () => {
+    dispatch(clearAuth());
+
+    queryClient.clear()
+
+    setShowMenu(false);
+
+    toast.success("Logged out successfully");
+
+    router.push("/auth/sign-in");
+  };
 
   const copyToClipboard = async (): Promise<void> => {
     try {
@@ -172,7 +198,7 @@ export default function SideDashboard() {
     }
   };
 
-  const formatLink = (url: string): JSX.Element => {
+  const formatLink = (url: string): React.ReactElement => {
     return (
       <>
         <span className="text-red-500 font-semibold">{url}</span>
@@ -263,9 +289,51 @@ export default function SideDashboard() {
               </button>
 
               {/* More */}
-              <button onClick={() => router.push("/dashboard/AccountSettings")}>
-                <MoreHorizontalIcon className="w-6 h-6 text-[#331400]" />
+              <button
+                className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]"
+                onClick={() => setShowMenu(!showMenu)}
+              >
+                <MoreHorizontalIcon size={18} color="#331400" />
               </button>
+              {showMenu && (
+                <>
+                  {/* Transparent overlay to close */}
+                  <div
+                    className="fixed inset-0 bg-transparent z-[99999]"
+                    onClick={() => setShowMenu(false)}
+                  />
+
+                  {/* Dropdown itself */}
+                  <div className="fixed top-12 left-30 w-56 bg-white border border-gray-200 shadow-2xl  animate-fadeIn">
+                    
+
+                    {/* Menu Items */}
+                    <div className="p-2">
+                      {menuItems.map((item) => (
+                        <Link
+                          key={item.label}
+                          href={item.href || "#"}
+                          className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                        >
+                          <item.icon size={16} />
+                          {item.label}
+                        </Link>
+                      ))}
+                    </div>
+
+                    {/* Logout */}
+                    <div className="border-t border-gray-100 p-2">
+                      <button
+                        onClick={handleLogout}
+                        className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition"
+                      >
+                        <LogOut size={16} />
+                        Log Out
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -292,7 +360,7 @@ export default function SideDashboard() {
             >
               <Share2Icon className="w-6 h-6 text-[#331400]" />
             </button>
-            <p className="text-sm text-gray-600">{formatLink(profileLink)}</p>
+            <p className="text-sm text-gray-600 cursor-pointer">{formatLink(profileLink)}</p>
           </div>
         </div>
       </div>
@@ -326,7 +394,7 @@ export default function SideDashboard() {
                 includeMargin={true}
                 bgColor="#ffffff"
                 fgColor="#000000"
-                // renderAs="canvas" // Use canvas for better download quality
+              // renderAs="canvas" // Use canvas for better download quality
               />
 
               {/* Logo overlay in center */}

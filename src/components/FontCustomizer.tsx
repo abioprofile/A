@@ -335,7 +335,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
           <label className="block text-[13px] font-semibold mb-2">Font</label>
           <button
             onClick={() => setOpen((prev) => !prev)}
-            className="w-full flex justify-between items-center border text-[12px] border-[#000] bg-[#ECECED] px-4 py-[6px]"
+            className="w-full cursor-pointer flex justify-between items-center border text-[12px] border-[#000] bg-[#ECECED] px-4 py-[6px]"
             style={{ fontFamily: selectedFont.font.style.fontFamily }}
           >
             <span className="truncate">{selectedFont.label}</span>

@@ -260,49 +260,42 @@ export default function DashboardPage() {
             variants={itemVariants}
             className="max-w-3xl flex gap-4 items-center px-8"
           >
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <div
             >
               <Image
                 src={userData?.profile?.avatarUrl || "/icons/Profile Picture.png"}
                 alt="Profile"
                 width={80}
                 height={80}
-                className="object-cover w-24 h-24 cursor-pointer rounded-full"
-                onClick={() => openModal("imageOptions")}
+                className="object-cover w-24 h-24  rounded-full"
+                
               />
-            </motion.div>
+            </div>
 
             <motion.div variants={itemVariants}>
               <div
-                className="mb-1 cursor-pointer"
-                onClick={() => openModal("editBio")}
+                className="mb-1"
+                
               >
-                <motion.h1
-                  whileHover={{ x: 5 }}
-                  className="font-semibold text-[24px]"
-                >
+                <h1 className="font-semibold text-[24px]">
                   {displayName || "User"}
-                </motion.h1>
+                </h1>
                 <p className="font-thin text-[10px] mt-2 md:text-[14px]">
                   @{userData?.profile?.username || "username"}
                 </p>
               </div>
 
-              <motion.p
-                whileHover={{ x: 5 }}
-                className="font-bold my-2 text-[14px] cursor-pointer"
-                onClick={() => openModal("editBio")}
+              <p
+                className="font-bold my-2 text-[14px]"
+                
               >
                 {userData?.profile?.bio || bio}
-              </motion.p>
+              </p>
 
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500 cursor-pointer px-1 py-1"
-                onClick={() => openModal("editLocation")}
+              <div
+              
+                className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500  px-1 py-1"
+                
               >
                 <Image
                   src="/icons/location1.png"
@@ -314,159 +307,11 @@ export default function DashboardPage() {
                 <span className="truncate">
                   {userData?.profile?.location || "No location"}
                 </span>
-              </motion.div>
+              </div>
             </motion.div>
           </motion.div>
 
-          {/* Animated Modals */}
-          <AnimatePresence>
-            {activeModal === "editBio" && (
-              <Modal isOpen={true} onClose={closeModal}>
-                <motion.div
-                  variants={modalContentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="w-full md:w-[400px] mx-auto"
-                >
-                  <h2 className="text-base md:text-lg font-semibold text-center mb-3 md:mb-4">
-                    Edit Name and Bio
-                  </h2>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const form = e.currentTarget;
-                      const name = (
-                        form.elements.namedItem("displayName") as HTMLInputElement
-                      ).value;
-                      const bioInput = (
-                        form.elements.namedItem("bio") as HTMLInputElement
-                      ).value;
-                      setDisplayName(name);
-                      setBio(bioInput);
-                      toast.success("Profile updated");
-                      closeModal();
-                    }}
-                  >
-                    <div className="mb-3 md:mb-4">
-                      <label
-                        htmlFor="displayName"
-                        className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Display Name
-                      </label>
-                      <input
-                        id="displayName"
-                        name="displayName"
-                        type="text"
-                        defaultValue={displayName || ""}
-                        className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
-                        required
-                      />
-                    </div>
-
-                    <div className="mb-3 md:mb-4">
-                      <label
-                        htmlFor="bio"
-                        className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
-                      >
-                        Bio
-                      </label>
-                      <textarea
-                        id="bio"
-                        name="bio"
-                        rows={3}
-                        defaultValue={userData?.profile?.bio || bio}
-                        className="w-full border border-2 border-[#000] px-3 py-2 text-[13px]"
-                        required
-                      />
-                    </div>
-
-                    <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className="flex justify-center gap-3"
-                    >
-                      <button
-                        type="submit"
-                        className="bg-[#FED45C] w-full text-[#331400] font-bold px-4 py-2 text-[14px]"
-                      >
-                        Save Changes
-                      </button>
-                    </motion.div>
-                  </form>
-                </motion.div>
-              </Modal>
-            )}
-          </AnimatePresence>
-
-          <AnimatePresence>
-            {activeModal === "editLocation" && (
-              <Modal isOpen={true} onClose={closeModal}>
-                <motion.div
-                  variants={modalContentVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="w-[280px] md:w-[320px] mx-auto text-center"
-                >
-                  <h2 className="text-base md:text-lg font-bold mb-3 md:mb-4">
-                    Location
-                  </h2>
-
-                  <div className="relative mb-3 md:mb-4">
-                    <span className="absolute inset-y-0 left-3 flex items-center pointer-events-none">
-                      <Image
-                        src="/icons/location1.png"
-                        alt="Location Icon"
-                        width={12}
-                        height={12}
-                        className="w-3 h-3 md:w-[14px] md:h-[14px]"
-                      />
-                    </span>
-                    <input
-                      type="text"
-                      placeholder="Location"
-                      value={tempLocation}
-                      onChange={(e) => handleLocationSearch(e.target.value)}
-                      className="w-full pl-8 pr-3 py-2 border border-[#000] text-[13px]"
-                    />
-                  </div>
-
-                  <motion.ul
-                    layout
-                    className="max-h-[180px] md:max-h-[200px] overflow-y-auto text-left space-y-1"
-                  >
-                    {locations.map((loc, idx) => (
-                      <motion.li
-                        key={idx}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: idx * 0.05 }}
-                        onClick={() => {
-                          setTempLocation(loc);
-                          setLocations([]);
-                        }}
-                        className="px-3 py-2 cursor-pointer hover:bg-gray-100 text-xs md:text-sm"
-                        whileHover={{ x: 5 }}
-                      >
-                        {loc}
-                      </motion.li>
-                    ))}
-                  </motion.ul>
-
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleSaveLocation}
-                    className="mt-1 text-[13px] font-bold bg-[#FED45C] text-[#331400] px-4 py-2"
-                  >
-                    Save Changes
-                  </motion.button>
-                </motion.div>
-              </Modal>
-            )}
-          </AnimatePresence>
+        
 
           {/* Other modals with similar animation patterns... */}
 
@@ -493,6 +338,7 @@ export default function DashboardPage() {
             transition={{ type: "spring", stiffness: 300 }}
           >
             <PhoneDisplay
+              phoneDisplayLoading={loading}
               buttonStyle={buttonStyle}
               fontStyle={fontStyle}
               selectedTheme={selectedTheme}
@@ -540,10 +386,7 @@ export default function DashboardPage() {
               <div>
                 <div className="px-8 mb-8  max-w-3xl">
                   <div className="flex gap-2 items-center">
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
+                    <div>
                       <Image
                         src={
                           userData?.profile?.avatarUrl ||
@@ -552,10 +395,10 @@ export default function DashboardPage() {
                         alt="Profile"
                         width={80}
                         height={80}
-                        className="object-cover shadow-lg w-20 h-20 cursor-pointer rounded-full"
-                        onClick={() => openModal("imageOptions")}
+                        className="object-cover shadow-lg w-20 h-20  rounded-full"
+                        
                       />
-                    </motion.div>
+                    </div>
 
                     <div>
                       <div

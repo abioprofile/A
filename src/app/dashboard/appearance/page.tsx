@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronLeft, RotateCcw, RotateCw } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import PhoneDisplay from "@/components/PhoneDisplay";
 import {
   useGetSettings,
@@ -35,7 +36,7 @@ import WallpaperSelector from "@/components/Wallpaper";
 import ThemeSelector from "@/components/ThemeSelector";
 import ButtonAndFontTabs from "@/components/ButtonAndFontTabs";
 import AppearanceBottomNav from "@/components/AppearanceBottomNav";
-import  { FontStyle } from "@/components/FontCustomizer";
+import { FontStyle } from "@/components/FontCustomizer";
 import {
   Sheet,
   SheetContent,
@@ -63,6 +64,7 @@ interface AppState {
 const AppearancePage: React.FC = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
   const userData = useAppSelector((state) => state.auth.user);
   const { data: settingsData } = useGetSettings();
   const {
@@ -311,14 +313,14 @@ const AppearancePage: React.FC = () => {
   const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
   return (
-    <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen  md:bg-white md:pt-4 px-4 md:px-6 md:pb-24 flex flex-col relative">
+    <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen md:bg-white md:pt-4 px-4 md:px-6 pb-20 md:pb-24 flex flex-col relative">
       {/* Desktop Save */}
       <div className="hidden md:flex justify-end mb-4 ">
         <button
           type="button"
           onClick={handleSaveAll}
           disabled={isSavingAll}
-          className="bg-[#FED45C] shadow-[2px_2px_0px_0px_#000000] font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-[#FED45C] cursor-pointer shadow-[2px_2px_0px_0px_#000000] font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSavingAll ? "Saving…" : "Save Changes"}
         </button>
@@ -364,18 +366,20 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Main Layout */}
-      <div className="flex flex-1 gap-8  md:">
+      <div className="flex flex-1 gap-8">
         {/* Phone Preview */}
-        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center items-start">
+        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center items-center md:items-start">
           <div
-            className="relative w-full max-w-[360px] md:max-w-[420px]
+            className="relative w-full max-w-[360px] md:max-w-[420px] mx-auto
                        transition-transform duration-300
                        ease-[cubic-bezier(.2,.8,.2,1)]
                        origin-top"
             style={{
-              transform: isSheetOpen
-                ? "scale(0.82) translateY(-24px)"
-                : "scale(1.05) translateY(0)",
+              transform: isMobile
+                ? "scale(1) translateY(0)"
+                : isSheetOpen
+                  ? "scale(0.82) translateY(-24px)"
+                  : "scale(1.05) translateY(0)",
             }}
           >
             <div className="overflow-hidden">
@@ -398,7 +402,7 @@ const AppearancePage: React.FC = () => {
               <button
                 key={item}
                 onClick={() => setActiveTab(i)}
-                className="py-3 font-bold relative"
+                className="py-3 cursor-pointer font-bold relative"
               >
                 {item}
                 {activeTab === i && (
@@ -454,22 +458,28 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Mobile Sheet */}
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      <Sheet
+        open={isMobile ? isSheetOpen : false}
+        onOpenChange={(open) => {
+          if (!isMobile) return;
+          setIsSheetOpen(open);
+        }}
+      >
         <SheetContent
           side="bottom"
-          className={`shadow-2xl p-0 overflow-hidden transition-all duration-300 ${
-            activeTab === 2 || activeTab === 3 ? "h-[35vh]" : "h-[50vh]"
-          }`}
+          className={`md:hidden rounded-t-2xl bg-white/95 backdrop-blur-sm shadow-lg p-0 overflow-hidden transition-all duration-300 ${activeTab === 2 || activeTab === 3 ? "h-[36vh]" : "h-[44vh]"
+            }`}
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
           <div className="h-full flex flex-col">
             {/* Sheet Header with handle */}
             <div className="flex flex-col">
-              <div className="flex justify-center pt-3 ">
+              <div className="flex justify-center pt-2">
                 <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
               </div>
-              <SheetHeader className="">
-                <div className="flex items-center justify-between">
-                  <SheetTitle className="text-lg font-semibold">
+              <SheetHeader>
+                <div className="flex items-center justify-center">
+                  <SheetTitle className="text-[15px] font-semibold">
                     {activeTab !== null ? menuItems[activeTab] : ""}
                   </SheetTitle>
                 </div>
@@ -477,7 +487,7 @@ const AppearancePage: React.FC = () => {
             </div>
 
             {/* Sheet Content */}
-            <div className="flex-1 overflow-y-auto px-2 md:py-4">
+            <div className="flex-1 overflow-y-auto px-3 pt-2 pb-3">
               {activeTab === 0 && (
                 <ProfileContent
                   onProfileUpdate={handleProfileUpdate}
@@ -522,6 +532,7 @@ const AppearancePage: React.FC = () => {
           </div>
         </SheetContent>
       </Sheet>
+      
 
       {/* Mobile Bottom Nav */}
       <AppearanceBottomNav

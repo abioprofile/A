@@ -120,13 +120,13 @@ const DashboardSideNav = ({
 
         {/* Footer */}
         <SidebarFooter className="pb-6 w-full flex flex-col items-center space-y-3 relative">
-          <button className="p-2 rounded-lg hover:bg-[#f4f4f4]">
+          <button className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]">
             <Bell size={18} color="#331400" />
           </button>
 
           {/* More / Menu Button */}
           <button
-            className="p-2 rounded-lg hover:bg-[#f4f4f4]"
+            className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]"
             onClick={() => setShowMenu(!showMenu)}
           >
             <MoreHorizontal size={18} color="#331400" />

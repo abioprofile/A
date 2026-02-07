@@ -4,7 +4,7 @@ import {ImageIcon, PencilLineIcon, MapPinIcon} from "lucide-react";
 
 export const sidebarNav = [
     {
-        title: "Links",
+        title: "My Abio",
         url: "/dashboard",
         icon: "/icons/link.svg"
     },

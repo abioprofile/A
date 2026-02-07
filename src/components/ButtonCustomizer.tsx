@@ -24,6 +24,10 @@ const COLORS = [
 const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setButtonStyle }) => {
   const [showMobileFillPicker, setShowMobileFillPicker] = useState(false);
   const [showMobileStrokePicker, setShowMobileStrokePicker] = useState(false);
+  const safeOpacity =
+    typeof buttonStyle.opacity === 'number' && !Number.isNaN(buttonStyle.opacity)
+      ? buttonStyle.opacity
+      : 1;
 
   return (
     <>
@@ -34,7 +38,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
           <div className="flex gap-12 mt-2">
             <button
               onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '0px' }))}
-              className="flex-1 flex flex-col items-center gap-1 text-[10px] py-3 bg-[#D9D9D9]"
+              className="flex-1 flex flex-col items-center gap-1 text-[10px] cursor-pointer py-3 bg-[#D9D9D9]"
             >
               <Image 
                 src="/icons/sharpedge.svg" 
@@ -90,7 +94,8 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 onChange={e => setButtonStyle(s => ({ ...s, backgroundColor: e.target.value }))}
                 className="hidden"
                 aria-label="Custom fill color picker"
-              />
+              /> 
+             
             </label>
           </div>
           <div className="overflow-x-auto pb-2 scrollbar-hide mb-4">
@@ -144,17 +149,18 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 min="0"
                 max="1"
                 step="0.01"
-                value={buttonStyle.opacity}
-                onChange={e =>
-                  setButtonStyle(s => ({ ...s, opacity: parseFloat(e.target.value) }))
-                }
+                value={safeOpacity}
+                onChange={e => {
+                  const next = parseFloat(e.target.value);
+                  setButtonStyle(s => ({ ...s, opacity: Number.isFinite(next) ? next : 1 }));
+                }}
                 style={{
-                  background: `linear-gradient(to right, black ${buttonStyle.opacity * 100}%, #ff0000 ${buttonStyle.opacity * 100}%)`,
+                  background: `linear-gradient(to right, black ${safeOpacity * 100}%, #ff0000 ${safeOpacity * 100}%)`,
                 }}
                 className="w-full h-[2px] rounded-lg pl-2 appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black"
               />
               <span className="text-sm font-medium w-12 text-center">
-                {Math.round(buttonStyle.opacity * 50)}%
+                {Math.round(safeOpacity * 50)}%
               </span>
             </div>
           </div>
@@ -267,7 +273,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                   boxShadow: `4px 4px 0px 0px ${s.shadowColor || '#000000'}`,
                 }))
               }
-              className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+              className="flex-1 cursor-pointer flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
               style={{
                 boxShadow: `4px 4px 0px 0px ${buttonStyle.shadowColor || '#000000'}`
               }}
@@ -322,7 +328,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
           <div className="flex md:w-3/4 gap-12 mt-2">
             <button
               onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '0px' }))}
-              className="flex-1 flex flex-col items-center gap-1 text-[10px] py-3 bg-[#D9D9D9]"
+              className="flex-1 flex flex-col items-center cursor-pointer gap-1 text-[10px] py-3 bg-[#D9D9D9]"
             >
               <Image 
                 src="/icons/sharpedge.svg" 
@@ -335,7 +341,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
 
             <button
               onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '12px' }))}
-              className="flex-1 flex flex-col items-center gap-1 text-[10px] rounded-md py-3 bg-[#D9D9D9]"
+              className="flex-1 flex flex-col items-center cursor-pointer gap-1 text-[10px] rounded-md py-3 bg-[#D9D9D9]"
             >
               <Image 
                 src="/icons/curvededge.svg" 
@@ -348,7 +354,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
 
             <button
               onClick={() => setButtonStyle(s => ({ ...s, borderRadius: '9999px' }))}
-              className="flex-1 flex flex-col items-center rounded-full gap-1 text-[10px] py-3 bg-[#D9D9D9]"
+              className="flex-1 flex flex-col items-center cursor-pointer rounded-full gap-1 text-[10px] py-3 bg-[#D9D9D9]"
             >
               <Image 
                 src="/icons/roundedge.svg" 
@@ -372,12 +378,15 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
           <div className="flex items-center gap-2">
             <input
               type="color"
-              className="w-10 h-10"
+              className="w-10 cursor-pointer h-10"
               value={buttonStyle.backgroundColor}
               onChange={e =>
                 setButtonStyle(s => ({ ...s, backgroundColor: e.target.value }))
               }
             />
+             <span className="text-[10px] flex-1 bg-[#ECECED] border border-[#000] px-2 py-[6px]">
+             {buttonStyle.backgroundColor}
+            </span>
           </div>
 
           {/* Stroke Color */}
@@ -385,12 +394,15 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
           <div className="flex items-center gap-2">
             <input
               type="color"
-              className="w-10 h-10"
+              className="w-10 cursor-pointer h-10"
               value={buttonStyle.borderColor}
               onChange={e =>
                 setButtonStyle(s => ({ ...s, borderColor: e.target.value }))
               }
             />
+             <span className="text-[10px] flex-1 bg-[#ECECED] border border-[#000] px-2 py-[6px]">
+             {buttonStyle.borderColor}
+            </span>
           </div>
 
           {/* Opacity (background only) */}
@@ -402,17 +414,18 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
                 min="0"
                 max="1"
                 step="0.01"
-                value={buttonStyle.opacity}
-                onChange={e =>
-                  setButtonStyle(s => ({ ...s, opacity: parseFloat(e.target.value) }))
-                }
+                value={safeOpacity}
+                onChange={e => {
+                  const next = parseFloat(e.target.value);
+                  setButtonStyle(s => ({ ...s, opacity: Number.isFinite(next) ? next : 1 }));
+                }}
                 style={{
-                  background: `linear-gradient(to right, black ${buttonStyle.opacity * 100}%, #ff0000 ${buttonStyle.opacity * 100}%)`,
+                  background: `linear-gradient(to right, black ${safeOpacity * 100}%, #ff0000 ${safeOpacity * 100}%)`,
                 }}
                 className="w-full h-[2px] rounded-lg pl-2 appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-black [&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:bg-black"
               />
               <span className="text-sm font-medium w-12 text-center">
-                {Math.round(buttonStyle.opacity * 50)}%
+                {Math.round(safeOpacity * 50)}%
               </span>
             </div>
           </div>
@@ -428,7 +441,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
             {/* No Shadow */}
             <button
               onClick={() => setButtonStyle(s => ({ ...s, boxShadow: 'none', shadowColor: '#000000' }))}
-              className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+              className="flex-1 flex flex-col items-center cursor-pointer gap-1 text-[10px] py-4 bg-[#D9D9D9]"
             >
               <Image
                 src="/icons/tabler_shadowoff.svg"
@@ -450,7 +463,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               style={{
                 boxShadow: `2px 2px 6px ${buttonStyle.shadowColor || '#000000'}80`
               }}
-              className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
+              className="flex-1 flex flex-col items-center cursor-pointer gap-1 text-[10px] py-4 bg-[#D9D9D9]"
             >
               <Image
                 src="/icons/tabler_shadow.svg"
@@ -466,13 +479,13 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
               onClick={() =>
                 setButtonStyle(s => ({
                   ...s,
-                  boxShadow: `0px 0px 0px 0px ${s.shadowColor || '#000000'}`,
+                  boxShadow: `4px 4px 0px 0px ${s.shadowColor || '#000000'}`,
                 }))
               }
+              className="flex-1 cursor-pointer flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
               style={{
-                boxShadow: `0px 0px 0px 0px ${buttonStyle.shadowColor || '#000000'}`
+                boxShadow: `4px 4px 0px 0px ${buttonStyle.shadowColor || '#000000'}`
               }}
-              className="flex-1 flex flex-col items-center gap-1 text-[10px] py-4 bg-[#D9D9D9]"
             >
               <Image
                 src="/icons/tablerhard.svg"
@@ -489,7 +502,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({ buttonStyle, setBut
           <div className="flex items-center gap-2">
             <input
               type="color"
-              className="w-10 h-10"
+              className="w-10 cursor-pointer h-10"
               value={buttonStyle.shadowColor || '#000000'}
               onChange={e => {
                 const newColor = e.target.value;
