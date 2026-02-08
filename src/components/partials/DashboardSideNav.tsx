@@ -95,20 +95,25 @@ const DashboardSideNav = ({
                   >
                     <SidebarMenuItem>
                       <SidebarMenuButton
-                        className={`cursor-pointer w-9 h-9 flex items-center justify-center rounded-lg transition-all hover:bg-[#f4f4f4] ${isActive ? "bg-[#f4f4f4] shadow-sm" : ""
+                        className={`cursor-pointer w-12 h-12 flex items-center justify-center  transition-all hover:bg-[#f4f4f4] ${isActive ? "bg-[#f4f4f4] shadow-sm" : ""
                           }`}
                       >
-                        <Image
-                          src={item.icon}
-                          alt={`${item.title} Icon`}
-                          width={20}
-                          height={20}
-                          style={{
-                            filter: isActive
-                              ? "invert(25%) sepia(98%) saturate(7300%) hue-rotate(355deg) brightness(98%) contrast(100%)"
-                              : "invert(14%) sepia(15%) saturate(2076%) hue-rotate(347deg) brightness(94%) contrast(87%)",
-                          }}
-                        />
+                        {/* SVG as img element for direct control */}
+                        <div className="relative w-10 h-10">
+                          <img
+                            src={item.icon}
+                            alt={`${item.title} Icon`}
+                            className={`w-full h-full object-contain transition-all duration-200 ${isActive ? "svg-red-filter" : "svg-default-filter"}`}
+                          />
+                          <style jsx>{`
+                            .svg-red-filter {
+                              filter: invert(25%) sepia(98%) saturate(7300%) hue-rotate(355deg) brightness(98%) contrast(100%);
+                            }
+                            .svg-default-filter {
+                              filter: invert(14%) sepia(15%) saturate(2076%) hue-rotate(347deg) brightness(94%) contrast(87%);
+                            }
+                          `}</style>
+                        </div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </Link>
@@ -121,7 +126,7 @@ const DashboardSideNav = ({
         {/* Footer */}
         <SidebarFooter className="pb-6 w-full flex flex-col items-center space-y-3 relative">
           <button className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]">
-            <Bell size={18} color="#331400" />
+            <Bell size={30} color="#331400" />
           </button>
 
           {/* More / Menu Button */}
@@ -129,7 +134,7 @@ const DashboardSideNav = ({
             className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]"
             onClick={() => setShowMenu(!showMenu)}
           >
-            <MoreHorizontal size={18} color="#331400" />
+            <MoreHorizontal size={30} color="#331400" />
           </button>
         </SidebarFooter>
       </Sidebar>
@@ -196,12 +201,3 @@ const DashboardSideNav = ({
 };
 
 export default DashboardSideNav;
-
-
-
-
-
-
-
-
-
