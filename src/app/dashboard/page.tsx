@@ -10,6 +10,7 @@ import PhoneDisplay from "@/components/PhoneDisplay";
 import ButtonCustomizer from "@/components/ButtonCustomizer";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import ProfileContent from "@/components/ProfileContent";
+import { useUserProfileByUsername } from "@/hooks/api/useAuth";
 import { AuthContext, User } from "@/context/AuthContext";
 import { useAppSelector } from "@/stores/hooks";
 import { usePhoneDisplayProps } from "@/hooks/usePhoneDisplayProps";
@@ -34,16 +35,19 @@ export default function DashboardPage() {
   const [displayName, setDisplayName] = useState<string>("");
   const [firstName, setFirstName] = useState<string>("User");
 
-  useEffect(() => {
-    if (user?.name) {
-      const name = user.name.split(" ")[0];
-      setDisplayName(user.name);
-      setFirstName(name);
-    } else if (userData?.name) {
-      const name = userData.name.split(" ")[0];
-      setDisplayName(userData.name);
-      setFirstName(name);
-    }
+ useEffect(() => {
+    const getName = () => {
+      if (userData?.profile?.name) return userData.profile.name;
+      if (userData?.name) return userData.name;
+      if (user?.name) return user.name;
+      return "User";
+    };
+
+    const fullName = getName();
+    const firstName = fullName.split(" ")[0];
+    
+    setDisplayName(fullName);
+    setFirstName(firstName);
   }, [user, userData]);
 
   const [loading, setLoading] = useState(true);
@@ -333,7 +337,7 @@ export default function DashboardPage() {
           {/* PHONE DISPLAY */}
           <motion.div
             onClick={handlePhoneClick}
-            className="md:pointer-events-none cursor-pointer"
+            className="md:pointer-events-none mx-auto cursor-pointer"
             whileHover={{ scale: 1.02 }}
             transition={{ type: "spring", stiffness: 300 }}
           >
@@ -357,7 +361,7 @@ export default function DashboardPage() {
               animate="visible"
               exit="exit"
               variants={slideInVariants}
-              className="fixed inset-0 bg-[#FFF7DE] z-[999] overflow-y-auto"
+              className="fixed inset-0 bg-[#FFF7DE] z-[998] overflow-y-auto"
             >
               <motion.div
                 initial={{ y: -20, opacity: 0 }}

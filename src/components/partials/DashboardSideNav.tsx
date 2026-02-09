@@ -126,7 +126,7 @@ const DashboardSideNav = ({
         {/* Footer */}
         <SidebarFooter className="pb-6 w-full flex flex-col items-center space-y-3 relative">
           <button className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]">
-            <Bell size={30} color="#331400" />
+            <Settings size={25} color="#331400" />
           </button>
 
           {/* More / Menu Button */}

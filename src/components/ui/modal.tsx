@@ -17,7 +17,7 @@ const Modal = ({ isOpen, onClose, children, className }: ModalProps) => {
     <div className="fixed inset-0 z-50 h-screen flex items-center justify-center">
       {/* Background blur and dim */}
       <div
-        className="absolute inset-0 bg-black/20 bg-opacity-10 backdrop-blur-[1px]"
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 

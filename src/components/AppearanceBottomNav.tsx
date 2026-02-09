@@ -26,11 +26,11 @@ const AppearanceBottomNav: React.FC<AppearanceBottomNavProps> = ({
 }) => {
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 md:hidden"
+      className="fixed inset-x-0 bottom-14 z-50 md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="mx-4 mb-3  bg-white shadow-[0_6px_18px_rgba(0,0,0,0.08)]">
-        <div className="grid grid-cols-4 px-6 py-2">
+      <div className="mx-8 mb-3  bg-white shadow-[0_6px_18px_rgba(0,0,0,0.08)]">
+        <div className="grid grid-cols-4 px-4 py-2">
           {menuItems.map((item, index) => {
             const IconComponent = item.icon;
             const isActive = activeTab === index;
@@ -40,15 +40,15 @@ const AppearanceBottomNav: React.FC<AppearanceBottomNavProps> = ({
                 onClick={() => setActiveTab(index)}
                 aria-label={item.label}
                 aria-selected={isActive}
-                className="flex flex-col items-center justify-center gap-1 py-1.5"
+                className="flex flex-col items-center justify-center gap-1 py-"
               >
                 <IconComponent
-                  className={`w-5 h-5 ${
+                  className={`w-4 h-4 ${
                     isActive ? "text-[#EA2228]" : "text-black"
                   }`}
                 />
                 <span
-                  className={`text-[11px] ${
+                  className={`text-[10px] ${
                     isActive ? "font-semibold text-black" : "text-gray-500"
                   }`}
                 >

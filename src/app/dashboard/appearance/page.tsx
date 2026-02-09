@@ -43,6 +43,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 /** Re-export for components that import ButtonStyle from the page */
 export type { ButtonStyle } from "@/types/appearance.types";
@@ -392,6 +393,7 @@ const AppearancePage: React.FC = () => {
                 phoneDisplayLoading={phoneDisplayLoading}
               />
             </div>
+            
           </div>
         </aside>
 
@@ -539,6 +541,8 @@ const AppearancePage: React.FC = () => {
         activeTab={activeTab || 0} // default to profile tab if no tab is selected
         setActiveTab={handleTabClick}
       />
+
+      <MobileBottomNav/>
     </section>
   );
 };
