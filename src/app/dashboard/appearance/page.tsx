@@ -469,7 +469,7 @@ const AppearancePage: React.FC = () => {
       >
         <SheetContent
           side="bottom"
-          className={`md:hidden rounded-t-2xl bg-white/95 backdrop-blur-sm shadow-lg p-0 overflow-hidden transition-all duration-300 ${activeTab === 2 || activeTab === 3 ? "h-[36vh]" : "h-[44vh]"
+          className={`md:hidden  bg-white/95 backdrop-blur-sm shadow-lg p-0 overflow-hidden transition-all duration-300 ${activeTab === 2 || activeTab === 3 ? "h-[36vh]" : "h-[44vh]"
             }`}
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >

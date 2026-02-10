@@ -35,11 +35,38 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 }) => {
   const userDataProfile = useAppSelector((state) => state.auth.user);
 
-  const textStyle = {
-    fontFamily: fontStyle.fontFamily,
-    color: fontStyle.fillColor,
-    opacity: fontStyle.opacity / 100,
-    WebkitTextStroke: `1px ${fontStyle.strokeColor}`,
+  // Create text style based on fontStyle properties
+  const createTextStyle = (strokeWidth = 0) => {
+    // Base text style
+    const baseStyle: React.CSSProperties = {
+      fontFamily: fontStyle.fontFamily,
+      color: fontStyle.fillColor,
+      opacity: fontStyle.opacity / 100,
+      fontStyle: fontStyle.fontStyle || "normal",
+      fontWeight: fontStyle.fontWeight || "400",
+      textDecoration: fontStyle.textDecoration || "none",
+    };
+
+    // Only apply stroke if strokeWidth > 0 and strokeColor is set
+    if (strokeWidth > 0 && fontStyle.strokeColor && fontStyle.strokeColor !== "transparent") {
+      // Use text-shadow for smoother stroke rendering
+      const shadowSpread = Math.max(1, Math.round(strokeWidth));
+      return {
+        ...baseStyle,
+        textShadow: `
+          ${shadowSpread}px ${shadowSpread}px 0 ${fontStyle.strokeColor},
+          -${shadowSpread}px ${shadowSpread}px 0 ${fontStyle.strokeColor},
+          ${shadowSpread}px -${shadowSpread}px 0 ${fontStyle.strokeColor},
+          -${shadowSpread}px -${shadowSpread}px 0 ${fontStyle.strokeColor},
+          0 ${shadowSpread}px 0 ${fontStyle.strokeColor},
+          0 -${shadowSpread}px 0 ${fontStyle.strokeColor},
+          ${shadowSpread}px 0 0 ${fontStyle.strokeColor},
+          -${shadowSpread}px 0 0 ${fontStyle.strokeColor}
+        `,
+      };
+    }
+
+    return baseStyle;
   };
 
   // Filter and sort links for display
@@ -85,6 +112,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
               <h1
                 className="text-[14px] font-bold truncate"
                 title={userDataProfile?.name || "Your Name"}
+                
               >
                 {userDataProfile?.name || "Your Name"}
               </h1>
@@ -95,6 +123,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                     ?.toLowerCase()
                     .replace(/\s+/g, "") || "username"
                 }`}
+               
               >
                 @
                 {userDataProfile?.profile?.username
@@ -107,6 +136,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           <p
             className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
             title={userDataProfile?.profile?.bio || "Add a short bio here..."}
+            
           >
             {userDataProfile?.profile?.bio || "Add a short bio here..."}
           </p>
@@ -125,6 +155,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
             <span
               className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]"
               title={userDataProfile?.profile?.location || "Add location"}
+              
             >
               {userDataProfile?.profile?.location || "Add location"}
             </span>
@@ -132,7 +163,12 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 
           {/* Links indicator */}
           <div className="mt-4 flex absolute bottom-0 flex-col items-center ">
-            <span className="text-[9px] font-medium">Links</span>
+            <span 
+              className="text-[9px] font-medium"
+              
+            >
+              Links
+            </span>
             <div className="h-[3px] absolute -bottom-[2px] w-6 bg-red-500  " />
           </div>
         </div>
@@ -159,7 +195,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                   href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full flex items-center gap-3 font-semibold px-4 py-2  relative overflow-hidden rounded-lg hover:opacity-90 transition-opacity active:scale-[0.98] break-words"
+                  className="w-full flex items-center gap-3 font-semibold px-4 py-2  relative overflow-hidden rounded-lg  transition-opacity active:scale-[0.98] break-words"
                   style={{
                     borderRadius: buttonStyle.borderRadius,
                     border: `2px solid ${buttonStyle.borderColor}`,
@@ -177,10 +213,10 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
                   ></span>
 
                   <span
-                    className="relative flex items-center gap-3 text-sm w-full"
-                    style={textStyle}
+                    className="relative flex items-center gap-3 text-sm font-semibold w-full"
+                    style={createTextStyle(fontStyle.strokeWidth || 0)}
                   >
-                    <div>
+                    <div style={{ color: fontStyle.fillColor }}>
                       {getPlatformIcon(link.platform)}
                     </div>
                     <span className="truncate overflow-ellipsis break-words max-w-[calc(100%-2rem)]">
@@ -193,10 +229,16 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-center p-4">
               <FaLink className="w-8 h-8 text-gray-400 mb-2" />
-              <p className="text-[12px] text-gray-500 font-medium">
+              <p 
+                className="text-[12px] text-gray-500 font-medium"
+                style={createTextStyle()}
+              >
                 No links added yet
               </p>
-              <p className="text-[10px] text-gray-400 mt-1">
+              <p 
+                className="text-[10px] text-gray-400 mt-1"
+                style={createTextStyle()}
+              >
                 Add some links to see them here
               </p>
             </div>
@@ -204,7 +246,6 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
         </div> : // 
         <div className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#331400] mx-auto mb-4"></div>
-
         </div>
         }
        

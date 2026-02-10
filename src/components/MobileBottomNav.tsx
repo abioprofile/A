@@ -13,7 +13,7 @@ const MobileBottomNav = () => {
     /* FULL SCREEN RED BACKGROUND */
     <div className="relative z-50 md:hidden">
       {/* WHITE BOTTOM NAV */}
-      <nav className="fixed bottom-1 left-0 right-0 bg-gradient-to-br from-white/40 to-white/80 backdrop-blur-2xl border-t-1 border-black  z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-br from-white/40 to-white/80 backdrop-blur-2xl border-t-1 border-black  z-50">
         <div className="flex justify-around items-center py-1 px-2">
           {sidebarNav.map((item) => {
             const isActive = pathname === item.url;

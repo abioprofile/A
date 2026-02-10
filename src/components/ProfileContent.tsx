@@ -398,5 +398,4 @@ const ProfileContent = ({
     </div>
   );
 };
-
 export default ProfileContent;
