@@ -76,15 +76,6 @@ export default function WallpaperSelector({
     }
   }, [initialWallpaperConfig]);
 
-  // Update preview string when fill/gradient colors change
-  useEffect(() => {
-    if (themeType === "fill") {
-      setSelectedTheme(`fill:${fillColor}`);
-    } else if (themeType === "gradient") {
-      setSelectedTheme(`gradient:${gradientStart}:${gradientEnd}`);
-    }
-  }, [themeType, fillColor, gradientStart, gradientEnd, setSelectedTheme]);
-
   // Notify parent of current wallpaper payload — only when values change, use ref for callback
   useEffect(() => {
     const cb = onWallpaperChangeRef.current;
@@ -176,10 +167,77 @@ export default function WallpaperSelector({
     { type: "image", label: "Image", backgroundStyle: {} },
   ];
 
+  const handleFillColorChange = (color: string) => {
+    setFillColor(color);
+    if (themeType === "fill") {
+      const themeString = `fill:${color}`;
+      setSelectedTheme(themeString);
+      onWallpaperChange?.({
+        wallpaperConfig: {
+          type: "fill",
+          backgroundColor: [
+            { color: toValidHex(color, "#000000"), amount: WALLPAPER_AMOUNT_FILL },
+          ],
+        },
+        imageFile: null,
+      });
+    }
+  };
+
+  const handleGradientStartChange = (color: string) => {
+    setGradientStart(color);
+    if (themeType === "gradient") {
+      const themeString = `gradient:${color}:${gradientEnd}`;
+      setSelectedTheme(themeString);
+      onWallpaperChange?.({
+        wallpaperConfig: {
+          type: "gradient",
+          backgroundColor: [
+            {
+              color: toValidHex(color, "#0f0f0f"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_START,
+            },
+            {
+              color: toValidHex(gradientEnd, "#dddddd"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_END,
+            },
+          ],
+        },
+        imageFile: null,
+      });
+    }
+  };
+
+  const handleGradientEndChange = (color: string) => {
+    setGradientEnd(color);
+    if (themeType === "gradient") {
+      const themeString = `gradient:${gradientStart}:${color}`;
+      setSelectedTheme(themeString);
+      onWallpaperChange?.({
+        wallpaperConfig: {
+          type: "gradient",
+          backgroundColor: [
+            {
+              color: toValidHex(gradientStart, "#0f0f0f"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_START,
+            },
+            {
+              color: toValidHex(color, "#dddddd"),
+              amount: WALLPAPER_AMOUNT_GRADIENT_END,
+            },
+          ],
+        },
+        imageFile: null,
+      });
+    }
+  };
+
   const handleSelectType = (type: "fill" | "gradient" | "image") => {
     setThemeType(type);
+    
     if (type === "fill") {
-      setSelectedTheme(`fill:${fillColor}`);
+      const themeString = `fill:${fillColor}`;
+      setSelectedTheme(themeString);
       setImageFile(null);
       onWallpaperChange?.({
         wallpaperConfig: {
@@ -191,7 +249,8 @@ export default function WallpaperSelector({
         imageFile: null,
       });
     } else if (type === "gradient") {
-      setSelectedTheme(`gradient:${gradientStart}:${gradientEnd}`);
+      const themeString = `gradient:${gradientStart}:${gradientEnd}`;
+      setSelectedTheme(themeString);
       setImageFile(null);
       onWallpaperChange?.({
         wallpaperConfig: {
@@ -281,7 +340,7 @@ export default function WallpaperSelector({
             <input
               type="color"
               value={fillColor}
-              onChange={(e) => setFillColor(e.target.value)}
+              onChange={(e) => handleFillColorChange(e.target.value)}
               className="w-10 h-10 cursor-pointer border rounded-lg"
             />
           </div>
@@ -294,7 +353,7 @@ export default function WallpaperSelector({
               <input
                 type="color"
                 value={gradientStart}
-                onChange={(e) => setGradientStart(e.target.value)}
+                onChange={(e) => handleGradientStartChange(e.target.value)}
                 className="w-10 h-10 cursor-pointer border rounded-lg"
               />
             </div>
@@ -303,7 +362,7 @@ export default function WallpaperSelector({
               <input
                 type="color"
                 value={gradientEnd}
-                onChange={(e) => setGradientEnd(e.target.value)}
+                onChange={(e) => handleGradientEndChange(e.target.value)}
                 className="w-10 h-10 cursor-pointer border rounded-lg"
               />
             </div>

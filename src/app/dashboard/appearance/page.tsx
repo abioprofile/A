@@ -329,7 +329,7 @@ const AppearancePage: React.FC = () => {
 
       {/* Mobile Save with Undo/Redo */}
       <div className="md:hidden">
-        <div className="flex items-center px-2 py-3 justify-between mb-3">
+        <div className="flex items-center px-2 py-3 justify-between ">
           <button
             onClick={handleBackClick}
             className="font-extrabold text-[20px] text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
@@ -369,7 +369,7 @@ const AppearancePage: React.FC = () => {
       {/* Main Layout */}
       <div className="flex flex-1 gap-8">
         {/* Phone Preview */}
-        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center items-center md:items-start">
+        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center mt-6 items-start">
           <div
             className="relative w-full max-w-[360px] md:max-w-[420px] mx-auto
                        transition-transform duration-300
