@@ -438,7 +438,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                     >
                       <p 
                         className="font-bold text-[14px]"
-                        style={fontStyle}
+                        
                       >
                         {isOotnUser
                           ? "one of those nights"
@@ -447,10 +447,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
 
                       <p 
                         className="text-[10px] text-gray-500"
-                        style={{
-                          color: fontStyle?.color ? `${fontStyle.color}99` : undefined,
-                          fontFamily: fontStyle?.fontFamily,
-                        }}
+                        
                       >
                         @{userData.username || "username"}
                       </p>
@@ -464,7 +461,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ delay: 0.8 }}
                       className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
-                      style={fontStyle}
+                      
                     >
                       {userData.bio}
                     </motion.p>
@@ -479,10 +476,10 @@ console.log("Final backgroundStyle:", backgroundStyle);
                       className="inline-flex items-center gap-1 mb-5 mt-2 border px-2 py-[2px] text-[10px] bg-white/70"
                       
                     >
-                      <FaMapMarkerAlt className="w-2 h-2" style={{ color: fontStyle?.color }} />
+                      <FaMapMarkerAlt className="w-2 h-2"  />
                       <span 
                         className="text-[7px] font-medium truncate max-w-[180px]"
-                        style={fontStyle}
+                       
                       >
                         {userData.location}
                       </span>
@@ -726,7 +723,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                 >
                   <p 
                     className="font-bold text-[14px]"
-                    style={fontStyle}
+                    
                   >
                     {isOotnUser
                       ? "one of those nights"
@@ -734,10 +731,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                   </p>
                   <p 
                     className="text-[13px] text-gray-500"
-                    style={{
-                      color: fontStyle?.color ? `${fontStyle.color}99` : undefined,
-                      fontFamily: fontStyle?.fontFamily,
-                    }}
+                    
                   >
                     @{userData.username || "username"}
                   </p>
@@ -751,7 +745,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
                   className="mt-2 text-[13px] text-left font-semibold line-clamp-2"
-                  style={fontStyle}
+                  
                 >
                   {userData.bio}
                 </motion.p>
@@ -766,8 +760,8 @@ console.log("Final backgroundStyle:", backgroundStyle);
                   className="inline-flex items-center gap-1 mt-3 border px-2 py-[2px] text-[10px] mb-6 bg-white/80"
                  
                 >
-                  <FaMapMarkerAlt className="w-3 h-3" style={{ color: fontStyle?.color }} />
-                  <span style={fontStyle}>{userData.location}</span>
+                  <FaMapMarkerAlt className="w-3 h-3"  />
+                  <span >{userData.location}</span>
                 </motion.div>
               )}
 
