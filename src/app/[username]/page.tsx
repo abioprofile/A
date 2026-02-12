@@ -108,6 +108,40 @@ const blurSideVariants: Variants = {
   },
 };
 
+// Helper function to create text style with stroke effect
+const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
+  if (!fontConfig) return undefined;
+
+  const baseStyle: React.CSSProperties = {
+    fontFamily: fontConfig.name || "Poppins",
+    color: fontConfig.fillColor ?? "#000000",
+    opacity: fontConfig.opacity ? fontConfig.opacity / 100 : 1,
+    fontStyle: fontConfig.fontStyle || "normal",
+    fontWeight: fontConfig.fontWeight || "400",
+    textDecoration: fontConfig.textDecoration || "none",
+  };
+
+  // Apply stroke if strokeColor exists and is valid
+  if (strokeWidth > 0 && fontConfig.strokeColor && fontConfig.strokeColor !== "none" && fontConfig.strokeColor !== "transparent") {
+    const shadowSpread = Math.max(1, Math.round(strokeWidth));
+    return {
+      ...baseStyle,
+      textShadow: `
+        ${shadowSpread}px ${shadowSpread}px 0 ${fontConfig.strokeColor},
+        -${shadowSpread}px ${shadowSpread}px 0 ${fontConfig.strokeColor},
+        ${shadowSpread}px -${shadowSpread}px 0 ${fontConfig.strokeColor},
+        -${shadowSpread}px -${shadowSpread}px 0 ${fontConfig.strokeColor},
+        0 ${shadowSpread}px 0 ${fontConfig.strokeColor},
+        0 -${shadowSpread}px 0 ${fontConfig.strokeColor},
+        ${shadowSpread}px 0 0 ${fontConfig.strokeColor},
+        -${shadowSpread}px 0 0 ${fontConfig.strokeColor}
+      `,
+    };
+  }
+
+  return baseStyle;
+};
+
 export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
@@ -134,9 +168,6 @@ export default function PublicProfilePage() {
     displayOrder: link.displayOrder,
     isVisible: link.isVisible,
   }));
-
-
-
 
   // Loading state
   if (profileLoading) {
@@ -207,7 +238,7 @@ export default function PublicProfilePage() {
     location: profile.location || undefined,
     avatarUrl: profile.avatarUrl || undefined,
     links,
-  }
+  };
 
   const profileDisplay = profileData.data.display;
 
@@ -217,20 +248,10 @@ export default function PublicProfilePage() {
   const wc = profileDisplay?.wallpaper_config;
   const selectedTheme = profileDisplay?.selected_theme ?? null;
 
-  const fontStyle = fc
-    ? {
-        fontFamily: fc.name || "Poppins",
-        color: fc.fillColor ?? "#000000",
-        ...((fc as { strokeColor?: string }).strokeColor &&
-        (fc as { strokeColor?: string }).strokeColor !== "none"
-          ? {
-              WebkitTextStroke: `1px ${(fc as { strokeColor?: string }).strokeColor}`,
-              paintOrder: "stroke fill" as const,
-            }
-          : {}),
-      }
-    : undefined;
-
+  // Create font style with stroke support
+  const fontStyle = fc ? createTextStyle(fc, fc.strokeWidth || 0) : undefined;
+  
+  // Create button style with opacity
   const buttonStyle = cc
     ? {
         borderRadius:
@@ -238,37 +259,66 @@ export default function PublicProfilePage() {
             ? 0
             : cc.type === "round"
               ? "9999px"
-              : "12px",
+              : cc.type === "pill"
+                ? "100px"
+                : "12px",
         backgroundColor: cc.fillColor ?? "#ffffff",
         opacity: cc.opacity ?? 1,
         boxShadow:
           cc.shadowSize === "hard"
-            ? `4px 4px 0px 0px ${cc.shadowColor}`
+            ? `4px 4px 0px 0px ${cc.shadowColor || "#000000"}`
             : cc.shadowColor
               ? `2px 2px 6px ${cc.shadowColor}80`
               : "none",
         border: `2px solid ${cc.strokeColor ?? "#000000"}`,
+        borderColor: cc.strokeColor ?? "#000000",
       }
     : undefined;
 
-  // Background: for non-ootn use display config; ootn branch is unchanged below
-  const bgFillColors =
-    wc?.type === "fill" &&
-    Array.isArray(wc.backgroundColor) &&
-    wc.backgroundColor.length > 0
-      ? wc.backgroundColor
-      : null;
-  const backgroundFillCss =
-    bgFillColors?.length === 1
-      ? bgFillColors[0].color
-      : bgFillColors && bgFillColors.length >= 2
-        ? `linear-gradient(${bgFillColors.map((c) => c.color).join(", ")})`
-        : null;
-  const backgroundImageSrc =
-    selectedTheme && typeof selectedTheme === "string"
-      ? selectedTheme
-      : "/themes/theme7.jpg";
+// Background handling - Debug version
+let backgroundStyle: React.CSSProperties = {};
+let backgroundImageSrc = "/themes/theme7.jpg";
+const isOotnUser = userData?.username === "ootn";
+const isDnaByGazaUser = userData?.username === "dnabygaza";
 
+// DEBUG - Check what data we're getting
+console.log("DEBUG - selectedTheme:", selectedTheme);
+console.log("DEBUG - wc:", wc);
+console.log("DEBUG - profileDisplay:", profileDisplay);
+
+if (!isOotnUser && !isDnaByGazaUser) {
+  if (selectedTheme && typeof selectedTheme === "string") {
+    console.log("Using selectedTheme:", selectedTheme);
+    if (selectedTheme.startsWith("fill:")) {
+      const color = selectedTheme.split(":")[1] || "#000";
+      backgroundStyle = { backgroundColor: color };
+    } else if (selectedTheme.startsWith("gradient:")) {
+      const [, start, end] = selectedTheme.split(":");
+      backgroundStyle = {
+        backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
+      };
+    } else {
+      backgroundImageSrc = selectedTheme;
+    }
+  } 
+  else if (wc?.type === "fill" && Array.isArray(wc.backgroundColor)) {
+    console.log("Using wallpaper fill");
+    if (wc.backgroundColor.length === 1) {
+      backgroundStyle = { backgroundColor: wc.backgroundColor[0].color };
+    } else if (wc.backgroundColor.length >= 2) {
+      const colors = wc.backgroundColor.map((c: any) => c.color);
+      const [start, end] = colors;
+      backgroundStyle = { 
+        background: `linear-gradient(135deg, ${start}, ${end})` 
+      };
+    }
+  } 
+  else if (wc?.type === "image" && wc.imageUrl) {
+    backgroundImageSrc = wc.imageUrl;
+  }
+}
+
+console.log("Final backgroundStyle:", backgroundStyle);
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -294,24 +344,24 @@ export default function PublicProfilePage() {
             variants={phoneContainerVariants}
             initial="initial"
             animate="animate"
-            className="relative z-20 mx-auto w-[300px]" // Fixed width added here
+            className="relative z-20 mx-auto w-[300px]"
           >
             {/* Phone Frame */}
             <motion.div
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl" // w-full to fill container
+              className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl"
             >
               {/* Screen Content */}
               <div className="w-full h-full bg-white overflow-hidden relative flex flex-col">
-                {/* Background Image inside phone */}
+                {/* Background */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                   className="absolute inset-0"
                 >
-                  {userData?.username === "ootn" ? (
+                  {isOotnUser ? (
                     <>
                       <Image
                         src="/themes/ootn.jpeg"
@@ -320,13 +370,12 @@ export default function PublicProfilePage() {
                         className="object-cover"
                         priority
                       />
-                      {/* Conditional overlay */}
                       <div className="absolute inset-0 bg-black/65" />
                     </>
-                  ) : backgroundFillCss ? (
+                  ) : Object.keys(backgroundStyle).length > 0 ? (
                     <div
                       className="absolute inset-0"
-                      style={{ background: backgroundFillCss }}
+                      style={backgroundStyle}
                     />
                   ) : (
                     <Image
@@ -344,7 +393,11 @@ export default function PublicProfilePage() {
                   variants={profileCardVariants}
                   initial="initial"
                   animate="animate"
-                  className="relative z-20 bg-white/95 p-3 backdrop-blur-sm"
+                  className="relative z-20 bg-white/90 p-4 backdrop-blur-xl"
+                  style={{
+                    backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
+                    opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
+                  }}
                 >
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -382,15 +435,23 @@ export default function PublicProfilePage() {
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
-                      // style={fontStyle}
                     >
-                      <p className="font-bold text-[14px]">
-                        {userData?.username === "ootn"
+                      <p 
+                        className="font-bold text-[14px]"
+                        style={fontStyle}
+                      >
+                        {isOotnUser
                           ? "one of those nights"
                           : userData?.name || userData?.username || "User"}
                       </p>
 
-                      <p className="text-[10px] text-gray-500">
+                      <p 
+                        className="text-[10px] text-gray-500"
+                        style={{
+                          color: fontStyle?.color ? `${fontStyle.color}99` : undefined,
+                          fontFamily: fontStyle?.fontFamily,
+                        }}
+                      >
                         @{userData.username || "username"}
                       </p>
                     </motion.div>
@@ -403,7 +464,7 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ delay: 0.8 }}
                       className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
-                      // style={fontStyle}
+                      style={fontStyle}
                     >
                       {userData.bio}
                     </motion.p>
@@ -416,9 +477,13 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.9, type: "spring" }}
                       className="inline-flex items-center gap-1 mb-5 mt-2 border px-2 py-[2px] text-[10px] bg-white/70"
+                      
                     >
-                      <FaMapMarkerAlt className="w-2 h-2" />
-                      <span className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]">
+                      <FaMapMarkerAlt className="w-2 h-2" style={{ color: fontStyle?.color }} />
+                      <span 
+                        className="text-[7px] font-medium truncate max-w-[180px]"
+                        style={fontStyle}
+                      >
                         {userData.location}
                       </span>
                     </motion.div>
@@ -431,7 +496,10 @@ export default function PublicProfilePage() {
                       className="relative flex flex-col items-center pb-2 group"
                     >
                       <span
-                        className={`text-[9px] font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}
+                        className={`text-[9px] font-medium transition-colors ${
+                          activeTab === "links" ? "text-black" : "text-gray-400"
+                        }`}
+                        style={activeTab === "links" ? fontStyle : undefined}
                       >
                         Links
                       </span>
@@ -442,13 +510,16 @@ export default function PublicProfilePage() {
                         />
                       )}
                     </button>
-                    {userData?.username === "dnabygaza" && (
+                    {isDnaByGazaUser && (
                       <button
                         onClick={() => setActiveTab("menu")}
                         className="relative flex flex-col items-center pb-2 group"
                       >
                         <span
-                          className={`text-[9px] font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-gray-400"}`}
+                          className={`text-[9px] font-medium transition-colors ${
+                            activeTab === "menu" ? "text-black" : "text-gray-400"
+                          }`}
+                          style={activeTab === "menu" ? fontStyle : undefined}
                         >
                           Menu
                         </span>
@@ -492,28 +563,42 @@ export default function PublicProfilePage() {
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center gap-3 px-4 py-3 font-bold text-sm
-                                     backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
+                                className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm
+                                     backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
                                 style={{
-                                  ...(buttonStyle ?? {
-                                    backgroundColor: "rgba(255,255,255,0.3)",
-                                    borderRadius: 12,
-                                    border: "1px solid rgba(255,255,255,0.5)",
-                                  }),
-                                  ...fontStyle,
-                                  color: fontStyle?.color ?? "#fff",
+                                  borderRadius: buttonStyle?.borderRadius || "12px",
+                                  border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
+                                  boxShadow: buttonStyle?.boxShadow || "none",
+                                  textDecoration: "none",
+                                  color: fontStyle?.color || "#fff",
+                                  fontFamily: fontStyle?.fontFamily,
+                                  fontWeight: fontStyle?.fontWeight,
+                                  fontStyle: fontStyle?.fontStyle,
+                                  textShadow: fontStyle?.textShadow,
                                 }}
                               >
+                                <span
+                                  className="absolute inset-0"
+                                  style={{
+                                    backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+                                    opacity: buttonStyle?.opacity ?? 1,
+                                    borderRadius: buttonStyle?.borderRadius || "12px",
+                                  }}
+                                />
                                 <motion.span
                                   whileHover={{ rotate: 10 }}
                                   transition={{
                                     type: "spring",
                                     stiffness: 300,
                                   }}
+                                  className="relative"
+                                  style={{ color: fontStyle?.color }}
                                 >
                                   {getPlatformIcon(link.platform, "w-4 h-4")}
                                 </motion.span>
-                                <span className="truncate">{link.title}</span>
+                                <span className="truncate relative" style={fontStyle}>
+                                  {link.title}
+                                </span>
                               </motion.a>
                             ))
                         ) : (
@@ -522,12 +607,13 @@ export default function PublicProfilePage() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
                             className="text-xs text-gray-500 text-center py-4 relative z-20"
+                            style={fontStyle}
                           >
                             No links added yet.
                           </motion.p>
                         )}
                       </AnimatePresence>
-                      {userData?.username === "dnabygaza" && (
+                      {isDnaByGazaUser && (
                         <div>
                           <DnaFormV1 />
                         </div>
@@ -564,14 +650,14 @@ export default function PublicProfilePage() {
           transition={{ duration: 0.4 }}
           className="lg:hidden w-full min-h-screen bg-[#FEF4EA]"
         >
-          {/* Background Image for Mobile */}
+          {/* Background for Mobile */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
             className="fixed inset-0"
           >
-            {userData?.username === "ootn" ? (
+            {isOotnUser ? (
               <>
                 <Image
                   src="/themes/ootn.jpeg"
@@ -580,13 +666,12 @@ export default function PublicProfilePage() {
                   className="object-cover"
                   priority
                 />
-                {/* Conditional overlay */}
                 <div className="absolute inset-0 bg-black/65" />
               </>
-            ) : backgroundFillCss ? (
+            ) : Object.keys(backgroundStyle).length > 0 ? (
               <div
                 className="absolute inset-0"
-                style={{ background: backgroundFillCss }}
+                style={backgroundStyle}
               />
             ) : (
               <Image
@@ -606,7 +691,11 @@ export default function PublicProfilePage() {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/80 p-4 backdrop-blur-md"
+              className="bg-white/90 p-4 backdrop-blur-xl"
+              style={{
+                backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
+                opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
+              }}
             >
               <div className="flex items-center gap-3">
                 {/* Avatar */}
@@ -634,14 +723,22 @@ export default function PublicProfilePage() {
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
-                  // style={fontStyle}
                 >
-                  <p className="font-bold text-[14px]">
-                    {userData?.username === "ootn"
+                  <p 
+                    className="font-bold text-[14px]"
+                    style={fontStyle}
+                  >
+                    {isOotnUser
                       ? "one of those nights"
                       : userData?.name || userData?.username || "User"}
                   </p>
-                  <p className="text-[13px] text-gray-500">
+                  <p 
+                    className="text-[13px] text-gray-500"
+                    style={{
+                      color: fontStyle?.color ? `${fontStyle.color}99` : undefined,
+                      fontFamily: fontStyle?.fontFamily,
+                    }}
+                  >
                     @{userData.username || "username"}
                   </p>
                 </motion.div>
@@ -654,7 +751,7 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
                   className="mt-2 text-[13px] text-left font-semibold line-clamp-2"
-                  // style={fontStyle}
+                  style={fontStyle}
                 >
                   {userData.bio}
                 </motion.p>
@@ -667,9 +764,10 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6, type: "spring" }}
                   className="inline-flex items-center gap-1 mt-3 border px-2 py-[2px] text-[10px] mb-6 bg-white/80"
+                 
                 >
-                  <FaMapMarkerAlt className="w-3 h-3" />
-                  {userData.location}
+                  <FaMapMarkerAlt className="w-3 h-3" style={{ color: fontStyle?.color }} />
+                  <span style={fontStyle}>{userData.location}</span>
                 </motion.div>
               )}
 
@@ -680,7 +778,10 @@ export default function PublicProfilePage() {
                   className="relative flex flex-col items-center pb-2 group"
                 >
                   <span
-                    className={`text-[11px] font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}
+                    className={`text-[11px] font-medium transition-colors ${
+                      activeTab === "links" ? "text-black" : "text-gray-400"
+                    }`}
+                    style={activeTab === "links" ? fontStyle : undefined}
                   >
                     Links
                   </span>
@@ -691,13 +792,16 @@ export default function PublicProfilePage() {
                     />
                   )}
                 </button>
-                {userData?.username === "dnabygaza" && (
+                {isDnaByGazaUser && (
                   <button
                     onClick={() => setActiveTab("menu")}
                     className="relative flex flex-col items-center pb-2 group"
                   >
                     <span
-                      className={`text-[11px] font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-gray-400"}`}
+                      className={`text-[11px] font-medium transition-colors ${
+                        activeTab === "menu" ? "text-black" : "text-gray-400"
+                      }`}
+                      style={activeTab === "menu" ? fontStyle : undefined}
                     >
                       Menu
                     </span>
@@ -731,25 +835,37 @@ export default function PublicProfilePage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3 font-bold text-sm
-                                      backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
+                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm
+                                      backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
                             style={{
-                              ...(buttonStyle ?? {
-                                backgroundColor: "rgba(255,255,255,0.3)",
-                                borderRadius: 12,
-                                border: "1px solid rgba(255,255,255,0.5)",
-                              }),
-                              ...fontStyle,
-                              color: fontStyle?.color ?? "#fff",
+                              borderRadius: buttonStyle?.borderRadius || "12px",
+                              border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
+                              boxShadow: buttonStyle?.boxShadow || "none",
+                              textDecoration: "none",
+                              color: fontStyle?.color || "#fff",
+                              fontFamily: fontStyle?.fontFamily,
+                              fontWeight: fontStyle?.fontWeight,
+                              fontStyle: fontStyle?.fontStyle,
+                              textShadow: fontStyle?.textShadow,
                             }}
                           >
+                            <span
+                              className="absolute inset-0"
+                              style={{
+                                backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+                                opacity: buttonStyle?.opacity ?? 1,
+                                borderRadius: buttonStyle?.borderRadius || "12px",
+                              }}
+                            />
                             <motion.span
                               whileHover={{ rotate: 10 }}
                               transition={{ type: "spring", stiffness: 300 }}
+                              className="relative"
+                              style={{ color: fontStyle?.color }}
                             >
                               {getPlatformIcon(link.platform, "w-4 h-4")}
                             </motion.span>
-                            <span className="truncate font-bold">
+                            <span className="truncate font-bold relative" style={fontStyle}>
                               {link.title}
                             </span>
                           </motion.a>
@@ -760,12 +876,13 @@ export default function PublicProfilePage() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
                         className="text-xs text-gray-500 text-center py-4"
+                        style={fontStyle}
                       >
                         No links added yet.
                       </motion.p>
                     )}
                   </AnimatePresence>
-                  {userData?.username === "dnabygaza" && (
+                  {isDnaByGazaUser && (
                     <div>
                       <DnaFormV1 />
                     </div>
