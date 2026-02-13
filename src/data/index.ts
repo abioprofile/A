@@ -6,22 +6,26 @@ export const sidebarNav = [
     {
         title: "My Abio",
         url: "/dashboard",
-        icon: "/icons/link.svg"
+        icon: "/icons/link.svg",
+        activeIcon: "/icons/link-fill.svg"
     },
     {
         title: "Appearance",
         url: "/dashboard/appearance",
         icon: "/assets/icons/dashboard/appearance.svg",
+        activeIcon: "/assets/icons/dashboard/appearance-fill.svg"
     },
     {
         title: "Analytics",
         url: "/dashboard/statistics",
         icon: "/assets/icons/dashboard/statistics.svg",
+        activeIcon: "/assets/icons/dashboard/statistics-fill.svg"
     },
     {
         title: "Store",
         url: "/dashboard/store",
         icon: "/assets/icons/dashboard/store.svg",
+        activeIcon: "/assets/icons/dashboard/store-fill.svg"
     }
 ]
 

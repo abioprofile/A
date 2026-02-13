@@ -493,17 +493,17 @@ console.log("Final backgroundStyle:", backgroundStyle);
                       className="relative flex flex-col items-center pb-2 group"
                     >
                       <span
-                        className={`text-[9px] font-medium transition-colors ${
+                        className={`text-[9px] -mb-2 font-medium transition-colors ${
                           activeTab === "links" ? "text-black" : "text-gray-400"
                         }`}
-                        style={activeTab === "links" ? fontStyle : undefined}
+                        
                       >
                         Links
                       </span>
                       {activeTab === "links" && (
                         <motion.div
                           layoutId="activeTabDesktop"
-                          className="h-[3px] absolute bottom-0 w-6 bg-red-500"
+                          className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
                         />
                       )}
                     </button>
@@ -563,7 +563,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                                 className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm
                                      backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
                                 style={{
-                                  borderRadius: buttonStyle?.borderRadius || "12px",
+                                  borderRadius: buttonStyle?.borderRadius || "0px",
                                   border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
                                   boxShadow: buttonStyle?.boxShadow || "none",
                                   textDecoration: "none",
@@ -579,7 +579,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                                   style={{
                                     backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
                                     opacity: buttonStyle?.opacity ?? 1,
-                                    borderRadius: buttonStyle?.borderRadius || "12px",
+                                    borderRadius: buttonStyle?.borderRadius || "0px",
                                   }}
                                 />
                                 <motion.span
@@ -772,17 +772,17 @@ console.log("Final backgroundStyle:", backgroundStyle);
                   className="relative flex flex-col items-center pb-2 group"
                 >
                   <span
-                    className={`text-[11px] font-medium transition-colors ${
+                    className={`text-[11px] -mb-2 font-medium transition-colors ${
                       activeTab === "links" ? "text-black" : "text-gray-400"
                     }`}
-                    style={activeTab === "links" ? fontStyle : undefined}
+                    
                   >
                     Links
                   </span>
                   {activeTab === "links" && (
                     <motion.div
                       layoutId="activeTabMobile"
-                      className="h-[3px] absolute bottom-0 w-6 bg-red-500"
+                      className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
                     />
                   )}
                 </button>
@@ -832,7 +832,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                             className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm
                                       backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
                             style={{
-                              borderRadius: buttonStyle?.borderRadius || "12px",
+                              borderRadius: buttonStyle?.borderRadius || "0px",
                               border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
                               boxShadow: buttonStyle?.boxShadow || "none",
                               textDecoration: "none",
@@ -848,7 +848,7 @@ console.log("Final backgroundStyle:", backgroundStyle);
                               style={{
                                 backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
                                 opacity: buttonStyle?.opacity ?? 1,
-                                borderRadius: buttonStyle?.borderRadius || "12px",
+                                borderRadius: buttonStyle?.borderRadius || "0px",
                               }}
                             />
                             <motion.span
