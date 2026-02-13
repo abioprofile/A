@@ -155,6 +155,23 @@ const AppearancePage: React.FC = () => {
     }
   }, [userData]);
 
+  // ✅ Lock page scroll on mobile — ADDED ONLY THIS
+useEffect(() => {
+  if (!isMobile) return;
+
+  const originalOverflow = document.body.style.overflow;
+  const originalHeight = document.body.style.height;
+
+  document.body.style.overflow = "hidden";
+  document.body.style.height = "100vh";
+
+  return () => {
+    document.body.style.overflow = originalOverflow;
+    document.body.style.height = originalHeight;
+  };
+}, [isMobile]);
+
+
   // Undo/Redo state
   const [history, setHistory] = useState<AppState[]>([]);
   const [historyIndex, setHistoryIndex] = useState<number>(-1);
