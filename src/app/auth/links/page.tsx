@@ -70,7 +70,7 @@ const LinksScreen = () => {
     return `https://${trimmed}`;
   };
 
-  const handleSubmit = async () => {
+   const handleSubmit = async () => {
     setIsSubmitting(true);
 
     try {
@@ -144,6 +144,8 @@ const LinksScreen = () => {
               duration: 5000,
             }
           );
+          // Navigate even with partial success
+          router.push("/auth/profile");
         } else {
           toast.error("Failed to save links", {
             description: failedLinks[0]?.error || "Please check your links and try again.",
