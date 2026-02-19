@@ -143,7 +143,7 @@ export function LocationInput({
             if (value.trim().length >= 2) setDropdownOpen(true);
           }}
           onBlur={() => setFocused(false)}
-          className={`flex-1 min-w-0 bg-transparent outline-none text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] text-gray-800 ${inputClassName ?? ""}`}
+          className={`flex-1 min-w-0 bg-transparent outline-none text-[10px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] text-gray-800 ${inputClassName ?? ""}`}
           autoComplete="off"
           role="combobox"
           aria-expanded={showDropdown}

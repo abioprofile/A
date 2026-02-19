@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { OnboardingProgressWithSteps } from "@/components/ProgressBar";
 
 const MAX_PLATFORMS = 5;
 
@@ -134,6 +135,7 @@ const Platforms = () => {
         variants={containerVariants}
         className="min-h-screen bg-[#FEF4EA] flex flex-col justify-center p-5"
       >
+        <OnboardingProgressWithSteps currentStep={3} totalSteps={5} />
         {/* 🔹 Full-width top bar - Skip button hidden on mobile */}
         <motion.div 
           variants={itemVariants}
@@ -171,7 +173,7 @@ const Platforms = () => {
             className="text-center mb-8"
           >
             <motion.h1 
-              className="text-3xl md:text-4xl font-bold mb-2 text-[#331400]"
+              className="text-[22px] md:text-[24px] font-semibold my-2 text-[#331400]"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -179,7 +181,7 @@ const Platforms = () => {
             </motion.h1>
             <motion.p 
               variants={itemVariants}
-              className="text-[#331400] text-sm lg:text-[14px] font-semibold max-w-2xl"
+              className="text-[#331400] text-[14px] max-w-2xl"
             >
               Pick a maximum of 5 platforms to get started. You can update later
             </motion.p>
@@ -201,7 +203,7 @@ const Platforms = () => {
                   animate={isSelected ? "selected" : "unselected"}
                   whileHover="hover"
                   whileTap="tap"
-                  className={`cursor-pointer flex flex-col w-20 md:w-24 items-center justify-center p-4 border-2  ${
+                  className={`cursor-pointer flex flex-col w-20 h-20 md:h-24 md:w-24 items-center justify-center p-4 border-2  ${
                     isSelected ? "border-[#331400]" : "border-transparent"
                   }`}
                   onClick={() => handlePlatformClick(platform)}
@@ -213,7 +215,7 @@ const Platforms = () => {
                     height={35}
                     className="mb-2"
                   />
-                  <span className="text-xs md:text-sm font-semibold text-center">
+                  <span className="text-[12px] md:text-sm  text-center">
                     {platform.name}
                   </span>
                 </motion.button>
@@ -232,7 +234,7 @@ const Platforms = () => {
             >
               <Button
                 onClick={() => router.push("/auth/links")}
-                className="w-full bg-[#FED45C] text-[#331400] py-6 text-base font-medium hover:bg-[#FED45C]/90"
+                className="w-full bg-[#FED45C] text-[#331400] py-6 text-[14px] hover:bg-[#FED45C]/90"
               >
                 Continue
               </Button>

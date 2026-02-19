@@ -12,6 +12,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useAppSelector } from "@/stores/hooks";
 import { Zap, Users, ShoppingCart, Link2, Compass } from "lucide-react";
+import { OnboardingProgressWithSteps } from "@/components/ProgressBar";
 
 // Define types
 interface Goal {
@@ -37,7 +38,9 @@ const MotionButton = motion.create(Button);
 
 const SelectGoalPage = () => {
   const router = useRouter();
-  const currentUser = useAppSelector((state) => state.auth.user) as CurrentUser | null;
+  const currentUser = useAppSelector(
+    (state) => state.auth.user,
+  ) as CurrentUser | null;
   const [isMounted, setIsMounted] = useState<boolean>(false);
   const [selectedGoal, setSelectedGoal] = useState<string | null>(
     currentUser?.profile?.goals?.[0] || null,
@@ -94,7 +97,7 @@ const SelectGoalPage = () => {
       const updateData: UpdateProfileData = {
         goals: [selectedGoal],
       };
-      
+
       updateProfileMutation.mutate(updateData, {
         onSuccess: () => {
           toast.success("Goal saved successfully!");
@@ -203,41 +206,47 @@ const SelectGoalPage = () => {
         variants={containerVariants}
         className="bg-[#FEF4EA] min-h-screen w-full flex flex-col relative"
       >
-        {/* Logo - Top Left */}
-        <motion.div
-          variants={logoVariants}
-          className="absolute top-0 left-0 px-4 pt-4 md:px-6 md:pt-6 lg:px-8 lg:pt-8"
-        >
-          <Link href="/" className="flex items-center gap-1 group">
-            <Image
-              src="/icons/A.Bio.png"
-              alt="A.Bio Logo"
-              width={28}
-              height={28}
-              priority
-              className="cursor-pointer select-none transition-transform group-hover:scale-105"
-            />
-            <span className="font-bold text-xl md:text-2xl text-black tracking-wide">
-              bio
-            </span>
-          </Link>
-        </motion.div>
+        {/* Header: Logo top-left + Progress bar centered below */}
+        <div className="w-full px-4 pt-4 md:px-6 md:pt-6 lg:px-8 lg:pt-4 flex flex-col gap-4">
+          {/* Logo row */}
+          <motion.div variants={logoVariants} className="flex justify-start">
+            <Link href="/" className="flex items-center gap-1 group">
+              <Image
+                src="/icons/A.Bio.png"
+                alt="A.Bio Logo"
+                width={28}
+                height={28}
+                priority
+                className="cursor-pointer select-none transition-transform group-hover:scale-105"
+              />
+              <span className="font-bold text-xl md:text-2xl text-black tracking-wide">
+                bio
+              </span>
+            </Link>
+          </motion.div>
+
+          {/* Progress bar row — centered */}
+          <div className="w-full flex justify-center">
+            <div className="w-full mt-10  max-w-lg">
+              <OnboardingProgressWithSteps currentStep={2} totalSteps={5} />
+            </div>
+          </div>
+        </div>
 
         {/* Centered Content */}
-        <div className="flex-1 flex flex-col items-center justify-center w-full px-4 sm:px-6 lg:px-8 pt-20 pb-8">
+        <div className="flex-1 flex flex-col items-center justify-center w-full px-4 sm:px-6 lg:px-8 md:pt-10 pb-8">
           <div className="w-full max-w-md mx-auto flex flex-col items-center justify-center">
-            
             {/* Title Section */}
             <motion.div
               variants={itemVariants}
-              className="text-center space-y-4 mb-10 w-full"
+              className="text-center space-y-4 mb-6 w-full"
             >
-              <motion.h1 className="text-2xl md:text-3xl font-bold text-[#1a1a1a] leading-tight">
+              <motion.h1 className="text-[22px] md:text-[24px] font-bold text-[#1a1a1a] leading-tight">
                 What best describes your goal for using Abio?
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="text-[#666666] text-base md:text-lg"
+                className="text-[#666666] text-[14px]"
               >
                 Helps us personalize your experience.
               </motion.p>
@@ -267,7 +276,7 @@ const SelectGoalPage = () => {
                       whileHover={{ y: -2 }}
                       whileTap={{ scale: 0.98 }}
                       className={cn(
-                        "w-full p-5 md:p-6 text-left transition-all duration-200 border-2 flex items-center gap-4",
+                        "w-full p-5 md:p-4 text-left transition-all duration-200 border-2 flex items-center gap-4",
                         isSelected
                           ? "bg-white border-black shadow-lg"
                           : "bg-white border-white hover:shadow-md",
@@ -285,10 +294,10 @@ const SelectGoalPage = () => {
 
                       {/* Text Section */}
                       <div className="flex-1">
-                        <h3 className="font-bold text-lg text-gray-900">
+                        <h3 className="font-bold text-[16px] text-gray-900">
                           {goal.title}
                         </h3>
-                        <p className="text-sm text-gray-600 mt-1">
+                        <p className="text-[12px] text-gray-600 mt-1">
                           {goal.description}
                         </p>
                       </div>
@@ -326,20 +335,42 @@ const SelectGoalPage = () => {
             <motion.div variants={itemVariants} className="w-full">
               <MotionButton
                 onClick={handleSubmit}
-                disabled={!selectedGoal || isSubmitting || updateProfileMutation.isPending}
-                whileHover={selectedGoal && !isSubmitting && !updateProfileMutation.isPending ? { scale: 1.02 } : {}}
-                whileTap={selectedGoal && !isSubmitting && !updateProfileMutation.isPending ? { scale: 0.98 } : {}}
+                disabled={
+                  !selectedGoal ||
+                  isSubmitting ||
+                  updateProfileMutation.isPending
+                }
+                whileHover={
+                  selectedGoal &&
+                  !isSubmitting &&
+                  !updateProfileMutation.isPending
+                    ? { scale: 1.02 }
+                    : {}
+                }
+                whileTap={
+                  selectedGoal &&
+                  !isSubmitting &&
+                  !updateProfileMutation.isPending
+                    ? { scale: 0.98 }
+                    : {}
+                }
                 className={cn(
-                  "w-full py-4 px-6 font-bold text-lg transition-all duration-200 flex items-center justify-center gap-2",
-                  selectedGoal && !isSubmitting && !updateProfileMutation.isPending
+                  "w-full py-4 px-6 font-semibold text-[14px] transition-all duration-200 flex items-center justify-center gap-2",
+                  selectedGoal &&
+                    !isSubmitting &&
+                    !updateProfileMutation.isPending
                     ? "bg-yellow-400 text-black hover:shadow-lg cursor-pointer"
                     : "bg-gray-300 text-gray-600 cursor-not-allowed opacity-50",
                 )}
               >
-                {(isSubmitting || updateProfileMutation.isPending) ? (
+                {isSubmitting || updateProfileMutation.isPending ? (
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   >
                     <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full" />
                   </motion.div>

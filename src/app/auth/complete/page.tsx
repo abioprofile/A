@@ -342,7 +342,7 @@ export default function ProfileLivePage() {
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="flex flex-col-reverse lg:flex-row items-center justify-center w-full max-w-6xl gap-10 lg:gap-16 relative z-10"
+          className="flex flex-col-reverse lg:flex-row items-center justify-center w-full max-w-6xl gap-8 lg:gap-16 relative z-10"
         >
           {/* Left Side — Profile Preview */}
           <motion.div
@@ -415,7 +415,7 @@ export default function ProfileLivePage() {
                     transition={{ delay: 0.6 }}
                     className="w-full text-left"
                   >
-                    <p className="text-xs md:text-[11px] text-[#3A2B20] mb-3">
+                    <p className="text-xs md:text-[11px] text-[#3A2B20] mb-2">
                       {userData.bio || "No bio added yet."}
                     </p>
                     {userData.location && (
@@ -423,10 +423,13 @@ export default function ProfileLivePage() {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.7 }}
-                        className="inline-flex items-center gap-1 px-3 py-1 border border-[#C8C0B5] text-xs text-[#5C4C3B] mb-6 "
+                        className="inline-flex items-center gap-1 w-[100px] px-3 py-1 border border-[#C8C0B5] text-[8px] text-[#5C4C3B] mb-2 overflow-hidden"
                       >
-                        <FaMapMarkerAlt className="w-3 h-3" />
-                        <span>{userData.location}</span>
+                        <FaMapMarkerAlt className="w-3 h-3 flex-shrink-0" />
+
+                        <span className="truncate min-w-0">
+                          {userData.location}
+                        </span>
                       </motion.div>
                     )}
                   </motion.div>
@@ -440,7 +443,7 @@ export default function ProfileLivePage() {
 
                 {/* Links/Buttons Section - Fixed with proper scrolling */}
                 <div
-                  className="flex-1 p-4 overflow-y-auto [&::-webkit-scrollbar]:hidden space-y-3 md:space-y-4"
+                  className="flex-1 p-6 overflow-y-auto [&::-webkit-scrollbar]:hidden space-y-3 md:space-y-4"
                   style={{
                     scrollbarWidth: "none",
                     msOverflowStyle: "none",
@@ -478,7 +481,7 @@ export default function ProfileLivePage() {
                       .filter((link: UserLink) => link.isVisible !== false)
                       .sort(
                         (a: UserLink, b: UserLink) =>
-                          a.displayOrder - b.displayOrder
+                          a.displayOrder - b.displayOrder,
                       )
                       .map((link: UserLink, index: number) => (
                         <a
@@ -486,7 +489,7 @@ export default function ProfileLivePage() {
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="w-full flex items-center gap-3 font-semibold px-4 py-3 relative overflow-hidden  hover:opacity-90 transition-opacity active:scale-[0.98] break-words bg-white border-2 border-black"
+                          className="w-full flex items-center gap-2 font-semibold  px-4 py-2 relative  hover:opacity-90 transition-opacity active:scale-[0.98] break-words bg-white border-1 border-black"
                         >
                           {getPlatformIcon(link.platform)}
                           <span className="truncate">{link.title}</span>
@@ -514,13 +517,13 @@ export default function ProfileLivePage() {
           >
             <motion.h1
               variants={itemVariants}
-              className="text-2xl md:text-3xl font-bold text-[#331400] mb-3"
+              className="text-[22px] md:text-[24px] font-semibold text-[#331400] mb-3"
             >
               Your profile is now live!
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-[#4B2E1E] mb-6 text-sm md:text-base"
+              className="text-[#4B2E1E] md:mb-6 text-[14px]"
             >
               Get more visitors by sharing your Abio Profile everywhere.
             </motion.p>
@@ -533,7 +536,7 @@ export default function ProfileLivePage() {
               <input
                 readOnly
                 value={profileLink}
-                className="border-0 w-full text-[#4B2E1E] text-sm font-medium bg-transparent px-3 py-2 focus-visible:ring-0"
+                className="border-0 w-full text-[#4B2E1E] text-[12px] font-medium bg-transparent px-3 py-2 focus-visible:ring-0"
               />
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -581,17 +584,17 @@ export default function ProfileLivePage() {
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="fixed bottom-0 left-0 w-full flex md:hidden gap-3 bg-white p-4 border-t border-gray-200 shadow-lg z-20"
+          className="fixed bottom-0 left-0 w-full flex md:hidden gap-3 p-4 border-t border-gray-200 shadow-lg z-20"
         >
           <Button
             onClick={() => router.push("/dashboard")}
-            className="flex-1 bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E] font-semibold py-4 transition-colors"
+            className="flex-1 bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E] text-[12px] py-4 transition-colors"
           >
             Continue Editing
           </Button>
           <Button
             onClick={() => setShowShareBox(true)}
-            className="flex-1 bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5] font-semibold py-4 transition-colors"
+            className="flex-1 bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5] text-[12px] py-4 transition-colors"
           >
             Share
           </Button>
