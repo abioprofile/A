@@ -242,11 +242,11 @@ export default function PublicProfilePage() {
 
   const profileDisplay = profileData.data.display;
 
-  // Derive display styles from profileDisplay (font_config, corner_config, wallpaper_config, selected_theme)
+  // Derive display styles from profileDisplay (support snake_case and camelCase for production API)
   const fc = profileDisplay?.font_config;
   const cc = profileDisplay?.corner_config;
-  const wc = profileDisplay?.wallpaper_config;
-  const selectedTheme = profileDisplay?.selected_theme ?? null;
+  const wc = profileDisplay?.wallpaper_config ?? (profileDisplay as { wallpaperConfig?: typeof profileDisplay.wallpaper_config })?.wallpaperConfig;
+  const selectedTheme = profileDisplay?.selected_theme ?? (profileDisplay as { selectedTheme?: string | null })?.selectedTheme ?? null;
 
   // Create font style with stroke support
   const fontStyle = fc ? createTextStyle(fc, fc.strokeWidth || 0) : undefined;
@@ -275,20 +275,21 @@ export default function PublicProfilePage() {
       }
     : undefined;
 
-// Background handling - Debug version
+// Background handling (resilient to prod API: camelCase, missing display, or different wallpaper shape)
 let backgroundStyle: React.CSSProperties = {};
 let backgroundImageSrc = "/themes/theme7.jpg";
 const isOotnUser = userData?.username === "ootn";
 const isDnaByGazaUser = userData?.username === "dnabygaza";
 
-// DEBUG - Check what data we're getting
-console.log("DEBUG - selectedTheme:", selectedTheme);
-console.log("DEBUG - wc:", wc);
-console.log("DEBUG - profileDisplay:", profileDisplay);
+// Normalize backgroundColor to array (backend may return array or single object)
+const bgColors = wc?.backgroundColor != null
+  ? Array.isArray(wc.backgroundColor)
+    ? wc.backgroundColor
+    : [wc.backgroundColor].filter((c: unknown) => c && typeof (c as { color?: string }).color === "string")
+  : [];
 
 if (!isOotnUser && !isDnaByGazaUser) {
   if (selectedTheme && typeof selectedTheme === "string") {
-    console.log("Using selectedTheme:", selectedTheme);
     if (selectedTheme.startsWith("fill:")) {
       const color = selectedTheme.split(":")[1] || "#000";
       backgroundStyle = { backgroundColor: color };
@@ -300,25 +301,24 @@ if (!isOotnUser && !isDnaByGazaUser) {
     } else {
       backgroundImageSrc = selectedTheme;
     }
-  } 
-  else if (wc?.type === "fill" && Array.isArray(wc.backgroundColor)) {
-    console.log("Using wallpaper fill");
-    if (wc.backgroundColor.length === 1) {
-      backgroundStyle = { backgroundColor: wc.backgroundColor[0].color };
-    } else if (wc.backgroundColor.length >= 2) {
-      const colors = wc.backgroundColor.map((c: any) => c.color);
+  }
+  else if (wc?.type === "fill" && bgColors.length > 0) {
+    if (bgColors.length === 1) {
+      backgroundStyle = { backgroundColor: (bgColors[0] as { color: string }).color };
+    } else if (bgColors.length >= 2) {
+      const colors = bgColors.map((c: unknown) => (c as { color: string }).color);
       const [start, end] = colors;
-      backgroundStyle = { 
-        background: `linear-gradient(135deg, ${start}, ${end})` 
+      backgroundStyle = {
+        background: `linear-gradient(135deg, ${start}, ${end})`,
       };
     }
-  } 
-  else if (wc?.type === "image" && wc.imageUrl) {
-    backgroundImageSrc = wc.imageUrl;
+  }
+  else if (wc?.type === "image") {
+    const wcImage = wc as { imageUrl?: string; image?: { url?: string } };
+    const imageUrl = wcImage.imageUrl ?? wcImage.image?.url;
+    if (imageUrl) backgroundImageSrc = imageUrl;
   }
 }
-
-console.log("Final backgroundStyle:", backgroundStyle);
   return (
     <AnimatePresence mode="wait">
       <motion.div
