@@ -25,36 +25,39 @@ const AppearanceBottomNav: React.FC<AppearanceBottomNavProps> = ({
   setActiveTab,
 }) => {
   return (
-    <nav className="fixed bottom-2 left-10 right-10 z-50 md:hidden">
-      <div className="flex justify-between bg-white px-8 py-3 ">
-        {menuItems.map((item, index) => {
-          const IconComponent = item.icon;
-
-          return (
-            <button
-              key={item.label}
-              onClick={() => setActiveTab(index)}
-              className="flex flex-col items-center justify-center text-xs transition-all"
-            >
-              <IconComponent
-                className={`w-4 h-4 mb-2 transition-colors ${
-                  activeTab === index
-                    ? "text-red-500"
-                    : "text-black"
-                }`}
-              />
-              <span
-                className={`${
-                  activeTab === index
-                    ? "font-semibold text-black"
-                    : "text-gray-500"
-                }`}
+    <nav
+      className="fixed inset-x-0 bottom-14 z-50 md:hidden"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
+      <div className="mx-8 mb-3  bg-white shadow-[0_6px_18px_rgba(0,0,0,0.08)]">
+        <div className="grid grid-cols-4 px-4 py-2">
+          {menuItems.map((item, index) => {
+            const IconComponent = item.icon;
+            const isActive = activeTab === index;
+            return (
+              <button
+                key={item.label}
+                onClick={() => setActiveTab(index)}
+                aria-label={item.label}
+                aria-selected={isActive}
+                className="flex flex-col items-center justify-center gap-1 py-"
               >
-                {item.label}
-              </span>
-            </button>
-          );
-        })}
+                <IconComponent
+                  className={`w-4 h-4 ${
+                    isActive ? "text-[#EA2228]" : "text-black"
+                  }`}
+                />
+                <span
+                  className={`text-[10px] ${
+                    isActive ? "font-semibold text-black" : "text-gray-500"
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

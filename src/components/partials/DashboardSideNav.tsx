@@ -42,20 +42,14 @@ const DashboardSideNav = ({
 
   const handleLogout = () => {
     dispatch(clearAuth());
-
     queryClient.clear()
-    
     setShowMenu(false);
-    
     toast.success("Logged out successfully");
-    
     router.push("/auth/sign-in");
   };
 
   const menuItems = [
-    // { icon: User, label: "Profile", href: "/profile" },
     { icon: CreditCard, label: "Billing", href: "/dashboard/Billing" },
-    // { icon: Bell, label: "Notifications", href: "/notifications" },
     { icon: Settings, label: "Account Settings", href: "/dashboard/AccountSettings" },
     { icon: Moon, label: "Light Mode", action: "toggle-theme" },
   ];
@@ -69,7 +63,6 @@ const DashboardSideNav = ({
       >
         {/* Header */}
         <SidebarHeader className="flex justify-center items-center mb-16">
-          {/* <Logo width={28} height={28} /> */}
           <Image
             src='/icons/logo.png'
             alt='A logo'
@@ -86,6 +79,9 @@ const DashboardSideNav = ({
             <SidebarMenu className="space-y-4 flex flex-col items-center">
               {sidebarNav.map((item) => {
                 const isActive = pathname === item.url;
+                // Use activeIcon if it exists and is active, otherwise use default icon
+                const iconSrc = isActive && item.activeIcon ? item.activeIcon : item.icon;
+                
                 return (
                   <Link
                     key={item.title}
@@ -95,20 +91,18 @@ const DashboardSideNav = ({
                   >
                     <SidebarMenuItem>
                       <SidebarMenuButton
-                        className={`cursor-pointer w-9 h-9 flex items-center justify-center rounded-lg transition-all hover:bg-[#f4f4f4] ${isActive ? "bg-[#f4f4f4] shadow-sm" : ""
-                          }`}
+                        className={`cursor-pointer w-12 h-12 flex items-center justify-center transition-all hover:bg-[#f4f4f4] ${
+                          isActive ? "bg-[#f4f4f4] shadow-sm" : ""
+                        }`}
                       >
-                        <Image
-                          src={item.icon}
-                          alt={`${item.title} Icon`}
-                          width={20}
-                          height={20}
-                          style={{
-                            filter: isActive
-                              ? "invert(25%) sepia(98%) saturate(7300%) hue-rotate(355deg) brightness(98%) contrast(100%)"
-                              : "invert(14%) sepia(15%) saturate(2076%) hue-rotate(347deg) brightness(94%) contrast(87%)",
-                          }}
-                        />
+                        {/* SVG as img element for direct control */}
+                        <div className="relative w-10 h-10">
+                          <img
+                            src={iconSrc}
+                            alt={`${item.title} Icon`}
+                            className="w-full h-full object-contain"
+                          />
+                        </div>
                       </SidebarMenuButton>
                     </SidebarMenuItem>
                   </Link>
@@ -120,21 +114,27 @@ const DashboardSideNav = ({
 
         {/* Footer */}
         <SidebarFooter className="pb-6 w-full flex flex-col items-center space-y-3 relative">
-          <button className="p-2 rounded-lg hover:bg-[#f4f4f4]">
-            <Bell size={18} color="#331400" />
-          </button>
+          {/* Settings icon with active state handling */}
+          <Link href="/dashboard/AccountSettings">
+            <button className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]">
+              <Settings 
+                size={25} 
+                color={pathname === "/dashboard/AccountSettings" ? "#FF0000" : "#331400"} 
+              />
+            </button>
+          </Link>
 
           {/* More / Menu Button */}
           <button
-            className="p-2 rounded-lg hover:bg-[#f4f4f4]"
+            className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]"
             onClick={() => setShowMenu(!showMenu)}
           >
-            <MoreHorizontal size={18} color="#331400" />
+            <MoreHorizontal size={30} color="#331400" />
           </button>
         </SidebarFooter>
       </Sidebar>
 
-      {/* ✅ Fixed Dropdown Menu */}
+      {/* Dropdown Menu */}
       {showMenu && (
         <>
           {/* Transparent overlay to close */}
@@ -144,7 +144,7 @@ const DashboardSideNav = ({
           />
 
           {/* Dropdown itself */}
-          <div className="fixed bottom-12 left-24 w-56 bg-white border border-gray-200 shadow-2xl  z-[99999] animate-fadeIn">
+          <div className="fixed bottom-12 left-24 w-56 bg-white border border-gray-200 shadow-2xl z-[99999] animate-fadeIn">
             {/* User Info */}
             <div className="flex items-center gap-3 p-4 border-b border-gray-100">
               <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
@@ -166,16 +166,26 @@ const DashboardSideNav = ({
 
             {/* Menu Items */}
             <div className="p-2">
-              {menuItems.map((item) => (
-                <Link
-                  key={item.label}
-                  href={item.href || "#"}
-                  className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                >
-                  <item.icon size={16} />
-                  {item.label}
-                </Link>
-              ))}
+              {menuItems.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href || "#"}
+                    className={`flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition ${
+                      isActive 
+                        ? "bg-gray-100 text-gray-900" 
+                        : "text-gray-700 hover:bg-gray-100"
+                    }`}
+                  >
+                    <item.icon 
+                      size={16} 
+                      color={isActive ? "#FF0000" : "currentColor"} 
+                    />
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
 
             {/* Logout */}
@@ -196,12 +206,3 @@ const DashboardSideNav = ({
 };
 
 export default DashboardSideNav;
-
-
-
-
-
-
-
-
-

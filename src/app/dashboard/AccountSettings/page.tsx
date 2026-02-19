@@ -2,10 +2,18 @@
 
 import { useState } from 'react';
 import { PencilIcon, CheckCircleIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
+import { LogOut } from 'lucide-react';
+import { useQueryClient } from '@tanstack/react-query';
+import { useAppDispatch } from '@/stores/hooks';
+import { clearAuth } from '@/stores/slices/auth.slice';
+import { toast } from 'sonner';
 
 export default function AccountSettings() {
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const dispatch = useAppDispatch();
   const [username, setUsername] = useState('davidosh');
   const [email, setEmail] = useState('davidosh2003@gmail.com');
   const [is2FAEnabled, setIs2FAEnabled] = useState(false);
@@ -31,8 +39,19 @@ export default function AccountSettings() {
     alert('Settings saved successfully!');
   };
 
+   const handleLogout = () => {
+      dispatch(clearAuth());
+  
+      queryClient.clear()
+
+      
+      toast.success("Logged out successfully");
+      
+      router.push("/auth/sign-in");
+    };
+
   return (
-    <div className="md:min-h-screen bg-[#Fff7de] md:bg-white">
+    <div className="md:min-h-screen bg-white">
       {/* Mobile Header */}
       <div className="sticky top-0 z-50 bg-[#Fff7de]  border-b border-gray-200 px-4 py-6">
         <div className="flex md:hidden items-center justify-between">
@@ -52,7 +71,7 @@ export default function AccountSettings() {
           {/* Save Button */}
           <button
             onClick={handleSave}
-            className="px-4 py-1.5 bg-[#FED45C] text-gray-900 text-sm font-medium rounded-lg hover:bg-[#E5C052] transition-colors"
+            className="px-4 py-1.5 bg-[#FED45C] text-gray-900 shadow-[4px_4px_0_0_#000000] text-sm font-medium hover:bg-[#E5C052] transition-colors"
           >
             Save
           </button>
@@ -201,6 +220,17 @@ export default function AccountSettings() {
               Delete
             </button>
           </div>
+        </div>
+
+        {/* Mobile Logout - shown only on mobile, after delete section */}
+        <div className="md:hidden border-t border-gray-200 pt-4 mt-4">
+          <button 
+            onClick={handleLogout}
+            className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition"
+          >
+            <LogOut size={16} />
+            Log Out
+          </button>
         </div>
 
         {/* Modals - Mobile Optimized */}

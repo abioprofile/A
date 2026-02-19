@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { ChevronLeft, RotateCcw, RotateCw } from "lucide-react";
+import { useIsMobile } from "@/hooks/use-mobile";
 import PhoneDisplay from "@/components/PhoneDisplay";
 import {
-  useGetAllLinks,
   useGetSettings,
   useUpdateProfile,
   useUpdateAppearanceAll,
 } from "@/hooks/api/useAuth";
+import { usePhoneDisplayProps } from "@/hooks/usePhoneDisplayProps";
 import { useAppSelector } from "@/stores/hooks";
 import type {
   AppearancePayload,
@@ -21,143 +22,31 @@ import type {
   FontConfig,
   WallpaperConfig as BackendWallpaperConfig,
 } from "@/types/appearance.types";
+import {
+  buttonStyleToCornerConfig,
+  cornerConfigToButtonStyle,
+  fontConfigToFontStyle,
+  fontStyleToFontConfig,
+  selectedThemeFromWallpaper,
+  wallpaperConfigFromBackend,
+} from "@/lib/helpers/appearance";
+import type { ButtonStyle } from "@/types/appearance.types";
 import ProfileContent from "@/components/ProfileContent";
 import WallpaperSelector from "@/components/Wallpaper";
 import ThemeSelector from "@/components/ThemeSelector";
 import ButtonAndFontTabs from "@/components/ButtonAndFontTabs";
 import AppearanceBottomNav from "@/components/AppearanceBottomNav";
-import  { FontStyle } from "@/components/FontCustomizer";
+import { FontStyle } from "@/components/FontCustomizer";
 import {
   Sheet,
   SheetContent,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
-/* Shared interfaces*/
-export interface ButtonStyle {
-  borderRadius: string;
-  backgroundColor: string;
-  borderColor: string;
-  opacity: number;
-  boxShadow: string;
-  shadowColor?: string;
-}
-
-/** Map UI button style to API CornerConfig for save */
-function buttonStyleToCornerConfig(style: ButtonStyle): CornerConfig {
-  const type: CornerConfig["type"] =
-    style.borderRadius === "0px"
-      ? "sharp"
-      : style.borderRadius === "9999px" || style.borderRadius === "50%"
-        ? "round"
-        : "curved";
-  const shadowSize =
-    style.boxShadow === "none" || !style.boxShadow
-      ? "soft"
-      : style.boxShadow.includes("4px 4px 0px")
-        ? "hard"
-        : "soft";
-  return {
-    type,
-    opacity: style.opacity,
-    fillColor: style.backgroundColor,
-    shadowSize,
-    shadowColor: style.shadowColor ?? "#000000",
-    strokeColor: style.borderColor,
-  };
-}
-
-/** Map API CornerConfig to UI ButtonStyle (for initial load from settings) */
-function cornerConfigToButtonStyle(c: CornerConfig): ButtonStyle {
-  const borderRadius =
-    c.type === "sharp" ? "0px" : c.type === "round" ? "9999px" : "12px";
-  const boxShadow =
-    c.shadowSize === "hard"
-      ? `4px 4px 0px 0px ${c.shadowColor}`
-      : `2px 2px 6px ${c.shadowColor}80`;
-  return {
-    borderRadius,
-    backgroundColor: c.fillColor,
-    borderColor: c.strokeColor,
-    opacity: c.opacity,
-    boxShadow: c.shadowSize === "soft" && !c.shadowColor ? "none" : boxShadow,
-    shadowColor: c.shadowColor,
-  };
-}
-
-/** Map API FontConfig to UI FontStyle (for initial load from settings) */
-function fontConfigToFontStyle(f: FontConfig): FontStyle {
-  return {
-    fontFamily: f.name || "Poppins",
-    fillColor: f.fillColor ?? "#000000",
-    strokeColor: (f as { strokeColor?: string }).strokeColor ?? "none",
-    opacity: 100,
-  };
-}
-
-/**
- * Backend expects a single font name (letters, numbers, hyphens only).
- * UI fontFamily can be a CSS stack like "'Merriweather', 'Merriweather Fallback'".
- * Extract the primary name and sanitize for the API.
- */
-function fontFamilyToApiName(fontFamily: string): string {
-  const first = fontFamily.split(",")[0].trim().replace(/^['"]|['"]$/g, "");
-  return first.replace(/[^a-zA-Z0-9-]/g, "") || "Poppins";
-}
-
-/** Backend expects valid color values; UI may use "none" for no stroke. Map to valid hex. */
-function toValidColor(value: string | undefined | null, fallback: string): string {
-  const v = (value ?? "").trim().toLowerCase();
-  if (!v || v === "none" || v === "transparent") return fallback;
-  return value!.trim();
-}
-
-/** Map UI FontStyle to API FontConfig for save */
-function fontStyleToFontConfig(s: FontStyle): FontConfig {
-  return {
-    name: fontFamilyToApiName(s.fontFamily),
-    fillColor: toValidColor(s.fillColor, "#000000"),
-    strokeColor: toValidColor(s.strokeColor, "#00000000"),
-  };
-}
-
-/** Default amount for wallpaper backgroundColor when not from backend (design didn't account for it). */
-const WALLPAPER_DEFAULT_AMOUNT = 100;
-
-/** Build FillGradientWallpaperConfig from backend wallpaper_config (for restore/sync). */
-function wallpaperConfigFromBackend(
-  w: BackendWallpaperConfig | undefined | null
-): FillGradientWallpaperConfig | null {
-  if (!w || (w.type !== "fill" && w.type !== "gradient")) return null;
-  const bg = (w as { backgroundColor?: Array<{ color: string; amount: number }> }).backgroundColor;
-  if (!Array.isArray(bg) || bg.length === 0) return null;
-  const withAmount = bg.map((item) => ({
-    color: typeof item?.color === "string" ? item.color : "#000000",
-    amount:
-      typeof item?.amount === "number" && item.amount >= 0
-        ? item.amount
-        : WALLPAPER_DEFAULT_AMOUNT,
-  }));
-  return { type: w.type, backgroundColor: withAmount };
-}
-
-/** Build selectedTheme string from backend wallpaper_config for preview. */
-function selectedThemeFromWallpaper(
-  w: BackendWallpaperConfig | undefined | null
-): string | null {
-  if (!w) return null;
-  const bg = (w as { backgroundColor?: Array<{ color: string }> }).backgroundColor;
-  if (w.type === "fill" && Array.isArray(bg) && bg[0]) {
-    return `fill:${bg[0].color}`;
-  }
-  if (w.type === "gradient" && Array.isArray(bg) && bg.length >= 2) {
-    return `gradient:${bg[0].color}:${bg[1].color}`;
-  }
-  const img = (w as { image?: { url: string } }).image;
-  if (w.type === "image" && img?.url) return img.url;
-  return null;
-}
+/** Re-export for components that import ButtonStyle from the page */
+export type { ButtonStyle } from "@/types/appearance.types";
 
 interface AppState {
   buttonStyle: ButtonStyle;
@@ -176,8 +65,17 @@ interface AppState {
 const AppearancePage: React.FC = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const isMobile = useIsMobile();
   const userData = useAppSelector((state) => state.auth.user);
   const { data: settingsData } = useGetSettings();
+  const {
+    buttonStyle: initialButtonStyle,
+    fontStyle: initialFontStyle,
+    selectedTheme: initialTheme,
+    profile: initialProfile,
+    links: profileLinks,
+    isLoading: phoneDisplayLoading,
+  } = usePhoneDisplayProps();
   const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateProfile();
   const { mutateAsync: updateAppearanceAllAsync, isPending: isSavingAll } =
     useUpdateAppearanceAll();
@@ -256,6 +154,23 @@ const AppearancePage: React.FC = () => {
       }));
     }
   }, [userData]);
+
+  // ✅ Lock page scroll on mobile — ADDED ONLY THIS
+useEffect(() => {
+  if (!isMobile) return;
+
+  const originalOverflow = document.body.style.overflow;
+  const originalHeight = document.body.style.height;
+
+  document.body.style.overflow = "hidden";
+  document.body.style.height = "100vh";
+
+  return () => {
+    document.body.style.overflow = originalOverflow;
+    document.body.style.height = originalHeight;
+  };
+}, [isMobile]);
+
 
   // Undo/Redo state
   const [history, setHistory] = useState<AppState[]>([]);
@@ -344,14 +259,6 @@ const AppearancePage: React.FC = () => {
     [handleStateChange]
   );
 
-  const { data: linksData } = useGetAllLinks();
-
-  const profileLinks = linksData?.data
-    ? Array.isArray(linksData.data)
-      ? linksData.data
-      : []
-    : [];
-
   /** Restore local state from server payload (e.g. after a failed save) */
   const restoreFromPayload = useCallback((payload: AppearancePayload) => {
     if (payload.corner_config) {
@@ -378,6 +285,11 @@ const AppearancePage: React.FC = () => {
         fontConfig: fontStyleToFontConfig(fontStyle),
         wallpaperConfig: wallpaperImageFile ? null : wallpaperConfig ?? undefined,
         wallpaperImageFile: wallpaperImageFile ?? undefined,
+        profile: {
+          displayName: profile.displayName || null,
+          bio: profile.bio || null,
+          location: profile.location || null,
+        },
       });
     } catch {
       try {
@@ -395,6 +307,9 @@ const AppearancePage: React.FC = () => {
     fontStyle,
     wallpaperConfig,
     wallpaperImageFile,
+    profile.displayName,
+    profile.bio,
+    profile.location,
     updateAppearanceAllAsync,
     queryClient,
     restoreFromPayload,
@@ -416,14 +331,14 @@ const AppearancePage: React.FC = () => {
   const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
   return (
-    <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen  md:bg-white md:pt-4 px-4 md:px-6 md:pb-24 flex flex-col relative">
+    <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen md:bg-white md:pt-4 px-4 md:px-6 pb-20 md:pb-24 flex flex-col relative">
       {/* Desktop Save */}
       <div className="hidden md:flex justify-end mb-4 ">
         <button
           type="button"
           onClick={handleSaveAll}
           disabled={isSavingAll}
-          className="bg-[#FED45C] shadow-[2px_2px_0px_0px_#000000] font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-[#FED45C] cursor-pointer shadow-[2px_2px_0px_0px_#000000] font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSavingAll ? "Saving…" : "Save Changes"}
         </button>
@@ -431,7 +346,7 @@ const AppearancePage: React.FC = () => {
 
       {/* Mobile Save with Undo/Redo */}
       <div className="md:hidden">
-        <div className="flex items-center px-2 py-3 justify-between mb-3">
+        <div className="flex items-center px-2 py-3 justify-between ">
           <button
             onClick={handleBackClick}
             className="font-extrabold text-[20px] text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
@@ -469,18 +384,20 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Main Layout */}
-      <div className="flex flex-1 gap-8  md:">
+      <div className="flex flex-1 gap-8">
         {/* Phone Preview */}
-        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center items-start">
+        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center mt-6 items-start">
           <div
-            className="relative w-full max-w-[360px] md:max-w-[420px]
+            className="relative w-full max-w-[360px] md:max-w-[420px] mx-auto
                        transition-transform duration-300
                        ease-[cubic-bezier(.2,.8,.2,1)]
                        origin-top"
             style={{
-              transform: isSheetOpen
-                ? "scale(0.82) translateY(-24px)"
-                : "scale(1.05) translateY(0)",
+              transform: isMobile
+                ? "scale(1) translateY(0)"
+                : isSheetOpen
+                  ? "scale(0.82) translateY(-24px)"
+                  : "scale(1.05) translateY(0)",
             }}
           >
             <div className="overflow-hidden">
@@ -490,8 +407,10 @@ const AppearancePage: React.FC = () => {
                 selectedTheme={selectedTheme}
                 profile={profile}
                 links={profileLinks}
+                phoneDisplayLoading={phoneDisplayLoading}
               />
             </div>
+            
           </div>
         </aside>
 
@@ -502,7 +421,7 @@ const AppearancePage: React.FC = () => {
               <button
                 key={item}
                 onClick={() => setActiveTab(i)}
-                className="py-3 font-bold relative"
+                className="py-3 cursor-pointer font-bold relative"
               >
                 {item}
                 {activeTab === i && (
@@ -558,22 +477,28 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Mobile Sheet */}
-      <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+      <Sheet
+        open={isMobile ? isSheetOpen : false}
+        onOpenChange={(open) => {
+          if (!isMobile) return;
+          setIsSheetOpen(open);
+        }}
+      >
         <SheetContent
           side="bottom"
-          className={`shadow-2xl p-0 overflow-hidden transition-all duration-300 ${
-            activeTab === 2 || activeTab === 3 ? "h-[35vh]" : "h-[50vh]"
-          }`}
+          className={`md:hidden  bg-white/95 backdrop-blur-sm shadow-lg p-0 overflow-hidden transition-all duration-300 ${activeTab === 2 || activeTab === 3 ? "h-[36vh]" : "h-[44vh]"
+            }`}
+          style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
           <div className="h-full flex flex-col">
             {/* Sheet Header with handle */}
             <div className="flex flex-col">
-              <div className="flex justify-center pt-3 ">
+              <div className="flex justify-center pt-2">
                 <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
               </div>
-              <SheetHeader className="">
-                <div className="flex items-center justify-between">
-                  <SheetTitle className="text-lg font-semibold">
+              <SheetHeader>
+                <div className="flex items-center justify-center">
+                  <SheetTitle className="text-[15px] font-semibold">
                     {activeTab !== null ? menuItems[activeTab] : ""}
                   </SheetTitle>
                 </div>
@@ -581,7 +506,7 @@ const AppearancePage: React.FC = () => {
             </div>
 
             {/* Sheet Content */}
-            <div className="flex-1 overflow-y-auto px-2 md:py-4">
+            <div className="flex-1 overflow-y-auto px-3 pt-2 pb-3">
               {activeTab === 0 && (
                 <ProfileContent
                   onProfileUpdate={handleProfileUpdate}
@@ -626,12 +551,15 @@ const AppearancePage: React.FC = () => {
           </div>
         </SheetContent>
       </Sheet>
+      
 
       {/* Mobile Bottom Nav */}
       <AppearanceBottomNav
         activeTab={activeTab || 0} // default to profile tab if no tab is selected
         setActiveTab={handleTabClick}
       />
+
+      <MobileBottomNav/>
     </section>
   );
 };

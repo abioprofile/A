@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
 import { useState, useRef, useEffect } from "react";
-import { MapPin } from "lucide-react";
 import Modal from "@/components/ui/modal";
 import DeleteModal from "@/components/DeleteModal";
 import { toast } from "sonner";
 import { useAppSelector } from "@/stores/hooks";
 import { useUpdateProfileAvatar } from "@/hooks/api/useAuth";
+import { LocationInput } from "@/components/LocationInput";
 
 interface ProfileData {
   profileImage: string;
@@ -173,8 +173,7 @@ const ProfileContent = ({
     }
   };
 
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newVal = e.target.value;
+  const handleLocationChange = (newVal: string) => {
     setLocation(newVal);
     setIsDirty(true);
     onProfileUpdate({
@@ -187,10 +186,10 @@ const ProfileContent = ({
   };
 
   return (
-    <div className="space-y-2 p-6 flex flex-col items-center gap-2">
+    <div className="p-4 md:p-6 space-y-2 md:space-y-3 flex flex-col items-center gap-2 md:gap-3">
       {/* Profile Image Section */}
       <div className="flex justify-between md:mb-8 items-center w-full">
-        <div className="relative w-20 h-20 rounded-full border border-gray-300 overflow-hidden">
+        <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full border border-gray-200 overflow-hidden">
           <Image
             src={userData?.profile?.avatarUrl || defaultProfileImage}
             alt="Profile"
@@ -218,7 +217,7 @@ const ProfileContent = ({
         <div className="flex flex-row md:flex-col gap-2 md:gap-0 md:space-y-2 mt-2">
           <button
             onClick={() => openModal("imageOptions")}
-            className="bg-black text-white text-[12px] px-4 py-[6px] cursor-pointer transition hover:opacity-90"
+            className="bg-black text-white text-[11px] md:text-[12px] px-3 md:px-4 py-[5px] md:py-[6px] cursor-pointer transition hover:opacity-90"
           >
             Upload Image
           </button>
@@ -235,7 +234,7 @@ const ProfileContent = ({
       <div className="w-full flex flex-col gap-1">
         <label
           htmlFor="displayName"
-          className="text-left text-[12px] font-semibold"
+          className="text-left text-[11px] md:text-[12px] font-semibold"
         >
           Display Name
         </label>
@@ -244,21 +243,21 @@ const ProfileContent = ({
           type="text"
           value={displayName}
           onChange={handleDisplayNameChange}
-          className="w-full border border-black px-3 py-2 text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] bg-transparent"
+          className="w-full border border-black px-3 py-2 text-[13px] md:text-[14px] placeholder:text-[11px] md:placeholder:text-[14px] bg-transparent"
           placeholder="Enter your display name"
         />
       </div>
 
       {/* Bio */}
       <div className="w-full flex flex-col gap-1">
-        <label htmlFor="bio" className="text-left text-[12px] font-semibold">
+        <label htmlFor="bio" className="text-left text-[11px] md:text-[12px] font-semibold">
           Bio
         </label>
         <textarea
           id="bio"
           value={bio}
           onChange={handleBioChange}
-          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] h-10 md:h-24 text-gray-800"
+          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[13px] md:text-[14px] placeholder:text-[11px] md:placeholder:text-[14px] h-10 md:h-24 text-gray-800"
           placeholder="Tell us about yourself (max 15 words)..."
         />
         <p className="text-[11px] hidden md:block text-gray-500 text-right">
@@ -266,26 +265,15 @@ const ProfileContent = ({
         </p>
       </div>
 
-      {/* Location */}
-      <div className="w-full flex flex-col gap-1">
-        <label
-          htmlFor="location"
-          className="text-left text-[12px] font-semibold"
-        >
-          Location
-        </label>
-        <div className="flex items-center border border-black px-3 py-2 bg-transparent">
-          <MapPin className="mr-1 w-4 h-4 text-gray-700" />
-          <input
-            id="location"
-            type="text"
-            placeholder="Add your location"
-            value={location}
-            onChange={handleLocationChange}
-            className="flex-1 bg-transparent outline-none text-[16px] md:text-[12px] placeholder:text-[16px] md:placeholder:text-[12px] text-gray-800"
-          />
-        </div>
-      </div>
+      {/* Location (reusable: search + select from dropdown) */}
+      <LocationInput
+        id="location"
+        label="Location"
+        value={location}
+        onChange={handleLocationChange}
+        placeholder="Search for a location"
+        className="w-full flex flex-col gap-1"
+      />
 
       {/* Save Button */}
       
@@ -293,7 +281,7 @@ const ProfileContent = ({
       {/* --- MODALS --- */}
       <Modal isOpen={activeModal === "imageOptions"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center bg-white space-y-3 md:space-y-4">
-          <h2 className="text-base md:text-lg font-bold text-[#331400]">
+          <h2 className="text-[14px] md:text-[16px] font-bold text-[#331400]">
             Profile Picture
           </h2>
           <div className="flex flex-col gap-3 md:gap-4">
@@ -328,10 +316,10 @@ const ProfileContent = ({
       {/* Upload Image */}
       <Modal isOpen={activeModal === "uploadImage"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center">
-          <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+          <h2 className="text-[14px] md:text-[16px] font-semibold mb-3 md:mb-4">
             Profile Picture
           </h2>
-          <label className={`flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 ${isUploadingAvatar ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+          <label className={`flex flex-col items-center justify-center w-full h-32 md:h-40 border-2 border-dashed border-gray-300 ${isUploadingAvatar ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
             {isUploadingAvatar ? (
                <div className="flex flex-col items-center">
                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-2"></div>
@@ -371,10 +359,10 @@ const ProfileContent = ({
       {/* Upload Icon */}
       <Modal isOpen={activeModal === "uploadIcon"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center">
-          <h2 className="text-base md:text-lg font-semibold mb-3 md:mb-4">
+          <h2 className="text-[14px] md:text-[16px] font-semibold mb-3 md:mb-4">
             Upload Icon
           </h2>
-          <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 cursor-pointer">
+          <label className="flex flex-col items-center justify-center w-full h-32 md:h-40 border-2 border-dashed border-gray-300 cursor-pointer">
             <Image
               src="/icons/upload.svg"
               alt="Upload Icon"
@@ -410,5 +398,4 @@ const ProfileContent = ({
     </div>
   );
 };
-
 export default ProfileContent;

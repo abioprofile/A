@@ -44,7 +44,7 @@
     )
   }
 
-  function SheetContent({
+  function  SheetContent({
     className,
     children,
     side = "right",
@@ -54,7 +54,7 @@
   }) {
     return (
       <SheetPortal>
-        <SheetOverlay />
+        {/* <SheetOverlay /> */}
         <SheetPrimitive.Content
           data-slot="sheet-content"
           className={cn(

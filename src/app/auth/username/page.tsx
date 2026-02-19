@@ -12,6 +12,7 @@ import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useAppSelector } from "@/stores/hooks";
+import { OnboardingProgressWithSteps } from "@/components/ProgressBar";
 
 const UsernamePage = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -220,15 +221,20 @@ const UsernamePage = () => {
 
   return (
     <ProtectedRoute>
+      {/* <OnboardingProgressWithSteps currentStep={1} totalSteps={5} /> */}
       <motion.div
         initial="hidden"
         animate="visible"
         variants={containerVariants}
         className="flex flex-col min-h-screen bg-[#FEF4EA]"
       >
+        
         {/* Main content */}
         <div className="flex flex-1 flex-col lg:flex-row items-center justify-center">
           <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-5 max-w-xl">
+            <div className="w-full max-w-lg flex justify-center">
+    <OnboardingProgressWithSteps currentStep={1} totalSteps={5} />
+  </div>
             {/* Header */}
             <motion.div
               variants={itemVariants}
@@ -242,7 +248,7 @@ const UsernamePage = () => {
                 Create Username
               </motion.h1>
               <motion.h1
-                className="hidden md:block text-3xl md:text-4xl font-bold text-[#331400] mb-1"
+                className="hidden md:block text-[22px] md:text-[24px] font-bold text-[#331400] mb-1"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
@@ -250,7 +256,7 @@ const UsernamePage = () => {
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="text-[#666464] text-sm lg:text-[14px] font-semibold"
+                className="text-[#666666] text-[14px] "
               >
                 Choose a unique username that represents you.
               </motion.p>
@@ -263,7 +269,7 @@ const UsernamePage = () => {
               className="w-full space-y-4 lg:max-w-fit relative"
             >
               <div className="relative w-full">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-semibold text-lg text-[#4B2E1E] select-none pointer-events-none">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 font-semibold text-[16px] text-[#4B2E1E] select-none pointer-events-none">
                   abio.site/
                 </span>
 
@@ -273,7 +279,7 @@ const UsernamePage = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter unique username"
-                  className="pl-[100px] pr-12 h-10 text-base md:text-[14px] placeholder:text-[12px] font-medium placeholder:font-medium placeholder:text-gray-500"
+                  className="pl-[85px] pr-12 h-9 text-base md:text-[14px] placeholder:text-[12px] font-medium placeholder:font-medium placeholder:text-gray-500"
                   aria-label="Username"
                   autoComplete="off"
                 />

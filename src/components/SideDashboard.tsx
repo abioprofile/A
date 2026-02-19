@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Link from "next/link";
 import Modal from "@/components/ui/modal";
 import { toast } from "sonner";
 import {
@@ -13,10 +14,14 @@ import {
   XIcon,
   MailIcon,
   LinkIcon,
+  Settings,
+  LogOut,
+  Moon,
+  CreditCard,
   LucideIcon,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAppSelector } from "@/stores/hooks";
+import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   FaFacebook,
   FaTwitter,
@@ -26,10 +31,13 @@ import {
   FaTiktok,
   FaYoutube,
   FaSnapchat,
-  IconType,
 } from "react-icons/fa6";
+import type { IconType } from "react-icons";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
+import { clearAuth } from "@/stores/slices/auth.slice";
+import { useQueryClient } from "@tanstack/react-query";
 import { QRCodeSVG } from "qrcode.react";
 import { toPng } from "html-to-image";
 
@@ -67,15 +75,38 @@ export default function SideDashboard() {
 
   const profileLink = getProfileLink();
   const shareText = `Check out my Abio profile! ${profileLink}`;
-
+  const [showMenu, setShowMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
   const [showAccountSettings, setShowAccountSettings] =
     useState<boolean>(false);
   const [twoStepEnabled, setTwoStepEnabled] = useState<boolean>(false);
-
+  const menuItems = [
+    // { icon: User, label: "Profile", href: "/profile" },
+    { icon: CreditCard, label: "Billing", href: "/dashboard/Billing" },
+    // { icon: Bell, label: "Notifications", href: "/notifications" },
+    {
+      icon: Settings,
+      label: "Account Settings",
+      href: "/dashboard/AccountSettings",
+    },
+    { icon: Moon, label: "Light Mode", action: "toggle-theme" },
+  ];
   // Ref for QR code download
+  const dispatch = useAppDispatch();
   const qrCodeRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
+  const handleLogout = () => {
+    dispatch(clearAuth());
+
+    queryClient.clear();
+
+    setShowMenu(false);
+
+    toast.success("Logged out successfully");
+
+    router.push("/auth/sign-in");
+  };
 
   const copyToClipboard = async (): Promise<void> => {
     try {
@@ -172,7 +203,7 @@ export default function SideDashboard() {
     }
   };
 
-  const formatLink = (url: string): JSX.Element => {
+  const formatLink = (url: string): React.ReactElement => {
     return (
       <>
         <span className="text-red-500 font-semibold">{url}</span>
@@ -214,10 +245,10 @@ export default function SideDashboard() {
   return (
     <>
       {/* MOBILE TOP BAR */}
-      <div className="md:hidden sticky mb-3 top-3 z-10 bg-[#Fff7de] w-full">
-        <div className="px-8 py-3 mb-2">
+      <div className="md:hidden sticky top-0 mt-2 z-40 bg-[#Fff7de] w-full border-b border-gray-200">
+        <div className="px-8 py-2 ">
           <div className="flex items-center justify-between">
-            <div>
+            <div className="flex-1 min-w-0">
               <p className="font-extrabold mb-1 text-[20px]">
                 Hi, {userData?.name || "User"}
               </p>
@@ -226,23 +257,34 @@ export default function SideDashboard() {
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <button onClick={() => setIsModalOpen(true)}>
-                <QrCodeIcon className="w-6 h-6 text-[#331400]" />
+                
+              <Image
+                  src="/assets/icons/dashboard/qrcode.svg"
+                  alt="QR Code"
+                  width={24}
+                  height={24}
+                  className="w-10 h-10 text-[#331400]"
+                />
+                {/* <QrCodeIcon className="w-6 h-6 text-[#331400]" /> */}
               </button>
-
-              {/* Share - Opens modal on mobile */}
               <button onClick={() => setIsShareModalOpen(true)}>
-                <Share2Icon className="w-6 h-6 text-[#331400]" />
+                 <Image
+                  src="/assets/icons/dashboard/share.svg"
+                  alt="Share"
+                  width={24}
+                  height={24}
+                  className="w-10 h-10 text-[#331400]"
+                />
               </button>
 
-              {/* Notifications */}
               <button className="relative">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-6 h-6 text-[#331400]"
                   viewBox="0 0 24 24"
-                  fill="fill"
+                  fill="none"
                   stroke="currentColor"
                   strokeWidth={2}
                 >
@@ -257,15 +299,57 @@ export default function SideDashboard() {
                     d="M13.73 21a2 2 0 01-3.46 0"
                   />
                 </svg>
-
-                {/* Notification dot */}
                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
               </button>
 
-              {/* More */}
-              <button onClick={() => router.push("/dashboard/AccountSettings")}>
-                <MoreHorizontalIcon className="w-6 h-6 text-[#331400]" />
-              </button>
+              {/* More Button with Dropdown */}
+              <div className="relative">
+                <button
+                  className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]"
+                  onClick={() => setShowMenu(!showMenu)}
+                >
+                  <MoreHorizontalIcon size={18} color="#331400" />
+                </button>
+
+                {showMenu && (
+                  <>
+                    {/* Full-screen overlay that closes the menu */}
+                    <div
+                      className="fixed inset-0 bg-transparent z-40"
+                      onClick={() => setShowMenu(false)}
+                    />
+
+                    {/* Menu Dropdown */}
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white  border border-gray-200 backdrop-blur shadow-xl z-50 overflow-hidden">
+                      {/* Menu Items */}
+                      <div className="p-2">
+                        {menuItems.map((item) => (
+                          <Link
+                            key={item.label}
+                            href={item.href || "#"}
+                            onClick={() => setShowMenu(false)}
+                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                          >
+                            <item.icon size={16} />
+                            {item.label}
+                          </Link>
+                        ))}
+                      </div>
+
+                      {/* Logout */}
+                      <div className="border-t border-gray-100 p-2">
+                        <button
+                          onClick={handleLogout}
+                          className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition-colors"
+                        >
+                          <LogOut size={16} />
+                          Log Out
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -274,32 +358,52 @@ export default function SideDashboard() {
       {/* ================= DESKTOP QR SECTION ================= */}
       <div className="hidden md:block p-4 sm:p-6 space-y-4 text-gray-800 max-w-[400px] mx-auto">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-6 mb-6">
+          <div className="flex items-center gap-2 mb-6">
             <button
               className="cursor-pointer"
               onClick={() => setIsModalOpen(true)}
             >
-              <QrCodeIcon className="w-6 h-6 text-[#331400]" />
+              <Image
+                  src="/assets/icons/dashboard/qrcode.svg"
+                  alt="QR Code"
+                  width={24}
+                  height={24}
+                  className="w-12 h-12 text-[#331400]"
+                />
             </button>
 
             <button className="cursor-pointer" onClick={copyToClipboard}>
-              <CopyIcon className="w-6 h-6 text-[#331400]" />
+              <Image
+                  src="/assets/icons/dashboard/copy.svg"
+                  alt="copy"
+                  width={24}
+                  height={24}
+                  className="w-12 h-12 text-[#331400]"
+                />
             </button>
 
             <button
               className="cursor-pointer"
               onClick={() => setIsShareModalOpen(true)}
             >
-              <Share2Icon className="w-6 h-6 text-[#331400]" />
+              <Image
+                  src="/assets/icons/dashboard/share.svg"
+                  alt="QR Code"
+                  width={24}
+                  height={24}
+                  className="w-12 h-12 text-[#331400]"
+                />
             </button>
-            <p className="text-sm text-gray-600">{formatLink(profileLink)}</p>
+            <p className="text-sm text-gray-600 cursor-pointer">
+              {formatLink(profileLink)}
+            </p>
           </div>
         </div>
       </div>
 
       {/* QR MODAL */}
       <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="relative bg-white rounded-2xl  text-center w-[320px] mx-auto">
+        <div className="relative bg-white rounded-2xl   text-center w-full max-w-md">
           <div className="flex justify-end mb-2">
             <button
               onClick={() => setIsModalOpen(false)}
@@ -344,7 +448,13 @@ export default function SideDashboard() {
               className="flex flex-col items-center gap-1 text-xs text-gray-700"
             >
               <div className="w-10 h-10 bg-[#3B1F0E] flex items-center justify-center">
-                <Share2Icon className="w-5 h-5 text-white" />
+                 <Image
+                  src="/assets/icons/dashboard/share.svg"
+                  alt="copy"
+                  width={24}
+                  height={24}
+                  className="w-12 h-12 text-white"
+                />
               </div>
               Share
             </button>

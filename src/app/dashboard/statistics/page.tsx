@@ -1,174 +1,245 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import { FiEye, FiTrendingUp } from "react-icons/fi";
+import { motion } from "framer-motion";
+import PhoneDisplay from "@/components/PhoneDisplay";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { usePhoneDisplayProps } from "@/hooks/usePhoneDisplayProps";
+import MobileBottomNav from "@/components/MobileBottomNav";
 
 export default function AnalyticsPage() {
-  const [activeTab, setActiveTab] = useState("analytics");
+  const isMobile = useIsMobile();
+  const [activeRange, setActiveRange] = useState("ALL");
 
-  const lifetimeStats = [
-    { icon: <FiEye />, label: "Views", value: 4000 },
-    { icon: <FiTrendingUp />, label: "Overall click", value: 4000 },
-    { icon: <FiTrendingUp />, label: "Click Rate", value: "40%" },
-  ];
+  const {
+    buttonStyle,
+    fontStyle,
+    selectedTheme,
+    profile,
+    links,
+    isLoading: phoneDisplayLoading,
+  } = usePhoneDisplayProps();
 
-  const links = [
-    {
-      name: "Instagram",
-      icon: "/icons/Social.png",
-      views: 1000,
-      clicks: 1000,
-      rate: "10%",
-    },
-    {
-      name: "Behance",
-      icon: "/icons/Social 2.png",
-      views: 1000,
-      clicks: 1000,
-      rate: "10%",
-    },
-    {
-      name: "Add on Snapchat",
-      icon: "/icons/Social 1.png",
-      views: 1000,
-      clicks: 1000,
-      rate: "10%",
-    },
-    {
-      name: "X",
-      icon: "/icons/Social 3.png",
-      views: 1000,
-      clicks: 1000,
-      rate: "10%",
-    },
-  ];
-
-  const renderAnalyticsContent = () => (
-    <>
-      {/* Lifetime */}
-      <div className="bg-[#f6f6f6] border border-[#ECE7C7] px-6 py-1 flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-[18px] font-bold mb-4">Lifetime</h2>
-          <div className="flex gap-12">
-            {lifetimeStats.map((stat, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#f0eefc] text-[#6b4eff] flex items-center justify-center">
-                  {stat.icon}
-                </div>
-                <div className="flex gap-2 items-center">
-                  <div className="text-2xl font-bold">{stat.value}</div>
-                  <div className="text-[12px] text-gray-600">{stat.label}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <img
-          src="/Analytics 1.png"
-          alt="chart"
-          className="w-[120px] h-[120px] object-contain"
-        />
-      </div>
-
-      {/* Audience */}
-      <div className="bg-[#FEF4EA] border border-[#ECE7C7] p-6 space-y-4">
-        <h2 className="text-[18px] font-bold">Audience</h2>
-
-        {/* Link Performance */}
-        <div className="bg-white p-6 border border-gray-200">
-          <h3 className="text-[16px] font-bold mb-4">Link Performance</h3>
-          <table className="w-full">
-            <thead>
-              <tr className="border-b font-bold border-gray-200 text-left">
-                <th className="py-3 text-[14px]">Link Name</th>
-                <th className="py-3 text-right text-[13px]">Views</th>
-                <th className="py-3 text-right text-[13px]">Clicks</th>
-                <th className="py-3 text-right text-[13px]">Click Rate</th>
-              </tr>
-            </thead>
-            <tbody>
-              {links.map((link, i) => (
-                <tr key={i} className="border-b border-[#D6C5FF]">
-                  <td className="py-3 text-[13px] flex items-center gap-3">
-                    <div className="w-5 h-5 relative">
-                      <Image
-                        src={link.icon}
-                        alt={link.name}
-                        fill
-                        className="object-contain filter grayscale"
-                      />
-                    </div>
-                    {link.name}
-                  </td>
-                  <td className="py-3 text-[13px] text-right">{link.views}</td>
-                  <td className="py-3 text-[13px] text-right">{link.clicks}</td>
-                  <td className="py-3 text-[13px] text-right">{link.rate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </>
-  );
-
-  return (
-    <div className="min-h-screen bg-white relative">
-      {/* Tabs Header */}
-      <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-md">
-        <div className="flex justify-center items-center gap-4 pt-6">
-          <button
-            onClick={() => setActiveTab("analytics")}
-            className={`relative px-10 py-1 text-[14px] font-extrabold transition-all ${
-              activeTab === "analytics"
-                ? "bg-black text-white"
-                : "text-black hover:text-gray-700"
-            }`}
-          >
-            Analytics
-            {activeTab === "analytics" && (
-              <span className="absolute right-[-12px] top-1/2 -translate-y-1/2 w-[1px] h-5 bg-gray-400" />
-            )}
-          </button>
-
-          <button
-            onClick={() => setActiveTab("nfc")}
-            className={`relative px-10 py-1 font-extrabold text-[14px] transition-all ${
-              activeTab === "nfc"
-                ? "bg-black text-white"
-                : "text-black hover:text-gray-700"
-            }`}
-          >
-            NFC Analytics
-          </button>
-        </div>
-      </div>
-
-      {/* Shared Analytics Content */}
-      <div className="max-w-5xl mx-auto px-6 py-10 relative">
-        {renderAnalyticsContent()}
-
-        {/* Overlay for NFC Analytics */}
-        {activeTab === "nfc" && (
-          <div className="absolute inset-0 bg-white/60 backdrop-blur-[4px] flex flex-col items-center justify-center z-20">
-            <div className="flex flex-col items-center">
-              <div className="text-5xl mb-2">🔒</div>
-              <h1 className="text-2xl font-bold text-[#331400] mb-2">Locked</h1>
-              <button className="mt-2 bg-[#f5f0ff] text-[#331400] text-[17px] font-semibold px-6 py-1  font-semibold hover:bg-[#ece5ff]">
-                Unlock
+  // MOBILE VIEW
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-[#FEF4EA] pt-4 pb-8 px-4">
+        {/* HEADER */}
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-[20px] font-bold text-black">Analytics</h1>
+          
+          {/* FILTERS - Mobile optimized */}
+          <div className="flex gap-2">
+            {["ALL", "1D", "7D", "30D"].map((range) => (
+              <button
+                key={range}
+                onClick={() => setActiveRange(range)}
+                className={`px-3 py-1 text-xs cursor-pointer transition ${
+                  activeRange === range
+                    ? "bg-[#331400] shadow-[2px_2px_0px_0px_rgba(0,0,0,0.5)] text-white"
+                    : "border border-black/30 text-black"
+                }`}
+              >
+                {range}
               </button>
-            </div>
+            ))}
+            <MobileBottomNav/>
           </div>
-        )}
+        </div>
+
+        {/* METRICS GRID */}
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <MetricCardMobile 
+            label="VIEWS" 
+            value="0" 
+            className="bg-[#FED45C]" 
+          />
+          <MetricCardMobile 
+            label="CLICKS" 
+            value="0" 
+            className="bg-[#FED45C]" 
+          />
+          <MetricCardMobile 
+            label="CTR" 
+            value="0%" 
+            className="bg-[#FED45C] col-span-2" 
+            small
+          />
+        </div>
+
+             {/* ADDITIONAL STATS - Mobile specific */}
+        <div className="bg-white mb-4 p-4 shadow-sm border border-black/10">
+          <h2 className="text-sm font-semibold text-black mb-3">Performance Summary</h2>
+          <div className="space-y-3">
+            <StatRow label="Avg. Click Rate" value="0%" />
+            <StatRow label="Top Link" value="None" />
+            <StatRow label="Peak Time" value="--:--" />
+          </div>
+        </div>
+        {/* PHONE DISPLAY - Mobile centered */}
+        <div className="relative z-10 mb-8">
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+            className="w-full max-w-[280px] mx-auto"
+          >
+            <PhoneDisplay
+              buttonStyle={buttonStyle}
+              fontStyle={fontStyle}
+              selectedTheme={selectedTheme}
+              profile={profile}
+              links={links}
+              phoneDisplayLoading={phoneDisplayLoading}
+            />
+          </motion.div>
+        </div>
+
+       
+      </div>
+    );
+  }
+
+  // DESKTOP VIEW (Original)
+  return (
+    <div className="min-h-screen bg-[#FEF4EA] relative overflow-hidden">
+      {/* HEADER */}
+      <div className="absolute top-10 left-16 text-[22px] font-bold">
+        Analytics
+      </div>
+
+      {/* FILTERS */}
+      <div className="absolute top-10 right-16 flex gap-3">
+        {["ALL", "1D", "7D", "30D"].map((range) => (
+          <button
+            key={range}
+            onClick={() => setActiveRange(range)}
+            className={`px-5 py-1 cursor-pointer text-[13px] transition ${
+              activeRange === range
+                ? "bg-[#331400] shadow-[3px_3px_0px_0px_rgba(0,0,0,0.5)] text-white"
+                : "border border-black/30 text-black"
+            }`}
+          >
+            {range}
+          </button>
+        ))}
+      </div>
+
+      {/* FLOATING METRIC ORBS */}
+      <MetricOrb label="VIEWS" value="0" className="left-[22%] top-[45%]" />
+      <MetricOrb
+        label="CLICKS"
+        value="0"
+        className="right-[18%] top-[48%]"
+        delay={0.2}
+      />
+      <MetricOrb
+        label="CTR"
+        value="0%"
+        small
+        className="right-[30%] bottom-[22%]"
+        delay={0.4}
+      />
+
+      {/* CENTERED PHONE DISPLAY */}
+      <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+        <motion.div
+          animate={{ y: [0, -8, 0] }}
+          transition={{ repeat: Infinity, duration: 6, ease: "easeInOut" }}
+          className="pointer-events-auto w-full max-w-[360px] md:max-w-[420px] mx-auto"
+        >
+          <PhoneDisplay
+            buttonStyle={buttonStyle}
+            fontStyle={fontStyle}
+            selectedTheme={selectedTheme}
+            profile={profile}
+            links={links}
+            phoneDisplayLoading={phoneDisplayLoading}
+          />
+        </motion.div>
       </div>
     </div>
   );
 }
 
+/* ------------------ METRIC ORB (Desktop) ------------------ */
+function MetricOrb({
+  label,
+  value,
+  className,
+  delay = 0,
+  small = false,
+}: {
+  label: string;
+  value: string;
+  className: string;
+  delay?: number;
+  small?: boolean;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.85 }}
+      animate={{
+        opacity: 1,
+        scale: 1,
+        y: [0, -10, 0],
+      }}
+      transition={{
+        opacity: { delay },
+        scale: { delay },
+        y: {
+          delay,
+          repeat: Infinity,
+          duration: 4,
+          ease: "easeInOut",
+        },
+      }}
+      className={`absolute ${className} ${
+        small ? "w-[90px] h-[90px]" : "w-[120px] h-[120px]"
+      } bg-[#FED45C] shadow-[4px_4px_0px_0px_rgba(0,0,0,0.5)]
+        flex flex-col items-center justify-center text-black`}
+    >
+      <p className="text-[11px] opacity-60 tracking-wider">{label}</p>
+      <p className={`font-bold ${small ? "text-[22px]" : "text-[30px]"}`}>
+        {value}
+      </p>
+    </motion.div>
+  );
+}
 
+/* ------------------ METRIC CARD (Mobile) ------------------ */
+function MetricCardMobile({
+  label,
+  value,
+  className,
+  small = false,
+}: {
+  label: string;
+  value: string;
+  className: string;
+  small?: boolean;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      className={`${className} p-4 shadow-[2px_2px_0px_0px_rgba(0,0,0,0.3)]
+        flex flex-col items-center justify-center text-black min-h-[100px]`}
+    >
+      <p className="text-xs opacity-70 tracking-wider mb-1">{label}</p>
+      <p className={`font-bold ${small ? "text-[20px]" : "text-[24px]"}`}>
+        {value}
+      </p>
+    </motion.div>
+  );
+}
 
-
-
-
+/* ------------------ STAT ROW (Mobile) ------------------ */
+function StatRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between items-center py-2 border-b border-black/5 last:border-b-0">
+      <span className="text-sm text-black/70">{label}</span>
+      <span className="text-sm font-semibold text-black">{value}</span>
+    </div>
+  );
+}

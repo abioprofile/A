@@ -11,8 +11,149 @@ import { toast } from "sonner";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { useAddLinks, useCurrentUser } from "@/hooks/api/useAuth";
 import { AddLinksRequest } from "@/types/auth.types";
-import { motion, AnimatePresence, type Variants  } from "framer-motion";
+import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { OnboardingProgressWithSteps } from "@/components/ProgressBar";
 
+// ─── Platform base-URL map
+const PLATFORM_BASE_URLS: Record<string, string> = {
+  instagram: "instagram.com/",
+  behance: "behance.net/",
+  x: "x.com/",
+  snapchat: "snapchat.com/add/",
+  tiktok: "tiktok.com/@",
+  youtube: "youtube.com/@",
+  linkedin: "linkedin.com/in/",
+  github: "github.com/",
+  pinterest: "pinterest.com/",
+  twitter: "x.com/",
+  whatsapp: "wa.me/",
+};
+
+// Platforms that use @ symbol prefix visually
+const AT_PLATFORMS = new Set([
+  "x",
+  "twitter",
+  "snapchat",
+  "tiktok",
+  "instagram",
+]);
+
+// Builds the final URL from prefix + username
+const buildUrl = (platformId: string, value: string): string => {
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  const base = PLATFORM_BASE_URLS[platformId];
+  if (base) return `https://${base}${trimmed}`;
+  return `https://${trimmed}`;
+};
+
+// Returns the placeholder text shown when input is unfocused & empty
+const getPlaceholder = (platformId: string, platformName: string): string => {
+  if (platformId === "whatsapp") return "WhatsApp phone number";
+  const base = PLATFORM_BASE_URLS[platformId];
+  if (!base) return `Input your ${platformName} link`;
+  if (AT_PLATFORMS.has(platformId)) return `@username`;
+  return `${base}username`;
+};
+
+// ─── SmartLinkInput
+interface SmartLinkInputProps {
+  platformId: string;
+  platformName: string;
+  value: string;
+  onChange: (val: string) => void;
+}
+
+const SmartLinkInput = ({
+  platformId,
+  platformName,
+  value,
+  onChange,
+}: SmartLinkInputProps) => {
+  const [focused, setFocused] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const base = PLATFORM_BASE_URLS[platformId];
+
+  const isFullUrl = /^https?:\/\//i.test(value);
+  const showPrefix = !!base && !isFullUrl && focused;
+  const hasValue = value.length > 0;
+
+  // Floating label appears when focused or has a value
+  const showFloatingLabel = focused || hasValue;
+
+  const floatingLabel =
+    platformId === "whatsapp"
+      ? "Phone number"
+      : base
+        ? "Username"
+        : `${platformName} link`;
+
+  return (
+    <div
+      onClick={() => inputRef.current?.focus()}
+      className={`
+        relative flex items-center w-full ring-1 ring-[#331400]  bg-transparent cursor-text
+        transition-all duration-200 overflow-hidden
+        ${
+          focused
+            ? "border-[#331400] ring-2 ring-[#331400]/20"
+            : "border-input hover:border-[#331400]/50"
+        }
+      `}
+      style={{ minHeight: "42px" }}
+    >
+      {/* Floating label */}
+      <AnimatePresence>
+        {showFloatingLabel && (
+          <motion.span
+            key="label"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 4 }}
+            transition={{ duration: 0.15 }}
+            className="absolute left-3 top-2 text-[10px] font-semibold text-[#331400]/50 select-none pointer-events-none leading-none"
+          >
+            {floatingLabel}
+          </motion.span>
+        )}
+      </AnimatePresence>
+
+      {/* Input row */}
+      <div
+        className={`flex items-center w-full px-3 ${showFloatingLabel ? "pt-5 pb-2" : "py-3"}`}
+      >
+        {/* Inline URL prefix (shown when focused) */}
+        <AnimatePresence>
+          {showPrefix && (
+            <motion.span
+              key="prefix"
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "auto" }}
+              exit={{ opacity: 0, width: 0 }}
+              transition={{ duration: 0.2 }}
+              className=" whitespace-nowrap select-none overflow-hidden text-[14px]"
+            >
+              {base}
+            </motion.span>
+          )}
+        </AnimatePresence>
+
+        <input
+          ref={inputRef}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder={!focused ? getPlaceholder(platformId, platformName) : ""}
+          className="flex-1 bg-transparent outline-none placeholder:text-[#331400]/50 placeholder:text-[14px] min-w-0 text-[14px]"
+        />
+      </div>
+    </div>
+  );
+};
+
+// ─── Main Screen
 const LinksScreen = () => {
   const [isMounted, setIsMounted] = useState(false);
   const { selectedPlatforms, customLinks, updateCustomLink } = useUserStore();
@@ -21,11 +162,8 @@ const LinksScreen = () => {
   const addLinksMutation = useAddLinks();
   const { refetch: refetchCurrentUser } = useCurrentUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
+  const [visibleCount, setVisibleCount] = useState(1);
+  
   const platforms =
     selectedPlatforms.length > 0
       ? selectedPlatforms
@@ -36,14 +174,29 @@ const LinksScreen = () => {
           { id: "snapchat", name: "Snapchat", icon: "/icons/snapchat.svg" },
         ];
 
+  // ── Platform link values stored in state
+  const [platformValues, setPlatformValues] = useState<Record<string, string>>(
+    () => Object.fromEntries(platforms.map((p) => [p.id, ""])),
+  );
+
+  const handlePlatformChange = (platformId: string, value: string) => {
+    setPlatformValues((prev) => ({ ...prev, [platformId]: value }));
+  };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   const handleIconClick = (index: number) => {
     fileInputRefs.current[index]?.click();
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleFileChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
-
     const reader = new FileReader();
     reader.onload = (e) => {
       const iconUrl = e.target?.result as string;
@@ -52,46 +205,31 @@ const LinksScreen = () => {
     reader.readAsDataURL(file);
   };
 
-  const handleLinkChange = (value: string, index: number) => {
+  const handleCustomLinkChange = (value: string, index: number) => {
     updateCustomLink(index + 1, value, customLinks[index].iconUrl);
   };
 
-  // Format URL to ensure it starts with http:// or https://
-  const formatUrl = (url: string): string => {
-    const trimmed = url.trim();
-    if (!trimmed) return trimmed;
-    
-    // If it already starts with http:// or https://, return as is
-    if (trimmed.toLowerCase().startsWith('http://') || trimmed.toLowerCase().startsWith('https://')) {
-      return trimmed;
-    }
-    
-    // Otherwise, add https:// prefix
-    return `https://${trimmed}`;
-  };
-
+  // ── Submit
   const handleSubmit = async () => {
     setIsSubmitting(true);
 
     try {
       const linksToSave: AddLinksRequest[] = [
+        // Platform links
         ...platforms
           .map((p) => {
-            const url = (document.getElementById(`platform-${p.id}`) as HTMLInputElement)?.value?.trim();
-            return url
-              ? {
-                  title: p.name,
-                  url: formatUrl(url),
-                  platform: p.id,
-                }
-              : null;
+            const raw = platformValues[p.id] ?? "";
+            const url = buildUrl(p.id, raw);
+            return url ? { title: p.name, url, platform: p.id } : null;
           })
-          .filter((link): link is AddLinksRequest => link !== null),
+          .filter((l): l is AddLinksRequest => l !== null),
+
+        // Custom links
         ...customLinks
           .filter((l) => l.url.trim())
           .map((l) => ({
             title: "Custom Link",
-            url: formatUrl(l.url),
+            url: buildUrl("", l.url),
             platform: "Custom Platform",
           })),
       ];
@@ -102,7 +240,11 @@ const LinksScreen = () => {
         return;
       }
 
-      const results: Array<{ link: AddLinksRequest; success: boolean; error?: string }> = [];
+      const results: Array<{
+        link: AddLinksRequest;
+        success: boolean;
+        error?: string;
+      }> = [];
 
       for (const link of linksToSave) {
         try {
@@ -110,21 +252,20 @@ const LinksScreen = () => {
           results.push({ link, success: true });
         } catch (error: unknown) {
           const axiosError = error as {
-            response?: {
-              status?: number;
-              data?: { message?: string };
-            };
+            response?: { status?: number; data?: { message?: string } };
             message?: string;
           };
-
           if (axiosError?.response?.status === 409) {
             results.push({ link, success: true });
           } else {
-            const errorMessage =
-              axiosError?.response?.data?.message ||
-              axiosError?.message ||
-              "Failed to add link";
-            results.push({ link, success: false, error: errorMessage });
+            results.push({
+              link,
+              success: false,
+              error:
+                axiosError?.response?.data?.message ||
+                axiosError?.message ||
+                "Failed to add link",
+            });
           }
         }
       }
@@ -132,46 +273,46 @@ const LinksScreen = () => {
       const failedLinks = results.filter((r) => !r.success);
 
       if (failedLinks.length > 0) {
-        const failedCount = failedLinks.length;
-        const totalCount = linksToSave.length;
-        const successCount = totalCount - failedCount;
-
+        const successCount = linksToSave.length - failedLinks.length;
         if (successCount > 0) {
           toast.error(
-            `${failedCount} link${failedCount > 1 ? "s" : ""} failed to save`,
+            `${failedLinks.length} link${failedLinks.length > 1 ? "s" : ""} failed to save`,
             {
-              description: `Successfully saved ${successCount} link${successCount > 1 ? "s" : ""}, but ${failedCount} link${failedCount > 1 ? "s" : ""} failed. Please check and try again.`,
+              description: `Saved ${successCount}, but ${failedLinks.length} failed. Please check and retry.`,
               duration: 5000,
-            }
+            },
           );
+          router.push("/auth/profile");
         } else {
           toast.error("Failed to save links", {
-            description: failedLinks[0]?.error || "Please check your links and try again.",
+            description:
+              failedLinks[0]?.error || "Please check your links and try again.",
             duration: 5000,
           });
         }
-
         setIsSubmitting(false);
         return;
       }
 
       try {
         await refetchCurrentUser();
-        toast.success("All links saved successfully!", {
-          description: `Successfully added ${linksToSave.length} link${linksToSave.length > 1 ? "s" : ""}`,
-        });
-        router.push("/auth/profile");
-      } catch (error) {
-        toast.success("Links saved successfully!", {
-          description: "Note: Could not refresh user data, but links were saved.",
-        });
-        router.push("/auth/profile");
+      } catch (_) {
+        // non-critical
       }
+      toast.success("All links saved successfully!", {
+        description: `Added ${linksToSave.length} link${linksToSave.length > 1 ? "s" : ""}`,
+      });
+      router.push("/auth/profile");
     } catch (error: unknown) {
-      console.error("Unexpected error saving links:", error);
-      const axiosError = error as { response?: { data?: { message?: string } }; message?: string };
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+        message?: string;
+      };
       toast.error("Failed to save links", {
-        description: axiosError?.response?.data?.message || axiosError?.message || "An unexpected error occurred. Please try again.",
+        description:
+          axiosError?.response?.data?.message ||
+          axiosError?.message ||
+          "An unexpected error occurred.",
         duration: 5000,
       });
     } finally {
@@ -179,7 +320,7 @@ const LinksScreen = () => {
     }
   };
 
-  // Animation variants 
+  // ── Animation variants
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
@@ -197,66 +338,34 @@ const LinksScreen = () => {
     visible: {
       opacity: 1,
       y: 0,
-      transition: {
-        duration: 0.4,
-        ease: "easeOut",
-      },
+      transition: { duration: 0.4, ease: "easeOut" },
     },
   };
 
   const iconVariants: Variants = {
     hover: {
       scale: 1.1,
-      backgroundColor: "rgba(209, 213, 219, 0.8)",
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
+      backgroundColor: "rgba(209,213,219,0.8)",
+      transition: { duration: 0.2 },
     },
-    tap: {
-      scale: 0.95,
-      transition: {
-        duration: 0.1,
-      },
-    },
+    tap: { scale: 0.95, transition: { duration: 0.1 } },
   };
 
   const buttonVariants: Variants = {
-    hover: {
-      scale: 1.02,
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
-    },
-    tap: {
-      scale: 0.98,
-      transition: {
-        duration: 0.1,
-      },
-    },
+    hover: { scale: 1.02, transition: { duration: 0.2 } },
+    tap: { scale: 0.98, transition: { duration: 0.1 } },
   };
 
   const navButtonVariants: Variants = {
     hover: {
       scale: 1.05,
       backgroundColor: "#4a2c1a",
-      transition: {
-        duration: 0.2,
-        ease: "easeInOut",
-      },
+      transition: { duration: 0.2 },
     },
-    tap: {
-      scale: 0.95,
-      transition: {
-        duration: 0.1,
-      },
-    },
+    tap: { scale: 0.95, transition: { duration: 0.1 } },
   };
 
-  if (!isMounted) {
-    return null;
-  }
+  if (!isMounted) return null;
 
   return (
     <ProtectedRoute>
@@ -266,8 +375,10 @@ const LinksScreen = () => {
         variants={containerVariants}
         className="min-h-screen bg-[#FEF4EA] flex flex-col pt-6 pb-10"
       >
-        {/* Navigation Buttons - Original layout preserved */}
-        <motion.div 
+        
+
+        {/* Nav */}
+        <motion.div
           variants={itemVariants}
           className="flex justify-between px-4 md:px-10 mb-10 w-[100%] md:w-full mx-auto"
         >
@@ -292,7 +403,9 @@ const LinksScreen = () => {
             >
               <path d="M15 18l-6-6 6-6" />
             </svg>
-            <span className="md:text-[#FFE4A5] text-sm font-semibold">Back</span>
+            <span className="md:text-[#FFE4A5] text-sm font-semibold">
+              Back
+            </span>
           </motion.div>
 
           <motion.div
@@ -302,7 +415,9 @@ const LinksScreen = () => {
             onClick={() => router.push("/auth/profile")}
             className="flex items-center md:bg-[#331400] md:px-3 py-1 cursor-pointer"
           >
-            <span className="md:text-[#FFE4A5] text-sm font-semibold">Skip</span>
+            <span className="md:text-[#FFE4A5] text-sm font-semibold">
+              Skip
+            </span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -320,31 +435,34 @@ const LinksScreen = () => {
           </motion.div>
         </motion.div>
 
-        {/* Header - Original layout preserved */}
-        <motion.div 
+          <OnboardingProgressWithSteps currentStep={4} totalSteps={5} />
+        {/* Header */}
+        <motion.div
           variants={itemVariants}
-          className="mb-4 md:mb-8 flex justify-center items-center flex-col"
+          className="mb-4 mt-2 md:mb-8 flex justify-center items-center flex-col"
         >
-          <motion.h1 
-            className="text-3xl md:text-4xl font-bold mb-2 text-[#331400]"
+          <motion.h1
+            className="text-[22px] md:text-[24px] font-bold mb-2 text-[#331400]"
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.2 }}
           >
             Add your Links
           </motion.h1>
-          <motion.p 
+          <motion.p
             variants={itemVariants}
-            className="font-semibold text-[12px] md:text-[14px] px-16 text-center"
+            className=" text-[12px] md:text-[14px] md:px-16 text-center"
           >
             Fill the fields below to add content to your Biography
           </motion.p>
         </motion.div>
 
-        {/* Form Content - CENTERED while maintaining original width */}
+        {/* Form */}
         <div className="flex justify-center items-start w-full flex-grow">
           <div className="w-[90%] md:max-w-md mx-auto flex flex-col justify-start space-y-5 pb-10">
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-center font-semibold text-lg">Selected Platforms form</h2>
+              <h2 className="text-center font-semibold text-[16px]">
+                Selected Platforms
+              </h2>
 
               {platforms.map((platform, index) => (
                 <motion.div
@@ -354,69 +472,102 @@ const LinksScreen = () => {
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center gap-2"
                 >
-                  <Image src={platform.icon} alt={platform.name} width={20} height={20} />
-                  <Input
-                    id={`platform-${platform.id}`}
-                    placeholder={`Input your ${platform.name} Link`}
-                    className="h-10!"
+                  <Image
+                    src={platform.icon}
+                    alt={platform.name}
+                    width={20}
+                    height={20}
+                  />
+                  <SmartLinkInput
+                    platformId={platform.id}
+                    platformName={platform.name}
+                    value={platformValues[platform.id] ?? ""}
+                    onChange={(val) => handlePlatformChange(platform.id, val)}
                   />
                 </motion.div>
               ))}
 
-              <motion.h2 
+              <motion.h2
                 variants={itemVariants}
-                className="font-semibold text-lg pt-4 text-center"
+                className="font-semibold text-[14px] md:text-[16px] pt-4 text-center"
               >
-                Optional Additions form
+                Optional Additions
               </motion.h2>
 
-              {customLinks.map((link, index) => (
-                <motion.div
-                  key={link.id}
-                  custom={index}
-                  variants={itemVariants}
-                  transition={{ delay: index * 0.05 }}
-                  className="flex items-center gap-3"
-                >
+                   <AnimatePresence>
+                {customLinks.slice(0, visibleCount).map((link, index) => (
                   <motion.div
-                    variants={iconVariants}
-                    whileHover="hover"
-                    whileTap="tap"
-                    onClick={() => handleIconClick(index)}
-                    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative overflow-hidden cursor-pointer"
+                    key={link.id}
+                    custom={index}
+                    variants={itemVariants}
+                    initial="hidden"
+                    animate="visible"
+                    exit={{ opacity: 0, y: -6, transition: { duration: 0.2 } }}
+                    transition={{ delay: index * 0.05 }}
+                    className="flex items-center gap-2"
                   >
-                    {link.iconUrl ? (
-                      <Image
-                        src={link.iconUrl}
-                        alt="Custom icon"
-                        width={32}
-                        height={32}
-                        className="rounded-full object-cover"
-                      />
-                    ) : (
-                      <LinkIcon className="text-[#331400]" />
-                    )}
+                    <motion.div
+                      variants={iconVariants}
+                      whileHover="hover"
+                      whileTap="tap"
+                      onClick={() => handleIconClick(index)}
+                      className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative overflow-hidden cursor-pointer flex-shrink-0"
+                    >
+                      {link.iconUrl ? (
+                        <Image src={link.iconUrl} alt="Custom icon" width={32} height={32} className="rounded-full object-cover" />
+                      ) : (
+                        <LinkIcon className="text-[#331400] w-4 h-4" />
+                      )}
+                    </motion.div>
+
+                    <input
+                      type="file"
+                      ref={(el) => { fileInputRefs.current[index] = el; }}
+                      onChange={(e) => handleFileChange(e, index)}
+                      accept="image/*"
+                      className="hidden"
+                    />
+
+                    <Input
+                      placeholder="Add Link"
+                      value={link.url}
+                      onChange={(e) => handleCustomLinkChange(e.target.value, index)}
+                      className="h-10!"
+                    />
                   </motion.div>
+                ))}
+              </AnimatePresence>
 
-                  <input
-                    type="file"
-                    ref={(el) => {
-                      fileInputRefs.current[index] = el;
-                    }}
-                    onChange={(e) => handleFileChange(e, index)}
-                    accept="image/*"
-                    className="hidden"
-                  />
+              {/* + / - controls */}
+              <div className="flex items-center justify-between mt-1">
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setVisibleCount((c) => Math.max(1, c - 1))}
+                  disabled={visibleCount <= 1}
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-[#331400]/30 text-[#331400] text-xl font-light disabled:opacity-20 disabled:cursor-not-allowed transition-opacity"
+                  aria-label="Remove link field"
+                >
+                  −
+                </motion.button>
 
-                  <Input
-                    placeholder="Add Link"
-                    value={link.url}
-                    onChange={(e) => handleLinkChange(e.target.value, index)}
-                    className="h-10!"
-                  />
-                </motion.div>
-              ))}
+                <span className="text-xs text-[#331400]/40 font-medium">
+                  {visibleCount} / {customLinks.length}
+                </span>
 
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setVisibleCount((c) => Math.min(customLinks.length, c + 1))}
+                  disabled={visibleCount >= customLinks.length}
+                  className="w-8 h-8 flex items-center justify-center rounded-full border border-[#331400]/30 text-[#331400] text-xl font-light disabled:opacity-20 disabled:cursor-not-allowed transition-opacity"
+                  aria-label="Add link field"
+                >
+                  +
+                </motion.button>
+              </div>
             </motion.div>
 
             <motion.div variants={itemVariants}>
@@ -428,7 +579,7 @@ const LinksScreen = () => {
                 <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting || addLinksMutation.isPending}
-                  className="w-full md:mt-8 bg-[#FED45C] text-black text-[16px] font-medium h-10! disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full md:mt-8 bg-[#FED45C] text-black text-[14px] font-medium h-10! disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting || addLinksMutation.isPending ? (
                     <motion.span
@@ -446,15 +597,12 @@ const LinksScreen = () => {
           </div>
         </div>
 
-        {/* Footer - Original layout preserved */}
-        <motion.footer 
+        {/* Footer */}
+        <motion.footer
           variants={itemVariants}
           className="w-full flex items-center md:hidden justify-between gap-2 py-4 px-4 text-sm text-[#331400] mt-8"
         >
-          <motion.p
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.2 }}
-          >
+          <motion.p whileHover={{ scale: 1.03 }} transition={{ duration: 0.2 }}>
             © 2025 Abio
           </motion.p>
           <motion.a

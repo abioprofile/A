@@ -11,6 +11,9 @@ export interface User {
   emailVerificationExpires?: string;
   createdAt: string;
   updatedAt: string;
+  user: {
+    name: string;
+  }
   profile: UserProfile; // Backend should always return this for consistency
 }
 

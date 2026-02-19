@@ -4,20 +4,9 @@
 import { useRef, useState, JSX } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
-import {
-  FaInstagram,
-  FaTiktok,
-  FaPinterest,
-  FaTwitter,
-  FaCopy,
-  FaWhatsapp,
-  FaXTwitter,
-  FaFacebook,
-  FaSnapchat,
-  FaYoutube,
-} from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUserProfileByUsername } from "@/hooks/api/useAuth";
+import { getPlatformIcon } from "@/components/PlatformIcon";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/stores/hooks";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
@@ -32,34 +21,6 @@ interface UserLink {
   displayOrder: number;
   isVisible: boolean;
 }
-
-const platformIcons: Record<string, JSX.Element> = {
-  INSTAGRAM: <FaInstagram className="w-4 h-4" />,
-  TIKTOK: <FaTiktok className="w-4 h-4" />,
-  PINTEREST: <FaPinterest className="w-4 h-4" />,
-  TWITTER: <FaTwitter className="w-4 h-4" />,
-  FACEBOOK: <FaFacebook className="w-4 h-4" />,
-  SNAPCHAT: <FaSnapchat className="w-4 h-4" />,
-  YOUTUBE: <FaYoutube className="w-4 h-4" />,
-  WHATSAPP: <FaWhatsapp className="w-4 h-4" />,
-  X: <FaXTwitter className="w-4 h-4" />,
-  snapchat: <FaSnapchat className="w-4 h-4" />,
-  facebook: <FaFacebook className="w-4 h-4" />,
-  youtube: <FaYoutube className="w-4 h-4" />,
-  instagram: <FaInstagram className="w-4 h-4" />,
-  tiktok: <FaTiktok className="w-4 h-4" />,
-  twitter: <FaTwitter className="w-4 h-4" />,
-  "Custom Platform": <FaCopy className="w-4 h-4" />,
-};
-
-const getPlatformIcon = (platform: string) => {
-  const normalizedPlatform = platform.toUpperCase();
-  return (
-    platformIcons[normalizedPlatform] ||
-    platformIcons[platform.toLowerCase()] ||
-    platformIcons[platform] || <FaCopy className="w-4 h-4" />
-  );
-};
 
 // Animation variants
 const pageVariants: Variants = {
@@ -145,6 +106,40 @@ const blurSideVariants: Variants = {
       delay: 0.3,
     },
   },
+};
+
+// Helper function to create text style with stroke effect
+const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
+  if (!fontConfig) return undefined;
+
+  const baseStyle: React.CSSProperties = {
+    fontFamily: fontConfig.name || "Poppins",
+    color: fontConfig.fillColor ?? "#000000",
+    opacity: fontConfig.opacity ? fontConfig.opacity / 100 : 1,
+    fontStyle: fontConfig.fontStyle || "normal",
+    fontWeight: fontConfig.fontWeight || "400",
+    textDecoration: fontConfig.textDecoration || "none",
+  };
+
+  // Apply stroke if strokeColor exists and is valid
+  if (strokeWidth > 0 && fontConfig.strokeColor && fontConfig.strokeColor !== "none" && fontConfig.strokeColor !== "transparent") {
+    const shadowSpread = Math.max(1, Math.round(strokeWidth));
+    return {
+      ...baseStyle,
+      textShadow: `
+        ${shadowSpread}px ${shadowSpread}px 0 ${fontConfig.strokeColor},
+        -${shadowSpread}px ${shadowSpread}px 0 ${fontConfig.strokeColor},
+        ${shadowSpread}px -${shadowSpread}px 0 ${fontConfig.strokeColor},
+        -${shadowSpread}px -${shadowSpread}px 0 ${fontConfig.strokeColor},
+        0 ${shadowSpread}px 0 ${fontConfig.strokeColor},
+        0 -${shadowSpread}px 0 ${fontConfig.strokeColor},
+        ${shadowSpread}px 0 0 ${fontConfig.strokeColor},
+        -${shadowSpread}px 0 0 ${fontConfig.strokeColor}
+      `,
+    };
+  }
+
+  return baseStyle;
 };
 
 export default function PublicProfilePage() {
@@ -237,7 +232,7 @@ export default function PublicProfilePage() {
 
   const profile = profileData.data;
   const userData = {
-    name: profile.displayName || undefined,
+    name: profile.user.name || undefined,
     username: profile.username || undefined,
     bio: profile.bio || undefined,
     location: profile.location || undefined,
@@ -245,6 +240,85 @@ export default function PublicProfilePage() {
     links,
   };
 
+  const profileDisplay = profileData.data.display;
+
+  // Derive display styles from profileDisplay (font_config, corner_config, wallpaper_config, selected_theme)
+  const fc = profileDisplay?.font_config;
+  const cc = profileDisplay?.corner_config;
+  const wc = profileDisplay?.wallpaper_config;
+  const selectedTheme = profileDisplay?.selected_theme ?? null;
+
+  // Create font style with stroke support
+  const fontStyle = fc ? createTextStyle(fc, fc.strokeWidth || 0) : undefined;
+  
+  // Create button style with opacity
+  const buttonStyle = cc
+    ? {
+        borderRadius:
+          cc.type === "sharp"
+            ? 0
+            : cc.type === "round"
+              ? "9999px"
+              : cc.type === "pill"
+                ? "100px"
+                : "12px",
+        backgroundColor: cc.fillColor ?? "#ffffff",
+        opacity: cc.opacity ?? 1,
+        boxShadow:
+          cc.shadowSize === "hard"
+            ? `4px 4px 0px 0px ${cc.shadowColor || "#000000"}`
+            : cc.shadowColor
+              ? `2px 2px 6px ${cc.shadowColor}80`
+              : "none",
+        border: `2px solid ${cc.strokeColor ?? "#000000"}`,
+        borderColor: cc.strokeColor ?? "#000000",
+      }
+    : undefined;
+
+// Background handling - Debug version
+let backgroundStyle: React.CSSProperties = {};
+let backgroundImageSrc = "/themes/theme7.jpg";
+const isOotnUser = userData?.username === "ootn";
+const isDnaByGazaUser = userData?.username === "dnabygaza";
+
+// DEBUG - Check what data we're getting
+console.log("DEBUG - selectedTheme:", selectedTheme);
+console.log("DEBUG - wc:", wc);
+console.log("DEBUG - profileDisplay:", profileDisplay);
+
+if (!isOotnUser && !isDnaByGazaUser) {
+  if (selectedTheme && typeof selectedTheme === "string") {
+    console.log("Using selectedTheme:", selectedTheme);
+    if (selectedTheme.startsWith("fill:")) {
+      const color = selectedTheme.split(":")[1] || "#000";
+      backgroundStyle = { backgroundColor: color };
+    } else if (selectedTheme.startsWith("gradient:")) {
+      const [, start, end] = selectedTheme.split(":");
+      backgroundStyle = {
+        backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
+      };
+    } else {
+      backgroundImageSrc = selectedTheme;
+    }
+  } 
+  else if (wc?.type === "fill" && Array.isArray(wc.backgroundColor)) {
+    console.log("Using wallpaper fill");
+    if (wc.backgroundColor.length === 1) {
+      backgroundStyle = { backgroundColor: wc.backgroundColor[0].color };
+    } else if (wc.backgroundColor.length >= 2) {
+      const colors = wc.backgroundColor.map((c: any) => c.color);
+      const [start, end] = colors;
+      backgroundStyle = { 
+        background: `linear-gradient(135deg, ${start}, ${end})` 
+      };
+    }
+  } 
+  else if (wc?.type === "image" && wc.imageUrl) {
+    backgroundImageSrc = wc.imageUrl;
+  }
+}
+
+console.log("Final backgroundStyle:", backgroundStyle);
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -270,17 +344,17 @@ export default function PublicProfilePage() {
             variants={phoneContainerVariants}
             initial="initial"
             animate="animate"
-            className="relative z-20 mx-auto w-[300px]" // Fixed width added here
+            className="relative z-20 mx-auto w-[300px]"
           >
             {/* Phone Frame */}
             <motion.div
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl" // w-full to fill container
+              className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl"
             >
               {/* Screen Content */}
               <div className="w-full h-full bg-white overflow-hidden relative flex flex-col">
-                {/* Background Image inside phone */}
+                {/* Background */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -298,8 +372,11 @@ export default function PublicProfilePage() {
                     className="object-cover"
                     priority
                   />
-                  {/* Overlay to ensure content is readable */}
-                  <div className="absolute inset-0" />
+
+                  {/* Conditional overlay */}
+                  {userData?.username === "ootn" && (
+                    <div className="absolute inset-0 bg-black/65" />
+                  )}
                 </motion.div>
 
                 {/* ===== TOP PROFILE CARD ===== */}
@@ -307,7 +384,11 @@ export default function PublicProfilePage() {
                   variants={profileCardVariants}
                   initial="initial"
                   animate="animate"
-                  className="relative z-20 bg-white/95 p-3 backdrop-blur-sm"
+                  className="relative z-20 bg-white/90 p-4 backdrop-blur-xl"
+                  style={{
+                    backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
+                    opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
+                  }}
                 >
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}
@@ -347,8 +428,11 @@ export default function PublicProfilePage() {
                       transition={{ delay: 0.7 }}
                     >
                       <p className="font-bold text-[14px]">
-                        {userData?.name || userData?.username || "User"}
+                        {userData?.username === "ootn"
+                          ? "one of those nights"
+                          : userData?.name || userData?.username || "User"}
                       </p>
+
                       <p className="text-[10px] text-gray-500">
                         @{userData.username || "username"}
                       </p>
@@ -362,6 +446,7 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ delay: 0.8 }}
                       className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
+                      
                     >
                       {userData.bio}
                     </motion.p>
@@ -374,9 +459,13 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.9, type: "spring" }}
                       className="inline-flex items-center gap-1 mb-5 mt-2 border px-2 py-[2px] text-[10px] bg-white/70"
+                      
                     >
-                      <FaMapMarkerAlt className="w-2 h-2" />
-                      <span className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]">
+                      <FaMapMarkerAlt className="w-2 h-2"  />
+                      <span 
+                        className="text-[7px] font-medium truncate max-w-[180px]"
+                       
+                      >
                         {userData.location}
                       </span>
                     </motion.div>
@@ -389,24 +478,30 @@ export default function PublicProfilePage() {
                       className="relative flex flex-col items-center pb-2 group"
                     >
                       <span
-                        className={`text-[9px] font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}
+                        className={`text-[9px] -mb-2 font-medium transition-colors ${
+                          activeTab === "links" ? "text-black" : "text-gray-400"
+                        }`}
+                        
                       >
                         Links
                       </span>
                       {activeTab === "links" && (
                         <motion.div
                           layoutId="activeTabDesktop"
-                          className="h-[3px] absolute bottom-0 w-6 bg-red-500"
+                          className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
                         />
                       )}
                     </button>
-                    {userData?.username === "dnabygaza" && (
+                    {isDnaByGazaUser && (
                       <button
                         onClick={() => setActiveTab("menu")}
                         className="relative flex flex-col items-center pb-2 group"
                       >
                         <span
-                          className={`text-[9px] font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-gray-400"}`}
+                          className={`text-[9px] font-medium transition-colors ${
+                            activeTab === "menu" ? "text-black" : "text-gray-400"
+                          }`}
+                          style={activeTab === "menu" ? fontStyle : undefined}
                         >
                           Menu
                         </span>
@@ -445,28 +540,47 @@ export default function PublicProfilePage() {
                               <motion.a
                                 key={link.id}
                                 variants={linkItemVariants}
-                                // initial="initial"
-                                // animate="animate"
                                 whileHover="hover"
                                 custom={index}
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
-                                     bg-white/30 backdrop-blur-md text-white shadow-xl
-                                      hover:translate-y-[2px]
-                                      transition-all cursor-pointer"
+                                className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm
+                                     backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
+                                style={{
+                                  borderRadius: buttonStyle?.borderRadius || "0px",
+                                  border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
+                                  boxShadow: buttonStyle?.boxShadow || "none",
+                                  textDecoration: "none",
+                                  color: fontStyle?.color || "#fff",
+                                  fontFamily: fontStyle?.fontFamily,
+                                  fontWeight: fontStyle?.fontWeight,
+                                  fontStyle: fontStyle?.fontStyle,
+                                  textShadow: fontStyle?.textShadow,
+                                }}
                               >
+                                <span
+                                  className="absolute inset-0"
+                                  style={{
+                                    backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+                                    opacity: buttonStyle?.opacity ?? 1,
+                                    borderRadius: buttonStyle?.borderRadius || "0px",
+                                  }}
+                                />
                                 <motion.span
                                   whileHover={{ rotate: 10 }}
                                   transition={{
                                     type: "spring",
                                     stiffness: 300,
                                   }}
+                                  className="relative"
+                                  style={{ color: fontStyle?.color }}
                                 >
-                                  {getPlatformIcon(link.platform)}
+                                  {getPlatformIcon(link.platform, "w-4 h-4")}
                                 </motion.span>
-                                <span className="truncate">{link.title}</span>
+                                <span className="truncate relative" style={fontStyle}>
+                                  {link.title}
+                                </span>
                               </motion.a>
                             ))
                         ) : (
@@ -475,12 +589,13 @@ export default function PublicProfilePage() {
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
                             className="text-xs text-gray-500 text-center py-4 relative z-20"
+                            style={fontStyle}
                           >
                             No links added yet.
                           </motion.p>
                         )}
                       </AnimatePresence>
-                      {userData?.username === "dnabygaza" && (
+                      {isDnaByGazaUser && (
                         <div>
                           <DnaFormV1 />
                         </div>
@@ -518,7 +633,7 @@ export default function PublicProfilePage() {
           className="lg:hidden w-full min-h-screen bg-[#FEF4EA]"
         >
           {/* Background Image for Mobile */}
-           <motion.div
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
@@ -536,7 +651,7 @@ export default function PublicProfilePage() {
               priority
             />
 
-            {/*  overlay */}
+            {/* Conditional overlay */}
             {userData?.username === "ootn" && (
               <div className="absolute inset-0 bg-black/65" />
             )}
@@ -549,7 +664,11 @@ export default function PublicProfilePage() {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/80 p-4 backdrop-blur-md"
+              className="bg-white/90 p-4 backdrop-blur-xl"
+              style={{
+                backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
+                opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
+              }}
             >
               <div className="flex items-center gap-3">
                 {/* Avatar */}
@@ -578,10 +697,15 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <p className="font-bold text-[16px] capitalize mb-1">
-                    {userData?.name || userData?.username || "User"}
+                  <p className="font-bold text-[14px]">
+                    {userData?.username === "ootn"
+                      ? "one of those nights"
+                      : userData?.name || userData?.username || "User"}
                   </p>
-                  <p className="text-[13px] text-gray-500">
+                  <p 
+                    className="text-[13px] text-gray-500"
+                    
+                  >
                     @{userData.username || "username"}
                   </p>
                 </motion.div>
@@ -594,6 +718,7 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
                   className="mt-2 text-[13px] text-left font-semibold line-clamp-2"
+                  
                 >
                   {userData.bio}
                 </motion.p>
@@ -606,9 +731,10 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6, type: "spring" }}
                   className="inline-flex items-center gap-1 mt-3 border px-2 py-[2px] text-[10px] mb-6 bg-white/80"
+                 
                 >
-                  <FaMapMarkerAlt className="w-3 h-3" />
-                  {userData.location}
+                  <FaMapMarkerAlt className="w-3 h-3"  />
+                  <span >{userData.location}</span>
                 </motion.div>
               )}
 
@@ -619,24 +745,30 @@ export default function PublicProfilePage() {
                   className="relative flex flex-col items-center pb-2 group"
                 >
                   <span
-                    className={`text-[11px] font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}
+                    className={`text-[11px] -mb-2 font-medium transition-colors ${
+                      activeTab === "links" ? "text-black" : "text-gray-400"
+                    }`}
+                    
                   >
                     Links
                   </span>
                   {activeTab === "links" && (
                     <motion.div
                       layoutId="activeTabMobile"
-                      className="h-[3px] absolute bottom-0 w-6 bg-red-500"
+                      className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
                     />
                   )}
                 </button>
-                {userData?.username === "dnabygaza" && (
+                {isDnaByGazaUser && (
                   <button
                     onClick={() => setActiveTab("menu")}
                     className="relative flex flex-col items-center pb-2 group"
                   >
                     <span
-                      className={`text-[11px] font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-gray-400"}`}
+                      className={`text-[11px] font-medium transition-colors ${
+                        activeTab === "menu" ? "text-black" : "text-gray-400"
+                      }`}
+                      style={activeTab === "menu" ? fontStyle : undefined}
                     >
                       Menu
                     </span>
@@ -676,18 +808,37 @@ export default function PublicProfilePage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3  font-bold text-sm
-                                      bg-white/30 backdrop-blur-md text-white shadow-xl
-                                      hover:translate-y-[2px]
-                                      transition-all cursor-pointer"
+                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm
+                                      backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
+                            style={{
+                              borderRadius: buttonStyle?.borderRadius || "0px",
+                              border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
+                              boxShadow: buttonStyle?.boxShadow || "none",
+                              textDecoration: "none",
+                              color: fontStyle?.color || "#fff",
+                              fontFamily: fontStyle?.fontFamily,
+                              fontWeight: fontStyle?.fontWeight,
+                              fontStyle: fontStyle?.fontStyle,
+                              textShadow: fontStyle?.textShadow,
+                            }}
                           >
+                            <span
+                              className="absolute inset-0"
+                              style={{
+                                backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+                                opacity: buttonStyle?.opacity ?? 1,
+                                borderRadius: buttonStyle?.borderRadius || "0px",
+                              }}
+                            />
                             <motion.span
                               whileHover={{ rotate: 10 }}
                               transition={{ type: "spring", stiffness: 300 }}
+                              className="relative"
+                              style={{ color: fontStyle?.color }}
                             >
-                              {getPlatformIcon(link.platform)}
+                              {getPlatformIcon(link.platform, "w-4 h-4")}
                             </motion.span>
-                            <span className="truncate font-bold">
+                            <span className="truncate font-bold relative" style={fontStyle}>
                               {link.title}
                             </span>
                           </motion.a>
@@ -698,12 +849,13 @@ export default function PublicProfilePage() {
                         animate={{ opacity: 1 }}
                         transition={{ delay: 0.5 }}
                         className="text-xs text-gray-500 text-center py-4"
+                        style={fontStyle}
                       >
                         No links added yet.
                       </motion.p>
                     )}
                   </AnimatePresence>
-                  {userData?.username === "dnabygaza" && (
+                  {isDnaByGazaUser && (
                     <div>
                       <DnaFormV1 />
                     </div>
