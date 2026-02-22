@@ -112,7 +112,7 @@ const SmartLinkInput = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-3 top-2 text-sm font-semibold  select-none pointer-events-none leading-none"
+            className="absolute left-3 top-2 text-[16px] font-semibold  select-none pointer-events-none leading-none"
           >
             {floatingLabel}
           </motion.span>
@@ -132,7 +132,7 @@ const SmartLinkInput = ({
               animate={{ opacity: 1, width: "auto" }}
               exit={{ opacity: 0, width: 0 }}
               transition={{ duration: 0.2 }}
-              className=" whitespace-nowrap select-none overflow-hidden text-sm"
+              className=" whitespace-nowrap select-none overflow-hidden text-[16px]"
             >
               {base}
             </motion.span>
@@ -146,7 +146,7 @@ const SmartLinkInput = ({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={!focused ? getPlaceholder(platformId, platformName) : ""}
-          className="flex-1 bg-transparent outline-none placeholder:text-[#331400]/50 placeholder:text-sm min-w-0 text-sm"
+          className="flex-1 bg-transparent outline-none placeholder:text-[#331400]/50 placeholder:text-sm min-w-0 text-[16px]"
         />
       </div>
     </div>
@@ -368,7 +368,7 @@ const LinksScreen = () => {
   if (!isMounted) return null;
 
   return (
-    <ProtectedRoute>
+    <>
       <motion.main
         initial="hidden"
         animate="visible"
@@ -615,7 +615,7 @@ const LinksScreen = () => {
           </motion.a>
         </motion.footer>
       </motion.main>
-    </ProtectedRoute>
+    </>
   );
 };
 
