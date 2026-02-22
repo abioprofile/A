@@ -250,7 +250,7 @@ export default function SideDashboard() {
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
               <p className="font-extrabold mb-1 text-[20px]">
-                Hi, {userData?.name || "User"}
+                Hi, {userData?.profile?.username || "User"}
               </p>
               <p className="text-[12px] font-semibold text-gray-600 truncate">
                 {formatLink(profileLink)}

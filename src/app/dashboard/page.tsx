@@ -33,21 +33,23 @@ export default function DashboardPage() {
   const userData = useAppSelector((state) => state.auth.user);
 
   const [displayName, setDisplayName] = useState<string>("");
-  const [firstName, setFirstName] = useState<string>("User");
+  const [username, setUsername] = useState<string>("User");
 
- useEffect(() => {
+  useEffect(() => {
     const getName = () => {
       if (userData?.profile?.name) return userData.profile.name;
       if (userData?.name) return userData.name;
       if (user?.name) return user.name;
       return "User";
     };
+    const getUsername = () => {
+      if (userData?.profile?.username) return userData.profile.username;
+      if (user?.profile?.username) return (user.profile as { username?: string })?.username;
+      return "User";
+    };
 
-    const fullName = getName();
-    const firstName = fullName.split(" ")[0];
-    
-    setDisplayName(fullName);
-    setFirstName(firstName);
+    setDisplayName(getName());
+    setUsername(getUsername());
   }, [user, userData]);
 
   const [loading, setLoading] = useState(true);
@@ -257,7 +259,7 @@ export default function DashboardPage() {
             variants={itemVariants}
             className="p-8 text-[30px] font-medium"
           >
-            Hi, {firstName}
+            Hi, {username}
           </motion.h1>
           
           <motion.div

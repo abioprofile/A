@@ -102,7 +102,7 @@ export default function ProfileScreen() {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-screen bg-[#FEF4EA] flex flex-col items-center px-4 pt-20 md:pt-6 pb-10">
+      <main className="min-h-screen bg-[#FEF4EA] flex flex-col items-center px-4 pt-6 pb-10">
         {/* Back Button */}
         <div className="relative w-full flex flex-col items-center">
           <div
@@ -133,7 +133,7 @@ export default function ProfileScreen() {
         <h1 className="text-center hidden md:block text-[#4B2E1E] text-[24px] font-semibold mt-6 mb-10 leading-snug max-w-md">
           Add your bio and location to make <br /> your Profile more you
         </h1>
-        <h1 className="text-center md:hidden text-[#4B2E1E] text-[22px] mb-2 font-bold mt-6 md:mb-10 leading-snug max-w-md">
+        <h1 className="text-center md:hidden text-[#4B2E1E] text-[20px] mb-2 font-bold mt-2 md:mb-10 leading-snug max-w-md">
           Add Profile Details
         </h1>
 
@@ -217,12 +217,12 @@ export default function ProfileScreen() {
                   onChange={(e) => setBio(e.target.value)}
                   className="
                     w-full min-h-[110px] resize-none
-                    border border-[#4B2E1E]/30 bg-transparent
+                    border border-[#4B2E1E] bg-transparent
                      px-4 py-3
-                    text-[14px] text-[#2A1500] leading-relaxed
-                    placeholder:text-[#4B2E1E]/40
+                    text-[16px] text-[#2A1500] leading-relaxed
+                    placeholder:text-[#4B2E1E]
                     outline-none transition-all duration-200
-                    focus:border-[#331400] focus:bg-white
+                    focus:border-[#331400] 
                     focus:shadow-[0_0_0_3px_rgba(254,212,92,0.35)]
                   "
                 />
@@ -242,7 +242,7 @@ export default function ProfileScreen() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="location"
-                className="text-[14px] font-semibold uppercase tracking-widest text-[#6B3F18]"
+                className="text-[14px] font-semibold uppercase  text-[#6B3F18]"
               >
                 Location
               </label>
@@ -253,8 +253,8 @@ export default function ProfileScreen() {
                   value={location}
                   onChange={handleLocationChange}
                   placeholder="Search for a location"
-                  className="w-full "
-                  inputClassName="text-[14px]"
+                  className="w-full"
+                  inputClassName="text-[16px]"
                 />
               </div>
             </div>
@@ -269,7 +269,7 @@ export default function ProfileScreen() {
               !bio.trim() ||
               !location.trim()
             }
-            className="w-full bg-[#FED45C] hover:bg-[#f5ca4f] disabled:opacity-50 disabled:cursor-not-allowed text-[#4B2E1E] text-[16px] py-6 mt-8 relative z-0"
+            className="w-full bg-[#FED45C] hover:bg-[#f5ca4f] disabled:opacity-50 disabled:cursor-not-allowed text-[#4B2E1E] text-sm  py-6 mt-8 relative z-0"
           >
             {isSubmitting || updateProfileMutation.isPending
               ? "Saving..."

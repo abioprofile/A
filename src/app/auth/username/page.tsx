@@ -226,22 +226,21 @@ const UsernamePage = () => {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="flex flex-col min-h-screen bg-[#FEF4EA]"
+        className="flex min-h-screen flex-col overflow-x-hidden bg-[#FEF4EA]"
       >
-        
         {/* Main content */}
-        <div className="flex flex-1 flex-col lg:flex-row items-center justify-center">
-          <div className="flex flex-col items-center justify-center w-full lg:w-1/2 p-5 max-w-xl">
-            <div className="w-full max-w-lg flex justify-center">
-    <OnboardingProgressWithSteps currentStep={1} totalSteps={5} />
-  </div>
+        <div className="flex flex-1 flex-col items-center justify-center lg:flex-row">
+          <div className="flex w-full min-w-0 max-w-5xl flex-col items-center justify-center p-4 sm:p-5 lg:w-1/2">
+            <div className="flex w-full min-w-0 max-w-4xl justify-center mb-4">
+              <OnboardingProgressWithSteps currentStep={1} totalSteps={5} />
+            </div>
             {/* Header */}
             <motion.div
               variants={itemVariants}
               className="mb-6 text-center"
             >
               <motion.h1
-                className="text-3xl font-bold text-[#331400] mb-1 md:hidden"
+                className="text-[20px] font-bold text-[#331400] mb-1 md:hidden"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
@@ -256,7 +255,7 @@ const UsernamePage = () => {
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="text-[#666666] text-[14px] "
+                className="text-[#666666] text-[12px]  "
               >
                 Choose a unique username that represents you.
               </motion.p>
@@ -266,7 +265,7 @@ const UsernamePage = () => {
             <motion.form
               variants={itemVariants}
               onSubmit={handleSubmit}
-              className="w-full space-y-4 lg:max-w-fit relative"
+              className="relative w-full min-w-0 space-y-4 lg:max-w-fit"
             >
               <div className="relative w-full">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 font-semibold text-[16px] text-[#4B2E1E] select-none pointer-events-none">
@@ -277,9 +276,9 @@ const UsernamePage = () => {
                   id="username"
                   type="text"
                   value={username}
-                  onChange={(e) => setUsername(e.target.value)}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase())}
                   placeholder="Enter unique username"
-                  className="pl-[85px] pr-12 h-9 text-base md:text-[14px] placeholder:text-[12px] font-medium placeholder:font-medium placeholder:text-gray-500"
+                  className="pl-[85px] pr-12 h-10 text-base md:text-[14px] placeholder:text-sm font-medium placeholder:font-medium placeholder:text-gray-500"
                   aria-label="Username"
                   autoComplete="off"
                 />
@@ -395,9 +394,9 @@ const UsernamePage = () => {
               {/* Mobile terms note */}
               <motion.div
                 variants={itemVariants}
-                className="text-[12px] text-center font-semibold md:hidden max-w-sm"
+                className="min-w-0 max-w-full px-1 text-center text-[10px] font-semibold md:hidden"
               >
-                <p>
+                <p className="break-words">
                   By continuing, you agree to receive offers, news and updates
                   from A.Bio.
                 </p>
@@ -419,7 +418,7 @@ const UsernamePage = () => {
                       usernameData?.data?.isValid
                     ))
                 }
-                className="w-full cursor-pointer bg-[#FED45C] lg:hidden shadow-[4px_4px_0px_0px_#000000] hover:bg-[#f5ca4f] disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] py-2 font-semibold transition-all"
+                className="w-full cursor-pointer bg-[#FED45C] lg:hidden shadow-[4px_4px_0px_0px_#000000] hover:bg-[#f5ca4f] disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] py-2 text-sm font-semibold h-10 transition-all"
               >
                 {updateProfileMutation.isPending ? (
                   <span className="flex items-center justify-center gap-2">

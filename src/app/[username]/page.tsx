@@ -122,7 +122,12 @@ const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
   };
 
   // Apply stroke if strokeColor exists and is valid
-  if (strokeWidth > 0 && fontConfig.strokeColor && fontConfig.strokeColor !== "none" && fontConfig.strokeColor !== "transparent") {
+  if (
+    strokeWidth > 0 &&
+    fontConfig.strokeColor &&
+    fontConfig.strokeColor !== "none" &&
+    fontConfig.strokeColor !== "transparent"
+  ) {
     const shadowSpread = Math.max(1, Math.round(strokeWidth));
     return {
       ...baseStyle,
@@ -245,12 +250,21 @@ export default function PublicProfilePage() {
   // Derive display styles from profileDisplay (support snake_case and camelCase for production API)
   const fc = profileDisplay?.font_config;
   const cc = profileDisplay?.corner_config;
-  const wc = profileDisplay?.wallpaper_config ?? (profileDisplay as { wallpaperConfig?: typeof profileDisplay.wallpaper_config })?.wallpaperConfig;
-  const selectedTheme = profileDisplay?.selected_theme ?? (profileDisplay as { selectedTheme?: string | null })?.selectedTheme ?? null;
+  const wc =
+    profileDisplay?.wallpaper_config ??
+    (
+      profileDisplay as {
+        wallpaperConfig?: typeof profileDisplay.wallpaper_config;
+      }
+    )?.wallpaperConfig;
+  const selectedTheme =
+    profileDisplay?.selected_theme ??
+    (profileDisplay as { selectedTheme?: string | null })?.selectedTheme ??
+    null;
 
   // Create font style with stroke support
   const fontStyle = fc ? createTextStyle(fc, fc.strokeWidth || 0) : undefined;
-  
+
   // Create button style with opacity
   const buttonStyle = cc
     ? {
@@ -275,50 +289,56 @@ export default function PublicProfilePage() {
       }
     : undefined;
 
-// Background handling (resilient to prod API: camelCase, missing display, or different wallpaper shape)
-let backgroundStyle: React.CSSProperties = {};
-let backgroundImageSrc = "/themes/theme7.jpg";
-const isOotnUser = userData?.username === "ootn";
-const isDnaByGazaUser = userData?.username === "dnabygaza";
+  // Background handling (resilient to prod API: camelCase, missing display, or different wallpaper shape)
+  let backgroundStyle: React.CSSProperties = {};
+  let backgroundImageSrc = "/themes/theme7.jpg";
+  const isOotnUser = userData?.username === "ootn";
+  const isDnaByGazaUser = userData?.username === "dnabygaza";
 
-// Normalize backgroundColor to array (backend may return array or single object)
-const bgColors = wc?.backgroundColor != null
-  ? Array.isArray(wc.backgroundColor)
-    ? wc.backgroundColor
-    : [wc.backgroundColor].filter((c: unknown) => c && typeof (c as { color?: string }).color === "string")
-  : [];
+  // Normalize backgroundColor to array (backend may return array or single object)
+  const bgColors =
+    wc?.backgroundColor != null
+      ? Array.isArray(wc.backgroundColor)
+        ? wc.backgroundColor
+        : [wc.backgroundColor].filter(
+            (c: unknown) =>
+              c && typeof (c as { color?: string }).color === "string",
+          )
+      : [];
 
-if (!isOotnUser && !isDnaByGazaUser) {
-  if (selectedTheme && typeof selectedTheme === "string") {
-    if (selectedTheme.startsWith("fill:")) {
-      const color = selectedTheme.split(":")[1] || "#000";
-      backgroundStyle = { backgroundColor: color };
-    } else if (selectedTheme.startsWith("gradient:")) {
-      const [, start, end] = selectedTheme.split(":");
-      backgroundStyle = {
-        backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
-      };
-    } else {
-      backgroundImageSrc = selectedTheme;
+  if (!isOotnUser && !isDnaByGazaUser) {
+    if (selectedTheme && typeof selectedTheme === "string") {
+      if (selectedTheme.startsWith("fill:")) {
+        const color = selectedTheme.split(":")[1] || "#000";
+        backgroundStyle = { backgroundColor: color };
+      } else if (selectedTheme.startsWith("gradient:")) {
+        const [, start, end] = selectedTheme.split(":");
+        backgroundStyle = {
+          backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
+        };
+      } else {
+        backgroundImageSrc = selectedTheme;
+      }
+    } else if (wc?.type === "fill" && bgColors.length > 0) {
+      if (bgColors.length === 1) {
+        backgroundStyle = {
+          backgroundColor: (bgColors[0] as { color: string }).color,
+        };
+      } else if (bgColors.length >= 2) {
+        const colors = bgColors.map(
+          (c: unknown) => (c as { color: string }).color,
+        );
+        const [start, end] = colors;
+        backgroundStyle = {
+          background: `linear-gradient(135deg, ${start}, ${end})`,
+        };
+      }
+    } else if (wc?.type === "image") {
+      const wcImage = wc as { imageUrl?: string; image?: { url?: string } };
+      const imageUrl = wcImage.imageUrl ?? wcImage.image?.url;
+      if (imageUrl) backgroundImageSrc = imageUrl;
     }
   }
-  else if (wc?.type === "fill" && bgColors.length > 0) {
-    if (bgColors.length === 1) {
-      backgroundStyle = { backgroundColor: (bgColors[0] as { color: string }).color };
-    } else if (bgColors.length >= 2) {
-      const colors = bgColors.map((c: unknown) => (c as { color: string }).color);
-      const [start, end] = colors;
-      backgroundStyle = {
-        background: `linear-gradient(135deg, ${start}, ${end})`,
-      };
-    }
-  }
-  else if (wc?.type === "image") {
-    const wcImage = wc as { imageUrl?: string; image?: { url?: string } };
-    const imageUrl = wcImage.imageUrl ?? wcImage.image?.url;
-    if (imageUrl) backgroundImageSrc = imageUrl;
-  }
-}
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -373,10 +393,7 @@ if (!isOotnUser && !isDnaByGazaUser) {
                       <div className="absolute inset-0 bg-black/65" />
                     </>
                   ) : Object.keys(backgroundStyle).length > 0 ? (
-                    <div
-                      className="absolute inset-0"
-                      style={backgroundStyle}
-                    />
+                    <div className="absolute inset-0" style={backgroundStyle} />
                   ) : (
                     <Image
                       src={backgroundImageSrc}
@@ -395,7 +412,9 @@ if (!isOotnUser && !isDnaByGazaUser) {
                   animate="animate"
                   className="relative z-20 bg-white/90 p-4 backdrop-blur-xl"
                   style={{
-                    backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
+                    backgroundColor: fc?.cardBgColor
+                      ? fc.cardBgColor
+                      : undefined,
                     opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
                   }}
                 >
@@ -436,19 +455,13 @@ if (!isOotnUser && !isDnaByGazaUser) {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
                     >
-                      <p 
-                        className="font-bold text-[14px]"
-                        
-                      >
+                      <p className="font-bold text-[14px]">
                         {isOotnUser
                           ? "one of those nights"
                           : userData?.name || userData?.username || "User"}
                       </p>
 
-                      <p 
-                        className="text-[10px] text-gray-500"
-                        
-                      >
+                      <p className="text-[10px] text-gray-500">
                         @{userData.username || "username"}
                       </p>
                     </motion.div>
@@ -461,7 +474,6 @@ if (!isOotnUser && !isDnaByGazaUser) {
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ delay: 0.8 }}
                       className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
-                      
                     >
                       {userData.bio}
                     </motion.p>
@@ -474,13 +486,9 @@ if (!isOotnUser && !isDnaByGazaUser) {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.9, type: "spring" }}
                       className="inline-flex items-center gap-1 mb-5 mt-2 border px-2 py-[2px] text-[10px] bg-white/70"
-                      
                     >
-                      <FaMapMarkerAlt className="w-2 h-2"  />
-                      <span 
-                        className="text-[7px] font-medium truncate max-w-[180px]"
-                       
-                      >
+                      <FaMapMarkerAlt className="w-2 h-2" />
+                      <span className="text-[7px] font-medium truncate max-w-[180px]">
                         {userData.location}
                       </span>
                     </motion.div>
@@ -496,7 +504,6 @@ if (!isOotnUser && !isDnaByGazaUser) {
                         className={`text-[9px] -mb-2 font-medium transition-colors ${
                           activeTab === "links" ? "text-black" : "text-gray-400"
                         }`}
-                        
                       >
                         Links
                       </span>
@@ -514,7 +521,9 @@ if (!isOotnUser && !isDnaByGazaUser) {
                       >
                         <span
                           className={`text-[9px] font-medium transition-colors ${
-                            activeTab === "menu" ? "text-black" : "text-gray-400"
+                            activeTab === "menu"
+                              ? "text-black"
+                              : "text-gray-400"
                           }`}
                           style={activeTab === "menu" ? fontStyle : undefined}
                         >
@@ -563,8 +572,9 @@ if (!isOotnUser && !isDnaByGazaUser) {
                                 className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm
                                      backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
                                 style={{
-                                  borderRadius: buttonStyle?.borderRadius || "0px",
-                                  border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
+                                  borderRadius:
+                                    buttonStyle?.borderRadius || "0px",
+                                  border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
                                   boxShadow: buttonStyle?.boxShadow || "none",
                                   textDecoration: "none",
                                   color: fontStyle?.color || "#fff",
@@ -577,9 +587,12 @@ if (!isOotnUser && !isDnaByGazaUser) {
                                 <span
                                   className="absolute inset-0"
                                   style={{
-                                    backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+                                    backgroundColor:
+                                      buttonStyle?.backgroundColor ||
+                                      "rgba(255,255,255,0.3)",
                                     opacity: buttonStyle?.opacity ?? 1,
-                                    borderRadius: buttonStyle?.borderRadius || "0px",
+                                    borderRadius:
+                                      buttonStyle?.borderRadius || "0px",
                                   }}
                                 />
                                 <motion.span
@@ -593,7 +606,10 @@ if (!isOotnUser && !isDnaByGazaUser) {
                                 >
                                   {getPlatformIcon(link.platform, "w-4 h-4")}
                                 </motion.span>
-                                <span className="truncate relative" style={fontStyle}>
+                                <span
+                                  className="truncate relative"
+                                  style={fontStyle}
+                                >
                                   {link.title}
                                 </span>
                               </motion.a>
@@ -666,10 +682,7 @@ if (!isOotnUser && !isDnaByGazaUser) {
                 <div className="absolute inset-0 bg-black/65" />
               </>
             ) : Object.keys(backgroundStyle).length > 0 ? (
-              <div
-                className="absolute inset-0"
-                style={backgroundStyle}
-              />
+              <div className="absolute inset-0" style={backgroundStyle} />
             ) : (
               <Image
                 src={backgroundImageSrc}
@@ -721,18 +734,12 @@ if (!isOotnUser && !isDnaByGazaUser) {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <p 
-                    className="font-bold text-[14px]"
-                    
-                  >
+                  <p className="font-bold text-[14px]">
                     {isOotnUser
                       ? "one of those nights"
                       : userData?.name || userData?.username || "User"}
                   </p>
-                  <p 
-                    className="text-[13px] text-gray-500"
-                    
-                  >
+                  <p className="text-[13px] text-gray-500">
                     @{userData.username || "username"}
                   </p>
                 </motion.div>
@@ -745,7 +752,6 @@ if (!isOotnUser && !isDnaByGazaUser) {
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
                   className="mt-2 text-[13px] text-left font-semibold line-clamp-2"
-                  
                 >
                   {userData.bio}
                 </motion.p>
@@ -758,10 +764,9 @@ if (!isOotnUser && !isDnaByGazaUser) {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.6, type: "spring" }}
                   className="inline-flex items-center gap-1 mt-3 border px-2 py-[2px] text-[10px] mb-6 bg-white/80"
-                 
                 >
-                  <FaMapMarkerAlt className="w-3 h-3"  />
-                  <span >{userData.location}</span>
+                  <FaMapMarkerAlt className="w-3 h-3" />
+                  <span>{userData.location}</span>
                 </motion.div>
               )}
 
@@ -775,7 +780,6 @@ if (!isOotnUser && !isDnaByGazaUser) {
                     className={`text-[11px] -mb-2 font-medium transition-colors ${
                       activeTab === "links" ? "text-black" : "text-gray-400"
                     }`}
-                    
                   >
                     Links
                   </span>
@@ -833,7 +837,7 @@ if (!isOotnUser && !isDnaByGazaUser) {
                                       backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
                             style={{
                               borderRadius: buttonStyle?.borderRadius || "0px",
-                              border: `2px solid ${buttonStyle?.borderColor || (cc?.strokeColor || "#000000")}`,
+                              border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
                               boxShadow: buttonStyle?.boxShadow || "none",
                               textDecoration: "none",
                               color: fontStyle?.color || "#fff",
@@ -846,9 +850,12 @@ if (!isOotnUser && !isDnaByGazaUser) {
                             <span
                               className="absolute inset-0"
                               style={{
-                                backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+                                backgroundColor:
+                                  buttonStyle?.backgroundColor ||
+                                  "rgba(255,255,255,0.3)",
                                 opacity: buttonStyle?.opacity ?? 1,
-                                borderRadius: buttonStyle?.borderRadius || "0px",
+                                borderRadius:
+                                  buttonStyle?.borderRadius || "0px",
                               }}
                             />
                             <motion.span
@@ -859,7 +866,10 @@ if (!isOotnUser && !isDnaByGazaUser) {
                             >
                               {getPlatformIcon(link.platform, "w-4 h-4")}
                             </motion.span>
-                            <span className="truncate font-bold relative" style={fontStyle}>
+                            <span
+                              className="truncate font-bold relative"
+                              style={fontStyle}
+                            >
                               {link.title}
                             </span>
                           </motion.a>
