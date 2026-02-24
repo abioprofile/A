@@ -92,7 +92,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   }
 
   return (
-    <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto  border-[2px]  border-black overflow-hidden bg-white shadow-2xl">
+    <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto  border-[2px]  border-black overflow-hidden bg-white ">
       <div className="absolute inset-0 pointer-events-none" style={bgStyle} />
 
       {/* Content */}

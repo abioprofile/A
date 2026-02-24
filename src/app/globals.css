@@ -1,5 +1,7 @@
 @import "tailwindcss";
-
+body {
+  overflow: hidden;
+}
 @custom-variant dark (&:is(.dark *));
 
 :root {

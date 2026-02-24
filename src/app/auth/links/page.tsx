@@ -368,7 +368,7 @@ const LinksScreen = () => {
   if (!isMounted) return null;
 
   return (
-    <>
+    <ProtectedRoute>
       <motion.main
         initial="hidden"
         animate="visible"
@@ -615,7 +615,7 @@ const LinksScreen = () => {
           </motion.a>
         </motion.footer>
       </motion.main>
-    </>
+    </ProtectedRoute>
   );
 };
 

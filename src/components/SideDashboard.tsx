@@ -6,7 +6,7 @@ import Modal from "@/components/ui/modal";
 import { toast } from "sonner";
 import {
   CopyIcon,
-  Share2Icon,
+  Share,
   DownloadIcon,
   QrCodeIcon,
   MoreHorizontalIcon,
@@ -25,6 +25,7 @@ import { useAppDispatch, useAppSelector } from "@/stores/hooks";
 import {
   FaFacebook,
   FaTwitter,
+  FaXTwitter,
   FaWhatsapp,
   FaInstagram,
   FaPinterest,
@@ -59,6 +60,70 @@ interface SharePlatform {
   bgColor: string;
 }
 
+// ─── Reusable Responsive Modal Shell ────────────────────────────────────────
+// On mobile  → slides up from the bottom as a sheet
+// On desktop → centered modal (existing behaviour via the Modal component)
+function ResponsiveSheet({
+  isOpen,
+  onClose,
+  children,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/20 md:backdrop-blur-sm"
+            onClick={onClose}
+          />
+
+          {/* ── Mobile: bottom sheet ── */}
+          <motion.div
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="
+              fixed bottom-0 left-0 right-0 z-[999]
+               bg-white shadow-2xl
+              md:hidden
+            "
+          >
+            
+            {children}
+          </motion.div>
+
+          {/* ── Desktop: centred modal ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+            className="
+              hidden md:flex
+              fixed top-1/2 left-1/2 z-50
+              -translate-x-1/2 -translate-y-1/2
+              w-full max-w-md px-4
+            "
+          >
+            <div className="w-full bg-white shadow-2xl overflow-hidden">
+              {children}
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+}
+
 export default function SideDashboard() {
   const router = useRouter();
   const userData = useAppSelector(
@@ -82,29 +147,24 @@ export default function SideDashboard() {
     useState<boolean>(false);
   const [twoStepEnabled, setTwoStepEnabled] = useState<boolean>(false);
   const menuItems = [
-    // { icon: User, label: "Profile", href: "/profile" },
     { icon: CreditCard, label: "Billing", href: "/dashboard/Billing" },
-    // { icon: Bell, label: "Notifications", href: "/notifications" },
-    {
-      icon: Settings,
-      label: "Account Settings",
-      href: "/dashboard/AccountSettings",
-    },
-    { icon: Moon, label: "Light Mode", action: "toggle-theme" },
+    // {
+    //   icon: Settings,
+    //   label: "Account Settings",
+    //   href: "/dashboard/AccountSettings",
+    // },
+    // { icon: Moon, label: "Light Mode", action: "toggle-theme" },
   ];
-  // Ref for QR code download
+
   const dispatch = useAppDispatch();
   const qrCodeRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
+
   const handleLogout = () => {
     dispatch(clearAuth());
-
     queryClient.clear();
-
     setShowMenu(false);
-
     toast.success("Logged out successfully");
-
     router.push("/auth/sign-in");
   };
 
@@ -120,18 +180,15 @@ export default function SideDashboard() {
   const shareLink = async (): Promise<void> => {
     try {
       if (navigator.share && window.innerWidth < 768) {
-        // Use native share on mobile
         await navigator.share({
           title: userData?.name || "User",
           text: shareText,
           url: profileLink,
         });
       } else {
-        // Open custom share modal for desktop and mobile when native share not available
         setIsShareModalOpen(true);
       }
-    } catch (error) {
-      // If native share fails or is cancelled, open custom modal
+    } catch {
       setIsShareModalOpen(true);
     }
   };
@@ -139,24 +196,12 @@ export default function SideDashboard() {
   const handleShare = async (platform: string): Promise<void> => {
     const shareUrls: Record<string, string> = {
       whatsapp: `https://wa.me/?text=${encodeURIComponent(shareText)}`,
-      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(
-        shareText,
-      )}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
-        profileLink,
-      )}&quote=${encodeURIComponent(shareText)}`,
-      instagram: `https://www.instagram.com/?url=${encodeURIComponent(
-        profileLink,
-      )}`,
-      pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(
-        profileLink,
-      )}&description=${encodeURIComponent(shareText)}`,
-      tiktok: `https://www.tiktok.com/share?url=${encodeURIComponent(
-        profileLink,
-      )}`,
-      email: `mailto:?subject=Check out my Abio profile&body=${encodeURIComponent(
-        shareText,
-      )}`,
+      twitter: `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(profileLink)}&quote=${encodeURIComponent(shareText)}`,
+      instagram: `https://www.instagram.com/?url=${encodeURIComponent(profileLink)}`,
+      pinterest: `https://pinterest.com/pin/create/button/?url=${encodeURIComponent(profileLink)}&description=${encodeURIComponent(shareText)}`,
+      tiktok: `https://www.tiktok.com/share?url=${encodeURIComponent(profileLink)}`,
+      email: `mailto:?subject=Check out my Abio profile&body=${encodeURIComponent(shareText)}`,
       copy: profileLink,
     };
 
@@ -165,7 +210,7 @@ export default function SideDashboard() {
         await navigator.clipboard.writeText(profileLink);
         toast.success("Profile link copied to clipboard!");
         setIsShareModalOpen(false);
-      } catch (err) {
+      } catch {
         toast.error("Failed to copy profile link to clipboard!");
       }
     } else if (platform === "email") {
@@ -175,27 +220,19 @@ export default function SideDashboard() {
     }
   };
 
-  // Download QR code as PNG
   const downloadQRCode = async (): Promise<void> => {
-    if (qrCodeRef.current === null) {
-      return;
-    }
-
+    if (qrCodeRef.current === null) return;
     try {
       const dataUrl = await toPng(qrCodeRef.current, {
         backgroundColor: "#ffffff",
         width: 400,
         height: 400,
-        style: {
-          margin: "0 auto",
-        },
+        style: { margin: "0 auto" },
       });
-
       const link = document.createElement("a");
       link.download = `abio-qr-${userData?.profile?.username || "profile"}.png`;
       link.href = dataUrl;
       link.click();
-
       toast.success("QR code downloaded!");
     } catch (error) {
       console.error("Error downloading QR code:", error);
@@ -204,11 +241,19 @@ export default function SideDashboard() {
   };
 
   const formatLink = (url: string): React.ReactElement => {
-    return (
-      <>
-        <span className="text-red-500 font-semibold">{url}</span>
-      </>
-    );
+    try {
+      const parsed = new URL(url);
+      const base = `${parsed.host}/`;
+      const username = parsed.pathname.replace(/^\//, "") || "";
+      return (
+        <>
+          <span className="font-semibold text-red-500">{base}</span>
+          <span className="text-gray-900">{username}</span>
+        </>
+      );
+    } catch {
+      return <span className="font-semibold text-red-500">{url}</span>;
+    }
   };
 
   const sharePlatforms: SharePlatform[] = [
@@ -242,86 +287,202 @@ export default function SideDashboard() {
     },
   ];
 
+  // ── Shared modal inner content 
+
+  const QRModalContent = () => (
+    <div className="relative   text-center w-full z-[999] p-2 md:p-6 ">
+      <div className="flex justify-end mb-2">
+        <button
+          onClick={() => setIsModalOpen(false)}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <XIcon className="w-5 h-5 text-gray-500" />
+        </button>
+      </div>
+      <h2 className="text-[20px] md:text-[24px] font-semibold">Here is your code!!!</h2>
+      <p className="text-[12px] md:text-sm text-gray-500 mt-1 mb-2">
+        This is your unique code for another <br /> person to scan
+      </p>
+
+      <div className="flex justify-center mb-2" ref={qrCodeRef}>
+        <QRCodeSVG
+          value={profileLink}
+          size={160}
+          level="H"
+          includeMargin={true}
+          bgColor="#ffffff"
+          fgColor="#000000"
+        />
+      </div>
+
+      <div className="flex justify-center gap-4 pb-2">
+        <button
+          onClick={() => {
+            setIsModalOpen(false);
+            setIsShareModalOpen(true);
+          }}
+          className="flex flex-col items-center gap-1 text-xs text-gray-700"
+        >
+          <div className="w-10 h-10 bg-[#3B1F0E] flex items-center justify-center">
+            <Share className="w-5 h-5 text-white" />
+            {/* <Image
+              src="/assets/icons/dashboard/share.svg"
+              alt="share"
+              width={24}
+              height={24}
+              className="w-6 h-6 text-white "
+            /> */}
+          </div>
+          Share
+        </button>
+
+        <button
+          onClick={downloadQRCode}
+          className="flex flex-col items-center gap-1 text-xs text-gray-700"
+        >
+          <div className="w-10 h-10 bg-[#3B1F0E] flex items-center justify-center">
+            <DownloadIcon className="w-5 h-5 text-white" />
+          </div>
+          Download
+        </button>
+      </div>
+    </div>
+  );
+
+  const ShareModalContent = () => (
+    <div className="w-full">
+      {/* Header */}
+      <div className="p-4 md:p-6 border-b border-gray-100 bg-white md:rounded-t-2xl">
+        <div className="flex justify-end mb-2">
+          <button
+            onClick={() => setIsShareModalOpen(false)}
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          >
+            <XIcon className="w-5 h-5 text-gray-500" />
+          </button>
+        </div>
+        <div className="text-center">
+          <h2 className="text-[20px] md:text-[24px] font-bold mb-2 text-gray-900">
+            Share Your Profile
+          </h2>
+          <p className="text-[12px] md:text-sm text-gray-500 mt-1">
+            Abio is more effective when you <br /> connect with friends!
+          </p>
+        </div>
+
+        {/* Link Preview */}
+        <div className="mt-4">
+          <p className="text-sm font-bold text-gray-700 mb-2">
+            Share your link
+          </p>
+          <div className="flex items-center gap-2 bg-[#F7F8FD] border border-gray-200 p-3 ">
+            <input
+              readOnly
+              value={profileLink}
+              className="bg-transparent w-full text-sm text-gray-800 outline-none truncate"
+            />
+            <button
+              onClick={() => handleShare("copy")}
+              className="flex-shrink-0 p-1 hover:bg-gray-200 transition-colors rounded"
+              title="Copy link"
+            >
+              <CopyIcon className="w-4 h-4 text-red-600" />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Share Options */}
+      <div className="p-4 md:p-6 bg-white md:rounded-b-2xl">
+        <p className="text-sm font-bold text-gray-700 mb-3">Share to</p>
+        <div className="grid grid-cols-4 gap-3 pb-2">
+          {sharePlatforms.map(({ platform, icon: Icon, color, label, bgColor }) => (
+            <button
+              key={platform}
+              onClick={() => handleShare(platform)}
+              className="flex flex-col items-center gap-2 p-2 md:p-3 hover:bg-gray-50 rounded-xl transition-colors group"
+            >
+              <div
+                className={`w-10 h-10 md:w-12 md:h-12  ${bgColor} flex items-center justify-center group-hover:scale-105 transition-transform`}
+              >
+                <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
+              </div>
+              <span className="text-xs font-medium text-gray-700 text-center line-clamp-2">
+                {label}
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       {/* MOBILE TOP BAR */}
-      <div className="md:hidden sticky top-0 mt-2 z-40 bg-[#Fff7de] w-full border-b border-gray-200">
-        <div className="px-8 py-2 ">
-          <div className="flex items-center justify-between">
-            <div className="flex-1 min-w-0">
-              <p className="font-extrabold mb-1 text-[20px]">
-                Hi, {userData?.profile?.username || "User"}
-              </p>
-              <p className="text-[12px] font-semibold text-gray-600 truncate">
-                {formatLink(profileLink)}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button onClick={() => setIsModalOpen(true)}>
-                
-              <Image
+      <div className="sticky top-0 z-40 mt-2 mb-4 w-full bg-[#Fff7de] md:hidden">
+        <div className="px-8 py-2 sm:px-6">
+          <div className="flex items-center justify-between gap-3">
+            <p className="min-w-0 flex-1 truncate text-left text-[20px] font-extrabold text-black">
+              {userData?.name || userData?.profile?.username || "User"}
+            </p>
+            <div className="flex shrink-0 items-center gap-[0.5px] p-0">
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
+                aria-label="QR Code"
+              >
+                <Image
                   src="/assets/icons/dashboard/qrcode.svg"
-                  alt="QR Code"
+                  alt=""
                   width={24}
                   height={24}
-                  className="w-10 h-10 text-[#331400]"
+                  className="h-9 w-9 text-[#331400]"
                 />
-                {/* <QrCodeIcon className="w-6 h-6 text-[#331400]" /> */}
               </button>
-              <button onClick={() => setIsShareModalOpen(true)}>
-                 <Image
+              <button
+                onClick={() => setIsShareModalOpen(true)}
+                className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
+                aria-label="Share"
+              >
+                <Image
                   src="/assets/icons/dashboard/share.svg"
-                  alt="Share"
+                  alt=""
                   width={24}
                   height={24}
-                  className="w-10 h-10 text-[#331400]"
+                  className="h-9 w-9 text-[#331400]"
                 />
               </button>
-
-              <button className="relative">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-6 h-6 text-[#331400]"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13.73 21a2 2 0 01-3.46 0"
-                  />
-                </svg>
-                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full" />
-              </button>
+              <Link href="/dashboard/AccountSettings">
+            <button className="">
+             <Image
+                  src="/assets/icons/dashboard/settings-1.svg"
+                  alt=""
+                  width={24}
+                  height={24}
+                  className="h-9 w-9 text-[#331400]"
+                />
+            </button>
+          </Link>
 
               {/* More Button with Dropdown */}
               <div className="relative">
+               
                 <button
-                  className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]"
+                  className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
                   onClick={() => setShowMenu(!showMenu)}
+                  aria-label="More options"
                 >
-                  <MoreHorizontalIcon size={18} color="#331400" />
+                  <MoreHorizontalIcon size={20} color="#331400" />
                 </button>
 
                 {showMenu && (
                   <>
-                    {/* Full-screen overlay that closes the menu */}
                     <div
                       className="fixed inset-0 bg-transparent z-40"
                       onClick={() => setShowMenu(false)}
                     />
-
-                    {/* Menu Dropdown */}
-                    <div className="absolute right-0 top-full mt-2 w-56 bg-white  border border-gray-200 backdrop-blur shadow-xl z-50 overflow-hidden">
-                      {/* Menu Items */}
+                    <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 backdrop-blur shadow-xl z-50 overflow-hidden">
                       <div className="p-2">
                         {menuItems.map((item) => (
                           <Link
@@ -335,8 +496,6 @@ export default function SideDashboard() {
                           </Link>
                         ))}
                       </div>
-
-                      {/* Logout */}
                       <div className="border-t border-gray-100 p-2">
                         <button
                           onClick={handleLogout}
@@ -352,47 +511,42 @@ export default function SideDashboard() {
               </div>
             </div>
           </div>
+          <p className="mt-0.5 truncate text-left text-[12px] font-semibold text-gray-600">
+            {formatLink(profileLink)}
+          </p>
         </div>
       </div>
 
-      {/* ================= DESKTOP QR SECTION ================= */}
+      {/* DESKTOP QR SECTION */}
       <div className="hidden md:block p-4 sm:p-6 space-y-4 text-gray-800 max-w-[400px] mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 mb-6">
-            <button
-              className="cursor-pointer"
-              onClick={() => setIsModalOpen(true)}
-            >
+            <button className="cursor-pointer" onClick={() => setIsModalOpen(true)}>
               <Image
-                  src="/assets/icons/dashboard/qrcode.svg"
-                  alt="QR Code"
-                  width={24}
-                  height={24}
-                  className="w-12 h-12 text-[#331400]"
-                />
+                src="/assets/icons/dashboard/qrcode.svg"
+                alt="QR Code"
+                width={24}
+                height={24}
+                className="w-12 h-12 text-[#331400]"
+              />
             </button>
-
             <button className="cursor-pointer" onClick={copyToClipboard}>
               <Image
-                  src="/assets/icons/dashboard/copy.svg"
-                  alt="copy"
-                  width={24}
-                  height={24}
-                  className="w-12 h-12 text-[#331400]"
-                />
+                src="/assets/icons/dashboard/copy.svg"
+                alt="copy"
+                width={24}
+                height={24}
+                className="w-12 h-12 text-[#331400]"
+              />
             </button>
-
-            <button
-              className="cursor-pointer"
-              onClick={() => setIsShareModalOpen(true)}
-            >
+            <button className="cursor-pointer" onClick={() => setIsShareModalOpen(true)}>
               <Image
-                  src="/assets/icons/dashboard/share.svg"
-                  alt="QR Code"
-                  width={24}
-                  height={24}
-                  className="w-12 h-12 text-[#331400]"
-                />
+                src="/assets/icons/dashboard/share.svg"
+                alt="Share"
+                width={24}
+                height={24}
+                className="w-12 h-12 text-[#331400]"
+              />
             </button>
             <p className="text-sm text-gray-600 cursor-pointer">
               {formatLink(profileLink)}
@@ -401,177 +555,15 @@ export default function SideDashboard() {
         </div>
       </div>
 
-      {/* QR MODAL */}
-      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-        <div className="relative bg-white rounded-2xl   text-center w-full max-w-md">
-          <div className="flex justify-end mb-2">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0 ml-2"
-            >
-              <XIcon className="w-5 h-5 text-gray-500" />
-            </button>
-          </div>
-          {/* Title */}
-          <h2 className="text-lg font-bold">Here is your code!!!</h2>
+      {/* ── QR Modal (bottom sheet on mobile, centred on desktop) ── */}
+      <ResponsiveSheet isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+        <QRModalContent />
+      </ResponsiveSheet>
 
-          {/* Subtitle */}
-          <p className="text-sm text-gray-500 mt-1 mb-4">
-            This is your unique code for another person to scan
-          </p>
-
-          {/* QR Code with logo in center */}
-          <div className="flex justify-center mb-6" ref={qrCodeRef}>
-            <div className="relative">
-              <QRCodeSVG
-                value={profileLink}
-                size={160}
-                level="H" // High error correction (30%)
-                includeMargin={true}
-                bgColor="#ffffff"
-                fgColor="#000000"
-                // renderAs="canvas" // Use canvas for better download quality
-              />
-
-              {/* Logo overlay in center */}
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex justify-center gap-10">
-            {/* Share */}
-            <button
-              onClick={() => {
-                setIsModalOpen(false);
-                setIsShareModalOpen(true);
-              }}
-              className="flex flex-col items-center gap-1 text-xs text-gray-700"
-            >
-              <div className="w-10 h-10 bg-[#3B1F0E] flex items-center justify-center">
-                 <Image
-                  src="/assets/icons/dashboard/share.svg"
-                  alt="copy"
-                  width={24}
-                  height={24}
-                  className="w-12 h-12 text-white"
-                />
-              </div>
-              Share
-            </button>
-
-            {/* Download */}
-            <button
-              onClick={downloadQRCode}
-              className="flex flex-col items-center gap-1 text-xs text-gray-700"
-            >
-              <div className="w-10 h-10 bg-[#3B1F0E]  flex items-center justify-center">
-                <DownloadIcon className="w-5 h-5 text-white" />
-              </div>
-              Download
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* SHARE MODAL */}
-      <AnimatePresence>
-        {isShareModalOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
-              onClick={() => setIsShareModalOpen(false)}
-            />
-
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, y: -100 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -100 }}
-              transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-md px-4"
-            >
-              <div className="bg-white  ">
-                {/* Header */}
-                <div className="p-4  md:p-6 border-b border-gray-100 sticky top-0 bg-white z-10 rounded-t-lg">
-                  <div className="flex justify-end mb-2">
-                    <button
-                      onClick={() => setIsShareModalOpen(false)}
-                      className="p-2 hover:bg-gray-100 rounded-full transition-colors flex-shrink-0 ml-2"
-                    >
-                      <XIcon className="w-5 h-5 text-gray-500" />
-                    </button>
-                  </div>
-                  <div className="flex items-center text-center justify-between">
-                    <div className="flex-1">
-                      <h2 className="text-xl font-bold mb-2 text-gray-900">
-                        Share Your Profile
-                      </h2>
-                      <p className="text-[14px] text-gray-500 mt-1">
-                        Abio is more effective when you <br /> connect with
-                        friends!
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Link Preview */}
-                  <div className="mt-4">
-                    <p className="text-sm font-bold text-gray-700 mb-2">
-                      Share your link
-                    </p>
-                    <div className="flex items-center gap-2 bg-[#F7F8FD] border border-gray-200 p-3 rounded-lg">
-                      <input
-                        readOnly
-                        value={profileLink}
-                        className="bg-transparent w-full text-sm text-gray-800 outline-none truncate"
-                      />
-                      <button
-                        onClick={() => handleShare("copy")}
-                        className="flex-shrink-0 p-1 hover:bg-gray-200 transition-colors rounded"
-                        title="Copy link"
-                      >
-                        <CopyIcon className="w-4 h-4 text-red-600" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Share Options */}
-                <div className="p-4 md:p-6">
-                  <p className="text-sm font-bold text-gray-700 mb-1">
-                    Share to
-                  </p>
-                  <div className="grid grid-cols-4 md:grid-cols-4 gap-3">
-                    {sharePlatforms.map(
-                      ({ platform, icon: Icon, color, label, bgColor }) => (
-                        <button
-                          key={platform}
-                          onClick={() => handleShare(platform)}
-                          className="flex flex-col items-center gap-2 p-2 md:p-3 hover:bg-gray-50 rounded-xl transition-colors group"
-                        >
-                          <div
-                            className={`w-10 h-10 md:w-12 md:h-12 rounded-full ${bgColor} flex items-center justify-center group-hover:scale-105 transition-transform`}
-                          >
-                            <Icon
-                              className={`w-5 h-5 md:w-6 md-h-6 ${color}`}
-                            />
-                          </div>
-                          <span className="text-xs font-medium text-gray-700 text-center line-clamp-2">
-                            {label}
-                          </span>
-                        </button>
-                      ),
-                    )}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* ── Share Modal (bottom sheet on mobile, centred on desktop) ── */}
+      <ResponsiveSheet isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)}>
+        <ShareModalContent />
+      </ResponsiveSheet>
     </>
   );
 }

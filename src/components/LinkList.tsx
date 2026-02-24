@@ -34,8 +34,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-// Import Framer Motion
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  containerVariants,
+  itemVariants,
+  modalOverlayVariants,
+  modalContentVariants,
+  slideInVariants,
+  sortableItemVariants,
+} from "@/lib/animations";
 
 // Suggested platforms
 const PLATFORMS = [
@@ -59,122 +66,6 @@ export default function LinkList({
 }) {
   const [linksData, setLinksData] = useState<ProfileLink[]>(linksDataData);
   const { refetch: refetchLinks } = useGetAllLinks();
-
-  // Animation variants
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.08,
-        delayChildren: 0.1,
-      }
-    }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { 
-      opacity: 0, 
-      y: 20,
-      scale: 0.95 
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    },
-    exit: {
-      opacity: 0,
-      x: -50,
-      scale: 0.9,
-      transition: {
-        duration: 0.2,
-        ease: "easeIn"
-      }
-    },
-    drag: {
-      scale: 1.05,
-      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 20
-      }
-    }
-  };
-
-  const modalOverlayVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut"
-      }
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        duration: 0.15,
-        ease: "easeIn"
-      }
-    }
-  };
-
-  const modalContentVariants: Variants = {
-    hidden: { 
-      scale: 0.9, 
-      opacity: 0,
-      y: 20 
-    },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 25,
-        delay: 0.1
-      }
-    },
-    exit: {
-      scale: 0.9,
-      opacity: 0,
-      y: 20,
-      transition: {
-        duration: 0.15,
-        ease: "easeIn"
-      }
-    }
-  };
-
-  const slideInVariants: Variants = {
-    hidden: { x: "100%" },
-    visible: {
-      x: 0,
-      transition: {
-        type: "spring",
-        stiffness: 80,
-        damping: 20,
-        mass: 0.8
-      }
-    },
-    exit: {
-      x: "100%",
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 20,
-        mass: 0.8
-      }
-    }
-  };
 
   // Update linksData when prop changes
   useEffect(() => {
@@ -425,7 +316,7 @@ export default function LinkList({
                 e.stopPropagation();
                 setIsAddModalOpen(true);
               }}
-              className="w-full py-3 mt-3 md:mt-6 shadow-md bg-[#331400] text-[#FED45C] font-semibold"
+              className="w-full py-3 mt-3 cursor-pointer md:mt-6 shadow-md bg-[#331400] text-[#FED45C] font-semibold"
             >
               + Add
             </button>
@@ -492,13 +383,9 @@ export default function LinkList({
       <AnimatePresence>
         {isAddModalOpen && (
           <>
-            <motion.div
-              key="mobile-add-modal"
-              variants={slideInVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col"
+            <div
+              
+            className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col"
             >
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
@@ -561,10 +448,10 @@ export default function LinkList({
                     onChange={(e) =>
                       setNewLink({ ...newLink, platform: e.target.value })
                     }
-                    className="w-full border border-[#4B2E1E] bg-transparent text-[12px] text-[#4B2E1E] px-3 py-2 "
+                    className="w-full border border-[#4B2E1E] bg-transparent cursor-pointer text-[12px] text-[#4B2E1E] px-3 py-2 "
                   >
                     {PLATFORMS.map((platform) => (
-                      <option key={platform} className="text-[12px]" value={platform}>
+                      <option key={platform} className="text-[12px] cursor-pointer" value={platform}>
                         {platform}
                       </option>
                     ))}
@@ -622,7 +509,7 @@ export default function LinkList({
                   </Button>
                 </motion.div>
               </motion.div>
-            </motion.div>
+            </div>
 
             {/* ADD LINK MODAL - DESKTOP */}
             <motion.div
@@ -802,18 +689,7 @@ function SortableItem({
       style={style}
       {...attributes}
       animate={isDragging ? "drag" : "visible"}
-      variants={{
-        drag: {
-          scale: 1.05,
-          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.15)",
-          zIndex: 999,
-        },
-        visible: {
-          scale: 1,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-          zIndex: 1,
-        }
-      }}
+      variants={sortableItemVariants}
       transition={{
         type: "spring",
         stiffness: 200,
