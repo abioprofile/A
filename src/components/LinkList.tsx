@@ -421,7 +421,7 @@ export default function LinkList({
                       setNewLink({ ...newLink, title: e.target.value })
                     }
                     placeholder="e.g., Instagram"
-                    className="w-full"
+                    className="w-full text-[16px] placeholder:text-[16px]"
                   />
                 </div>
 
@@ -435,7 +435,7 @@ export default function LinkList({
                       setNewLink({ ...newLink, url: e.target.value })
                     }
                     placeholder="https://instagram.com/username"
-                    className="w-full"
+                    className="w-full text-[16px] placeholder:text-[16px]"
                   />
                 </div>
 
@@ -448,7 +448,7 @@ export default function LinkList({
                     onChange={(e) =>
                       setNewLink({ ...newLink, platform: e.target.value })
                     }
-                    className="w-full border border-[#4B2E1E] bg-transparent cursor-pointer text-[12px] text-[#4B2E1E] px-3 py-2 "
+                    className="w-full border border-[#4B2E1E] bg-transparent cursor-pointer text-[16px] placeholder:text-[16px] text-[#4B2E1E] px-3 py-2 "
                   >
                     {PLATFORMS.map((platform) => (
                       <option key={platform} className="text-[12px] cursor-pointer" value={platform}>

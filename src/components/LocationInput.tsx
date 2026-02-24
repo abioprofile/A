@@ -126,7 +126,7 @@ export function LocationInput({
   return (
     <div className={className} ref={wrapperRef}>
       {label && (
-        <label htmlFor={id} className="text-left text-[12px] font-semibold block">
+        <label htmlFor={id} className="text-left text-[15px] font-semibold block">
           {label}
         </label>
       )}
@@ -143,7 +143,7 @@ export function LocationInput({
             if (value.trim().length >= 2) setDropdownOpen(true);
           }}
           onBlur={() => setFocused(false)}
-          className={`flex-1 min-w-0 bg-transparent outline-none text-[10px] md:text-[12px] placeholder:text-[14px] md:placeholder:text-[12px] text-gray-800 ${inputClassName ?? ""}`}
+          className={`flex-1 min-w-0 bg-transparent outline-none text-[16px] md:text-[12px] placeholder:text-[14px] md:placeholder:text-[12px] text-gray-800 ${inputClassName ?? ""}`}
           autoComplete="off"
           role="combobox"
           aria-expanded={showDropdown}
