@@ -234,7 +234,7 @@ const ProfileContent = ({
       <div className="w-full flex flex-col gap-1">
         <label
           htmlFor="displayName"
-          className="text-left text-[11px] md:text-[12px] font-semibold"
+          className="text-left text-[15px] md:text-[12px] font-semibold"
         >
           Display Name
         </label>
@@ -243,21 +243,21 @@ const ProfileContent = ({
           type="text"
           value={displayName}
           onChange={handleDisplayNameChange}
-          className="w-full border border-black px-3 py-2 text-[13px] md:text-[14px] placeholder:text-[11px] md:placeholder:text-[14px] bg-transparent"
+          className="w-full border border-black px-3 py-2 focus:outline-none text-[16px] md:text-[14px] placeholder:text-[16px] md:placeholder:text-[14px] bg-transparent"
           placeholder="Enter your display name"
         />
       </div>
 
       {/* Bio */}
       <div className="w-full flex flex-col gap-1">
-        <label htmlFor="bio" className="text-left text-[11px] md:text-[12px] font-semibold">
+        <label htmlFor="bio" className="text-left text-[15px] md:text-[12px] font-semibold">
           Bio
         </label>
         <textarea
           id="bio"
           value={bio}
           onChange={handleBioChange}
-          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[13px] md:text-[14px] placeholder:text-[11px] md:placeholder:text-[14px] h-10 md:h-24 text-gray-800"
+          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[15px] md:text-[14px] placeholder:text-[15px] md:placeholder:text-[14px] h-10 md:h-24 text-gray-800 focus:outline-none resize-none"
           placeholder="Tell us about yourself (max 15 words)..."
         />
         <p className="text-[11px] hidden md:block text-gray-500 text-right">

@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { Upload, X } from "lucide-react";
 import type { FillGradientWallpaperConfig } from "@/types/appearance.types";
@@ -6,6 +6,9 @@ import type { FillGradientWallpaperConfig } from "@/types/appearance.types";
 const WALLPAPER_AMOUNT_FILL = 0.5;
 const WALLPAPER_AMOUNT_GRADIENT_START = 0.5;
 const WALLPAPER_AMOUNT_GRADIENT_END = 0.5;
+
+const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/gif,image/webp";
 
 function isValidHexColor(s: string): boolean {
   return /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(s);
@@ -47,7 +50,7 @@ export default function WallpaperSelector({
       ? "gradient"
       : selectedTheme.startsWith("fill")
         ? "fill"
-        : "image"
+        : "image",
   );
   const [fillColor, setFillColor] = useState("#000000");
   const [gradientStart, setGradientStart] = useState("#0f0f0f");
@@ -85,7 +88,10 @@ export default function WallpaperSelector({
         wallpaperConfig: {
           type: "fill",
           backgroundColor: [
-            { color: toValidHex(fillColor, "#000000"), amount: WALLPAPER_AMOUNT_FILL },
+            {
+              color: toValidHex(fillColor, "#000000"),
+              amount: WALLPAPER_AMOUNT_FILL,
+            },
           ],
         },
         imageFile: null,
@@ -124,7 +130,7 @@ export default function WallpaperSelector({
     if (!isDragging || !showModal) return;
     const clientY = "touches" in e ? e.touches[0].clientY : e.clientY;
     const delta = clientY - dragStart;
-    
+
     if (delta > 0) {
       setTranslate(delta);
     }
@@ -158,11 +164,17 @@ export default function WallpaperSelector({
   }, [showModal]);
 
   const wallpapers = [
-    { type: "fill", label: "Fill", backgroundStyle: { backgroundColor: fillColor } },
+    {
+      type: "fill",
+      label: "Fill",
+      backgroundStyle: { backgroundColor: fillColor },
+    },
     {
       type: "gradient",
       label: "Gradient",
-      backgroundStyle: { backgroundImage: `linear-gradient(to bottom, ${gradientStart}, ${gradientEnd})` },
+      backgroundStyle: {
+        backgroundImage: `linear-gradient(to bottom, ${gradientStart}, ${gradientEnd})`,
+      },
     },
     { type: "image", label: "Image", backgroundStyle: {} },
   ];
@@ -176,7 +188,10 @@ export default function WallpaperSelector({
         wallpaperConfig: {
           type: "fill",
           backgroundColor: [
-            { color: toValidHex(color, "#000000"), amount: WALLPAPER_AMOUNT_FILL },
+            {
+              color: toValidHex(color, "#000000"),
+              amount: WALLPAPER_AMOUNT_FILL,
+            },
           ],
         },
         imageFile: null,
@@ -234,7 +249,7 @@ export default function WallpaperSelector({
 
   const handleSelectType = (type: "fill" | "gradient" | "image") => {
     setThemeType(type);
-    
+
     if (type === "fill") {
       const themeString = `fill:${fillColor}`;
       setSelectedTheme(themeString);
@@ -243,7 +258,10 @@ export default function WallpaperSelector({
         wallpaperConfig: {
           type: "fill",
           backgroundColor: [
-            { color: toValidHex(fillColor, "#000000"), amount: WALLPAPER_AMOUNT_FILL },
+            {
+              color: toValidHex(fillColor, "#000000"),
+              amount: WALLPAPER_AMOUNT_FILL,
+            },
           ],
         },
         imageFile: null,
@@ -313,12 +331,19 @@ export default function WallpaperSelector({
                   }
                 }}
                 className={`relative w-[100px] h-[100px] overflow-hidden border-2 flex items-center justify-center transition-all ${
-                  isSelected(wallpaper.type) ? "border-[#E30000]" : "border-transparent hover:border-gray-400"
+                  isSelected(wallpaper.type)
+                    ? "border-[#E30000]"
+                    : "border-transparent hover:border-gray-400"
                 }`}
               >
                 {wallpaper.type === "image" ? (
                   selectedTheme.startsWith("blob:") ? (
-                    <Image src={selectedTheme} alt="Uploaded wallpaper" fill className="object-cover" />
+                    <Image
+                      src={selectedTheme}
+                      alt="Uploaded wallpaper"
+                      fill
+                      className="object-cover"
+                    />
                   ) : (
                     <div className="flex flex-col items-center justify-center text-gray-500">
                       <Upload className="w-6 h-6 mb-1" />
@@ -326,7 +351,10 @@ export default function WallpaperSelector({
                     </div>
                   )
                 ) : (
-                  <div className="absolute inset-0" style={wallpaper.backgroundStyle} />
+                  <div
+                    className="absolute inset-0"
+                    style={wallpaper.backgroundStyle}
+                  />
                 )}
               </button>
               <span className="text-sm font-medium">{wallpaper.label}</span>
@@ -336,7 +364,9 @@ export default function WallpaperSelector({
 
         {themeType === "fill" && (
           <div className="flex items-center justify-center gap-3 mt-2">
-            <label className="text-sm font-medium text-gray-700">Fill Color:</label>
+            <label className="text-sm font-medium text-gray-700">
+              Fill Color:
+            </label>
             <input
               type="color"
               value={fillColor}
@@ -349,7 +379,9 @@ export default function WallpaperSelector({
         {themeType === "gradient" && (
           <div className="flex flex-row items-center justify-center gap-4 mt-2">
             <div className="flex items-center gap-2">
-              <label className="text-sm font-medium text-gray-700">Start:</label>
+              <label className="text-sm font-medium text-gray-700">
+                Start:
+              </label>
               <input
                 type="color"
                 value={gradientStart}
@@ -405,7 +437,9 @@ export default function WallpaperSelector({
             isAnimating ? "transition-transform duration-300 ease-out" : ""
           }`}
           style={{
-            transform: showModal ? `translateY(${translate}px)` : `translateY(${window.innerHeight}px)`,
+            transform: showModal
+              ? `translateY(${translate}px)`
+              : `translateY(${window.innerHeight}px)`,
             transitionProperty: isAnimating ? "transform" : "none",
           }}
         >
@@ -419,7 +453,9 @@ export default function WallpaperSelector({
 
           {/* Header */}
           <div className="flex items-center justify-between px-6 pb-4 border-b border-gray-200">
-            <h2 className="text-2xl font-bold text-gray-900">Select wallpaper</h2>
+            <h2 className="text-2xl font-bold text-gray-900">
+              Select wallpaper
+            </h2>
             <button
               onClick={() => setShowModal(false)}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
@@ -446,16 +482,26 @@ export default function WallpaperSelector({
               </div>
               <div className="text-left">
                 <h3 className="font-semibold text-gray-900">Upload your own</h3>
-                <p className="text-xs text-gray-500">JPG, PNG, GIF up to 10MB</p>
+                <p className="text-xs text-gray-500">
+                  JPG, PNG, GIF up to 10MB
+                </p>
               </div>
               <span className="ml-auto text-gray-400">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
                 </svg>
               </span>
             </button>
-
-        
           </div>
         </div>
       </div>

@@ -227,7 +227,7 @@ const SelectGoalPage = () => {
 
           {/* Progress bar row — centered */}
           <div className="w-full flex justify-center">
-            <div className="w-full mt-10  max-w-lg">
+            <div className="w-full my-2 md:my-6 max-w-lg">
               <OnboardingProgressWithSteps currentStep={2} totalSteps={5} />
             </div>
           </div>
@@ -241,7 +241,7 @@ const SelectGoalPage = () => {
               variants={itemVariants}
               className="text-center space-y-4 mb-6 w-full"
             >
-              <motion.h1 className="text-[22px] md:text-[24px] font-bold text-[#1a1a1a] leading-tight">
+              <motion.h1 className="text-[20px] md:text-[24px] font-extrabold text-[#331400] leading-tight">
                 What best describes your goal for using Abio?
               </motion.h1>
               <motion.p
@@ -255,7 +255,7 @@ const SelectGoalPage = () => {
             {/* Goal Cards - Centered */}
             <motion.div
               variants={itemVariants}
-              className="w-full space-y-4 mb-8"
+              className="w-full space-y-2 md:space-y-3 mb-8"
             >
               {goals.map((goal, index) => {
                 const isSelected = selectedGoal === goal.title;
@@ -297,7 +297,7 @@ const SelectGoalPage = () => {
                         <h3 className="font-bold text-[16px] text-gray-900">
                           {goal.title}
                         </h3>
-                        <p className="text-[12px] text-gray-600 mt-1">
+                        <p className="text-[12px]  text-gray-600 mt-1">
                           {goal.description}
                         </p>
                       </div>
@@ -355,7 +355,7 @@ const SelectGoalPage = () => {
                     : {}
                 }
                 className={cn(
-                  "w-full py-4 px-6 font-semibold text-[14px] transition-all duration-200 flex items-center justify-center gap-2",
+                  "w-full py-4 px-6 text-sm font-semibold h-10 transition-all duration-200 flex items-center justify-center gap-2",
                   selectedGoal &&
                     !isSubmitting &&
                     !updateProfileMutation.isPending
@@ -393,7 +393,7 @@ const SelectGoalPage = () => {
         {/* Footer - Centered at bottom */}
         <motion.footer
           variants={itemVariants}
-          className="px-4 py-6 text-center"
+          className="px-4 py-4 text-center"
         >
           <motion.a
             href="/privacy-policy"

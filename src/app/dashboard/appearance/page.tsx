@@ -4,6 +4,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { ChevronLeft, RotateCcw, RotateCw } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PhoneDisplay from "@/components/PhoneDisplay";
@@ -385,19 +386,24 @@ useEffect(() => {
 
       {/* Main Layout */}
       <div className="flex flex-1 gap-8">
-        {/* Phone Preview */}
+        {/* Phone Preview — mobile: smooth scale + translate when sheet is open (Linktree-style) */}
         <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center mt-6 items-start">
-          <div
-            className="relative w-full max-w-[360px] md:max-w-[420px] mx-auto
-                       transition-transform duration-300
-                       ease-[cubic-bezier(.2,.8,.2,1)]
-                       origin-top"
-            style={{
-              transform: isMobile
-                ? "scale(1) translateY(0)"
-                : isSheetOpen
-                  ? "scale(0.82) translateY(-24px)"
-                  : "scale(1.05) translateY(0)",
+          <motion.div
+            className="relative w-full max-w-[360px] md:max-w-[420px] mx-auto origin-top"
+            style={{ transformOrigin: "top center" }}
+            animate={
+              isMobile
+                ? {
+                    scale: isSheetOpen ? (activeTab === 2 || activeTab === 3 ? 0.58 : 0.55) : 1,
+                    y: isSheetOpen ? (activeTab === 2 || activeTab === 3 ? "-3vh" : "-2vh") : 0,
+                  }
+                : { scale: 1, y: 0 }
+            }
+            transition={{
+              type: "spring",
+              stiffness: 340,
+              damping: 30,
+              mass: 0.8,
             }}
           >
             <div className="overflow-hidden">
@@ -410,8 +416,7 @@ useEffect(() => {
                 phoneDisplayLoading={phoneDisplayLoading}
               />
             </div>
-            
-          </div>
+          </motion.div>
         </aside>
 
         {/* Desktop Editor */}

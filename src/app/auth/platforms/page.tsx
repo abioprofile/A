@@ -173,7 +173,7 @@ const Platforms = () => {
             className="text-center mb-8"
           >
             <motion.h1 
-              className="text-[22px] md:text-[24px] font-semibold my-2 text-[#331400]"
+              className="text-[20px] md:text-[24px] font-semibold my-2 text-[#331400]"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -181,7 +181,7 @@ const Platforms = () => {
             </motion.h1>
             <motion.p 
               variants={itemVariants}
-              className="text-[#331400] text-[14px] max-w-2xl"
+              className="text-[#666464] text-sm lg:text-[14px] font-medium max-w-2xl"
             >
               Pick a maximum of 5 platforms to get started. You can update later
             </motion.p>
@@ -234,7 +234,7 @@ const Platforms = () => {
             >
               <Button
                 onClick={() => router.push("/auth/links")}
-                className="w-full bg-[#FED45C] text-[#331400] py-6 text-[14px] hover:bg-[#FED45C]/90"
+                className="w-full bg-[#FED45C] text-[#331400] py-2 h-10 text-sm font-semibold hover:bg-[#FED45C]/90"
               >
                 Continue
               </Button>

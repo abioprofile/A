@@ -15,8 +15,8 @@ export const OnboardingProgressWithSteps = ({
   const steps = Array.from({ length: totalSteps }, (_, i) => i + 1);
 
   return (
-    <div className="">
-      <div className="max-w-2xl mx-auto px-4 py-3">
+    <div className="w-full min-w-0 overflow-x-hidden">
+      <div className="mx-auto max-w-2xl px-4 py-3 sm:px-4">
         {/* Progress bar */}
         <div className="relative mb-2">
           <div className="h-1 w-full bg-gray-200 ">
@@ -29,12 +29,15 @@ export const OnboardingProgressWithSteps = ({
           </div>
         </div>
 
-        {/* Step indicators */}
-        <div className="flex justify-between">
+        {/* Step indicators: labels hidden on mobile to prevent overflow */}
+        <div className="flex justify-between gap-1 sm:gap-2">
           {steps.map((step) => (
-            <div key={step} className="flex flex-col items-center">
+            <div
+              key={step}
+              className="flex min-w-0 flex-shrink flex-col items-center sm:min-w-[4.5rem] sm:shrink-0"
+            >
               <motion.div
-                className={`w-6 h-6  flex items-center justify-center text-xs font-semibold ${
+                className={`flex h-6 w-6 items-center justify-center text-xs font-semibold ${
                   step < currentStep
                     ? "bg-[#FED45C] text-[#331400]"
                     : step === currentStep
@@ -48,12 +51,12 @@ export const OnboardingProgressWithSteps = ({
                 transition={{ duration: 0.2 }}
               >
                 {step < currentStep ? (
-                  <Check className="w-3 h-3" />
+                  <Check className="h-3 w-3" />
                 ) : (
                   step
                 )}
               </motion.div>
-              <span className="text-xs mt-1 text-gray-600">
+              <span className="mt-1 hidden text-center text-xs text-gray-600 whitespace-nowrap sm:block">
                 {getStepLabel(step)}
               </span>
             </div>

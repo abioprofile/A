@@ -304,9 +304,9 @@ export default function ProfileLivePage() {
               <Button
                 onClick={handleRetry}
                 className="bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5]"
-              >
+              >v
                 Retry
-              </Button>
+              </Button>                                               
               <Button
                 onClick={() => router.push("/dashboard")}
                 className="bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E]"
@@ -342,7 +342,7 @@ export default function ProfileLivePage() {
           initial="hidden"
           animate="visible"
           variants={containerVariants}
-          className="flex flex-col-reverse lg:flex-row items-center justify-center w-full max-w-6xl gap-8 lg:gap-16 relative z-10"
+          className="flex flex-col-reverse lg:flex-row items-center justify-center w-full max-w-6xl -mt-20 md:mt-0 gap-8 lg:gap-16 relative z-10"
         >
           {/* Left Side — Profile Preview */}
           <motion.div
@@ -517,13 +517,13 @@ export default function ProfileLivePage() {
           >
             <motion.h1
               variants={itemVariants}
-              className="text-[22px] md:text-[24px] font-semibold text-[#331400] mb-3"
+              className="text-[20px] md:text-[24px] font-semibold text-[#331400] mb-3"
             >
               Your profile is now live!
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-[#4B2E1E] md:mb-6 text-[14px]"
+              className="text-[#4B2E1E] md:mb-6 text-sm"
             >
               Get more visitors by sharing your Abio Profile everywhere.
             </motion.p>
@@ -584,7 +584,7 @@ export default function ProfileLivePage() {
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="fixed bottom-0 left-0 w-full flex md:hidden gap-3 p-4 border-t border-gray-200 shadow-lg z-20"
+          className="fixed bottom-0 left-0 w-full flex md:hidden gap-3 p-4 z-20"
         >
           <Button
             onClick={() => router.push("/dashboard")}

@@ -15,7 +15,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const showTopNav = pathname === "/dashboard";
 
   return (
-    <ProtectedRoute>
+    <>
       <SidebarTitleProvider>
         <SidebarProvider>
           <div className="flex w-full md:h-screen overflow-hidden">
@@ -37,7 +37,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           {/* <MobileBottomNav /> */}
         </SidebarProvider>
       </SidebarTitleProvider>
-    </ProtectedRoute>
+    </>
   );
 };
 

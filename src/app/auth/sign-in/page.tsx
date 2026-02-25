@@ -152,12 +152,12 @@ const SignIn = () => {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="bg-[#FEF4EA] min-h-screen w-full flex flex-col"
+      className="flex h-screen w-full flex-col overflow-hidden bg-[#FEF4EA]"
     >
-      {/* Logo Section */}
+      {/* Logo Section - shrink on small screens */}
       <motion.div
         variants={logoVariants}
-        className="px-4 pt-4  md:px-20 md:pt-8 md:pb-4"
+        className="shrink-0 px-4 pt-3 pb-2 md:px-20 md:pt-8 md:pb-4"
       >
         <Link href="/" className="flex items-center mr-20 gap-1 group">
           <Image
@@ -174,12 +174,12 @@ const SignIn = () => {
         </Link>
       </motion.div>
 
-      {/* Centered Form Container */}
-      <div className="flex-1 flex items-center justify-center p-4">
+      {/* Centered Form Container - fills remaining space, no scroll */}
+      <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-3 sm:p-4">
         <motion.div variants={formVariants} className="w-full max-w-md">
-          <motion.div variants={itemVariants} className="mb-6 text-center">
+          <motion.div variants={itemVariants} className="mb-3 text-center sm:mb-6">
             <motion.h1
-              className="text-2xl md:text-3xl font-extrabold mb-1 md:mb-4 text-[#331400]"
+              className="mb-1 text-[20px] font-extrabold text-[#331400] md:mb-4 md:text-[24px]"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -196,9 +196,9 @@ const SignIn = () => {
           <motion.form
             variants={itemVariants}
             onSubmit={handleSubmit(onSubmit)}
-            className="space-y-4 w-full"
+            className="w-full space-y-2 sm:space-y-4"
           >
-            <motion.div variants={itemVariants} className="space-y-2">
+            <motion.div variants={itemVariants} className="space-y-1.5 sm:space-y-2">
               <Label htmlFor="email" className="font-semibold text-sm">
                 Email Address
               </Label>
@@ -207,7 +207,7 @@ const SignIn = () => {
                   id="email"
                   type="email"
                   placeholder="Email"
-                  className="h-10 text-base md:text-sm placeholder:text-sm border-1 border-[#331400]"
+                  className="h-9 border-1 border-[#331400] text-base placeholder:text-sm sm:h-10 md:text-sm"
                   {...register("email")}
                 />
               </div>
@@ -227,7 +227,7 @@ const SignIn = () => {
               </AnimatePresence>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="space-y-2">
+            <motion.div variants={itemVariants} className="space-y-1.5 sm:space-y-2">
               <Label htmlFor="password" className="font-semibold text-sm">
                 Password
               </Label>
@@ -236,7 +236,7 @@ const SignIn = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="h-10 pr-10 text-base md:text-sm placeholder:text-sm border-1 border-[#331400]"
+                  className="h-9 border-1 border-[#331400] pr-10 text-base placeholder:text-sm sm:h-10 md:text-sm"
                   {...register("password")}
                 />
                 <motion.button

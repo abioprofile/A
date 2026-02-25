@@ -17,7 +17,8 @@ import { usePhoneDisplayProps } from "@/hooks/usePhoneDisplayProps";
 import { ProfileLink, UserProfile } from "@/types/auth.types";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { ChevronLeft } from "lucide-react";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 interface UserLink {
   id: string;
@@ -33,21 +34,23 @@ export default function DashboardPage() {
   const userData = useAppSelector((state) => state.auth.user);
 
   const [displayName, setDisplayName] = useState<string>("");
-  const [firstName, setFirstName] = useState<string>("User");
+  const [username, setUsername] = useState<string>("User");
 
- useEffect(() => {
+  useEffect(() => {
     const getName = () => {
       if (userData?.profile?.name) return userData.profile.name;
       if (userData?.name) return userData.name;
       if (user?.name) return user.name;
       return "User";
     };
+    const getUsername = () => {
+      if (userData?.profile?.username) return userData.profile.username;
+      if (user?.profile?.username) return (user.profile as { username?: string })?.username;
+      return "User";
+    };
 
-    const fullName = getName();
-    const firstName = fullName.split(" ")[0];
-    
-    setDisplayName(fullName);
-    setFirstName(firstName);
+    setDisplayName(getName());
+    setUsername(getUsername());
   }, [user, userData]);
 
   const [loading, setLoading] = useState(true);
@@ -141,93 +144,6 @@ export default function DashboardPage() {
     setShowMobileLinks(true);
   };
 
-  // Animation variants
-  const containerVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      }
-    }
-  };
-
-  const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 15
-      }
-    }
-  };
-
-  const slideInVariants: Variants = {
-    hidden: { x: 100, opacity: 0 },
-    visible: {
-      x: 0,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 80,
-        damping: 20
-      }
-    },
-    exit: {
-      x: 100,
-      opacity: 0,
-      transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 20
-      }
-    }
-  };
-
-  const modalOverlayVariants: Variants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        duration: 0.2,
-        ease: "easeOut"
-      }
-    },
-    exit: {
-      opacity: 0,
-      transition: {
-        duration: 0.15,
-        ease: "easeIn"
-      }
-    }
-  };
-
-  const modalContentVariants: Variants = {
-    hidden: { scale: 0.9, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: {
-        type: "spring",
-        stiffness: 200,
-        damping: 25,
-        delay: 0.1
-      }
-    },
-    exit: {
-      scale: 0.9,
-      opacity: 0,
-      transition: {
-        duration: 0.15,
-        ease: "easeIn"
-      }
-    }
-  };
-
   // if (loading) {
   //   return (
   //     <div className="flex items-center justify-center min-h-screen bg-[#fff]">
@@ -245,7 +161,7 @@ export default function DashboardPage() {
   // }
 
   return (
-    <ProtectedRoute>
+    <>
       <motion.section
         initial="hidden"
         animate="visible"
@@ -257,7 +173,7 @@ export default function DashboardPage() {
             variants={itemVariants}
             className="p-8 text-[30px] font-medium"
           >
-            Hi, {firstName}
+            Hi, {username}
           </motion.h1>
           
           <motion.div
@@ -330,7 +246,7 @@ export default function DashboardPage() {
 
         <motion.aside
           variants={itemVariants}
-          className="w-full md:w-[40%] h-[100vh] overflow-y-auto md:h-none -mb-20 md:mb-0 bg-[#Fff7de] overscroll-auto md:overscroll-none"
+          className="w-full md:w-[40%] h-screen overflow-hidden  md:h-none -mb-30 md:mb-0 bg-[#Fff7de] overscroll-none"
         >
           <SideDashboard />
 
@@ -356,39 +272,29 @@ export default function DashboardPage() {
         {/* ================= MOBILE LINKLIST OVERLAY ================= */}
         <AnimatePresence>
           {isMobile && showMobileLinks && (
-            <motion.div
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-              variants={slideInVariants}
+            <div
+              
               className="fixed inset-0 bg-[#FFF7DE] z-[998] overflow-y-auto"
             >
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.1 }}
-                className="sticky mb top-0 py-8 bg-[#FFF7DE] px-4 border-b"
+                className="sticky mb top-0 pt-4 pb-2 bg-[#FFF7DE] px-4 border-b"
               >
                 <div className="flex items-center justify-between">
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowMobileLinks(false)}
-                    className="font-extrabold text-[19px] text-[#331400]"
+                    className="font-extrabold text-[18px] text-[#331400]"
                   >
                     <ChevronLeft className="inline mr-2" />
                     Abio Links
                   </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2"
-                  >
-                    Save
-                  </motion.button>
+                  
                 </div>
-              </motion.div>
-              <div>
-                <div className="px-8 mb-8  max-w-3xl">
+                <div>
+                <div className="px-4 mb-4 mt-6 max-w-3xl">
                   <div className="flex gap-2 items-center">
                     <div>
                       <Image
@@ -397,9 +303,9 @@ export default function DashboardPage() {
                           "/icons/Profile Picture.png"
                         }
                         alt="Profile"
-                        width={80}
-                        height={80}
-                        className="object-cover shadow-lg w-20 h-20  rounded-full"
+                        width={50}
+                        height={50}
+                        className="object-cover shadow-lg w-16 h-16  rounded-full"
                         
                       />
                     </div>
@@ -415,8 +321,8 @@ export default function DashboardPage() {
                         >
                           {displayName || "User"}
                         </motion.h1>
-                        <p className="font-semibold text-[12px]">
-                          {userData?.profile?.username || "username"}
+                        <p className="font-medium text-gray-500 text-[12px]">
+                          {userData?.profile?.username || "@username"}
                         </p>
                       </div>
                     </div>
@@ -424,7 +330,7 @@ export default function DashboardPage() {
                   <div>
                     <motion.p
                       whileHover={{ x: 5 }}
-                      className="font-bold my-2 text-[14px] cursor-pointer"
+                      className="font-medium my-2 text-[12px] cursor-pointer"
                       onClick={() => openModal("editBio")}
                     >
                       {userData?.profile?.bio || bio}
@@ -450,6 +356,8 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
+              </motion.div>
+              
               {/* LinkList EXACTLY AS DESKTOP */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -464,10 +372,10 @@ export default function DashboardPage() {
                   )}
                 />
               </motion.div>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
       </motion.section>
-    </ProtectedRoute>
+    </>
   );
 }

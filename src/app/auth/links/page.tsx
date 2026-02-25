@@ -93,15 +93,15 @@ const SmartLinkInput = ({
     <div
       onClick={() => inputRef.current?.focus()}
       className={`
-        relative flex items-center w-full ring-1 ring-[#331400]  bg-transparent cursor-text
+        relative flex items-center w-full ring-1 ring-[#331400]/20 bg-transparent cursor-text
         transition-all duration-200 overflow-hidden
         ${
           focused
-            ? "border-[#331400] ring-2 ring-[#331400]/20"
+            ? "ring-1 ring-[#331400]"
             : "border-input hover:border-[#331400]/50"
         }
       `}
-      style={{ minHeight: "42px" }}
+      style={{ minHeight: "40px" }}
     >
       {/* Floating label */}
       <AnimatePresence>
@@ -112,7 +112,7 @@ const SmartLinkInput = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 4 }}
             transition={{ duration: 0.15 }}
-            className="absolute left-3 top-2 text-[10px] font-semibold text-[#331400]/50 select-none pointer-events-none leading-none"
+            className="absolute left-3 top-2 text-[16px] font-semibold  select-none pointer-events-none leading-none"
           >
             {floatingLabel}
           </motion.span>
@@ -132,7 +132,7 @@ const SmartLinkInput = ({
               animate={{ opacity: 1, width: "auto" }}
               exit={{ opacity: 0, width: 0 }}
               transition={{ duration: 0.2 }}
-              className=" whitespace-nowrap select-none overflow-hidden text-[14px]"
+              className=" whitespace-nowrap select-none overflow-hidden text-[16px]"
             >
               {base}
             </motion.span>
@@ -146,7 +146,7 @@ const SmartLinkInput = ({
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
           placeholder={!focused ? getPlaceholder(platformId, platformName) : ""}
-          className="flex-1 bg-transparent outline-none placeholder:text-[#331400]/50 placeholder:text-[14px] min-w-0 text-[14px]"
+          className="flex-1 bg-transparent outline-none placeholder:text-[#331400]/50 placeholder:text-sm min-w-0 text-[16px]"
         />
       </div>
     </div>
@@ -442,7 +442,7 @@ const LinksScreen = () => {
           className="mb-4 mt-2 md:mb-8 flex justify-center items-center flex-col"
         >
           <motion.h1
-            className="text-[22px] md:text-[24px] font-bold mb-2 text-[#331400]"
+            className="text-[20px] md:text-[24px] font-bold mb-2 text-[#331400]"
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.2 }}
           >
@@ -450,7 +450,7 @@ const LinksScreen = () => {
           </motion.h1>
           <motion.p
             variants={itemVariants}
-            className=" text-[12px] md:text-[14px] md:px-16 text-center"
+            className=" text-sm text-[#666464] md:text-[14px] md:px-16 text-center"
           >
             Fill the fields below to add content to your Biography
           </motion.p>
@@ -459,8 +459,8 @@ const LinksScreen = () => {
         {/* Form */}
         <div className="flex justify-center items-start w-full flex-grow">
           <div className="w-[90%] md:max-w-md mx-auto flex flex-col justify-start space-y-5 pb-10">
-            <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-center font-semibold text-[16px]">
+            <motion.div variants={itemVariants} className="space-y-2 sm:space-y-4">
+              <h2 className="text-center font-semibold text-sm md:text-[16px]">
                 Selected Platforms
               </h2>
 
@@ -489,7 +489,7 @@ const LinksScreen = () => {
 
               <motion.h2
                 variants={itemVariants}
-                className="font-semibold text-[14px] md:text-[16px] pt-4 text-center"
+                className="font-semibold text-sm md:text-[16px] pt-4 text-center"
               >
                 Optional Additions
               </motion.h2>
@@ -529,10 +529,10 @@ const LinksScreen = () => {
                     />
 
                     <Input
-                      placeholder="Add Link"
+                      placeholder="add link"
                       value={link.url}
                       onChange={(e) => handleCustomLinkChange(e.target.value, index)}
-                      className="h-10!"
+                      className="h-10! text-[16px] placeholder:text-[16px]"
                     />
                   </motion.div>
                 ))}
@@ -579,7 +579,7 @@ const LinksScreen = () => {
                 <Button
                   onClick={handleSubmit}
                   disabled={isSubmitting || addLinksMutation.isPending}
-                  className="w-full md:mt-8 bg-[#FED45C] text-black text-[14px] font-medium h-10! disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full md:mt-4 bg-[#FED45C] text-black text-sm font-semibold h-10! disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isSubmitting || addLinksMutation.isPending ? (
                     <motion.span
@@ -600,7 +600,7 @@ const LinksScreen = () => {
         {/* Footer */}
         <motion.footer
           variants={itemVariants}
-          className="w-full flex items-center md:hidden justify-between gap-2 py-4 px-4 text-sm text-[#331400] mt-8"
+          className="w-full flex items-center md:hidden justify-between gap-2 pb-2 px-4 text-sm text-[#331400]"
         >
           <motion.p whileHover={{ scale: 1.03 }} transition={{ duration: 0.2 }}>
             © 2025 Abio
