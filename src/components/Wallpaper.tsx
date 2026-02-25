@@ -4,8 +4,8 @@ import { Upload, X } from "lucide-react";
 import type { FillGradientWallpaperConfig } from "@/types/appearance.types";
 
 const WALLPAPER_AMOUNT_FILL = 0.5;
-const WALLPAPER_AMOUNT_GRADIENT_START = 0.5;
-const WALLPAPER_AMOUNT_GRADIENT_END = 0.5;
+const WALLPAPER_AMOUNT_GRADIENT_START = 0.2;
+const WALLPAPER_AMOUNT_GRADIENT_END = 0.8;
 
 const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/gif,image/webp";
@@ -226,7 +226,7 @@ export default function WallpaperSelector({
   const handleGradientEndChange = (color: string) => {
     setGradientEnd(color);
     if (themeType === "gradient") {
-      const themeString = `gradient:${gradientStart}:${color}`;
+      const themeString = `gradient:${gradientStart}:${color} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%`;
       setSelectedTheme(themeString);
       onWallpaperChange?.({
         wallpaperConfig: {
@@ -385,6 +385,7 @@ export default function WallpaperSelector({
               <input
                 type="color"
                 value={gradientStart}
+                colorspace="display-p3"
                 onChange={(e) => handleGradientStartChange(e.target.value)}
                 className="w-10 h-10 cursor-pointer border rounded-lg"
               />
@@ -393,6 +394,7 @@ export default function WallpaperSelector({
               <label className="text-sm font-medium text-gray-700">End:</label>
               <input
                 type="color"
+                colorspace="display-p3"
                 value={gradientEnd}
                 onChange={(e) => handleGradientEndChange(e.target.value)}
                 className="w-10 h-10 cursor-pointer border rounded-lg"

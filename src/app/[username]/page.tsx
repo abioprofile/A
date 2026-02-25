@@ -295,7 +295,7 @@ export default function PublicProfilePage() {
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
 
-  // Normalize backgroundColor to array (backend may return array or single object)
+  // Use wallpaper_config exactly as returned from backend (no extra normalization)
   const bgColors =
     wc?.backgroundColor != null
       ? Array.isArray(wc.backgroundColor)
@@ -319,19 +319,43 @@ export default function PublicProfilePage() {
       } else {
         backgroundImageSrc = selectedTheme;
       }
-    } else if (wc?.type === "fill" && bgColors.length > 0) {
-      if (bgColors.length === 1) {
+    } else if (
+      (wc?.type === "fill" || wc?.type === "gradient") &&
+      bgColors.length > 0
+    ) {
+      const items = bgColors.map(
+        (c: unknown) => c as { color: string; amount?: number },
+      );
+      if (items.length === 1) {
         backgroundStyle = {
-          backgroundColor: (bgColors[0] as { color: string }).color,
+          backgroundColor: items[0].color,
         };
-      } else if (bgColors.length >= 2) {
-        const colors = bgColors.map(
-          (c: unknown) => (c as { color: string }).color,
-        );
-        const [start, end] = colors;
-        backgroundStyle = {
-          background: `linear-gradient(135deg, ${start}, ${end})`,
-        };
+      } else {
+        const direction =
+          (wc as { direction?: string }).direction ?? "to bottom";
+        const hasAmounts = items.some((c) => c.amount != null);
+        if (hasAmounts) {
+          // Use backend values as-is: amount can be 0–1 (fraction) or 0–100 (percent)
+          const [start,end] = items;
+          console.log(start,end);
+          // const stops = items
+          //   .map((c, i: number) => {
+          //     const amt = c.amount ?? 0;
+          //     const pct = amt <= 1 ? amt * 100 : amt;
+          //     return i != 0 ? `${c.color} ${pct}%` : `${c.color}`;
+          //   })
+          //   .join(", ");
+          // backgroundStyle = {
+          //   background: `linear-gradient(${direction}, ${stops})`,
+          // };
+          backgroundStyle = {
+            background: `linear-gradient(to bottom, ${start.color}, ${end.color} ${end.amount * 100}%)`,
+          };
+        } else {
+          backgroundStyle = {
+            background: `linear-gradient(${direction}, ${items.map((c) => c.color).join(", ")})`,
+          };
+        }
       }
     } else if (wc?.type === "image") {
       const wcImage = wc as { imageUrl?: string; image?: { url?: string } };
@@ -393,10 +417,7 @@ export default function PublicProfilePage() {
                       <div className="absolute inset-0 bg-black/65" />
                     </>
                   ) : Object.keys(backgroundStyle).length > 0 ? (
-                    <div
-                      className="absolute inset-0"
-                      style={backgroundStyle}
-                    />
+                    <div className="absolute inset-0" style={backgroundStyle} />
                   ) : (
                     <Image
                       src={backgroundImageSrc}
@@ -458,10 +479,7 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
                     >
-                      <p 
-                        className="font-bold text-[14px]"
-                        
-                      >
+                      <p className="font-bold text-[14px]">
                         {isOotnUser
                           ? "one of those nights"
                           : userData?.name || userData?.username || "User"}
@@ -688,10 +706,7 @@ export default function PublicProfilePage() {
                 <div className="absolute inset-0 bg-black/65" />
               </>
             ) : Object.keys(backgroundStyle).length > 0 ? (
-              <div
-                className="absolute inset-0"
-                style={backgroundStyle}
-              />
+              <div className="absolute inset-0" style={backgroundStyle} />
             ) : (
               <Image
                 src={backgroundImageSrc}
@@ -743,10 +758,7 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <p 
-                    className="font-bold text-[14px]"
-                    
-                  >
+                  <p className="font-bold text-[14px]">
                     {isOotnUser
                       ? "one of those nights"
                       : userData?.name || userData?.username || "User"}
