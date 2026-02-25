@@ -217,61 +217,40 @@ export default function PublicProfilePage() {
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
 
-  // Backend may return backgroundColor as JSON string; normalize to array
-  const bgColors = normalizeWallpaperBackgroundColor(
-    (wc as { backgroundColor?: unknown })?.backgroundColor
-  ) ?? [];
+  // Use wallpaper_config exactly as returned from backend (no extra normalization)
+  console.log(wc);
+  const bgColors =
+    wc?.backgroundColor != null
+      ? Array.isArray(wc.backgroundColor)
+        ? wc.backgroundColor
+        : [wc.backgroundColor].filter(
+            (c: unknown) =>
+              c && typeof (c as { color?: string }).color === "string",
+          )
+      : [];
 
   if (!isOotnUser && !isDnaByGazaUser) {
     if (selectedTheme && typeof selectedTheme === "string") {
       if (selectedTheme.startsWith("fill:")) {
         const color = selectedTheme.split(":")[1] || "#000";
-        backgroundStyle = { backgroundColor: color };
+        backgroundStyle = { backgroundColor: wc.backgroundColor };
       } else if (selectedTheme.startsWith("gradient:")) {
         const [, start, end] = selectedTheme.split(":");
         backgroundStyle = {
-          backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
+          // backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
+          backgroundImage: wc.backgroundColor,
         };
       } else {
         backgroundImageSrc = selectedTheme;
       }
+
+      console.log("IF");
     } else if (
-      (wc?.type === "fill" || wc?.type === "gradient") &&
-      bgColors.length > 0
+      (wc?.type == "fill" || wc?.type == "gradient")
     ) {
-      const items = bgColors.map(
-        (c: unknown) => c as { color: string; amount?: number },
-      );
-      if (items.length === 1) {
-        backgroundStyle = {
-          backgroundColor: items[0].color,
-        };
-      } else {
-        const direction =
-          (wc as { direction?: string }).direction ?? "to bottom";
-        const hasAmounts = items.some((c) => c.amount != null);
-        if (hasAmounts) {
-          // Use backend values as-is: amount can be 0–1 (fraction) or 0–100 (percent)
-          const [start, end] = items;
-          // const stops = items
-          //   .map((c, i: number) => {
-          //     const amt = c.amount ?? 0;
-          //     const pct = amt <= 1 ? amt * 100 : amt;
-          //     return i != 0 ? `${c.color} ${pct}%` : `${c.color}`;
-          //   })
-          //   .join(", ");
-          // backgroundStyle = {
-          //   background: `linear-gradient(${direction}, ${stops})`,
-          // };
-          backgroundStyle = {
-            background: `linear-gradient(to bottom, ${start.color}, ${end.color} ${end.amount * 100}%)`,
-          };
-        } else {
-          backgroundStyle = {
-            background: `linear-gradient(${direction}, ${items.map((c) => c.color).join(", ")})`,
-          };
-        }
-      }
+      backgroundStyle = {
+        background: wc.backgroundColor,
+      };
     } else if (wc?.type === "image") {
       const wcImage = wc as { imageUrl?: string; image?: { url?: string } };
       const imageUrl = wcImage.imageUrl ?? wcImage.image?.url;
@@ -322,14 +301,14 @@ export default function PublicProfilePage() {
                 >
                   {isOotnUser ? (
                     <>
-                      <Image
+                      {/* <Image
                         src="/themes/ootn.jpeg"
                         alt="background"
                         fill
                         className="object-cover"
                         priority
                       />
-                      <div className="absolute inset-0 bg-black/65" />
+                      <div className="absolute inset-0 bg-black/65" /> */}
                     </>
                   ) : Object.keys(backgroundStyle).length > 0 ? (
                     <div className="absolute inset-0" style={backgroundStyle} />

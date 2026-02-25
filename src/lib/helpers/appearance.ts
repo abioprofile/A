@@ -115,9 +115,10 @@ export function wallpaperConfigFromBackend(
   w: WallpaperConfig | undefined | null,
 ): FillGradientWallpaperConfig | null {
   if (!w || (w.type !== "fill" && w.type !== "gradient")) return null;
-  const rawBg = (w as { backgroundColor?: unknown }).backgroundColor;
-  const bg = normalizeWallpaperBackgroundColor(rawBg);
-  if (!bg || bg.length === 0) return null;
+  const bg = (
+    w as { backgroundColor?: Array<{ color: string; amount: number }> }
+  ).backgroundColor;
+  if (!Array.isArray(bg) || bg.length === 0) return null;
   const withAmount = bg.map((item) => ({
     color: typeof item?.color === "string" ? item.color : "#000000",
     amount:
@@ -133,15 +134,11 @@ export function selectedThemeFromWallpaper(
   w: WallpaperConfig | undefined | null,
 ): string | null {
   if (!w) return null;
-  const rawBg = (w as { backgroundColor?: unknown }).backgroundColor;
-  const bg = normalizeWallpaperBackgroundColor(rawBg);
-  if (w.type === "fill" && bg && bg[0]) {
-    return `fill:${bg[0].color}`;
+  if (w.type === "image") {
+    const img = w.image;
+    return img?.url ?? null;
   }
-  if (w.type === "gradient" && bg && bg.length >= 2) {
-    return `gradient:${bg[0].color}:${bg[1].color}`;
-  }
-  const img = (w as { image?: { url: string } }).image;
-  if (w.type === "image" && img?.url) return img.url;
-  return null;
+  
+  const bg = w.backgroundColor;
+  return bg ?? null;
 }
