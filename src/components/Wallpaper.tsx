@@ -4,7 +4,7 @@ import { Upload, X } from "lucide-react";
 import type { FillGradientWallpaperConfig } from "@/types/appearance.types";
 
 const WALLPAPER_AMOUNT_FILL = 0.5;
-const WALLPAPER_AMOUNT_GRADIENT_START = 0.2;
+const WALLPAPER_AMOUNT_GRADIENT_START = 0.5;
 const WALLPAPER_AMOUNT_GRADIENT_END = 0.8;
 
 const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
@@ -63,6 +63,7 @@ export default function WallpaperSelector({
   // Sync from server config only once per distinct config (avoids loop when parent re-renders)
   useEffect(() => {
     if (!initialWallpaperConfig) return;
+
     const key = JSON.stringify(initialWallpaperConfig);
     if (lastSyncedInitialRef.current === key) return;
     lastSyncedInitialRef.current = key;
@@ -87,12 +88,7 @@ export default function WallpaperSelector({
       cb({
         wallpaperConfig: {
           type: "fill",
-          backgroundColor: [
-            {
-              color: toValidHex(fillColor, "#000000"),
-              amount: WALLPAPER_AMOUNT_FILL,
-            },
-          ],
+          backgroundColor: toValidHex(fillColor, "#000000"),
         },
         imageFile: null,
       });
@@ -100,16 +96,7 @@ export default function WallpaperSelector({
       cb({
         wallpaperConfig: {
           type: "gradient",
-          backgroundColor: [
-            {
-              color: toValidHex(gradientStart, "#0f0f0f"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_START,
-            },
-            {
-              color: toValidHex(gradientEnd, "#dddddd"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_END,
-            },
-          ],
+          backgroundColor: `linear-gradient(to bottom, ${gradientStart}, ${gradientEnd} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%)`,
         },
         imageFile: null,
       });
@@ -182,17 +169,12 @@ export default function WallpaperSelector({
   const handleFillColorChange = (color: string) => {
     setFillColor(color);
     if (themeType === "fill") {
-      const themeString = `fill:${color}`;
+      const themeString = `${color}`;
       setSelectedTheme(themeString);
       onWallpaperChange?.({
         wallpaperConfig: {
           type: "fill",
-          backgroundColor: [
-            {
-              color: toValidHex(color, "#000000"),
-              amount: WALLPAPER_AMOUNT_FILL,
-            },
-          ],
+          backgroundColor: toValidHex(color, "#000000"),
         },
         imageFile: null,
       });
@@ -202,21 +184,13 @@ export default function WallpaperSelector({
   const handleGradientStartChange = (color: string) => {
     setGradientStart(color);
     if (themeType === "gradient") {
-      const themeString = `gradient:${color}:${gradientEnd}`;
+      // const themeString = `gradient:${color}:${gradientEnd}`;
+      const themeString = `linear-gradient(to bottom, ${color}, ${gradientEnd} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%)`;
       setSelectedTheme(themeString);
       onWallpaperChange?.({
         wallpaperConfig: {
           type: "gradient",
-          backgroundColor: [
-            {
-              color: toValidHex(color, "#0f0f0f"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_START,
-            },
-            {
-              color: toValidHex(gradientEnd, "#dddddd"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_END,
-            },
-          ],
+          backgroundColor: themeString,
         },
         imageFile: null,
       });
@@ -226,21 +200,13 @@ export default function WallpaperSelector({
   const handleGradientEndChange = (color: string) => {
     setGradientEnd(color);
     if (themeType === "gradient") {
-      const themeString = `gradient:${gradientStart}:${color} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%`;
+      // const themeString = `gradient:${gradientStart}:${color} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%`;
+      const themeString = `linear-gradient(to bottom, ${gradientStart}, ${color} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%)`;
       setSelectedTheme(themeString);
       onWallpaperChange?.({
         wallpaperConfig: {
           type: "gradient",
-          backgroundColor: [
-            {
-              color: toValidHex(gradientStart, "#0f0f0f"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_START,
-            },
-            {
-              color: toValidHex(color, "#dddddd"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_END,
-            },
-          ],
+          backgroundColor: themeString,
         },
         imageFile: null,
       });
@@ -251,38 +217,25 @@ export default function WallpaperSelector({
     setThemeType(type);
 
     if (type === "fill") {
-      const themeString = `fill:${fillColor}`;
+      const themeString = `${fillColor}`;
       setSelectedTheme(themeString);
       setImageFile(null);
       onWallpaperChange?.({
         wallpaperConfig: {
           type: "fill",
-          backgroundColor: [
-            {
-              color: toValidHex(fillColor, "#000000"),
-              amount: WALLPAPER_AMOUNT_FILL,
-            },
-          ],
+          backgroundColor: toValidHex(fillColor, "#000000"),
         },
         imageFile: null,
       });
     } else if (type === "gradient") {
-      const themeString = `gradient:${gradientStart}:${gradientEnd}`;
+      // const themeString = `gradient:${gradientStart}:${gradientEnd}`;
+      const themeString = `linear-gradient(to bottom, ${gradientStart}, ${gradientEnd} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%)`;
       setSelectedTheme(themeString);
       setImageFile(null);
       onWallpaperChange?.({
         wallpaperConfig: {
           type: "gradient",
-          backgroundColor: [
-            {
-              color: toValidHex(gradientStart, "#0f0f0f"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_START,
-            },
-            {
-              color: toValidHex(gradientEnd, "#dddddd"),
-              amount: WALLPAPER_AMOUNT_GRADIENT_END,
-            },
-          ],
+          backgroundColor: themeString,
         },
         imageFile: null,
       });

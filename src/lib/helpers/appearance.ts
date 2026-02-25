@@ -65,12 +65,18 @@ export function fontConfigToFontStyle(f: FontConfig): FontStyle {
  * Extract the primary name and sanitize for the API.
  */
 export function fontFamilyToApiName(fontFamily: string): string {
-  const first = fontFamily.split(",")[0].trim().replace(/^['"]|['"]$/g, "");
+  const first = fontFamily
+    .split(",")[0]
+    .trim()
+    .replace(/^['"]|['"]$/g, "");
   return first.replace(/[^a-zA-Z0-9-]/g, "") || "Poppins";
 }
 
 /** Backend expects valid color values; UI may use "none" for no stroke. Map to valid hex. */
-export function toValidColor(value: string | undefined | null, fallback: string): string {
+export function toValidColor(
+  value: string | undefined | null,
+  fallback: string,
+): string {
   const v = (value ?? "").trim().toLowerCase();
   if (!v || v === "none" || v === "transparent") return fallback;
   return value!.trim();
@@ -90,10 +96,12 @@ export const WALLPAPER_DEFAULT_AMOUNT = 100;
 
 /** Build FillGradientWallpaperConfig from backend wallpaper_config (for restore/sync). */
 export function wallpaperConfigFromBackend(
-  w: WallpaperConfig | undefined | null
+  w: WallpaperConfig | undefined | null,
 ): FillGradientWallpaperConfig | null {
   if (!w || (w.type !== "fill" && w.type !== "gradient")) return null;
-  const bg = (w as { backgroundColor?: Array<{ color: string; amount: number }> }).backgroundColor;
+  const bg = (
+    w as { backgroundColor?: Array<{ color: string; amount: number }> }
+  ).backgroundColor;
   if (!Array.isArray(bg) || bg.length === 0) return null;
   const withAmount = bg.map((item) => ({
     color: typeof item?.color === "string" ? item.color : "#000000",
@@ -107,17 +115,14 @@ export function wallpaperConfigFromBackend(
 
 /** Build selectedTheme string from backend wallpaper_config for preview. */
 export function selectedThemeFromWallpaper(
-  w: WallpaperConfig | undefined | null
+  w: WallpaperConfig | undefined | null,
 ): string | null {
   if (!w) return null;
-  const bg = (w as { backgroundColor?: Array<{ color: string, amount: number }> }).backgroundColor;
-  if (w.type === "fill" && Array.isArray(bg) && bg[0]) {
-    return `fill:${bg[0].color}`;
+  if (w.type === "image") {
+    const img = w.image;
+    return img?.url ?? null;
   }
-  if (w.type === "gradient" && Array.isArray(bg) && bg.length >= 2) {
-    return `gradient:${bg[0].color}:${bg[1].color} ${bg[1].amount * 100}%`;
-  }
-  const img = (w as { image?: { url: string } }).image;
-  if (w.type === "image" && img?.url) return img.url;
-  return null;
+  
+  const bg = w.backgroundColor;
+  return bg ?? null;
 }
