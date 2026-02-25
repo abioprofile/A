@@ -305,8 +305,6 @@ export default function PublicProfilePage() {
               c && typeof (c as { color?: string }).color === "string",
           )
       : [];
-  console.log(selectedTheme);
-  console.log(wc);
 
   if (!isOotnUser && !isDnaByGazaUser) {
     if (selectedTheme && typeof selectedTheme === "string") {
@@ -338,15 +336,20 @@ export default function PublicProfilePage() {
         const hasAmounts = items.some((c) => c.amount != null);
         if (hasAmounts) {
           // Use backend values as-is: amount can be 0–1 (fraction) or 0–100 (percent)
-          const stops = items
-            .map((c) => {
-              const amt = c.amount ?? 0;
-              const pct = amt <= 1 ? amt * 100 : amt;
-              return `${c.color} ${pct}%`;
-            })
-            .join(", ");
+          const [start,end] = items;
+          console.log(start,end);
+          // const stops = items
+          //   .map((c, i: number) => {
+          //     const amt = c.amount ?? 0;
+          //     const pct = amt <= 1 ? amt * 100 : amt;
+          //     return i != 0 ? `${c.color} ${pct}%` : `${c.color}`;
+          //   })
+          //   .join(", ");
+          // backgroundStyle = {
+          //   background: `linear-gradient(${direction}, ${stops})`,
+          // };
           backgroundStyle = {
-            background: `linear-gradient(${direction}, ${stops})`,
+            background: `linear-gradient(to bottom, ${start.color}, ${end.color} ${end.amount * 100}%)`,
           };
         } else {
           backgroundStyle = {

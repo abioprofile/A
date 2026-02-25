@@ -4,8 +4,8 @@ import { Upload, X } from "lucide-react";
 import type { FillGradientWallpaperConfig } from "@/types/appearance.types";
 
 const WALLPAPER_AMOUNT_FILL = 0.5;
-const WALLPAPER_AMOUNT_GRADIENT_START = 0.5;
-const WALLPAPER_AMOUNT_GRADIENT_END = 0.5;
+const WALLPAPER_AMOUNT_GRADIENT_START = 0.2;
+const WALLPAPER_AMOUNT_GRADIENT_END = 0.8;
 
 const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/gif,image/webp";
@@ -200,7 +200,6 @@ export default function WallpaperSelector({
   };
 
   const handleGradientStartChange = (color: string) => {
-    console.log(color);
     setGradientStart(color);
     if (themeType === "gradient") {
       const themeString = `gradient:${color}:${gradientEnd}`;
@@ -227,7 +226,7 @@ export default function WallpaperSelector({
   const handleGradientEndChange = (color: string) => {
     setGradientEnd(color);
     if (themeType === "gradient") {
-      const themeString = `gradient:${gradientStart}:${color}`;
+      const themeString = `gradient:${gradientStart}:${color} ${WALLPAPER_AMOUNT_GRADIENT_END * 100}%`;
       setSelectedTheme(themeString);
       onWallpaperChange?.({
         wallpaperConfig: {
