@@ -110,12 +110,12 @@ export function selectedThemeFromWallpaper(
   w: WallpaperConfig | undefined | null
 ): string | null {
   if (!w) return null;
-  const bg = (w as { backgroundColor?: Array<{ color: string }> }).backgroundColor;
+  const bg = (w as { backgroundColor?: Array<{ color: string, amount: number }> }).backgroundColor;
   if (w.type === "fill" && Array.isArray(bg) && bg[0]) {
     return `fill:${bg[0].color}`;
   }
   if (w.type === "gradient" && Array.isArray(bg) && bg.length >= 2) {
-    return `gradient:${bg[0].color}:${bg[1].color}`;
+    return `gradient:${bg[0].color}:${bg[1].color} ${bg[1].amount * 100}%`;
   }
   const img = (w as { image?: { url: string } }).image;
   if (w.type === "image" && img?.url) return img.url;
