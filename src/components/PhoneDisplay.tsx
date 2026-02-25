@@ -80,16 +80,13 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     .slice(0, 8); // Limit to 8 links for phone display
 
   // --- Background logic ---
-  let bgStyle: React.CSSProperties = {};
-  if (selectedTheme.startsWith("fill:")) {
-    const color = selectedTheme.split(":")[1] || "#000";
-    bgStyle = { backgroundColor: color };
-  } else if (selectedTheme.startsWith("gradient:")) {
-    const [, start, end] = selectedTheme.split(":");
-    bgStyle = {
-      backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
-    };
-  }
+  let bgStyle: React.CSSProperties = {
+    background: selectedTheme,
+  };
+  // if (selectedTheme.type == "fill") {
+  //   bgStyle.background = selectedTheme.value;
+  // }
+  // if (selectedTheme.type == "gradient")
 
   return (
     <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto  border-[2px]  border-black overflow-hidden bg-white ">

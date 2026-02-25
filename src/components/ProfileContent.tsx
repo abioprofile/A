@@ -26,7 +26,7 @@ const ProfileContent = ({
   initialData,
 }: ProfileContentProps) => {
   // Ensure default profile image path points to public/icons/Profile-Picture.png
-  const defaultProfileImage = "/icons/Profile-Picture.png";
+  const defaultProfileImage = "/icons/Profile Picture.png";
   const userData = useAppSelector((state) => state.auth.user);
 
 

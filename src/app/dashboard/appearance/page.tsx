@@ -123,6 +123,7 @@ const AppearancePage: React.FC = () => {
   useEffect(() => {
     const payload = settingsData?.data;
     if (!payload || settingsSynced) return;
+
     if (payload.corner_config) {
       setButtonStyle(cornerConfigToButtonStyle(payload.corner_config));
     }

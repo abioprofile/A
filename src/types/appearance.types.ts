@@ -33,19 +33,20 @@ export interface FillGradientWallpaperConfig {
   backgroundColor: Array<{
     color: string;
     amount: number;
-}>;
+}> | string;
 }
 
 export interface WallpaperConfig {
     type: 'fill' | 'gradient' | 'image';
-    image: {
+    image?: {
         url: string;
         publicId: string;
     };
-    backgroundColor: Array<{
-        color: string;
-        amount: number;
-    }>;
+    // backgroundColor: Array<{
+    //     color: string;
+    //     amount: number;
+    // }>;
+    backgroundColor?: string;
 }
 
 export interface AppearancePayload {
