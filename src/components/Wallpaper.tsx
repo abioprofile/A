@@ -200,6 +200,7 @@ export default function WallpaperSelector({
   };
 
   const handleGradientStartChange = (color: string) => {
+    console.log(color);
     setGradientStart(color);
     if (themeType === "gradient") {
       const themeString = `gradient:${color}:${gradientEnd}`;
@@ -385,6 +386,7 @@ export default function WallpaperSelector({
               <input
                 type="color"
                 value={gradientStart}
+                colorspace="display-p3"
                 onChange={(e) => handleGradientStartChange(e.target.value)}
                 className="w-10 h-10 cursor-pointer border rounded-lg"
               />
@@ -393,6 +395,7 @@ export default function WallpaperSelector({
               <label className="text-sm font-medium text-gray-700">End:</label>
               <input
                 type="color"
+                colorspace="display-p3"
                 value={gradientEnd}
                 onChange={(e) => handleGradientEndChange(e.target.value)}
                 className="w-10 h-10 cursor-pointer border rounded-lg"
