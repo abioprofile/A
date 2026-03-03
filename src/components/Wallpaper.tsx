@@ -292,8 +292,7 @@ export default function WallpaperSelector({
     if (!img?.naturalWidth || !img?.naturalHeight) return;
     const w = img.width;
     const h = img.height;
-    const pct =
-      crop.unit === "%" ? crop : { width: 90, height: 90, x: 5, y: 5 };
+    const pct = crop.unit === "%" ? crop : { width: 90, height: 90, x: 5, y: 5 };
     const width = ((pct as Crop).width / 100) * w;
     const height = ((pct as Crop).height / 100) * h;
     const x = (((pct as Crop).x ?? 5) / 100) * w;
@@ -303,8 +302,7 @@ export default function WallpaperSelector({
 
   const getCroppedImageBlob = (): Promise<Blob | null> => {
     const img = cropImgRef.current;
-    if (!img || !completedCrop?.width || !completedCrop?.height)
-      return Promise.resolve(null);
+    if (!img || !completedCrop?.width || !completedCrop?.height) return Promise.resolve(null);
     const scaleX = img.naturalWidth / img.width;
     const scaleY = img.naturalHeight / img.height;
     const srcX = completedCrop.x * scaleX;
@@ -316,17 +314,7 @@ export default function WallpaperSelector({
     canvas.height = PHONE_WALLPAPER_HEIGHT;
     const ctx = canvas.getContext("2d");
     if (!ctx) return Promise.resolve(null);
-    ctx.drawImage(
-      img,
-      srcX,
-      srcY,
-      srcW,
-      srcH,
-      0,
-      0,
-      PHONE_WALLPAPER_WIDTH,
-      PHONE_WALLPAPER_HEIGHT,
-    );
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, PHONE_WALLPAPER_WIDTH, PHONE_WALLPAPER_HEIGHT);
     return new Promise((resolve) => {
       canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
     });
@@ -580,9 +568,7 @@ export default function WallpaperSelector({
         createPortal(
           <div className="fixed inset-0 z-[200] flex flex-col bg-black/95 isolate">
             <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 bg-black/60 shrink-0 pointer-events-auto">
-              <h2 className="text-base md:text-lg font-semibold text-white">
-                Crop wallpaper
-              </h2>
+              <h2 className="text-base md:text-lg font-semibold text-white">Crop wallpaper</h2>
               <button
                 type="button"
                 onClick={handleCropCancel}
@@ -635,7 +621,7 @@ export default function WallpaperSelector({
               </button>
             </div>
           </div>,
-          document.body,
+          document.body
         )}
     </>
   );

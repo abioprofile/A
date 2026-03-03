@@ -69,10 +69,18 @@ export function fontFamilyToApiName(fontFamily: string): string {
     .split(",")[0]
     .trim()
     .replace(/^['"]|['"]$/g, "");
+  const first = fontFamily
+    .split(",")[0]
+    .trim()
+    .replace(/^['"]|['"]$/g, "");
   return first.replace(/[^a-zA-Z0-9-]/g, "") || "Poppins";
 }
 
 /** Backend expects valid color values; UI may use "none" for no stroke. Map to valid hex. */
+export function toValidColor(
+  value: string | undefined | null,
+  fallback: string,
+): string {
 export function toValidColor(
   value: string | undefined | null,
   fallback: string,
@@ -115,10 +123,9 @@ export function wallpaperConfigFromBackend(
   w: WallpaperConfig | undefined | null,
 ): FillGradientWallpaperConfig | null {
   if (!w || (w.type !== "fill" && w.type !== "gradient")) return null;
-  const bg = (
-    w as { backgroundColor?: Array<{ color: string; amount: number }> }
-  ).backgroundColor;
-  if (!Array.isArray(bg) || bg.length === 0) return null;
+  const rawBg = (w as { backgroundColor?: unknown }).backgroundColor;
+  const bg = normalizeWallpaperBackgroundColor(rawBg);
+  if (!bg || bg.length === 0) return null;
   const withAmount = bg.map((item) => ({
     color: typeof item?.color === "string" ? item.color : "#000000",
     amount:
@@ -132,13 +139,19 @@ export function wallpaperConfigFromBackend(
 /** Build selectedTheme string from backend wallpaper_config for preview. */
 export function selectedThemeFromWallpaper(
   w: WallpaperConfig | undefined | null,
+  w: WallpaperConfig | undefined | null,
 ): string | null {
   if (!w) return null;
-  if (w.type === "image") {
-    const img = w.image;
-    return img?.url ?? null;
+  const rawBg = (w as { backgroundColor?: unknown }).backgroundColor;
+  const bg = normalizeWallpaperBackgroundColor(rawBg);
+  if (w.type === "fill" && bg && bg[0]) {
+    return `fill:${bg[0].color}`;
   }
-  
-  const bg = w.backgroundColor;
-  return bg ?? null;
+  if (w.type === "gradient" && bg && bg.length >= 2) {
+    return `gradient:${bg[0].color}:${bg[1].color}`;
+  }
+  const img = (w as { image?: { url: string } }).image;
+  if (w.type === "image" && img?.url) return img.url;
+  return null;
 }
+

@@ -306,16 +306,6 @@ const AppearancePage: React.FC = () => {
       });
       setHistory([]);
       setHistoryIndex(-1);
-      // Refetch settings so PhoneDisplay and sync effect get latest fill/gradient
-      await queryClient.refetchQueries({ queryKey: ["settings"] });
-      setSettingsSynced(false);
-      // Refetch current user's profile so [username] page shows new theme in real time
-      const username = userData?.username;
-      if (username) {
-        await queryClient.refetchQueries({
-          queryKey: ["user-profile", username],
-        });
-      }
     } catch {
       try {
         await queryClient.refetchQueries({ queryKey: ["settings"] });
@@ -416,7 +406,7 @@ const AppearancePage: React.FC = () => {
         </button>
       </div>
 
-      {/* Mobile: Header — Back, then Upload theme (when abio) + Undo/Redo/Save (when hasEdits) */}
+      {/* Mobile: Header fixed at top (TikTok-style) — Save + Undo/Redo only when an edit has been made */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] px-2 py-3 flex items-center justify-between">
         <button
           onClick={handleBackClick}
@@ -425,48 +415,34 @@ const AppearancePage: React.FC = () => {
           <ChevronLeft className="inline" />
           Appearance
         </button>
-        <div className="flex items-center gap-2">
-          {canUploadThemes && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleThemeUploadClick}
-              className="gap-1.5 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-[12px] px-3 py-1.5"
+        {hasEdits && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={undo}
+              disabled={historyIndex <= 0}
+              className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
+              title="Undo"
             >
-              <Upload className="w-3.5 h-3.5" />
-              Upload theme
-            </Button>
-          )}
-          {hasEdits && (
-            <>
-              <button
-                onClick={undo}
-                disabled={historyIndex <= 0}
-                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
-                title="Undo"
-              >
-                <RotateCcw size={18} />
-              </button>
-              <button
-                onClick={redo}
-                disabled={historyIndex >= history.length - 1}
-                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
-                title="Redo"
-              >
-                <RotateCw size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSavingAll}
-                className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSavingAll ? "Saving…" : "Save"}
-              </button>
-            </>
-          )}
-        </div>
+              <RotateCcw size={18} />
+            </button>
+            <button
+              onClick={redo}
+              disabled={historyIndex >= history.length - 1}
+              className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
+              title="Redo"
+            >
+              <RotateCw size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveAll}
+              disabled={isSavingAll}
+              className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSavingAll ? "Saving…" : "Save"}
+            </button>
+          </div>
+        )}
       </div>
       {/* Spacer so content below doesn't sit under fixed header on mobile */}
       <div className="md:hidden h-14 flex-shrink-0" aria-hidden />
