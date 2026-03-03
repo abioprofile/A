@@ -233,6 +233,8 @@ useEffect(() => {
     addToHistory(getCurrentState());
   }, [addToHistory, getCurrentState]);
 
+  const hasEdits = history.length > 0;
+
   // Memoize the profile update handler to prevent infinite loops
   const handleProfileUpdate = useCallback(
     (updatedProfile: {
@@ -292,6 +294,8 @@ useEffect(() => {
           location: profile.location || null,
         },
       });
+      setHistory([]);
+      setHistoryIndex(-1);
     } catch {
       try {
         await queryClient.refetchQueries({ queryKey: ["settings"] });
@@ -345,16 +349,16 @@ useEffect(() => {
         </button>
       </div>
 
-      {/* Mobile Save with Undo/Redo */}
-      <div className="md:hidden">
-        <div className="flex items-center px-2 py-3 justify-between ">
-          <button
-            onClick={handleBackClick}
-            className="font-extrabold text-[20px] text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
-          >
-            <ChevronLeft className="inline" />
-            Appearance
-          </button>
+      {/* Mobile: Header fixed at top (TikTok-style) — Save + Undo/Redo only when an edit has been made */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] px-2 py-3 flex items-center justify-between">
+        <button
+          onClick={handleBackClick}
+          className="font-extrabold text-[20px] text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
+        >
+          <ChevronLeft className="inline" />
+          Appearance
+        </button>
+        {hasEdits && (
           <div className="flex items-center gap-2">
             <button
               onClick={undo}
@@ -381,32 +385,29 @@ useEffect(() => {
               {isSavingAll ? "Saving…" : "Save"}
             </button>
           </div>
-        </div>
+        )}
       </div>
+      {/* Spacer so content below doesn't sit under fixed header on mobile */}
+      <div className="md:hidden h-14 flex-shrink-0" aria-hidden />
 
-      {/* Main Layout */}
-      <div className="flex flex-1 gap-8">
-        {/* Phone Preview — mobile: smooth scale + translate when sheet is open (Linktree-style) */}
-        <aside className="flex w-full md:w-[450px] md:min-w-[450px] justify-center mt-6 items-start">
-          <motion.div
-            className="relative w-full max-w-[360px] md:max-w-[420px] mx-auto origin-top"
+      {/* Main Layout — mobile: min-height so section fills viewport (fixed PhoneDisplay overlays); desktop: normal flex */}
+      <div className="flex flex-1 gap-8 min-h-[calc(100vh-3.5rem)] md:min-h-0">
+        {/* PhoneDisplay: desktop = in-flow; mobile = TikTok-style fixed fullscreen → floating card when sheet open */}
+        <aside
+          className={`
+            flex w-full md:w-[450px] md:min-w-[450px] justify-center items-center md:items-start md:mt-6
+            md:relative
+            transition-[height,transform,border-radius] duration-[280ms] ease-out
+            ${isMobile ? "fixed inset-0 top-0 left-0 right-0 bottom-0 z-0" : ""}
+            ${isMobile && isSheetOpen ? "h-[60vh] -translate-y-[5%] rounded-2xl overflow-hidden" : ""}
+            ${isMobile && !isSheetOpen ? "h-full w-full rounded-none" : ""}
+          `}
+        >
+          <div
+            className={`relative w-full max-w-[360px] md:max-w-[420px] mx-auto h-full max-h-full md:max-h-none origin-top transition-transform duration-[280ms] ease-out ${isMobile && isSheetOpen ? "scale-[0.895]" : ""}`}
             style={{ transformOrigin: "top center" }}
-            animate={
-              isMobile
-                ? {
-                    scale: isSheetOpen ? (activeTab === 2 || activeTab === 3 ? 0.58 : 0.55) : 1,
-                    y: isSheetOpen ? (activeTab === 2 || activeTab === 3 ? "-3vh" : "-2vh") : 0,
-                  }
-                : { scale: 1, y: 0 }
-            }
-            transition={{
-              type: "spring",
-              stiffness: 340,
-              damping: 30,
-              mass: 0.8,
-            }}
           >
-            <div className="overflow-hidden">
+            <div className="overflow-hidden w-full h-full flex items-center justify-center md:block md:h-auto">
               <PhoneDisplay
                 buttonStyle={buttonStyle}
                 fontStyle={fontStyle}
@@ -416,7 +417,7 @@ useEffect(() => {
                 phoneDisplayLoading={phoneDisplayLoading}
               />
             </div>
-          </motion.div>
+          </div>
         </aside>
 
         {/* Desktop Editor */}
@@ -481,7 +482,7 @@ useEffect(() => {
         </div>
       </div>
 
-      {/* Mobile Sheet */}
+      {/* Mobile Sheet (WallpaperSheets): TikTok-style bottom sheet — mobile only */}
       <Sheet
         open={isMobile ? isSheetOpen : false}
         onOpenChange={(open) => {
@@ -491,13 +492,12 @@ useEffect(() => {
       >
         <SheetContent
           side="bottom"
-          className={`md:hidden  bg-white/95 backdrop-blur-sm shadow-lg p-0 overflow-hidden transition-all duration-300 ${activeTab === 2 || activeTab === 3 ? "h-[36vh]" : "h-[44vh]"
-            }`}
+          className="md:hidden bg-white shadow-lg p-0 overflow-hidden rounded-t-2xl border-t border-gray-200/80 h-[40vh] max-h-[40vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom data-[state=open]:duration-300 data-[state=closed]:duration-250"
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
-          <div className="h-full flex flex-col">
+          <div className="h-full flex flex-col min-h-0">
             {/* Sheet Header with handle */}
-            <div className="flex flex-col">
+            <div className="flex flex-col flex-shrink-0">
               <div className="flex justify-center pt-2">
                 <div className="w-12 h-1.5 bg-gray-300 rounded-full" />
               </div>
@@ -510,8 +510,8 @@ useEffect(() => {
               </SheetHeader>
             </div>
 
-            {/* Sheet Content */}
-            <div className="flex-1 overflow-y-auto px-3 pt-2 pb-3">
+            {/* Sheet Content: scrollable area (keyboard opens = only this scrolls; PhoneDisplay does not move) */}
+            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 pt-2 pb-3">
               {activeTab === 0 && (
                 <ProfileContent
                   onProfileUpdate={handleProfileUpdate}

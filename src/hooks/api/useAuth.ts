@@ -45,7 +45,14 @@ import {
   VerifyOtpFormData,
   ForgotPasswordFormData,
 } from "@/lib/validations/auth.schema";
-import { AppearanceResponse, CornerConfig, FillGradientWallpaperConfig, FontConfig, ImageWallpaperConfig, WallpaperConfig } from "@/types/appearance.types";
+import {
+  AppearanceResponse,
+  CornerConfig,
+  FillGradientWallpaperConfig,
+  FontConfig,
+  ImageWallpaperConfig,
+  WallpaperConfig,
+} from "@/types/appearance.types";
 
 // Sign up mutation
 export const useSignUp = () => {
@@ -75,8 +82,8 @@ export const useSignUp = () => {
 
       router.push(
         `/auth/verification?prev=register&email=${encodeURIComponent(
-          response.data.email
-        )}`
+          response.data.email,
+        )}`,
       );
     },
     onError: (error: any) => {
@@ -90,8 +97,6 @@ export const useSignUp = () => {
     },
   });
 };
-
-
 
 // Sign in mutation
 export const useSignIn = () => {
@@ -196,7 +201,7 @@ export const useVerifyOtp = () => {
     onSuccess: (response: VerifyOtpResponse) => {
       if (response.data) {
         dispatch(
-          setAuth({ user: response.data.user, token: response.data.token })
+          setAuth({ user: response.data.user, token: response.data.token }),
         );
         localStorage.setItem("auth_token", response.data.token);
         localStorage.setItem("user_data", JSON.stringify(response.data.user));
@@ -249,7 +254,7 @@ export const useForgotPassword = () => {
     },
     onSuccess: (
       response: { status: string; message: string },
-      variables: ForgotPasswordFormData
+      variables: ForgotPasswordFormData,
     ) => {
       if (response.status === "success") {
         toast.success("OTP code sent to email", {
@@ -258,8 +263,8 @@ export const useForgotPassword = () => {
         });
         router.push(
           `/auth/verification?prev=forgot-password&email=${encodeURIComponent(
-            variables.email
-          )}`
+            variables.email,
+          )}`,
         );
       }
     },
@@ -277,7 +282,7 @@ export const useForgotPassword = () => {
 
 export const useCheckUsername = (
   username: string,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean },
 ) => {
   return useQuery({
     queryKey: ["username", username],
@@ -494,11 +499,13 @@ export const useUpdateLink = () => {
       title?: string;
       url?: string;
       isVisible?: boolean;
+      platform?: string;
     }) => {
       return await updateLink(variables.linkId, {
         title: variables.title,
         url: variables.url,
         isVisible: variables.isVisible,
+        platform: variables.platform,
       });
     },
     onSuccess: (response: {
@@ -616,7 +623,6 @@ export const useDeleteLink = () => {
     },
   });
 };
-
 
 export const useCreateWaitlist = () => {
   const queryClient = useQueryClient();
@@ -747,11 +753,16 @@ export const useUpdateAppearanceAll = () => {
         updateAppearanceFont(fontConfig, signal),
       ];
       if (wallpaperConfig != null) {
-        appearancePromises.push(updateAppearanceWallpaper(wallpaperConfig, signal));
+        appearancePromises.push(
+          updateAppearanceWallpaper(wallpaperConfig, signal),
+        );
       }
       if (wallpaperImageFile != null) {
         appearancePromises.push(
-          updateAppearanceImage({ type: "image", image: wallpaperImageFile }, signal)
+          updateAppearanceImage(
+            { type: "image", image: wallpaperImageFile },
+            signal,
+          ),
         );
       }
 
@@ -786,19 +797,35 @@ export const useUpdateAppearanceAll = () => {
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["settings"] });
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
       const hadProfile = variables.profile != null;
       const hadAvatar = variables.profileAvatarFile != null;
       if (hadProfile || hadAvatar) {
         queryClient.invalidateQueries({ queryKey: ["user"] });
-        const response = (data as { profileResponse?: UpdateProfileResponse | null; avatarResponse?: UpdateProfileResponse | null }).profileResponse
-          ?? (data as { avatarResponse?: UpdateProfileResponse | null }).avatarResponse;
+        const response =
+          (
+            data as {
+              profileResponse?: UpdateProfileResponse | null;
+              avatarResponse?: UpdateProfileResponse | null;
+            }
+          ).profileResponse ??
+          (data as { avatarResponse?: UpdateProfileResponse | null })
+            .avatarResponse;
         if (currentUser && response?.data) {
+          const profileData = response.data as unknown as Record<string, unknown>;
+          const updatedProfile = {
+            ...currentUser.profile,
+            ...response.data,
+          };
+          const nameFromResponse =
+            (profileData?.user as { name?: string } | undefined)?.name ??
+            (profileData?.displayName as string | undefined);
           const updatedUser: User = {
             ...currentUser,
-            profile: {
-              ...currentUser.profile,
-              ...response.data,
-            },
+            name:
+              nameFromResponse ??
+              (variables.profile?.displayName ?? currentUser.name),
+            profile: updatedProfile,
           };
           dispatch(updateUser(updatedUser));
           if (typeof window !== "undefined") {
@@ -806,15 +833,23 @@ export const useUpdateAppearanceAll = () => {
           }
         }
       }
-      const saved = [hadProfile && "profile", hadAvatar && "avatar", "appearance"].filter(Boolean);
+      const saved = [
+        hadProfile && "profile",
+        hadAvatar && "avatar",
+        "appearance",
+      ].filter(Boolean);
       toast.success("Saved", {
-        description: saved.length > 1 ? `Updated ${saved.join(" and ")}.` : "Your settings have been updated.",
+        description:
+          saved.length > 1
+            ? `Updated ${saved.join(" and ")}.`
+            : "Your settings have been updated.",
       });
     },
     onError: (error: any) => {
+      // Prefer our labeled message (e.g. "Wallpaper image upload: ...") then server message
       const errorMessage =
-        error?.response?.data?.message ||
         error?.message ||
+        error?.response?.data?.message ||
         "Some settings could not be saved. No changes were applied.";
       toast.error("Save failed", {
         description: errorMessage,
@@ -857,7 +892,7 @@ export const useUpdateAppearanceImage = () => {
       const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
-          "Failed to update appearance image. Please try again.";
+        "Failed to update appearance image. Please try again.";
       toast.error("Failed to update appearance image", {
         description: errorMessage,
       });

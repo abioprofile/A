@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUserProfileByUsername } from "@/hooks/api/useAuth";
+import { normalizeWallpaperBackgroundColor } from "@/lib/helpers/appearance";
 import { getPlatformIcon } from "@/components/PlatformIcon";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/stores/hooks";
@@ -295,16 +296,10 @@ export default function PublicProfilePage() {
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
 
-  // Use wallpaper_config exactly as returned from backend (no extra normalization)
-  const bgColors =
-    wc?.backgroundColor != null
-      ? Array.isArray(wc.backgroundColor)
-        ? wc.backgroundColor
-        : [wc.backgroundColor].filter(
-            (c: unknown) =>
-              c && typeof (c as { color?: string }).color === "string",
-          )
-      : [];
+  // Backend may return backgroundColor as JSON string; normalize to array
+  const bgColors = normalizeWallpaperBackgroundColor(
+    (wc as { backgroundColor?: unknown })?.backgroundColor
+  ) ?? [];
 
   if (!isOotnUser && !isDnaByGazaUser) {
     if (selectedTheme && typeof selectedTheme === "string") {
@@ -336,8 +331,7 @@ export default function PublicProfilePage() {
         const hasAmounts = items.some((c) => c.amount != null);
         if (hasAmounts) {
           // Use backend values as-is: amount can be 0–1 (fraction) or 0–100 (percent)
-          const [start,end] = items;
-          console.log(start,end);
+          const [start, end] = items;
           // const stops = items
           //   .map((c, i: number) => {
           //     const amt = c.amount ?? 0;

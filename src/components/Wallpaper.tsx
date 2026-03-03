@@ -1,11 +1,20 @@
 import { useRef, useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import { Upload, X } from "lucide-react";
 import type { FillGradientWallpaperConfig } from "@/types/appearance.types";
+import { useIsMobile } from "@/hooks/use-mobile";
+import ReactCrop, { type Crop, type PixelCrop } from "react-image-crop";
+import "react-image-crop/dist/ReactCrop.css";
 
 const WALLPAPER_AMOUNT_FILL = 0.5;
 const WALLPAPER_AMOUNT_GRADIENT_START = 0.2;
 const WALLPAPER_AMOUNT_GRADIENT_END = 0.8;
+
+/** Match phone display links/bottom section: 285×400 so cropped image fills preview exactly */
+const PHONE_WALLPAPER_WIDTH = 285;
+const PHONE_WALLPAPER_HEIGHT = 400;
+const PHONE_ASPECT = PHONE_WALLPAPER_WIDTH / PHONE_WALLPAPER_HEIGHT;
 
 const MAX_IMAGE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/gif,image/webp";
@@ -34,6 +43,7 @@ export default function WallpaperSelector({
   initialWallpaperConfig,
   onWallpaperChange,
 }: WallpaperSelectorProps) {
+  const isMobile = useIsMobile();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showModal, setShowModal] = useState(false);
   const sheetRef = useRef<HTMLDivElement>(null);
@@ -44,6 +54,19 @@ export default function WallpaperSelector({
   const [isAnimating, setIsAnimating] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const blobUrlRef = useRef<string | null>(null);
+
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState<Crop>({
+    unit: "%",
+    width: 90,
+    height: 90,
+    x: 5,
+    y: 5,
+  });
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null);
+  const cropImgRef = useRef<HTMLImageElement>(null);
+  const cropBlobUrlRef = useRef<string | null>(null);
 
   const [themeType, setThemeType] = useState<"fill" | "gradient" | "image">(
     selectedTheme.startsWith("gradient")
@@ -298,22 +321,95 @@ export default function WallpaperSelector({
     const file = e.target.files?.[0];
     if (!file) return;
     if (!file.type.startsWith("image/")) return;
-    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
-    const imageUrl = URL.createObjectURL(file);
-    blobUrlRef.current = imageUrl;
+    const url = URL.createObjectURL(file);
+    cropBlobUrlRef.current = url;
+    setCropImageSrc(url);
+    setCompletedCrop(null);
+    setCrop({ unit: "%", width: 90, height: 90, x: 5, y: 5 });
+    setShowModal(false);
+    requestAnimationFrame(() => {
+      setShowCropModal(true);
+    });
+    e.target.value = "";
+  };
+
+  const handleCropImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.currentTarget;
+    if (!img?.naturalWidth || !img?.naturalHeight) return;
+    const w = img.width;
+    const h = img.height;
+    const pct = crop.unit === "%" ? crop : { width: 90, height: 90, x: 5, y: 5 };
+    const width = ((pct as Crop).width / 100) * w;
+    const height = ((pct as Crop).height / 100) * h;
+    const x = (((pct as Crop).x ?? 5) / 100) * w;
+    const y = (((pct as Crop).y ?? 5) / 100) * h;
+    setCompletedCrop({ unit: "px", width, height, x, y });
+  };
+
+  const getCroppedImageBlob = (): Promise<Blob | null> => {
+    const img = cropImgRef.current;
+    if (!img || !completedCrop?.width || !completedCrop?.height) return Promise.resolve(null);
+    const scaleX = img.naturalWidth / img.width;
+    const scaleY = img.naturalHeight / img.height;
+    const srcX = completedCrop.x * scaleX;
+    const srcY = completedCrop.y * scaleY;
+    const srcW = completedCrop.width * scaleX;
+    const srcH = completedCrop.height * scaleY;
+    const canvas = document.createElement("canvas");
+    canvas.width = PHONE_WALLPAPER_WIDTH;
+    canvas.height = PHONE_WALLPAPER_HEIGHT;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return Promise.resolve(null);
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, PHONE_WALLPAPER_WIDTH, PHONE_WALLPAPER_HEIGHT);
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
+    });
+  };
+
+  const handleCropSave = async () => {
+    const blob = await getCroppedImageBlob();
+    if (!blob) return;
+    const file = new File([blob], "wallpaper.jpg", { type: "image/jpeg" });
     setImageFile(file);
     setThemeType("image");
-    setSelectedTheme(imageUrl);
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    const url = URL.createObjectURL(blob);
+    blobUrlRef.current = url;
+    setSelectedTheme(url);
     setShowModal(false);
     onWallpaperChange?.({ wallpaperConfig: null, imageFile: file });
-    e.target.value = "";
+    if (cropBlobUrlRef.current) {
+      URL.revokeObjectURL(cropBlobUrlRef.current);
+      cropBlobUrlRef.current = null;
+    }
+    setCropImageSrc(null);
+    setShowCropModal(false);
+  };
+
+  const handleCropCancel = () => {
+    if (cropBlobUrlRef.current) {
+      URL.revokeObjectURL(cropBlobUrlRef.current);
+      cropBlobUrlRef.current = null;
+    }
+    setCropImageSrc(null);
+    setShowCropModal(false);
   };
 
   useEffect(() => {
     return () => {
       if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+      if (cropBlobUrlRef.current) URL.revokeObjectURL(cropBlobUrlRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!showCropModal) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [showCropModal]);
 
   return (
     <>
@@ -324,8 +420,12 @@ export default function WallpaperSelector({
               <button
                 onClick={() => {
                   if (wallpaper.type === "image") {
-                    setShowModal(true);
-                    setTranslate(0);
+                    if (isMobile) {
+                      setShowModal(true);
+                      setTranslate(0);
+                    } else {
+                      fileInputRef.current?.click();
+                    }
                   } else {
                     handleSelectType(wallpaper.type as "fill" | "gradient");
                   }
@@ -507,6 +607,68 @@ export default function WallpaperSelector({
           </div>
         </div>
       </div>
+
+      {/* Crop modal (portal) */}
+      {showCropModal &&
+        cropImageSrc &&
+        createPortal(
+          <div className="fixed inset-0 z-[200] flex flex-col bg-black/95 isolate">
+            <div className="flex items-center justify-between px-4 py-3 border-b border-white/20 bg-black/60 shrink-0 pointer-events-auto">
+              <h2 className="text-base md:text-lg font-semibold text-white">Crop wallpaper</h2>
+              <button
+                type="button"
+                onClick={handleCropCancel}
+                className="p-2.5 -mr-2 rounded-full active:bg-white/20 text-white touch-manipulation"
+                aria-label="Close"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div
+              className="flex-1 min-h-0 flex items-center justify-center p-3 md:p-4 overflow-hidden"
+              style={{ touchAction: "none" }}
+            >
+              <div className="w-full h-full flex items-center justify-center max-w-full">
+                <ReactCrop
+                  crop={crop}
+                  onChange={(_, percentCrop) => setCrop(percentCrop)}
+                  onComplete={(pixelCrop) => setCompletedCrop(pixelCrop)}
+                  aspect={PHONE_ASPECT}
+                  className="max-w-full"
+                  style={{ maxHeight: "100%" }}
+                >
+                  <img
+                    ref={cropImgRef}
+                    src={cropImageSrc}
+                    alt="Crop"
+                    className="max-w-full max-h-[72vh] md:max-h-[70vh] w-auto h-auto block select-none"
+                    style={{ maxHeight: "72vh", touchAction: "none" }}
+                    onLoad={handleCropImageLoad}
+                    draggable={false}
+                  />
+                </ReactCrop>
+              </div>
+            </div>
+            <div className="flex gap-3 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-white/20 bg-black/60 shrink-0 pointer-events-auto select-none">
+              <button
+                type="button"
+                onClick={handleCropCancel}
+                className="flex-1 min-h-[48px] py-3 rounded-xl border border-white/30 text-white font-medium active:bg-white/10 touch-manipulation"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleCropSave}
+                disabled={!completedCrop?.width || !completedCrop?.height}
+                className="flex-1 min-h-[48px] py-3 rounded-xl bg-[#E30000] text-white font-medium disabled:opacity-50 active:opacity-90 touch-manipulation"
+              >
+                Save
+              </button>
+            </div>
+          </div>,
+          document.body
+        )}
     </>
   );
 }

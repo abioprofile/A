@@ -167,6 +167,7 @@ export default function LinkList({
         await updateLinkMutation.mutateAsync({
           linkId: link.id,
           isVisible: !link.isVisible,
+          platform: link.platform,
         });
         // Optimistically update local state
         setLinksData((prev) =>
@@ -190,6 +191,7 @@ export default function LinkList({
           linkId: link.id,
           title,
           url,
+          platform: link.platform,
         });
         setEditItem(null);
         await refetchLinks();

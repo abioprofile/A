@@ -35,6 +35,13 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 }) => {
   const userDataProfile = useAppSelector((state) => state.auth.user);
 
+  // Use profile prop when provided (real-time preview on appearance page), else fall back to Redux
+  const displayName = profile?.displayName ?? userDataProfile?.name ?? "Your Name";
+  const userName = profile?.userName ?? userDataProfile?.profile?.username ?? "username";
+  const profileImage = profile?.profileImage ?? userDataProfile?.profile?.avatarUrl ?? "/icons/Profile Picture.png";
+  const bio = profile?.bio ?? userDataProfile?.profile?.bio ?? "Add a short bio here...";
+  const location = profile?.location ?? userDataProfile?.profile?.location ?? "Add location";
+
   // Create text style based on fontStyle properties
   const createTextStyle = (strokeWidth = 0) => {
     // Base text style
@@ -79,7 +86,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     .sort((a, b) => a.displayOrder - b.displayOrder)
     .slice(0, 8); // Limit to 8 links for phone display
 
-  // --- Background logic ---
+  // --- Background logic (fill, gradient, or image URL including blob) ---
   let bgStyle: React.CSSProperties = {};
   if (selectedTheme.startsWith("fill:")) {
     const color = selectedTheme.split(":")[1] || "#000";
@@ -87,13 +94,21 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   } else if (selectedTheme.startsWith("gradient:")) {
     const [, start, end] = selectedTheme.split(":");
     bgStyle = {
-      backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
+      backgroundImage: `linear-gradient(to bottom, ${start ?? "#000"}, ${end ?? "#fff"})`,
+    };
+  } else if (selectedTheme && (selectedTheme.startsWith("blob:") || selectedTheme.startsWith("http") || selectedTheme.startsWith("/"))) {
+    bgStyle = {
+      backgroundImage: `url(${selectedTheme})`,
+      backgroundSize: "100% 100%",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundColor: "#000000",
     };
   }
 
   return (
-    <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto  border-[2px]  border-black overflow-hidden bg-white ">
-      <div className="absolute inset-0 pointer-events-none" style={bgStyle} />
+    <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto  border-[2px]  border-black overflow-hidden bg-white "  >
+     
 
       {/* Content */}
       <div className="relative z-10 h-full flex flex-col">
@@ -102,10 +117,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           <div className="flex gap-3 items-center">
             <div className="w-[50px] h-[50px] rounded-full overflow-hidden shadow-md border border-gray-300">
               <img
-                src={
-                  userDataProfile?.profile?.avatarUrl ||
-                  "/icons/Profile Picture.png"
-                }
+                src={profileImage}
                 alt="Profile"
                 className="object-cover w-full h-full"
               />
@@ -113,31 +125,24 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
             <div className="flex-1 min-w-0">
               <h1
                 className="text-[14px] font-bold truncate"
-                title={userDataProfile?.name || "Your Name"}
+                title={displayName}
               >
-                {userDataProfile?.name || "Your Name"}
+                {displayName}
               </h1>
               <p
                 className="text-[10px] mt- font-medium text-gray-600 truncate"
-                title={`@${
-                  userDataProfile?.profile?.username
-                    ?.toLowerCase()
-                    .replace(/\s+/g, "") || "username"
-                }`}
+                title={`@${String(userName).toLowerCase().replace(/\s+/g, "")}`}
               >
-                @
-                {userDataProfile?.profile?.username
-                  ?.toLowerCase()
-                  .replace(/\s+/g, "") || "username"}
+                @{String(userName).toLowerCase().replace(/\s+/g, "")}
               </p>
             </div>
           </div>
 
           <p
             className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
-            title={userDataProfile?.profile?.bio || "Add a short bio here..."}
+            title={bio}
           >
-            {userDataProfile?.profile?.bio || "Add a short bio here..."}
+            {bio}
           </p>
 
           <div className="mt-2 mb-2 flex items-center  p-[2px] border text-[10px] border-[#4e4e4e] bg-white/70">
@@ -153,9 +158,9 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
             </div>
             <span
               className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]"
-              title={userDataProfile?.profile?.location || "Add location"}
+              title={location}
             >
-              {userDataProfile?.profile?.location || "Add location"}
+              {location}
             </span>
           </div>
 
@@ -171,6 +176,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           <div
             className="flex-1 py-4 px-6 overflow-y-auto [&::-webkit-scrollbar]:hidden"
             style={{
+              ...bgStyle,
               scrollbarWidth: "none",
               msOverflowStyle: "none",
             }}
