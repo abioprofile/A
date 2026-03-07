@@ -10,9 +10,16 @@ import { normalizeWallpaperBackgroundColor } from "@/lib/helpers/appearance";
 import { getPlatformIcon } from "@/components/PlatformIcon";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAppSelector } from "@/stores/hooks";
-import { motion, AnimatePresence, type Variants } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import DnaFormV1 from "@/components/dnabygaza/form";
 import MenuAccordion from "@/app/menu/page";
+import {
+  pageVariants,
+  phoneContainerVariants,
+  profileCardVariants,
+  linkItemVariants,
+  blurSideVariants,
+} from "@/lib/animations";
 
 interface UserLink {
   id: string;
@@ -22,92 +29,6 @@ interface UserLink {
   displayOrder: number;
   isVisible: boolean;
 }
-
-// Animation variants
-const pageVariants: Variants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: {
-      duration: 0.5,
-      ease: "easeOut",
-    },
-  },
-  exit: {
-    opacity: 0,
-    transition: {
-      duration: 0.3,
-      ease: "easeIn",
-    },
-  },
-};
-
-const phoneContainerVariants: Variants = {
-  initial: {
-    scale: 0.9,
-    opacity: 0,
-    y: 20,
-  },
-  animate: {
-    scale: 1,
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15,
-      delay: 0.2,
-    },
-  },
-};
-
-const profileCardVariants: Variants = {
-  initial: { y: -30, opacity: 0 },
-  animate: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 15,
-      delay: 0.4,
-    },
-  },
-};
-
-const linkItemVariants: Variants = {
-  initial: { x: -20, opacity: 0 },
-  animate: (i: number) => ({
-    x: 0,
-    opacity: 1,
-    transition: {
-      delay: 0.5 + i * 0.1,
-      type: "spring",
-      stiffness: 100,
-      damping: 15,
-    },
-  }),
-  hover: {
-    y: -2,
-    scale: 1.02,
-    transition: {
-      type: "spring",
-      stiffness: 400,
-      damping: 15,
-    },
-  },
-};
-
-const blurSideVariants: Variants = {
-  initial: { opacity: 0 },
-  animate: {
-    opacity: 1,
-    transition: {
-      duration: 0.8,
-      delay: 0.3,
-    },
-  },
-};
 
 // Helper function to create text style with stroke effect
 const createTextStyle = (fontConfig: any, strokeWidth = 0) => {

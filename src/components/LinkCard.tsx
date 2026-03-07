@@ -56,96 +56,108 @@ type Props = {
   onIconChange: (
     id: string,
     iconType: "platform" | "custom",
-    value: string
+    value: string,
   ) => void;
   dragHandleProps?: any;
   dragHandleId?: string;
 };
 
 // Updated platformIcons with Font Awesome components - ALL IN BLACK AND WHITE
-const platformIcons: Record<string, { name: string; icon: React.ReactElement }> = {
-  snapchat: { 
-    name: "Snapchat", 
-    icon: <FaSnapchat className="w-6 h-6 text-black" />
+const platformIcons: Record<
+  string,
+  { name: string; icon: React.ReactElement }
+> = {
+  snapchat: {
+    name: "Snapchat",
+    icon: <FaSnapchat className="w-6 h-6 text-black" />,
   },
-  instagram: { 
-    name: "Instagram", 
-    icon: <FaInstagram className="w-6 h-6 text-black" />
+  instagram: {
+    name: "Instagram",
+    icon: <FaInstagram className="w-6 h-6 text-black" />,
   },
-  behance: { 
-    name: "Behance", 
-    icon: <FaBehance className="w-6 h-6 text-black" />
+  behance: {
+    name: "Behance",
+    icon: <FaBehance className="w-6 h-6 text-black" />,
   },
-  linkedin: { 
-    name: "LinkedIn", 
-    icon: <FaLinkedinIn className="w-6 h-6 text-black" />
+  linkedin: {
+    name: "LinkedIn",
+    icon: <FaLinkedinIn className="w-6 h-6 text-black" />,
   },
-  tiktok: { 
-    name: "TikTok", 
-    icon: <FaTiktok className="w-6 h-6 text-black" />
+  tiktok: {
+    name: "TikTok",
+    icon: <FaTiktok className="w-6 h-6 text-black" />,
   },
-  x: { 
-    name: "X (Twitter)", 
-    icon: <FaXTwitter className="w-6 h-6 text-black" />
+  x: {
+    name: "X (Twitter)",
+    icon: <FaXTwitter className="w-6 h-6 text-black" />,
   },
-  youtube: { 
-    name: "YouTube", 
-    icon: <FaYoutube className="w-6 h-6 text-black" />
+  youtube: {
+    name: "YouTube",
+    icon: <FaYoutube className="w-6 h-6 text-black" />,
   },
-  facebook: { 
-    name: "Facebook", 
-    icon: <FaFacebook className="w-6 h-6 text-black" />
+  facebook: {
+    name: "Facebook",
+    icon: <FaFacebook className="w-6 h-6 text-black" />,
   },
-  whatsapp: { 
-    name: "WhatsApp", 
-    icon: <FaWhatsapp className="w-6 h-6 text-black" />
+  whatsapp: {
+    name: "WhatsApp",
+    icon: <FaWhatsapp className="w-6 h-6 text-black" />,
   },
-  pinterest: { 
-    name: "Pinterest", 
-    icon: <FaPinterest className="w-6 h-6 text-black" />
+  pinterest: {
+    name: "Pinterest",
+    icon: <FaPinterest className="w-6 h-6 text-black" />,
   },
-  custom: { 
-    name: "Custom Image", 
-    icon: <FaLink className="w-6 h-6 text-gray-500" />
+  custom: {
+    name: "Custom Image",
+    icon: <FaLink className="w-6 h-6 text-gray-500" />,
   },
-  github: { 
-    name: "GitHub", 
-    icon: <FaGithub className="w-6 h-6 text-black" />
+  github: {
+    name: "GitHub",
+    icon: <FaGithub className="w-6 h-6 text-black" />,
   },
-  spotify: { 
-    name: "Spotify", 
-    icon: <FaSpotify className="w-6 h-6 text-black" />
+  spotify: {
+    name: "Spotify",
+    icon: <FaSpotify className="w-6 h-6 text-black" />,
   },
-  apple: { 
-    name: "Apple", 
-    icon: <FaApple className="w-6 h-6 text-black" />
+  apple: {
+    name: "Apple",
+    icon: <FaApple className="w-6 h-6 text-black" />,
   },
-  google: { 
-    name: "Google", 
-    icon: <FaGoogle className="w-6 h-6 text-black" />
+  google: {
+    name: "Google",
+    icon: <FaGoogle className="w-6 h-6 text-black" />,
   },
-  amazon: { 
-    name: "Amazon", 
-    icon: <FaAmazon className="w-6 h-6 text-black" />
+  amazon: {
+    name: "Amazon",
+    icon: <FaAmazon className="w-6 h-6 text-black" />,
   },
-  figma: { 
-    name: "Figma", 
-    icon: <FaFigma className="w-6 h-6 text-black" />
+  figma: {
+    name: "Figma",
+    icon: <FaFigma className="w-6 h-6 text-black" />,
   },
-  dribbble: { 
-    name: "Dribbble", 
-    icon: <FaDribbble className="w-6 h-6 text-black" />
+  dribbble: {
+    name: "Dribbble",
+    icon: <FaDribbble className="w-6 h-6 text-black" />,
   },
-  telegram: { 
-    name: "Telegram", 
-    icon: <FaTelegram className="w-6 h-6 text-black" />
+  telegram: {
+    name: "Telegram",
+    icon: <FaTelegram className="w-6 h-6 text-black" />,
   },
 };
 
-const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVisibility, isVisible = true, dragHandleProps, dragHandleId }) => {
+const LinkCard: FC<Props> = ({
+  item,
+  onDelete,
+  onEdit,
+  onIconChange,
+  onToggleVisibility,
+  isVisible = true,
+  dragHandleProps,
+  dragHandleId,
+}) => {
   const [isActive, setIsActive] = useState(isVisible);
   const updateLinkIconMutation = useUpdateLinkWithIcon();
-  
+
   // Sync with prop changes
   useEffect(() => {
     setIsActive(isVisible);
@@ -166,7 +178,10 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
   const imgRef = useRef<HTMLImageElement>(null);
   const iconButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [dropdownPosition, setDropdownPosition] = useState<{ top: number; left: number } | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<{
+    top: number;
+    left: number;
+  } | null>(null);
 
   // Calculate dropdown position when opening
   const handleToggleDropdown = (e: MouseEvent) => {
@@ -187,21 +202,23 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
       const handleClickOutside = (e: globalThis.MouseEvent) => {
         const target = e.target as Node;
         // Check if click is outside both the button and the dropdown
-        const isOutsideButton = iconButtonRef.current && !iconButtonRef.current.contains(target);
-        const isOutsideDropdown = dropdownRef.current && !dropdownRef.current.contains(target);
-        
+        const isOutsideButton =
+          iconButtonRef.current && !iconButtonRef.current.contains(target);
+        const isOutsideDropdown =
+          dropdownRef.current && !dropdownRef.current.contains(target);
+
         if (isOutsideButton && isOutsideDropdown) {
           setShowIconDropdown(false);
         }
       };
       // Use a small delay to allow button clicks to register first
       const timeoutId = setTimeout(() => {
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
       }, 0);
-      
+
       return () => {
         clearTimeout(timeoutId);
-        document.removeEventListener('mousedown', handleClickOutside);
+        document.removeEventListener("mousedown", handleClickOutside);
       };
     }
   }, [showIconDropdown]);
@@ -220,12 +237,12 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
         />
       );
     }
-    
+
     const platformIcon = platformIcons[item.platform?.toLowerCase?.()];
     if (platformIcon) {
       return platformIcon.icon;
     }
-    
+
     // Default icon
     return <FaLink className="w-6 h-6 md:w-8 md:h-8 text-gray-500" />;
   };
@@ -258,28 +275,30 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
         // Use React 19's createRoot to render the icon
         const { createRoot } = await import("react-dom/client");
         const root = createRoot(tempDiv);
-        
+
         // Render the icon with proper styling
         root.render(
-          <div style={{ 
-            width: "64px", 
-            height: "64px", 
-            display: "flex", 
-            alignItems: "center", 
-            justifyContent: "center",
-            backgroundColor: "transparent",
-            color: "black"
-          }}>
+          <div
+            style={{
+              width: "64px",
+              height: "64px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backgroundColor: "transparent",
+              color: "black",
+            }}
+          >
             {iconData.icon}
-          </div>
+          </div>,
         );
 
         // Wait for React to render and SVG to load
-        await new Promise<void>(resolve => setTimeout(resolve, 300));
+        await new Promise<void>((resolve) => setTimeout(resolve, 300));
 
         // Get the SVG element from the rendered icon
         const svgElement = tempDiv.querySelector("svg") as SVGSVGElement;
-        
+
         if (!svgElement) {
           root.unmount();
           document.body.removeChild(tempDiv);
@@ -291,18 +310,23 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
         const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
         clonedSvg.setAttribute("width", "64");
         clonedSvg.setAttribute("height", "64");
-        const viewBox = svgElement.getAttribute("viewBox") || svgElement.getAttribute("viewbox") || "0 0 24 24";
+        const viewBox =
+          svgElement.getAttribute("viewBox") ||
+          svgElement.getAttribute("viewbox") ||
+          "0 0 24 24";
         clonedSvg.setAttribute("viewBox", viewBox);
-        
+
         // Create SVG string
         const svgString = new XMLSerializer().serializeToString(clonedSvg);
-        const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
+        const svgBlob = new Blob([svgString], {
+          type: "image/svg+xml;charset=utf-8",
+        });
         const svgUrl = URL.createObjectURL(svgBlob);
 
         // Create an image element to load the SVG
         const img = document.createElement("img");
         img.crossOrigin = "anonymous";
-        
+
         img.onload = () => {
           try {
             // Create canvas and draw the image
@@ -310,7 +334,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
             canvas.width = 64;
             canvas.height = 64;
             const ctx = canvas.getContext("2d");
-            
+
             if (!ctx) {
               URL.revokeObjectURL(svgUrl);
               root.unmount();
@@ -322,7 +346,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
             // Draw white background
             ctx.fillStyle = "white";
             ctx.fillRect(0, 0, 64, 64);
-            
+
             // Draw the SVG image
             ctx.drawImage(img, 0, 0, 64, 64);
 
@@ -331,9 +355,11 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
               URL.revokeObjectURL(svgUrl);
               root.unmount();
               document.body.removeChild(tempDiv);
-              
+
               if (blob) {
-                const file = new File([blob], `${platformKey}-icon.png`, { type: "image/png" });
+                const file = new File([blob], `${platformKey}-icon.png`, {
+                  type: "image/png",
+                });
                 resolve(file);
               } else {
                 reject(new Error("Failed to create icon blob"));
@@ -387,7 +413,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
             onError: (error) => {
               console.error("Failed to update icon:", error);
             },
-          }
+          },
         );
       } catch (error) {
         console.error("Failed to create icon file:", error);
@@ -434,7 +460,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
       0,
       0,
       completedCrop.width,
-      completedCrop.height
+      completedCrop.height,
     );
 
     canvas.toBlob((blob) => {
@@ -502,20 +528,25 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
     setShowAnalytics(!showAnalytics);
   };
 
+  const truncateUrl = (url: string, startChars = 20, endChars = 15) => {
+    if (url.length <= startChars + endChars) return url;
+    return `${url.slice(0, startChars)}...${url.slice(-endChars)}`;
+  };
 
   return (
     <div className="w-full">
       <div className="py-2 md:py-3">
         <div
-          className={`p-px md:p-[2px] ${
-            isActive ? "" : "border border-black"
-          }`}
+          className={`p-px md:p-[2px] ${isActive ? "" : "border border-black"}`}
         >
-          <div className="bg-[#FAFAFC] shadow-lg p-4 md:p-4 relative" style={{ zIndex: showIconDropdown ? 1 : 'auto' }}>
+          <div
+            className="bg-[#FAFAFC] shadow-lg p-4 md:p-4 relative"
+            style={{ zIndex: showIconDropdown ? 1 : "auto" }}
+          >
             {/* ================= TOP ROW ================= */}
             <div className="flex items-center gap-2 md:gap-3">
               {/* Drag dots (desktop only) - Only this area is draggable */}
-              <div 
+              <div
                 id={dragHandleId}
                 className="flex flex-col gap-1 cursor-grab"
                 {...(dragHandleProps || {})}
@@ -544,82 +575,88 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
               </div>
 
               {/* Icon Dropdown - Rendered via Portal outside DndContext */}
-              {showIconDropdown && typeof window !== 'undefined' && dropdownPosition && createPortal(
-                <>
-                  <div
-                    className="fixed inset-0 icon-dropdown-overlay"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowIconDropdown(false);
-                    }}
-                  />
-                  <div 
-                    ref={dropdownRef}
-                    className="fixed bg-white shadow-lg border min-w-[200px] max-h-[300px] flex flex-col icon-dropdown-container"
-                    style={{
-                      top: `${dropdownPosition.top}px`,
-                      left: `${dropdownPosition.left}px`,
-                    }}
-                    onClick={(e) => e.stopPropagation()}
-                    onMouseDown={(e) => e.stopPropagation()}
-                  >
-                    <div className="p-2 shrink-0">
-                      <h3 className="text-xs font-semibold text-gray-500 mb-2 px-2">
-                        Platform Icons
-                      </h3>
-                    </div>
-                    <div className="overflow-y-auto overflow-x-hidden flex-1 px-2 pb-2" style={{ maxHeight: '200px' }}>
-                      <div className="grid grid-cols-3 gap-2 mb-3">
-                        {Object.entries(platformIcons)
-                          .filter(([key]) => key !== "custom")
-                          .map(([key, { name, icon }]) => (
-                            <button
-                              key={key}
-                              type="button"
-                              onMouseDown={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                handleIconSelect(e, key);
-                              }}
-                              className="flex flex-col items-center p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
-                            >
-                              <div className="w-6 h-6 flex items-center justify-center mb-1">
-                                {icon}
-                              </div>
-                              <span className="text-[10px] text-gray-600 truncate w-full text-center">
-                                {name}
-                              </span>
-                            </button>
-                          ))}
+              {showIconDropdown &&
+                typeof window !== "undefined" &&
+                dropdownPosition &&
+                createPortal(
+                  <>
+                    <div
+                      className="fixed inset-0 icon-dropdown-overlay"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setShowIconDropdown(false);
+                      }}
+                    />
+                    <div
+                      ref={dropdownRef}
+                      className="fixed bg-white shadow-lg border min-w-[200px] max-h-[300px] flex flex-col icon-dropdown-container"
+                      style={{
+                        top: `${dropdownPosition.top}px`,
+                        left: `${dropdownPosition.left}px`,
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                    >
+                      <div className="p-2 shrink-0">
+                        <h3 className="text-xs font-semibold text-gray-500 mb-2 px-2">
+                          Platform Icons
+                        </h3>
+                      </div>
+                      <div
+                        className="overflow-y-auto overflow-x-hidden flex-1 px-2 pb-2"
+                        style={{ maxHeight: "200px" }}
+                      >
+                        <div className="grid grid-cols-3 gap-2 mb-3">
+                          {Object.entries(platformIcons)
+                            .filter(([key]) => key !== "custom")
+                            .map(([key, { name, icon }]) => (
+                              <button
+                                key={key}
+                                type="button"
+                                onMouseDown={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  e.preventDefault();
+                                  handleIconSelect(e, key);
+                                }}
+                                className="flex flex-col items-center p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
+                              >
+                                <div className="w-6 h-6 flex items-center justify-center mb-1">
+                                  {icon}
+                                </div>
+                                <span className="text-[10px] text-gray-600 truncate w-full text-center">
+                                  {name}
+                                </span>
+                              </button>
+                            ))}
+                        </div>
+                      </div>
+                      <div className="border-t pt-2 px-2 pb-2 shrink-0">
+                        <button
+                          type="button"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                          }}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            console.log("custom - button clicked");
+                            handleIconSelect(e, "custom");
+                          }}
+                          className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
+                        >
+                          <CameraIcon className="h-5 w-5 text-gray-600" />
+                          <span className="text-sm">Upload Image</span>
+                        </button>
                       </div>
                     </div>
-                    <div className="border-t pt-2 px-2 pb-2 shrink-0">
-                      <button
-                        type="button"
-                        onMouseDown={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          console.log("custom - button clicked");
-                          handleIconSelect(e, "custom");
-                        }}
-                        className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
-                      >
-                        <CameraIcon className="h-5 w-5 text-gray-600" />
-                        <span className="text-sm">Upload Image</span>
-                      </button>
-                    </div>
-                  </div>
-                </>,
-                document.body
-              )}
+                  </>,
+                  document.body,
+                )}
 
               {/* Hidden file input */}
               <input
@@ -643,9 +680,9 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                 <button
                   type="button"
                   onClick={handleUrlClick}
-                  className="block w-full text-left text-[11px] md:text-[13px] text-gray-600 line-clamp-3 truncate hover:text-gray-800 transition-colors"
+                  className="block w-full text-left text-[11px] md:text-[13px] text-gray-600 hover:text-gray-800 transition-colors"
                 >
-                  {item.url}
+                  {truncateUrl(item.url)}
                 </button>
               </div>
             </div>
@@ -679,7 +716,6 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                           onChange={(_, percentCrop) => setCrop(percentCrop)}
                           onComplete={handleCropComplete}
                           aspect={1}
-                          
                         >
                           <img
                             ref={imgRef}
@@ -712,7 +748,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                     </div>
                   </div>
                 </div>,
-                document.body
+                document.body,
               )}
 
             {/* ================= ACTION ROW ================= */}
@@ -747,7 +783,7 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
                 >
                   <span
                     className={`absolute top-0.5 h-4 w-4 md:h-5 md:w-5 bg-white rounded-full transition-transform duration-200 ${
-                      isActive 
+                      isActive
                         ? "translate-x-4 md:translate-x-5 left-0.5" // On: move to right
                         : "translate-x-0 left-0.5" // Off: stay on left
                     }`}
@@ -806,4 +842,4 @@ const LinkCard: FC<Props> = ({ item, onDelete, onEdit, onIconChange, onToggleVis
   );
 };
 
-export default LinkCard;  
+export default LinkCard;

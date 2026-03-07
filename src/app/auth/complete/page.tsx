@@ -304,9 +304,9 @@ export default function ProfileLivePage() {
               <Button
                 onClick={handleRetry}
                 className="bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5]"
-              >v
-                Retry
-              </Button>                                               
+              >
+                v Retry
+              </Button>
               <Button
                 onClick={() => router.push("/dashboard")}
                 className="bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E]"

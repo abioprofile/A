@@ -45,7 +45,8 @@ export default function DashboardPage() {
     };
     const getUsername = () => {
       if (userData?.profile?.username) return userData.profile.username;
-      if (user?.profile?.username) return (user.profile as { username?: string })?.username;
+      if (user?.profile?.username)
+        return (user.profile as { username?: string })?.username;
       return "User";
     };
 
@@ -60,7 +61,7 @@ export default function DashboardPage() {
   const [locations, setLocations] = useState<string[]>([]);
   const [tempLocation, setTempLocation] = useState("");
   const [profileImage, setProfileImage] = useState<string>(
-    "/icons/Profile Picture.png"
+    "/icons/Profile Picture.png",
   );
 
   const {
@@ -96,7 +97,7 @@ export default function DashboardPage() {
       const filtered = data
         .map((country: any) => country.name.common)
         .filter((name: string) =>
-          name.toLowerCase().includes(query.toLowerCase())
+          name.toLowerCase().includes(query.toLowerCase()),
         )
         .sort();
       setLocations(filtered);
@@ -175,28 +176,25 @@ export default function DashboardPage() {
           >
             Hi, {username}
           </motion.h1>
-          
+
           <motion.div
             variants={itemVariants}
             className="max-w-3xl flex gap-4 items-center px-8"
           >
-            <div
-            >
+            <div>
               <Image
-                src={userData?.profile?.avatarUrl || "/icons/Profile Picture.png"}
+                src={
+                  userData?.profile?.avatarUrl || "/icons/Profile Picture.png"
+                }
                 alt="Profile"
                 width={80}
                 height={80}
                 className="object-cover w-24 h-24  rounded-full"
-                
               />
             </div>
 
             <motion.div variants={itemVariants}>
-              <div
-                className="mb-1"
-                
-              >
+              <div className="mb-1">
                 <h1 className="font-semibold text-[24px]">
                   {displayName || "User"}
                 </h1>
@@ -205,18 +203,11 @@ export default function DashboardPage() {
                 </p>
               </div>
 
-              <p
-                className="font-bold my-2 text-[14px]"
-                
-              >
+              <p className="font-bold my-2 text-[14px]">
                 {userData?.profile?.bio || bio}
               </p>
 
-              <div
-              
-                className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500  px-1 py-1"
-                
-              >
+              <div className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500  px-1 py-1">
                 <Image
                   src="/icons/location1.png"
                   alt="Location"
@@ -231,14 +222,12 @@ export default function DashboardPage() {
             </motion.div>
           </motion.div>
 
-        
-
           {/* Other modals with similar animation patterns... */}
 
           <motion.div variants={itemVariants}>
             <LinkList
               linksDataData={profileLinks.sort(
-                (a, b) => a.displayOrder - b.displayOrder
+                (a, b) => a.displayOrder - b.displayOrder,
               )}
             />
           </motion.div>
@@ -272,10 +261,7 @@ export default function DashboardPage() {
         {/* ================= MOBILE LINKLIST OVERLAY ================= */}
         <AnimatePresence>
           {isMobile && showMobileLinks && (
-            <div
-              
-              className="fixed inset-0 bg-[#FFF7DE] z-[998] overflow-y-auto"
-            >
+            <div className="fixed inset-0 bg-[#FFF7DE] z-[998] overflow-y-auto">
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -291,73 +277,71 @@ export default function DashboardPage() {
                     <ChevronLeft className="inline mr-2" />
                     Abio Links
                   </motion.button>
-                  
                 </div>
                 <div>
-                <div className="px-4 mb-4 mt-6 max-w-3xl">
-                  <div className="flex gap-2 items-center">
-                    <div>
-                      <Image
-                        src={
-                          userData?.profile?.avatarUrl ||
-                          "/icons/Profile Picture.png"
-                        }
-                        alt="Profile"
-                        width={50}
-                        height={50}
-                        className="object-cover shadow-lg w-16 h-16  rounded-full"
-                        
-                      />
-                    </div>
+                  <div className="px-4 mb-4 mt-6 max-w-3xl">
+                    <div className="flex gap-2 items-center">
+                      <div>
+                        <Image
+                          src={
+                            userData?.profile?.avatarUrl ||
+                            "/icons/Profile Picture.png"
+                          }
+                          alt="Profile"
+                          width={50}
+                          height={50}
+                          className="object-cover shadow-lg w-16 h-16  rounded-full"
+                        />
+                      </div>
 
-                    <div>
-                      <div
-                        className="mb-1 cursor-pointer"
-                        onClick={() => openModal("editBio")}
-                      >
-                        <motion.h1
-                          whileHover={{ x: 5 }}
-                          className="font-extrabold text-[20px]"
+                      <div>
+                        <div
+                          className="mb-1 cursor-pointer"
+                          onClick={() => openModal("editBio")}
                         >
-                          {displayName || "User"}
-                        </motion.h1>
-                        <p className="font-medium text-gray-500 text-[12px]">
-                          {userData?.profile?.username || "@username"}
-                        </p>
+                          <motion.h1
+                            whileHover={{ x: 5 }}
+                            className="font-extrabold text-[20px]"
+                          >
+                            {displayName || "User"}
+                          </motion.h1>
+                          <p className="font-medium text-gray-500 text-[12px]">
+                            {userData?.profile?.username || "@username"}
+                          </p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <div>
-                    <motion.p
-                      whileHover={{ x: 5 }}
-                      className="font-medium my-2 text-[12px] cursor-pointer"
-                      onClick={() => openModal("editBio")}
-                    >
-                      {userData?.profile?.bio || bio}
-                    </motion.p>
+                    <div>
+                      <motion.p
+                        whileHover={{ x: 5 }}
+                        className="font-medium my-2 text-[12px] cursor-pointer"
+                        onClick={() => openModal("editBio")}
+                      >
+                        {userData?.profile?.bio || bio}
+                      </motion.p>
 
-                    <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      className="flex items-center w-fit whitespace-nowrap border-1 border-gray-400 gap-1  text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
-                      onClick={() => openModal("editLocation")}
-                    >
-                      <Image
-                        src="/icons/location1.png"
-                        alt="Location"
-                        width={12}
-                        height={12}
-                        className="w-3 h-3 flex-shrink-0"
-                      />
-                      <span className="truncate text-[10px]">
-                        {userData?.profile?.location || location}
-                      </span>
-                    </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex items-center w-fit whitespace-nowrap border-1 border-gray-400 gap-1  text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+                        onClick={() => openModal("editLocation")}
+                      >
+                        <Image
+                          src="/icons/location1.png"
+                          alt="Location"
+                          width={12}
+                          height={12}
+                          className="w-3 h-3 flex-shrink-0"
+                        />
+                        <span className="truncate text-[10px]">
+                          {userData?.profile?.location || location}
+                        </span>
+                      </motion.div>
+                    </div>
                   </div>
                 </div>
-              </div>
               </motion.div>
-              
+
               {/* LinkList EXACTLY AS DESKTOP */}
               <motion.div
                 initial={{ opacity: 0 }}
@@ -368,7 +352,7 @@ export default function DashboardPage() {
                 <LinkList
                   linksDataData={profileLinks.sort(
                     (a: ProfileLink, b: ProfileLink) =>
-                      a.displayOrder - b.displayOrder
+                      a.displayOrder - b.displayOrder,
                   )}
                 />
               </motion.div>

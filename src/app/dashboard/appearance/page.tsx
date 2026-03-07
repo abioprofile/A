@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { ChevronLeft, RotateCcw, RotateCw } from "lucide-react";
+import { ChevronLeft, RotateCcw, RotateCw, Upload } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PhoneDisplay from "@/components/PhoneDisplay";
 import {
@@ -45,6 +45,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import MobileBottomNav from "@/components/MobileBottomNav";
+import { Button } from "@/components/ui/button";
 
 /** Re-export for components that import ButtonStyle from the page */
 export type { ButtonStyle } from "@/types/appearance.types";
@@ -77,7 +78,8 @@ const AppearancePage: React.FC = () => {
     links: profileLinks,
     isLoading: phoneDisplayLoading,
   } = usePhoneDisplayProps();
-  const { mutate: updateProfile, isPending: isUpdatingProfile } = useUpdateProfile();
+  const { mutate: updateProfile, isPending: isUpdatingProfile } =
+    useUpdateProfile();
   const { mutateAsync: updateAppearanceAllAsync, isPending: isSavingAll } =
     useUpdateAppearanceAll();
 
@@ -104,7 +106,9 @@ const AppearancePage: React.FC = () => {
 
   const [wallpaperConfig, setWallpaperConfig] =
     useState<FillGradientWallpaperConfig | null>(null);
-  const [wallpaperImageFile, setWallpaperImageFile] = useState<File | null>(null);
+  const [wallpaperImageFile, setWallpaperImageFile] = useState<File | null>(
+    null,
+  );
   /** Only set from settings load / restore — never from WallpaperSelector, to avoid effect loop */
   const [initialWallpaperFromServer, setInitialWallpaperFromServer] =
     useState<FillGradientWallpaperConfig | null>(null);
@@ -123,6 +127,7 @@ const AppearancePage: React.FC = () => {
   useEffect(() => {
     const payload = settingsData?.data;
     if (!payload || settingsSynced) return;
+
     if (payload.corner_config) {
       setButtonStyle(cornerConfigToButtonStyle(payload.corner_config));
     }
@@ -138,7 +143,9 @@ const AppearancePage: React.FC = () => {
       setWallpaperImageFile(null);
       setInitialWallpaperFromServer(wp);
     }
-    const themeFromWallpaper = selectedThemeFromWallpaper(payload.wallpaper_config);
+    const themeFromWallpaper = selectedThemeFromWallpaper(
+      payload.wallpaper_config,
+    );
     if (themeFromWallpaper != null) setSelectedTheme(themeFromWallpaper);
     setSettingsSynced(true);
   }, [settingsData?.data, settingsSynced]);
@@ -157,21 +164,20 @@ const AppearancePage: React.FC = () => {
   }, [userData]);
 
   // ✅ Lock page scroll on mobile — ADDED ONLY THIS
-useEffect(() => {
-  if (!isMobile) return;
+  useEffect(() => {
+    if (!isMobile) return;
 
-  const originalOverflow = document.body.style.overflow;
-  const originalHeight = document.body.style.height;
+    const originalOverflow = document.body.style.overflow;
+    const originalHeight = document.body.style.height;
 
-  document.body.style.overflow = "hidden";
-  document.body.style.height = "100vh";
+    document.body.style.overflow = "hidden";
+    document.body.style.height = "100vh";
 
-  return () => {
-    document.body.style.overflow = originalOverflow;
-    document.body.style.height = originalHeight;
-  };
-}, [isMobile]);
-
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.body.style.height = originalHeight;
+    };
+  }, [isMobile]);
 
   // Undo/Redo state
   const [history, setHistory] = useState<AppState[]>([]);
@@ -259,7 +265,7 @@ useEffect(() => {
       setWallpaperImageFile(payload.imageFile ?? null);
       handleStateChange();
     },
-    [handleStateChange]
+    [handleStateChange],
   );
 
   /** Restore local state from server payload (e.g. after a failed save) */
@@ -277,7 +283,9 @@ useEffect(() => {
     setWallpaperConfig(wp ?? null);
     setWallpaperImageFile(null);
     if (wp) setInitialWallpaperFromServer(wp);
-    const themeFromWallpaper = selectedThemeFromWallpaper(payload.wallpaper_config);
+    const themeFromWallpaper = selectedThemeFromWallpaper(
+      payload.wallpaper_config,
+    );
     if (themeFromWallpaper != null) setSelectedTheme(themeFromWallpaper);
   }, []);
 
@@ -286,7 +294,9 @@ useEffect(() => {
       await updateAppearanceAllAsync({
         cornerConfig: buttonStyleToCornerConfig(buttonStyle),
         fontConfig: fontStyleToFontConfig(fontStyle),
-        wallpaperConfig: wallpaperImageFile ? null : wallpaperConfig ?? undefined,
+        wallpaperConfig: wallpaperImageFile
+          ? null
+          : (wallpaperConfig ?? undefined),
         wallpaperImageFile: wallpaperImageFile ?? undefined,
         profile: {
           displayName: profile.displayName || null,
@@ -296,6 +306,16 @@ useEffect(() => {
       });
       setHistory([]);
       setHistoryIndex(-1);
+      // Refetch settings so PhoneDisplay and sync effect get latest fill/gradient
+      await queryClient.refetchQueries({ queryKey: ["settings"] });
+      setSettingsSynced(false);
+      // Refetch current user's profile so [username] page shows new theme in real time
+      const username = userData?.username;
+      if (username) {
+        await queryClient.refetchQueries({
+          queryKey: ["user-profile", username],
+        });
+      }
     } catch {
       try {
         await queryClient.refetchQueries({ queryKey: ["settings"] });
@@ -318,6 +338,7 @@ useEffect(() => {
     updateAppearanceAllAsync,
     queryClient,
     restoreFromPayload,
+    userData?.username,
   ]);
 
   const handleBackClick = () => {
@@ -335,21 +356,67 @@ useEffect(() => {
 
   const menuItems = ["Profile", "Style", "Themes", "Wallpaper"];
 
+  /** Only show theme upload button when logged-in user is "abio" */
+  const canUploadThemes =
+    userData?.username === "abio" ||
+    (userData?.profile as { username?: string } | undefined)?.username ===
+      "abio";
+
+  const themeUploadInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleThemeUploadClick = useCallback(() => {
+    themeUploadInputRef.current?.click();
+  }, []);
+
+  const handleThemeFileChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file?.type.startsWith("image/")) return;
+      // TODO: wire to API to add theme to list (e.g. upload to storage and add to themes)
+      toast.success(
+        "Theme image selected. Upload integration can be wired here.",
+      );
+      e.target.value = "";
+    },
+    [],
+  );
+
   return (
     <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen md:bg-white md:pt-4 px-4 md:px-6 pb-20 md:pb-24 flex flex-col relative">
-      {/* Desktop Save */}
-      <div className="hidden md:flex justify-end mb-4 ">
+      {/* Hidden file input for theme upload (used when canUploadThemes) */}
+      <input
+        ref={themeUploadInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/gif,image/webp"
+        className="hidden"
+        onChange={handleThemeFileChange}
+      />
+
+      {/* Desktop: Save Changes + Upload theme (when abio) */}
+      <div className="hidden md:flex justify-end items-center gap-3 mb-4">
+        {canUploadThemes && (
+          <Button
+            type="button"
+            variant="outline"
+            onClick={handleThemeUploadClick}
+            className="flex items-center gap-2 w-40 h-8 px-6 text-sm font-bold text-[#331400] border-[#331400] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#331400]/10 transition-colors"
+          >
+            <Upload className="w-3 h-3" />
+            Upload Theme
+          </Button>
+        )}
+
         <button
           type="button"
           onClick={handleSaveAll}
           disabled={isSavingAll}
-          className="bg-[#FED45C] cursor-pointer shadow-[2px_2px_0px_0px_#000000] font-bold px-6 py-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          className="h-10 px-6 text-sm font-bold text-[#331400] bg-[#FED45C] shadow-[2px_2px_0px_0px_#000] cursor-pointer transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {isSavingAll ? "Saving…" : "Save Changes"}
         </button>
       </div>
 
-      {/* Mobile: Header fixed at top (TikTok-style) — Save + Undo/Redo only when an edit has been made */}
+      {/* Mobile: Header — Back, then Upload theme (when abio) + Undo/Redo/Save (when hasEdits) */}
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] px-2 py-3 flex items-center justify-between">
         <button
           onClick={handleBackClick}
@@ -358,34 +425,48 @@ useEffect(() => {
           <ChevronLeft className="inline" />
           Appearance
         </button>
-        {hasEdits && (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={undo}
-              disabled={historyIndex <= 0}
-              className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
-              title="Undo"
-            >
-              <RotateCcw size={18} />
-            </button>
-            <button
-              onClick={redo}
-              disabled={historyIndex >= history.length - 1}
-              className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
-              title="Redo"
-            >
-              <RotateCw size={18} />
-            </button>
-            <button
+        <div className="flex items-center gap-2">
+          {canUploadThemes && (
+            <Button
               type="button"
-              onClick={handleSaveAll}
-              disabled={isSavingAll}
-              className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="outline"
+              size="sm"
+              onClick={handleThemeUploadClick}
+              className="gap-1.5 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-[12px] px-3 py-1.5"
             >
-              {isSavingAll ? "Saving…" : "Save"}
-            </button>
-          </div>
-        )}
+              <Upload className="w-3.5 h-3.5" />
+              Upload theme
+            </Button>
+          )}
+          {hasEdits && (
+            <>
+              <button
+                onClick={undo}
+                disabled={historyIndex <= 0}
+                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
+                title="Undo"
+              >
+                <RotateCcw size={18} />
+              </button>
+              <button
+                onClick={redo}
+                disabled={historyIndex >= history.length - 1}
+                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
+                title="Redo"
+              >
+                <RotateCw size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSavingAll}
+                className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isSavingAll ? "Saving…" : "Save"}
+              </button>
+            </>
+          )}
+        </div>
       </div>
       {/* Spacer so content below doesn't sit under fixed header on mobile */}
       <div className="md:hidden h-14 flex-shrink-0" aria-hidden />
@@ -556,7 +637,6 @@ useEffect(() => {
           </div>
         </SheetContent>
       </Sheet>
-      
 
       {/* Mobile Bottom Nav */}
       <AppearanceBottomNav
@@ -564,7 +644,7 @@ useEffect(() => {
         setActiveTab={handleTabClick}
       />
 
-      <MobileBottomNav/>
+      <MobileBottomNav />
     </section>
   );
 };
