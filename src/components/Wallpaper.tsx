@@ -9,7 +9,6 @@ import "react-image-crop/dist/ReactCrop.css";
 
 const WALLPAPER_AMOUNT_FILL = 0.5;
 const WALLPAPER_AMOUNT_GRADIENT_START = 0.5;
-const WALLPAPER_AMOUNT_GRADIENT_START = 0.5;
 const WALLPAPER_AMOUNT_GRADIENT_END = 0.8;
 
 /** Match phone display links/bottom section: 285×400 so cropped image fills preview exactly */
