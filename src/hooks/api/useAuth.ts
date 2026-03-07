@@ -25,6 +25,8 @@ import {
   updateAppearanceCorners,
   updateAppearanceWallpaper,
   updateAppearanceImage,
+  getThemes,
+  createTheme,
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -46,7 +48,9 @@ import {
   ForgotPasswordFormData,
 } from "@/lib/validations/auth.schema";
 import {
+  ApiResponse,
   AppearanceResponse,
+  AppearanceTheme,
   CornerConfig,
   FillGradientWallpaperConfig,
   FontConfig,
@@ -899,3 +903,31 @@ export const useUpdateAppearanceImage = () => {
     },
   });
 };
+
+export const useGetThemes = () => {
+  const queryClient = useQueryClient();
+  return useQuery({
+    queryFn: async () => await getThemes(),
+    enabled: true,
+    queryKey: ["themes"],
+  })
+}
+
+export const useCreateTheme = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: AppearanceTheme) => await createTheme(data),
+    onSuccess: (response: ApiResponse<AppearanceTheme>) => {
+      queryClient.invalidateQueries({queryKey: ["themes"]});
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to save theme. Please try again.";
+      toast.error("Failed to save theme", {
+        description: errorMessage,
+      });
+    },
+  });
+}

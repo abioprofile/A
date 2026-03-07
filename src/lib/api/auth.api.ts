@@ -15,7 +15,9 @@ import {
   DisplayConfig,
 } from "@/types/auth.types";
 import {
+  ApiResponse,
   AppearanceResponse,
+  AppearanceTheme,
   CornerConfig,
   FillGradientWallpaperConfig,
   FontConfig,
@@ -411,5 +413,40 @@ export const updateAppearanceImage = async (
     formData,
     { signal },
   );
+  return response.data;
+};
+
+export const getThemes = async (
+  signal?: AbortSignal,
+): Promise<ApiResponse<AppearanceTheme[]>> => {
+  const response = await apiClient.get("/themes", { signal });
+  return response.data;
+};
+
+export const createTheme = async (
+  data: AppearanceTheme,
+  signal?: AbortSignal,
+): Promise<ApiResponse<AppearanceTheme>> => {
+  const formData = new FormData();
+
+  formData.append("name", data.name);
+  formData.append("wallpaper_config[type]", data.wallpaper_config.type);
+  if (data.wallpaper_config.type == "image") {
+    formData.append("wallpaper_config[image]", data.wallpaper_config.image as File);
+  } else {
+    formData.append("wallpaper_config[backgroundColor]", JSON.stringify(data.wallpaper_config.backgroundColor));
+  }
+  formData.append("font_config[name]", data.font_config.name);
+  formData.append("font_config[fillColor]", data.font_config.fillColor);
+  formData.append("font_config[strokeColor]", data.font_config.strokeColor);
+  
+  formData.append("corner_config[type]", data.corner_config.type);
+  formData.append("corner_config[fillColor]", data.corner_config.fillColor);
+  formData.append("corner_config[strokeColor]", data.corner_config.strokeColor);
+  formData.append("corner_config[opacity]", data.corner_config.opacity?.toString() ?? 1);
+  formData.append("corner_config[shadowColor]", data.corner_config.shadowColor);
+  formData.append("corner_config[shadowSize]", data.corner_config.shadowSize);
+
+  const response = await apiClient.post("/themes", formData, { signal });
   return response.data;
 };
