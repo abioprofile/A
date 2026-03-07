@@ -1,5 +1,6 @@
 "use client";
 
+import { useGetThemes } from "@/hooks/api/useAuth";
 import Image from "next/image";
 import { useState } from "react";
 
@@ -9,13 +10,13 @@ interface ThemeSelectorProps {
 }
 
 const themes = [
-  "/themes/theme.png",
-  "/themes/theme1.png",
-  "/themes/theme2.png",
-  "/themes/theme3.png",
-  "/themes/theme4.png",
-  "/themes/theme5.png",
-  "/themes/theme6.png",
+  // "/themes/theme.png",
+  // "/themes/theme1.png",
+  // "/themes/theme2.png",
+  // "/themes/theme3.png",
+  // "/themes/theme4.png",
+  // "/themes/theme5.png",
+  // "/themes/theme6.png",
 ];
 
 const ThemeSelector: React.FC<ThemeSelectorProps> = ({
@@ -24,12 +25,14 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const { data, error, isError, isLoading } = useGetThemes();
+
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + themes.length) % themes.length);
+    setCurrentIndex((prev) => (prev - 1 + themes?.length) % themes?.length);
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % themes.length);
+    setCurrentIndex((prev) => (prev + 1) % themes?.length);
   };
 
   return (
@@ -38,7 +41,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       <div className="md:hidden">
         <div className="overflow-x-auto pb-2 scrollbar-hide">
           <div className="flex gap-4 min-w-max px-4">
-            {themes.map((theme, index) => (
+            {data?.data.map((theme, index) => (
               <button
                 key={index}
                 onClick={() => {
@@ -67,7 +70,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
       {/* Desktop Grid View */}
       <div className="hidden md:block mt-6">
         <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
-          {themes.map((theme, index) => (
+          {data?.data.map((theme, index) => (
             <button
               key={index}
               onClick={() => setSelectedTheme(theme)}

@@ -9,60 +9,79 @@ export interface ButtonStyle {
 }
 
 export interface CornerConfig {
-    type: 'sharp' | 'round' | 'curved';
-    opacity: number;
-    fillColor: string;
-    shadowSize: string;
-    shadowColor: string;
-    strokeColor: string;
+  type: "sharp" | "round" | "curved";
+  opacity: number;
+  fillColor: string;
+  shadowSize: string;
+  shadowColor: string;
+  strokeColor: string;
 }
 
 export interface FontConfig {
-    name: string;
-    fillColor: string;
-    strokeColor: string;
+  name: string;
+  fillColor: string;
+  strokeColor: string;
 }
 
 export interface ImageWallpaperConfig {
-  type: 'image';
+  type: "image";
   image: File;
 }
 
 export interface FillGradientWallpaperConfig {
-    type: 'fill' | 'gradient';
+  type: "fill" | "gradient";
   backgroundColor: Array<{
     color: string;
     amount: number;
-}>;
+  }>;
+}
+
+export interface AppearanceTheme {
+  name: string;
+  font_config: FontConfig;
+  corner_config: CornerConfig;
+  wallpaper_config: {
+    type: "fill" | "gradient" | "image";
+    image?: File | { url: string; publicId: string };
+    backgroundColor?: string | Array<any>;
+  };
 }
 
 export interface WallpaperConfig {
-    type: 'fill' | 'gradient' | 'image';
-    image: {
-        url: string;
-        publicId: string;
-    };
-    backgroundColor: Array<{
-        color: string;
-        amount: number;
-    }>;
+  type: "fill" | "gradient" | "image";
+  image: {
+    url: string;
+    publicId: string;
+  };
+  // backgroundColor?: Array<{
+  //     color: string;
+  //     amount: number;
+  // }>;
+  backgroundColor?: string;
 }
 
 export interface AppearancePayload {
-    id: string;
-    userId: string;
-    profileId: string;
-    selected_theme: string | null;
-    font_config: FontConfig;
-    corner_config: CornerConfig;
-    wallpaper_config: WallpaperConfig;
-    createdAt: string;
-    updatedAt: string;
+  id: string;
+  userId: string;
+  profileId: string;
+  selected_theme: string | null;
+  font_config: FontConfig;
+  corner_config: CornerConfig;
+  wallpaper_config: WallpaperConfig;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface AppearanceResponse {
-    success: boolean;
-    message: string;
-    data: AppearancePayload;
-    statusCode: number;
+  success: boolean;
+  message: string;
+  data: AppearancePayload;
+  statusCode: number;
+}
+
+export interface ApiResponse<T> {
+  success: boolean;
+  message: string;
+  data: T;
+  statusCoe: number;
 }

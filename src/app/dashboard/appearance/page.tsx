@@ -12,6 +12,7 @@ import {
   useGetSettings,
   useUpdateProfile,
   useUpdateAppearanceAll,
+  useCreateTheme,
 } from "@/hooks/api/useAuth";
 import { usePhoneDisplayProps } from "@/hooks/usePhoneDisplayProps";
 import { useAppSelector } from "@/stores/hooks";
@@ -46,6 +47,7 @@ import {
 } from "@/components/ui/sheet";
 import MobileBottomNav from "@/components/MobileBottomNav";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 /** Re-export for components that import ButtonStyle from the page */
 export type { ButtonStyle } from "@/types/appearance.types";
@@ -82,6 +84,11 @@ const AppearancePage: React.FC = () => {
     useUpdateProfile();
   const { mutateAsync: updateAppearanceAllAsync, isPending: isSavingAll } =
     useUpdateAppearanceAll();
+  const {
+    mutateAsync: createThemeAsync,
+    isPending: isCreating,
+    isError: themeError,
+  } = useCreateTheme();
 
   const [activeTab, setActiveTab] = useState<number | null>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
@@ -103,6 +110,8 @@ const AppearancePage: React.FC = () => {
 
   const [selectedTheme, setSelectedTheme] =
     useState<string>("/themes/theme1.png");
+
+  const [themeName, setThemeName] = useState<string | undefined>(undefined);
 
   const [wallpaperConfig, setWallpaperConfig] =
     useState<FillGradientWallpaperConfig | null>(null);
@@ -364,9 +373,29 @@ const AppearancePage: React.FC = () => {
 
   const themeUploadInputRef = React.useRef<HTMLInputElement>(null);
 
-  const handleThemeUploadClick = useCallback(() => {
-    themeUploadInputRef.current?.click();
-  }, []);
+  const handleThemeUploadClick = () => {
+    if (!themeName) {
+      alert("Add a theme name");
+      return;
+    }
+
+    createThemeAsync({
+      name: themeName!,
+      corner_config: buttonStyleToCornerConfig(buttonStyle),
+      font_config: fontStyleToFontConfig(fontStyle),
+      wallpaper_config: {
+        type: wallpaperConfig!.type,
+        backgroundColor:
+          wallpaperConfig!.type != "image"
+            ? wallpaperConfig?.backgroundColor
+            : undefined,
+        image:
+          wallpaperConfig!.type == "image" ? wallpaperImageFile : undefined,
+      },
+    }).then((response) => {
+      console.log(response);
+    });
+  };
 
   const handleThemeFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -384,26 +413,33 @@ const AppearancePage: React.FC = () => {
   return (
     <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen md:bg-white md:pt-4 px-4 md:px-6 pb-20 md:pb-24 flex flex-col relative">
       {/* Hidden file input for theme upload (used when canUploadThemes) */}
-      <input
+      {/* <input
         ref={themeUploadInputRef}
         type="file"
         accept="image/jpeg,image/png,image/gif,image/webp"
         className="hidden"
         onChange={handleThemeFileChange}
-      />
+      /> */}
 
       {/* Desktop: Save Changes + Upload theme (when abio) */}
       <div className="hidden md:flex justify-end items-center gap-3 mb-4">
         {canUploadThemes && (
-          <Button
-            type="button"
-            variant="outline"
-            onClick={handleThemeUploadClick}
-            className="flex items-center gap-2 w-40 h-8 px-6 text-sm font-bold text-[#331400] border-[#331400] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#331400]/10 transition-colors"
-          >
-            <Upload className="w-3 h-3" />
-            Upload Theme
-          </Button>
+          <>
+            <Input
+              type="text"
+              value={themeName}
+              onChange={(e) => setThemeName(e.target.value)}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleThemeUploadClick}
+              className="flex items-center gap-2 w-40 h-8 px-6 text-sm font-bold text-[#331400] border-[#331400] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#331400]/10 transition-colors"
+            >
+              <Upload className="w-3 h-3" />
+              Upload Theme
+            </Button>
+          </>
         )}
 
         <button
@@ -427,16 +463,23 @@ const AppearancePage: React.FC = () => {
         </button>
         <div className="flex items-center gap-2">
           {canUploadThemes && (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleThemeUploadClick}
-              className="gap-1.5 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-[12px] px-3 py-1.5"
-            >
-              <Upload className="w-3.5 h-3.5" />
-              Upload theme
-            </Button>
+            <>
+              <Input
+                type="text"
+                value={themeName}
+                onChange={(e) => setThemeName(e.target.value)}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={handleThemeUploadClick}
+                className="gap-1.5 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-[12px] px-3 py-1.5"
+              >
+                <Upload className="w-3.5 h-3.5" />
+                Upload theme
+              </Button>
+            </>
           )}
           {hasEdits && (
             <>
