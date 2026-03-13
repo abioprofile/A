@@ -19,6 +19,7 @@ import { useAppSelector } from "@/stores/hooks";
 import type {
   AppearancePayload,
   AppearanceResponse,
+  AppearanceTheme,
   CornerConfig,
   FillGradientWallpaperConfig,
   FontConfig,
@@ -275,6 +276,33 @@ const AppearancePage: React.FC = () => {
       handleStateChange();
     },
     [handleStateChange],
+  );
+
+  /** Apply a selected theme globally (wallpaper + style + font); updates all relevant UI. */
+  const handleThemeSelect = useCallback(
+    (theme: AppearanceTheme) => {
+      const themeString = selectedThemeFromWallpaper(
+        theme.wallpaper_config as BackendWallpaperConfig,
+      );
+      const newButtonStyle = cornerConfigToButtonStyle(theme.corner_config);
+      const newFontStyle = fontConfigToFontStyle(theme.font_config);
+      const wp = wallpaperConfigFromBackend(
+        theme.wallpaper_config as BackendWallpaperConfig,
+      );
+      setSelectedTheme(themeString ?? selectedTheme);
+      setButtonStyle(newButtonStyle);
+      setFontStyle(newFontStyle);
+      setWallpaperConfig(wp ?? null);
+      setWallpaperImageFile(null);
+      if (wp) setInitialWallpaperFromServer(wp);
+      addToHistory({
+        buttonStyle: newButtonStyle,
+        fontStyle: newFontStyle,
+        selectedTheme: themeString ?? selectedTheme,
+        profile,
+      });
+    },
+    [addToHistory, profile, selectedTheme],
   );
 
   /** Restore local state from server payload (e.g. after a failed save) */
@@ -579,6 +607,7 @@ const AppearancePage: React.FC = () => {
                   setSelectedTheme(newTheme);
                   handleStateChange();
                 }}
+                onThemeSelect={handleThemeSelect}
               />
             )}
             {activeTab === 3 && (
@@ -653,6 +682,7 @@ const AppearancePage: React.FC = () => {
                     setSelectedTheme(newTheme);
                     handleStateChange();
                   }}
+                  onThemeSelect={handleThemeSelect}
                 />
               )}
               {activeTab === 3 && (

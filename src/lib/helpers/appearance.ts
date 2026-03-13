@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type {
   ButtonStyle,
   CornerConfig,
@@ -146,3 +147,28 @@ export function selectedThemeFromWallpaper(
   return null;
 }
 
+/** Theme preview style for thumbnail (fill or gradient from wallpaper_config). */
+export function themePreviewStyle(
+  w: WallpaperConfig | undefined | null,
+): CSSProperties {
+  if (!w) return {};
+  const rawBg = (w as { backgroundColor?: unknown }).backgroundColor;
+  const bg = normalizeWallpaperBackgroundColor(rawBg);
+  if (w.type === "fill" && bg?.[0]) {
+    return { backgroundColor: bg[0].color };
+  }
+  if (w.type === "gradient" && bg && bg.length >= 2) {
+    return {
+      backgroundImage: `linear-gradient(to bottom, ${bg[0].color}, ${bg[1].color})`,
+    };
+  }
+  const img = (w as { image?: { url: string } }).image;
+  if (w.type === "image" && img?.url) {
+    return {
+      backgroundImage: `url(${img.url})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+    };
+  }
+  return {};
+}

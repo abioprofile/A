@@ -162,7 +162,7 @@ export default function DashboardPage() {
   // }
 
   return (
-    <>
+    <ProtectedRoute>
       <motion.section
         initial="hidden"
         animate="visible"
@@ -189,7 +189,7 @@ export default function DashboardPage() {
                 alt="Profile"
                 width={80}
                 height={80}
-                className="object-cover w-24 h-24  rounded-full"
+                className="object-cover shadow-md w-24 h-24  rounded-full"
               />
             </div>
 
@@ -360,6 +360,6 @@ export default function DashboardPage() {
           )}
         </AnimatePresence>
       </motion.section>
-    </>
+    </ProtectedRoute>
   );
 }

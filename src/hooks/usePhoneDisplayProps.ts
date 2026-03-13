@@ -55,8 +55,16 @@ export interface UsePhoneDisplayPropsResult {
  */
 export function usePhoneDisplayProps(): UsePhoneDisplayPropsResult {
   const userData = useAppSelector((state) => state.auth.user);
-  const { data: settingsData, isLoading: settingsLoading, refetch: refetchSettings } = useGetSettings();
-  const { data: linksData, isLoading: linksLoading, refetch: refetchLinks } = useGetAllLinks();
+  const {
+    data: settingsData,
+    isLoading: settingsLoading,
+    refetch: refetchSettings,
+  } = useGetSettings();
+  const {
+    data: linksData,
+    isLoading: linksLoading,
+    refetch: refetchLinks,
+  } = useGetAllLinks();
 
   const refetch = () => {
     refetchSettings();
@@ -76,13 +84,18 @@ export function usePhoneDisplayProps(): UsePhoneDisplayPropsResult {
       : null;
     const selectedTheme =
       themeFromWallpaper ??
-      (payload?.selected_theme ?? undefined) ??
+      payload?.selected_theme ??
+      undefined ??
       DEFAULT_THEME;
 
     const profile: PhoneDisplayProfile = {
-      profileImage: userData?.profile?.avatarUrl ?? "/icons/Profile Picture.png",
+      profileImage:
+        userData?.profile?.avatarUrl ?? "/icons/Profile Picture.png",
       displayName: userData?.name ?? "User",
-      userName: userData?.username ?? "username",
+      userName:
+        userData?.profile?.username ??
+        (userData as { username?: string })?.username ??
+        "username",
       bio: userData?.profile?.bio ?? "",
       location: userData?.profile?.location ?? "",
     };

@@ -511,9 +511,14 @@ export default function SideDashboard() {
               </div>
             </div>
           </div>
-          <p className="mt-0.5 truncate text-left text-[12px] font-semibold text-gray-600">
+          <a
+            href={profileLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-0.5 block truncate text-left text-[12px] font-semibold text-gray-600 "
+          >
             {formatLink(profileLink)}
-          </p>
+          </a>
         </div>
       </div>
 
@@ -548,9 +553,14 @@ export default function SideDashboard() {
                 className="w-12 h-12 text-[#331400]"
               />
             </button>
-            <p className="text-sm text-gray-600 cursor-pointer">
+            <a
+              href={profileLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-gray-600 cursor-pointer "
+            >
               {formatLink(profileLink)}
-            </p>
+            </a>
           </div>
         </div>
       </div>

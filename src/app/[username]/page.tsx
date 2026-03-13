@@ -218,9 +218,10 @@ export default function PublicProfilePage() {
   const isDnaByGazaUser = userData?.username === "dnabygaza";
 
   // Backend may return backgroundColor as JSON string; normalize to array
-  const bgColors = normalizeWallpaperBackgroundColor(
-    (wc as { backgroundColor?: unknown })?.backgroundColor
-  ) ?? [];
+  const bgColors =
+    normalizeWallpaperBackgroundColor(
+      (wc as { backgroundColor?: unknown })?.backgroundColor,
+    ) ?? [];
 
   if (!isOotnUser && !isDnaByGazaUser) {
     if (selectedTheme && typeof selectedTheme === "string") {
@@ -238,9 +239,7 @@ export default function PublicProfilePage() {
       }
 
       console.log("IF");
-    } else if (
-      (wc?.type == "fill" || wc?.type == "gradient")
-    ) {
+    } else if (wc?.type == "fill" || wc?.type == "gradient") {
       const items = bgColors.map(
         (c: unknown) => c as { color: string; amount?: number },
       );
@@ -523,9 +522,15 @@ export default function PublicProfilePage() {
                                   fontWeight: fontStyle?.fontWeight,
                                   fontStyle: fontStyle?.fontStyle,
                                   textShadow: fontStyle?.textShadow,
+                                  backgroundColor:
+                                      buttonStyle?.backgroundColor ||
+                                      "rgba(255,255,255,0.3)",
+                                    opacity: buttonStyle?.opacity ?? 1,
+                                    // borderRadius:
+                                    //   buttonStyle?.borderRadius || "0px",
                                 }}
                               >
-                                <span
+                                {/* <span
                                   className="absolute inset-0"
                                   style={{
                                     backgroundColor:
@@ -535,7 +540,7 @@ export default function PublicProfilePage() {
                                     borderRadius:
                                       buttonStyle?.borderRadius || "0px",
                                   }}
-                                />
+                                /> */}
                                 <motion.span
                                   whileHover={{ rotate: 10 }}
                                   transition={{
@@ -792,9 +797,15 @@ export default function PublicProfilePage() {
                               fontWeight: fontStyle?.fontWeight,
                               fontStyle: fontStyle?.fontStyle,
                               textShadow: fontStyle?.textShadow,
+                               backgroundColor:
+                                  buttonStyle?.backgroundColor ||
+                                  "rgba(255,255,255,0.3)",
+                                opacity: buttonStyle?.opacity ?? 1,
+                                // borderRadius:
+                                //   buttonStyle?.borderRadius || "0px",
                             }}
                           >
-                            <span
+                            {/* <span
                               className="absolute inset-0"
                               style={{
                                 backgroundColor:
@@ -804,7 +815,7 @@ export default function PublicProfilePage() {
                                 borderRadius:
                                   buttonStyle?.borderRadius || "0px",
                               }}
-                            />
+                            /> */}
                             <motion.span
                               whileHover={{ rotate: 10 }}
                               transition={{ type: "spring", stiffness: 300 }}
