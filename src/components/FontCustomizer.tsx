@@ -84,27 +84,6 @@ const fonts = [
   { label: "Lato", font: lato },
   { label: "Open Sans", font: openSans },
   { label: "Raleway", font: raleway },
-  { label: "Nunito", font: nunito },
-  { label: "Ubuntu", font: ubuntu },
-  { label: "Oswald", font: oswald },
-  { label: "Merriweather", font: merriweather },
-  { label: "Playfair Display", font: playfair },
-  { label: "Rubik", font: rubik },
-  { label: "Noto Sans", font: notoSans },
-  { label: "Josefin Sans", font: josefin },
-  { label: "Quicksand", font: quicksand },
-  { label: "Work Sans", font: workSans },
-  { label: "Source Sans 3", font: sourceSans },
-  { label: "DM Sans", font: dmSans },
-  { label: "Cabin", font: cabin },
-  { label: "Fira Sans", font: firaSans },
-  { label: "Karla", font: karla },
-  { label: "Manrope", font: manrope },
-  { label: "Mukta", font: mukta },
-  { label: "Heebo", font: heebo },
-  { label: "Exo 2", font: exo2 },
-  { label: "Urbanist", font: urbanist },
-  { label: "IBM Plex Sans", font: ibmPlexSans },
 ];
 
 export interface FontStyle {
@@ -190,6 +169,9 @@ const COLORS = [
   "#FBBF24", // yellow
 ];
 
+const isNone = (color: string) =>
+  !color || color === "transparent" || color.toLowerCase() === "none";
+
 export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
   const [selectedFont, setSelectedFont] = useState(
     fonts.find((f) => f.font.style.fontFamily === fontStyle.fontFamily) ||
@@ -197,6 +179,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
   );
   const [open, setOpen] = useState(false);
   const [mobileStyle, setMobileStyle] = useState("normal");
+  const [showMobileFillPicker, setShowMobileFillPicker] = useState(false);
 
   // Sync mobile style with fontStyle prop
   useEffect(() => {
@@ -309,12 +292,42 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
           </div>
           <div className="overflow-x-auto pb-2 scrollbar-hide ">
             <div className="flex gap-2 min-w-max">
+              {/* Color picker button - First box */}
+              <label className="relative cursor-pointer w-8 h-8 flex-shrink-0">
+  <div
+    className="w-full h-full flex items-center justify-center transition-transform hover:scale-100"
+    style={{
+      background:
+        "linear-gradient(45deg, #FF0000, #FF9900, #FFFF00, #00FF00, #00FFFF, #0000FF, #9900FF, #FF00FF)",
+      borderColor: showMobileFillPicker ? "#000" : "#ccc",
+      boxShadow: showMobileFillPicker
+        ? "0 0 0 2px #fff, 0 0 0 4px #000"
+        : "none",
+    }}
+  >
+    <span className="text-[14px] font-bold text-black">+</span>
+  </div>
+  <input
+    type="color"
+    value={isNone(fontStyle.fillColor) ? "#ffffff" : fontStyle.fillColor}
+    onChange={(e) =>
+      setFontStyle({
+        ...fontStyle,
+        fillColor: e.target.value,
+      })
+    }
+    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+    onClick={() => setShowMobileFillPicker(true)}
+    onBlur={() => setShowMobileFillPicker(false)}
+    aria-label="Custom fill color picker"
+  />
+</label>
               {COLORS.map((c) => (
                 <button
                   key={c}
                   onClick={() => handleColorSelect(c)}
                   className={clsx(
-                    "w-14 h-14  border-1 transition-transform hover:scale-110",
+                    "w-8 h-8  border-1 transition-transform hover:scale-110",
                     fontStyle.fillColor === c
                       ? "ring-2 ring-offset-2 ring-black border-white"
                       : "border-gray-300",

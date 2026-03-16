@@ -96,8 +96,8 @@ const AppearancePage: React.FC = () => {
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
     borderRadius: "0px",
-    backgroundColor: "#ffffff",
-    borderColor: "#000000",
+    backgroundColor: "transparent",
+    borderColor: "transparent",
     opacity: 1,
     boxShadow: "2px 2px 6px rgba(0,0,0,0.2)",
   });

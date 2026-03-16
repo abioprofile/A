@@ -1,6 +1,5 @@
 "use client";
 
-// Import useState
 import { useRef, useState, JSX } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -30,7 +29,37 @@ interface UserLink {
   isVisible: boolean;
 }
 
-// Helper function to create text style with stroke effect
+// ─── Helper: convert any hex/rgb color + separate opacity into a single rgba() ─
+function applyOpacityToColor(color: string, opacity: number): string {
+  // opacity is 0–1
+  const alpha = Math.max(0, Math.min(1, opacity));
+
+  // Already rgba — replace alpha channel
+  const rgbaMatch = color.match(
+    /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/,
+  );
+  if (rgbaMatch) {
+    return `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${alpha})`;
+  }
+
+  // Hex — convert to rgba
+  let hex = color.replace("#", "");
+  if (hex.length === 3)
+    hex = hex
+      .split("")
+      .map((c) => c + c)
+      .join("");
+  if (hex.length === 6) {
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  // Fallback — return as-is with CSS color-mix if supported, else original
+  return color;
+}
+
 const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
   if (!fontConfig) return undefined;
 
@@ -43,7 +72,6 @@ const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
     textDecoration: fontConfig.textDecoration || "none",
   };
 
-  // Apply stroke if strokeColor exists and is valid
   if (
     strokeWidth > 0 &&
     fontConfig.strokeColor &&
@@ -75,7 +103,6 @@ export default function PublicProfilePage() {
   const usernameData = useAppSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState<"links" | "menu">("links");
 
-  // Fetch user profile by username
   const {
     data: profileData,
     isLoading: profileLoading,
@@ -83,10 +110,8 @@ export default function PublicProfilePage() {
     error: profileErrorData,
   } = useUserProfileByUsername(username);
 
-  // Get links from profile data (profileData already includes links)
   const profileLinks = profileData?.data?.links || [];
 
-  // Transform profile links to UserLink format
   const links: UserLink[] = profileLinks.map((link) => ({
     id: link.id,
     title: link.title,
@@ -96,7 +121,6 @@ export default function PublicProfilePage() {
     isVisible: link.isVisible,
   }));
 
-  // Loading state
   if (profileLoading) {
     return (
       <motion.div
@@ -125,7 +149,6 @@ export default function PublicProfilePage() {
     );
   }
 
-  // Error state
   if (profileError || !profileData?.data) {
     const errorMessage =
       profileErrorData instanceof Error
@@ -169,7 +192,6 @@ export default function PublicProfilePage() {
 
   const profileDisplay = profileData.data.display;
 
-  // Derive display styles from profileDisplay (support snake_case and camelCase for production API)
   const fc = profileDisplay?.font_config;
   const cc = profileDisplay?.corner_config;
   const wc =
@@ -184,40 +206,46 @@ export default function PublicProfilePage() {
     (profileDisplay as { selectedTheme?: string | null })?.selectedTheme ??
     null;
 
-  // Create font style with stroke support
   const fontStyle = fc ? createTextStyle(fc, fc.strokeWidth || 0) : undefined;
 
-  // Create button style with opacity
+  // ─── FIX: build buttonStyle WITHOUT element-level opacity ──────────────────
+  // Instead, bake the opacity directly into backgroundColor via rgba so only
+  // the fill is transparent — text and icons remain fully visible.
   const buttonStyle = cc
-    ? {
-        borderRadius:
-          cc.type === "sharp"
-            ? 0
-            : cc.type === "round"
-              ? "9999px"
-              : cc.type === "pill"
-                ? "100px"
-                : "12px",
-        backgroundColor: cc.fillColor ?? "#ffffff",
-        opacity: cc.opacity ?? 1,
-        boxShadow:
-          cc.shadowSize === "hard"
-            ? `4px 4px 0px 0px ${cc.shadowColor || "#000000"}`
-            : cc.shadowColor
-              ? `2px 2px 6px ${cc.shadowColor}80`
-              : "none",
-        border: `2px solid ${cc.strokeColor ?? "#000000"}`,
-        borderColor: cc.strokeColor ?? "#000000",
-      }
+    ? (() => {
+        const rawBg = cc.fillColor ?? "#ffffff";
+        const opacity = cc.opacity ?? 1;
+        // Bake opacity into the background color only
+        const backgroundColorWithOpacity = applyOpacityToColor(rawBg, opacity);
+
+        return {
+          borderRadius:
+            cc.type === "sharp"
+              ? 0
+              : cc.type === "round"
+                ? "9999px"
+                : cc.type === "pill"
+                  ? "100px"
+                  : "12px",
+          backgroundColor: backgroundColorWithOpacity,
+          // ← NO `opacity` property here anymore
+          boxShadow:
+            cc.shadowSize === "hard"
+              ? `4px 4px 0px 0px ${cc.shadowColor || "#000000"}`
+              : cc.shadowColor
+                ? `2px 2px 6px ${cc.shadowColor}80`
+                : "none",
+          border: `2px solid ${cc.strokeColor ?? "#000000"}`,
+          borderColor: cc.strokeColor ?? "#000000",
+        };
+      })()
     : undefined;
 
-  // Background handling (resilient to prod API: camelCase, missing display, or different wallpaper shape)
   let backgroundStyle: React.CSSProperties = {};
   let backgroundImageSrc = "/themes/theme7.jpg";
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
 
-  // Backend may return backgroundColor as JSON string; normalize to array
   const bgColors =
     normalizeWallpaperBackgroundColor(
       (wc as { backgroundColor?: unknown })?.backgroundColor,
@@ -227,45 +255,35 @@ export default function PublicProfilePage() {
     if (selectedTheme && typeof selectedTheme === "string") {
       if (selectedTheme.startsWith("fill:")) {
         const color = selectedTheme.split(":")[1] || "#000";
-        backgroundStyle = { backgroundColor: wc.backgroundColor };
+        backgroundStyle = { backgroundColor: color };
       } else if (selectedTheme.startsWith("gradient:")) {
         const [, start, end] = selectedTheme.split(":");
         backgroundStyle = {
-          // backgroundImage: `linear-gradient(to bottom, ${start}, ${end})`,
-          backgroundImage: wc.backgroundColor,
+          backgroundImage: `linear-gradient(to bottom, ${start ?? "#000"}, ${end ?? "#fff"})`,
         };
       } else {
         backgroundImageSrc = selectedTheme;
       }
-
-      console.log("IF");
     } else if (wc?.type == "fill" || wc?.type == "gradient") {
       const items = bgColors.map(
         (c: unknown) => c as { color: string; amount?: number },
       );
       if (items.length === 1) {
-        backgroundStyle = {
-          backgroundColor: items[0].color,
-        };
+        backgroundStyle = { backgroundColor: items[0].color };
       } else {
         const direction =
           (wc as { direction?: string }).direction ?? "to bottom";
         const hasAmounts = items.some((c) => c.amount != null);
         if (hasAmounts) {
-          // Use backend values as-is: amount can be 0–1 (fraction) or 0–100 (percent)
           const [start, end] = items;
-          // const stops = items
-          //   .map((c, i: number) => {
-          //     const amt = c.amount ?? 0;
-          //     const pct = amt <= 1 ? amt * 100 : amt;
-          //     return i != 0 ? `${c.color} ${pct}%` : `${c.color}`;
-          //   })
-          //   .join(", ");
-          // backgroundStyle = {
-          //   background: `linear-gradient(${direction}, ${stops})`,
-          // };
           backgroundStyle = {
-            background: `linear-gradient(to bottom, ${start.color}, ${end.color} ${end.amount * 100}%)`,
+            background: `linear-gradient(${direction}, ${start.color} 0%, ${end.color} ${
+              typeof end.amount === "number"
+                ? end.amount <= 1
+                  ? end.amount * 100
+                  : end.amount
+                : 100
+            }%)`,
           };
         } else {
           backgroundStyle = {
@@ -279,6 +297,22 @@ export default function PublicProfilePage() {
       if (imageUrl) backgroundImageSrc = imageUrl;
     }
   }
+
+  // ─── Shared link button style (no opacity on element) ─────────────────────
+  const linkButtonStyle: React.CSSProperties = {
+    borderRadius: buttonStyle?.borderRadius || "0px",
+    border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
+    boxShadow: buttonStyle?.boxShadow || "none",
+    textDecoration: "none",
+    color: fontStyle?.color || "#fff",
+    fontFamily: fontStyle?.fontFamily,
+    fontWeight: fontStyle?.fontWeight,
+    fontStyle: fontStyle?.fontStyle,
+    textShadow: fontStyle?.textShadow,
+    backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+    // ← opacity intentionally omitted here
+  };
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -291,7 +325,6 @@ export default function PublicProfilePage() {
       >
         {/* Desktop Layout with Blurred Sides */}
         <div className="hidden lg:flex items-center justify-center min-h-screen">
-          {/* Left Blurred Side */}
           <motion.div
             variants={blurSideVariants}
             initial="initial"
@@ -299,40 +332,25 @@ export default function PublicProfilePage() {
             className="fixed left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
           />
 
-          {/* Center Phone Container - FIXED WIDTH */}
           <motion.div
             variants={phoneContainerVariants}
             initial="initial"
             animate="animate"
             className="relative z-20 mx-auto w-[300px]"
           >
-            {/* Phone Frame */}
             <motion.div
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
               className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl"
             >
-              {/* Screen Content */}
               <div className="w-full h-full bg-white overflow-hidden relative flex flex-col">
-                {/* Background */}
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                   className="absolute inset-0"
                 >
-                  {isOotnUser ? (
-                    <>
-                      {/* <Image
-                        src="/themes/ootn.jpeg"
-                        alt="background"
-                        fill
-                        className="object-cover"
-                        priority
-                      />
-                      <div className="absolute inset-0 bg-black/65" /> */}
-                    </>
-                  ) : Object.keys(backgroundStyle).length > 0 ? (
+                  {isOotnUser ? null : Object.keys(backgroundStyle).length > 0 ? (
                     <div className="absolute inset-0" style={backgroundStyle} />
                   ) : (
                     <Image
@@ -345,16 +363,13 @@ export default function PublicProfilePage() {
                   )}
                 </motion.div>
 
-                {/* ===== TOP PROFILE CARD ===== */}
                 <motion.div
                   variants={profileCardVariants}
                   initial="initial"
                   animate="animate"
                   className="relative z-20 bg-white/90 p-4 backdrop-blur-xl"
                   style={{
-                    backgroundColor: fc?.cardBgColor
-                      ? fc.cardBgColor
-                      : undefined,
+                    backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
                     opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
                   }}
                 >
@@ -364,20 +379,13 @@ export default function PublicProfilePage() {
                     transition={{ delay: 0.6 }}
                     className="flex items-center gap-3"
                   >
-                    {/* Avatar */}
                     <motion.div
                       whileHover={{ scale: 1.1 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 400,
-                        damping: 15,
-                      }}
+                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
                     >
                       <Avatar className="w-[56px] h-[56px] border">
                         <AvatarImage
-                          src={
-                            userData.avatarUrl || "/icons/Profile Picture.png"
-                          }
+                          src={userData.avatarUrl || "/icons/Profile Picture.png"}
                           alt={userData.name || userData.username || "Profile"}
                           className="object-cover"
                         />
@@ -389,7 +397,6 @@ export default function PublicProfilePage() {
                       </Avatar>
                     </motion.div>
 
-                    {/* Name */}
                     <motion.div
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -400,14 +407,12 @@ export default function PublicProfilePage() {
                           ? "one of those nights"
                           : userData?.name || userData?.username || "User"}
                       </p>
-
                       <p className="text-[10px] text-gray-500">
                         @{userData.username || "username"}
                       </p>
                     </motion.div>
                   </motion.div>
 
-                  {/* Bio */}
                   {userData.bio && (
                     <motion.p
                       initial={{ opacity: 0, height: 0 }}
@@ -419,7 +424,6 @@ export default function PublicProfilePage() {
                     </motion.p>
                   )}
 
-                  {/* Location */}
                   {userData.location && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -434,7 +438,6 @@ export default function PublicProfilePage() {
                     </motion.div>
                   )}
 
-                  {/* Tab Switcher */}
                   <div className="mt-4 flex absolute bottom-0 gap-8">
                     <button
                       onClick={() => setActiveTab("links")}
@@ -461,9 +464,7 @@ export default function PublicProfilePage() {
                       >
                         <span
                           className={`text-[9px] font-medium transition-colors ${
-                            activeTab === "menu"
-                              ? "text-black"
-                              : "text-gray-400"
+                            activeTab === "menu" ? "text-black" : "text-gray-400"
                           }`}
                           style={activeTab === "menu" ? fontStyle : undefined}
                         >
@@ -480,26 +481,17 @@ export default function PublicProfilePage() {
                   </div>
                 </motion.div>
 
-                {/* ===== BUTTONS ===== */}
                 <div
                   className="relative z-20 px-6 pt-4 pb-6 space-y-3 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
-                  style={{
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                  }}
+                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {activeTab === "links" ? (
                     <>
                       <AnimatePresence>
                         {links.length > 0 ? (
                           links
-                            .filter(
-                              (link: UserLink) => link.isVisible !== false,
-                            )
-                            .sort(
-                              (a: UserLink, b: UserLink) =>
-                                a.displayOrder - b.displayOrder,
-                            )
+                            .filter((link: UserLink) => link.isVisible !== false)
+                            .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
                             .map((link: UserLink, index: number) => (
                               <motion.a
                                 key={link.id}
@@ -509,53 +501,17 @@ export default function PublicProfilePage() {
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm
-                                     backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
-                                style={{
-                                  borderRadius:
-                                    buttonStyle?.borderRadius || "0px",
-                                  border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
-                                  boxShadow: buttonStyle?.boxShadow || "none",
-                                  textDecoration: "none",
-                                  color: fontStyle?.color || "#fff",
-                                  fontFamily: fontStyle?.fontFamily,
-                                  fontWeight: fontStyle?.fontWeight,
-                                  fontStyle: fontStyle?.fontStyle,
-                                  textShadow: fontStyle?.textShadow,
-                                  backgroundColor:
-                                      buttonStyle?.backgroundColor ||
-                                      "rgba(255,255,255,0.3)",
-                                    opacity: buttonStyle?.opacity ?? 1,
-                                    // borderRadius:
-                                    //   buttonStyle?.borderRadius || "0px",
-                                }}
+                                className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
+                                style={linkButtonStyle}
                               >
-                                {/* <span
-                                  className="absolute inset-0"
-                                  style={{
-                                    backgroundColor:
-                                      buttonStyle?.backgroundColor ||
-                                      "rgba(255,255,255,0.3)",
-                                    opacity: buttonStyle?.opacity ?? 1,
-                                    borderRadius:
-                                      buttonStyle?.borderRadius || "0px",
-                                  }}
-                                /> */}
                                 <motion.span
                                   whileHover={{ rotate: 10 }}
-                                  transition={{
-                                    type: "spring",
-                                    stiffness: 300,
-                                  }}
-                                  className="relative"
+                                  transition={{ type: "spring", stiffness: 300 }}
                                   style={{ color: fontStyle?.color }}
                                 >
                                   {getPlatformIcon(link.platform, "w-4 h-4")}
                                 </motion.span>
-                                <span
-                                  className="truncate relative"
-                                  style={fontStyle}
-                                >
+                                <span className="truncate" style={fontStyle}>
                                   {link.title}
                                 </span>
                               </motion.a>
@@ -565,18 +521,14 @@ export default function PublicProfilePage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
-                            className="text-xs text-gray-500 text-center py-4 relative z-20"
+                            className="text-xs text-gray-500 text-center py-4"
                             style={fontStyle}
                           >
                             No links added yet.
                           </motion.p>
                         )}
                       </AnimatePresence>
-                      {isDnaByGazaUser && (
-                        <div>
-                          <DnaFormV1 />
-                        </div>
-                      )}
+                      {isDnaByGazaUser && <DnaFormV1 />}
                     </>
                   ) : (
                     <motion.div
@@ -593,7 +545,6 @@ export default function PublicProfilePage() {
             </motion.div>
           </motion.div>
 
-          {/* Right Blurred Side */}
           <motion.div
             variants={blurSideVariants}
             initial="initial"
@@ -602,14 +553,13 @@ export default function PublicProfilePage() {
           />
         </div>
 
-        {/* Mobile Layout - Full Screen View */}
+        {/* Mobile Layout */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
           className="lg:hidden w-full min-h-screen bg-[#FEF4EA]"
         >
-          {/* Background Image for Mobile */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -640,9 +590,7 @@ export default function PublicProfilePage() {
             )}
           </motion.div>
 
-          {/* Mobile Content */}
           <div className="relative z-10 w-full min-h-screen flex flex-col">
-            {/* ===== TOP PROFILE CARD ===== */}
             <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -654,7 +602,6 @@ export default function PublicProfilePage() {
               }}
             >
               <div className="flex items-center gap-3">
-                {/* Avatar */}
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
@@ -674,7 +621,6 @@ export default function PublicProfilePage() {
                   </Avatar>
                 </motion.div>
 
-                {/* Name */}
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -691,7 +637,6 @@ export default function PublicProfilePage() {
                 </motion.div>
               </div>
 
-              {/* Bio */}
               {userData.bio && (
                 <motion.p
                   initial={{ opacity: 0, height: 0 }}
@@ -703,7 +648,6 @@ export default function PublicProfilePage() {
                 </motion.p>
               )}
 
-              {/* Location */}
               {userData.location && (
                 <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
@@ -716,7 +660,6 @@ export default function PublicProfilePage() {
                 </motion.div>
               )}
 
-              {/* Tab Switcher */}
               <div className="mt-4 flex absolute bottom-0 gap-8">
                 <button
                   onClick={() => setActiveTab("links")}
@@ -760,7 +703,6 @@ export default function PublicProfilePage() {
               </div>
             </motion.div>
 
-            {/* ===== BUTTONS ===== */}
             <div className="px-10 pt-6 pb-6 space-y-4 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden">
               {activeTab === "links" ? (
                 <>
@@ -768,64 +710,26 @@ export default function PublicProfilePage() {
                     {links.length > 0 ? (
                       links
                         .filter((link: UserLink) => link.isVisible !== false)
-                        .sort(
-                          (a: UserLink, b: UserLink) =>
-                            a.displayOrder - b.displayOrder,
-                        )
+                        .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
                         .map((link: UserLink, index: number) => (
                           <motion.a
                             key={link.id}
-                            // initial={{ x: -30, opacity: 0 }}
-                            // animate={{ x: 0, opacity: 1 }}
-                            // transition={{
-                            //   delay: 0.3 + index * 0.1,
-                            //   type: "spring",
-                            // }}
                             whileHover={{ scale: 1.03, y: -2 }}
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm
-                                      backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer relative"
-                            style={{
-                              borderRadius: buttonStyle?.borderRadius || "0px",
-                              border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
-                              boxShadow: buttonStyle?.boxShadow || "none",
-                              textDecoration: "none",
-                              color: fontStyle?.color || "#fff",
-                              fontFamily: fontStyle?.fontFamily,
-                              fontWeight: fontStyle?.fontWeight,
-                              fontStyle: fontStyle?.fontStyle,
-                              textShadow: fontStyle?.textShadow,
-                               backgroundColor:
-                                  buttonStyle?.backgroundColor ||
-                                  "rgba(255,255,255,0.3)",
-                                opacity: buttonStyle?.opacity ?? 1,
-                                // borderRadius:
-                                //   buttonStyle?.borderRadius || "0px",
-                            }}
+                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer"
+                            style={linkButtonStyle}
                           >
-                            {/* <span
-                              className="absolute inset-0"
-                              style={{
-                                backgroundColor:
-                                  buttonStyle?.backgroundColor ||
-                                  "rgba(255,255,255,0.3)",
-                                opacity: buttonStyle?.opacity ?? 1,
-                                borderRadius:
-                                  buttonStyle?.borderRadius || "0px",
-                              }}
-                            /> */}
                             <motion.span
                               whileHover={{ rotate: 10 }}
                               transition={{ type: "spring", stiffness: 300 }}
-                              className="relative"
                               style={{ color: fontStyle?.color }}
                             >
                               {getPlatformIcon(link.platform, "w-4 h-4")}
                             </motion.span>
                             <span
-                              className="truncate font-bold relative"
+                              className="truncate font-bold"
                               style={fontStyle}
                             >
                               {link.title}
@@ -844,11 +748,7 @@ export default function PublicProfilePage() {
                       </motion.p>
                     )}
                   </AnimatePresence>
-                  {isDnaByGazaUser && (
-                    <div>
-                      <DnaFormV1 />
-                    </div>
-                  )}
+                  {isDnaByGazaUser && <DnaFormV1 />}
                 </>
               ) : (
                 <motion.div
