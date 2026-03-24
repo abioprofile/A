@@ -51,6 +51,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
       opacity: fontStyle.opacity / 100,
       fontStyle: fontStyle.fontStyle || "normal",
       fontWeight: fontStyle.fontWeight || "400",
+      fontSize: fontStyle.fontSize ? `${fontStyle.fontSize}px` : undefined,
       textDecoration: fontStyle.textDecoration || "none",
     };
 

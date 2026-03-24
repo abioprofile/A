@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, JSX } from "react";
+import { useRef, useState, JSX, useEffect } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { FaMapMarkerAlt } from "react-icons/fa";
@@ -69,6 +69,7 @@ const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
     opacity: fontConfig.opacity ? fontConfig.opacity / 100 : 1,
     fontStyle: fontConfig.fontStyle || "normal",
     fontWeight: fontConfig.fontWeight || "400",
+    fontSize: fontConfig.fontSize ? `${fontConfig.fontSize}px` : undefined,
     textDecoration: fontConfig.textDecoration || "none",
   };
 
@@ -206,7 +207,28 @@ export default function PublicProfilePage() {
     (profileDisplay as { selectedTheme?: string | null })?.selectedTheme ??
     null;
 
-  const fontStyle = fc ? createTextStyle(fc, fc.strokeWidth || 0) : undefined;
+  const fontStyle = fc ? createTextStyle(fc, (fc as { strokeWidth?: number }).strokeWidth || 0) : undefined;
+
+  // Load the profile font on the page so it renders (username preview doesn't use next/font)
+  useEffect(() => {
+    const name = (fc as { name?: string })?.name;
+    if (!name || typeof document === "undefined") return;
+    const family = name.replace(/\s+/g, "+");
+    const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(name)}:wght@400;500;600;700&display=swap`;
+    const id = "profile-font-link";
+    let link = document.getElementById(id) as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      document.head.appendChild(link);
+    }
+    if (link.getAttribute("href") !== href) link.href = href;
+    return () => {
+      const el = document.getElementById(id);
+      if (el?.parentNode) el.parentNode.removeChild(el);
+    };
+  }, [(fc as { name?: string })?.name]);
 
   // ─── FIX: build buttonStyle WITHOUT element-level opacity ──────────────────
   // Instead, bake the opacity directly into backgroundColor via rgba so only

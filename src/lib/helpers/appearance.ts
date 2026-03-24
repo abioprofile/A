@@ -57,6 +57,10 @@ export function fontConfigToFontStyle(f: FontConfig): FontStyle {
     fillColor: f.fillColor ?? "#000000",
     strokeColor: (f as { strokeColor?: string }).strokeColor ?? "none",
     opacity: 100,
+    fontWeight: f.fontWeight ?? "400",
+    fontSize: f.fontSize ?? 14,
+    fontStyle: f.fontStyle ?? "normal",
+    textDecoration: (f.textDecoration === "underline" || f.textDecoration === "line-through" ? f.textDecoration : "none"),
   };
 }
 
@@ -85,11 +89,16 @@ export function toValidColor(
 
 /** Map UI FontStyle to API FontConfig for save */
 export function fontStyleToFontConfig(s: FontStyle): FontConfig {
-  return {
+  const config: FontConfig = {
     name: fontFamilyToApiName(s.fontFamily),
     fillColor: toValidColor(s.fillColor, "#000000"),
     strokeColor: toValidColor(s.strokeColor, "#00000000"),
   };
+  if (s.fontWeight != null && s.fontWeight !== "") config.fontWeight = s.fontWeight;
+  if (s.fontSize != null && s.fontSize > 0) config.fontSize = s.fontSize;
+  if (s.fontStyle != null) config.fontStyle = s.fontStyle;
+  if (s.textDecoration != null) config.textDecoration = s.textDecoration;
+  return config;
 }
 
 /** Default amount for wallpaper backgroundColor when not from backend (design didn't account for it). */

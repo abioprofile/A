@@ -1,87 +1,102 @@
-"use client"
-import Footer from '@/components/Footer';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image'
-import React, { useState } from 'react'
+"use client";
 
-const Store = () => {
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
+
+const STORE_PRODUCTS = [
+  {
+    id: "ap-card-5",
+    name: "Ap Card 5",
+    description: "The last business card you'll ever need.",
+    priceLabel: "From N35,000",
+    image: "/icons/store-card-1.svg",
+    imageAlt: "Ap card 5 image",
+  },
+  {
+    id: "ap-card-5-plus-custom",
+    name: "Ap Card 5+ Custom",
+    description: "The last business card you'll ever need.",
+    priceLabel: "From N50,000",
+    image: "/icons/store-card-2.svg",
+    imageAlt: "Ap card 5+ image",
+  },
+] as const;
+
+export default function Store() {
   const [showSearch, setShowSearch] = useState(false);
 
   return (
-    <main className='pt-34 bg-[#FEF4EA]'>
-      <div className='px-4 md:px-10'>
+    <main className="min-h-screen bg-[#FEF4EA] py-16 px-4">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className='flex justify-between items-center mb-5'>
-          <h1 className='text-xl md:text-3xl font-extrabold text-center tracking-tight leading-snug capitalize'>
+        <div className="flex justify-between items-center mb-10">
+          <h1 className="text-2xl md:text-4xl font-extrabold">
             All Products
           </h1>
-          <div className='flex gap-4'>
-            <div className="relative flex items-center">
+
+          <div className="flex gap-4 items-center">
+            <div className="relative">
               <Input
                 onBlur={() => setShowSearch(false)}
-                type="text"
                 placeholder="Search..."
-                className={`pl-3 pr-10 py-1 transition-all duration-300 ease-in-out ${showSearch ? "w-[130px] opacity-100" : "w-0 opacity-0"}`}
+                className={`transition-all duration-300 ${
+                  showSearch ? "w-40 opacity-100" : "w-0 opacity-0"
+                }`}
               />
               <button
                 onClick={() => setShowSearch((prev) => !prev)}
-                className="absolute right-2 text-gray-400"
+                className="absolute right-2 top-1/2 -translate-y-1/2"
               >
-                <Image
-                  src={"/icons/search.svg"}
-                  priority={true}
-                  alt='search icon'
-                  width={18}
-                  height={18}
-                  className='cursor-pointer'
-                />
+                <Image src="/icons/search.svg" alt="search" width={18} height={18} />
               </button>
             </div>
-            <Image src={"/icons/cart.svg"} priority={true} alt='cart icon' width={18} height={18} className='cursor-pointer' />
+
+            <Image src="/icons/cart.svg" alt="cart" width={20} height={20} />
           </div>
         </div>
 
-        {/* Store Grid */}
-        <div className='grid grid-cols-1 sm:grid-cols-2 gap-10 lg:gap-40 items-center mb-8'>
-        
-          <div className='flex flex-col sm:flex-col items-center sm:items-center gap-3'>
-            {/* On mobile: row layout */}
-            <div className='flex flex-row sm:flex-col items-center gap-4 w-full justify-center'>
-              <Image src={"/icons/store-card-1.svg"} priority={true} alt='Ap card 5 image' width={200} height={200} className='cursor-pointer sm:w-[350px] sm:h-[350px]' />
-              
-            <div className='flex flex-col space-y-3 items-start sm:items-center'>
-                <h3 className='text-[13px] lg:text-xl font-bold'>Ap Card 5</h3>
-                <p className='text-[12px] font-thin'>The last business card you’ll ever need.</p>
-                <h3 className='text-[#331400] text-[14px] lg:text-xl font-semibold'>From N35,000</h3>
-                <Button className="bg-[#FED45C] text-[#331400] px-2 md:px-4 py-2 font-semibold mt-2 sm:hidden">
-                  Explore More
-                </Button>
-              </div>
-            </div>
-          </div>
+        {/* Products */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24">
+          {STORE_PRODUCTS.map((product) => (
+            <div
+              key={product.id}
+              className="flex flex-col items-center text-center space-y-4"
+            >
+              <Image
+                src={product.image}
+                alt={product.imageAlt}
+                width={320}
+                height={320}
+                className="w-[260px] md:w-[320px]"
+              />
 
-          {/* Card 2 */}
-          <div className='flex flex-col sm:flex-col items-center sm:items-center gap-3'>
-            <div className='flex flex-row sm:flex-col items-center gap-4 w-full justify-center'>
-              <Image src={"/icons/store-card-2.svg"} priority={true} alt='Ap card 5+ image' width={200} height={200} className='cursor-pointer sm:w-[350px] sm:h-[350px]' />
-              
-              <div className='flex flex-col space-y-3 items-start sm:items-center'>
-                <h3 className='text-[13px] lg:text-xl font-bold'>Ap Card 5+ Custom</h3>
-                <p className='text-[12px] font-thin'>The last business card you’ll ever need.</p>
-                <h3 className='text-[#331400] text-[14px] lg:text-xl font-semibold'>From N50,000</h3>
-                <Button className="bg-[#FED45C] text-[#331400] px-2 md:px-4 py-2 font-semibold mt-2 sm:hidden">
-                  Explore More
-                </Button>
+              <div className="space-y-2">
+                <h3 className="text-lg md:text-xl font-bold">
+                  {product.name}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  {product.description}
+                </p>
+                <p className="text-[#331400] text-lg font-semibold">
+                  {product.priceLabel}
+                </p>
               </div>
-            </div>
-          </div>
 
+              <Button
+                asChild
+                className="bg-[#FED45C] text-[#331400] px-6 py-3 font-semibold shadow-[4px_4px_0px_#000]"
+              >
+                <Link href={`/store/onboarding/${product.id}`}>
+                  Buy Now
+                </Link>
+              </Button>
+            </div>
+          ))}
         </div>
       </div>
-      <Footer />
     </main>
-  )
+  );
 }
-
-export default Store

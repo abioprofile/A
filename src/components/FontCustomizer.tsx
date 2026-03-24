@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import { Type, Italic, Underline, Bold } from "lucide-react";
 import {
   Poppins,
   Roboto,
@@ -95,6 +96,8 @@ export interface FontStyle {
   fontStyle?: "normal" | "italic";
   textDecoration?: "none" | "underline" | "line-through";
   fontWeight?: string;
+  /** Font size in px for link button text. */
+  fontSize?: number;
 }
 
 interface Props {
@@ -171,6 +174,56 @@ const COLORS = [
 
 const isNone = (color: string) =>
   !color || color === "transparent" || color.toLowerCase() === "none";
+
+const FONT_WEIGHTS = [
+  { label: "Regular", value: "400" },
+  { label: "Medium", value: "500" },
+  { label: "Semibold", value: "600" },
+  { label: "Bold", value: "700" },
+] as const;
+
+const FONT_SIZES = [12, 14, 16, 18, 20] as const;
+const DEFAULT_FONT_SIZE = 14;
+
+/** Icon-only font style options (normal, italic, underline, bold) */
+const FONT_STYLE_ICONS = [
+  {
+    id: "normal",
+    Icon: Type,
+    styleProps: {
+      fontStyle: "normal" as const,
+      textDecoration: "none" as const,
+      fontWeight: "400",
+    },
+  },
+  {
+    id: "italic",
+    Icon: Italic,
+    styleProps: {
+      fontStyle: "italic" as const,
+      textDecoration: "none" as const,
+      fontWeight: "400",
+    },
+  },
+  {
+    id: "underline",
+    Icon: Underline,
+    styleProps: {
+      fontStyle: "normal" as const,
+      textDecoration: "underline" as const,
+      fontWeight: "400",
+    },
+  },
+  {
+    id: "bold",
+    Icon: Bold,
+    styleProps: {
+      fontStyle: "normal" as const,
+      textDecoration: "none" as const,
+      fontWeight: "700",
+    },
+  },
+] as const;
 
 export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
   const [selectedFont, setSelectedFont] = useState(
@@ -264,7 +317,6 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
             </span> */}
           </div>
           <div className="overflow-x-auto  scrollbar-hide ">
-            
             <div className="flex gap-2 min-w-max">
               {fonts.slice(0, 27).map((font) => (
                 <button
@@ -284,44 +336,79 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Font style icons - Mobile */}
+        <div className="px-4 py-2">
+          <span className="text-xs font-medium block mb-2">Style</span>
+          <div className="flex gap-2">
+            {FONT_STYLE_ICONS.map(({ id, Icon, styleProps }) => {
+              const isActive =
+                (fontStyle.fontStyle || "normal") === styleProps.fontStyle &&
+                (fontStyle.textDecoration || "none") ===
+                  styleProps.textDecoration &&
+                (fontStyle.fontWeight || "400") === styleProps.fontWeight;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setFontStyle({ ...fontStyle, ...styleProps })}
+                  className={clsx(
+                    "w-10 h-10 flex items-center justify-center rounded-md border transition-colors",
+                    isActive
+                      ? "bg-black text-white border-black"
+                      : "bg-[#ECECED] text-black hover:bg-[#E0E0E1] border-gray-300",
+                  )}
+                  style={{ fontFamily: fontStyle.fontFamily }}
+                  aria-label={id}
+                >
+                  <Icon className="w-4 h-4" strokeWidth={2.5} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* color palette */}
         <div className="px-4 ">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium">Color</span>
-            
           </div>
           <div className="overflow-x-auto pb-2 scrollbar-hide ">
             <div className="flex gap-2 min-w-max">
               {/* Color picker button - First box */}
               <label className="relative cursor-pointer w-8 h-8 flex-shrink-0">
-  <div
-    className="w-full h-full flex items-center justify-center transition-transform hover:scale-100"
-    style={{
-      background:
-        "linear-gradient(45deg, #FF0000, #FF9900, #FFFF00, #00FF00, #00FFFF, #0000FF, #9900FF, #FF00FF)",
-      borderColor: showMobileFillPicker ? "#000" : "#ccc",
-      boxShadow: showMobileFillPicker
-        ? "0 0 0 2px #fff, 0 0 0 4px #000"
-        : "none",
-    }}
-  >
-    <span className="text-[14px] font-bold text-black">+</span>
-  </div>
-  <input
-    type="color"
-    value={isNone(fontStyle.fillColor) ? "#ffffff" : fontStyle.fillColor}
-    onChange={(e) =>
-      setFontStyle({
-        ...fontStyle,
-        fillColor: e.target.value,
-      })
-    }
-    className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-    onClick={() => setShowMobileFillPicker(true)}
-    onBlur={() => setShowMobileFillPicker(false)}
-    aria-label="Custom fill color picker"
-  />
-</label>
+                <div
+                  className="w-full h-full flex items-center justify-center transition-transform hover:scale-100"
+                  style={{
+                    background:
+                      "linear-gradient(45deg, #FF0000, #FF9900, #FFFF00, #00FF00, #00FFFF, #0000FF, #9900FF, #FF00FF)",
+                    borderColor: showMobileFillPicker ? "#000" : "#ccc",
+                    boxShadow: showMobileFillPicker
+                      ? "0 0 0 2px #fff, 0 0 0 4px #000"
+                      : "none",
+                  }}
+                >
+                  <span className="text-[14px] font-bold text-black">+</span>
+                </div>
+                <input
+                  type="color"
+                  value={
+                    isNone(fontStyle.fillColor)
+                      ? "#ffffff"
+                      : fontStyle.fillColor
+                  }
+                  onChange={(e) =>
+                    setFontStyle({
+                      ...fontStyle,
+                      fillColor: e.target.value,
+                    })
+                  }
+                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                  onClick={() => setShowMobileFillPicker(true)}
+                  onBlur={() => setShowMobileFillPicker(false)}
+                  aria-label="Custom fill color picker"
+                />
+              </label>
               {COLORS.map((c) => (
                 <button
                   key={c}
@@ -339,6 +426,60 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
             </div>
           </div>
         </div>
+
+        {/* Text weight - Mobile */}
+        <div className="px-4 py-3">
+          <span className="text-xs font-medium block mb-2">Text weight</span>
+          <div className="flex gap-2 flex-wrap">
+            {FONT_WEIGHTS.map((w) => (
+              <button
+                key={w.value}
+                onClick={() =>
+                  setFontStyle({ ...fontStyle, fontWeight: w.value })
+                }
+                className={clsx(
+                  "px-3 py-2 text-xs border transition-colors min-w-[70px]",
+                  (fontStyle.fontWeight || "400") === w.value
+                    ? "bg-black text-white border-black"
+                    : "bg-[#ECECED] text-black hover:bg-[#E0E0E1] border-gray-300",
+                )}
+                style={{
+                  fontFamily: fontStyle.fontFamily,
+                  fontWeight: w.value,
+                }}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Text size - Mobile */}
+        {/* <div className="px-4 py-3">
+          <span className="text-xs font-medium block mb-2">
+            Text size ({fontStyle.fontSize ?? DEFAULT_FONT_SIZE}px)
+          </span>
+          <div className="flex gap-2 flex-wrap">
+            {FONT_SIZES.map((size) => (
+              <button
+                key={size}
+                onClick={() => setFontStyle({ ...fontStyle, fontSize: size })}
+                className={clsx(
+                  "px-3 py-2 text-xs border transition-colors",
+                  (fontStyle.fontSize ?? DEFAULT_FONT_SIZE) === size
+                    ? "bg-black text-white border-black"
+                    : "bg-[#ECECED] text-black hover:bg-[#E0E0E1] border-gray-300",
+                )}
+                style={{
+                  fontFamily: fontStyle.fontFamily,
+                  fontSize: `${size}px`,
+                }}
+              >
+                {size}px
+              </button>
+            ))}
+          </div>
+        </div> */}
       </div>
 
       {/* ========== DESKTOP VIEW (Your original code) ========== */}
@@ -388,6 +529,37 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
           </AnimatePresence>
         </div>
 
+        {/* Font style icons - Desktop */}
+        <div className="mb-4 w-full">
+          <label className="block text-[13px] font-semibold mb-2">Style</label>
+          <div className="flex gap-2">
+            {FONT_STYLE_ICONS.map(({ id, Icon, styleProps }) => {
+              const isActive =
+                (fontStyle.fontStyle || "normal") === styleProps.fontStyle &&
+                (fontStyle.textDecoration || "none") ===
+                  styleProps.textDecoration &&
+                (fontStyle.fontWeight || "400") === styleProps.fontWeight;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setFontStyle({ ...fontStyle, ...styleProps })}
+                  className={clsx(
+                    "w-10 h-10 flex items-center justify-center rounded-md border transition-colors",
+                    isActive
+                      ? "bg-black text-white border-black"
+                      : "bg-[#ECECED] text-black hover:bg-[#E0E0E1] border-gray-300",
+                  )}
+                  style={{ fontFamily: fontStyle.fontFamily }}
+                  aria-label={id}
+                >
+                  <Icon className="w-4 h-4" strokeWidth={2.5} />
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Fill Color */}
         <div className="mb-4 w-full">
           <label className="block text-[13px] font-semibold mb-2">
@@ -409,7 +581,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
         </div>
 
         {/* Stroke Color */}
-        <div className="mb-4 w-full">
+        {/* <div className="mb-4 w-full">
           <label className="block text-[13px] font-semibold mb-2">
             Stroke Color
           </label>
@@ -444,7 +616,63 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
               {fontStyle.strokeColor || "none"}
             </span>
           </div>
+        </div> */}
+
+        {/* Text weight - Desktop */}
+        <div className="mb-4 w-full">
+          <label className="block text-[13px] font-semibold mb-2">
+            Text weight
+          </label>
+          <div className="flex gap-2 flex-wrap">
+            {FONT_WEIGHTS.map((w) => (
+              <button
+                key={w.value}
+                onClick={() =>
+                  setFontStyle({ ...fontStyle, fontWeight: w.value })
+                }
+                className={clsx(
+                  "px-3 py-2 text-xs border transition-colors",
+                  (fontStyle.fontWeight || "400") === w.value
+                    ? "bg-black text-white border-black"
+                    : "bg-[#ECECED] text-black hover:bg-[#E0E0E1] border-gray-300",
+                )}
+                style={{
+                  fontFamily: fontStyle.fontFamily,
+                  fontWeight: w.value,
+                }}
+              >
+                {w.label}
+              </button>
+            ))}
+          </div>
         </div>
+
+        {/* Text size - Desktop */}
+        {/* <div className="mb-4 w-full">
+          <label className="block text-[13px] font-semibold mb-2">
+            Text size
+          </label>
+          <div className="flex gap-2 flex-wrap">
+            {FONT_SIZES.map((size) => (
+              <button
+                key={size}
+                onClick={() => setFontStyle({ ...fontStyle, fontSize: size })}
+                className={clsx(
+                  "px-3 py-2 text-xs border transition-colors",
+                  (fontStyle.fontSize ?? DEFAULT_FONT_SIZE) === size
+                    ? "bg-black text-white border-black"
+                    : "bg-[#ECECED] text-black hover:bg-[#E0E0E1] border-gray-300",
+                )}
+                style={{
+                  fontFamily: fontStyle.fontFamily,
+                  fontSize: `${size}px`,
+                }}
+              >
+                {size}px
+              </button>
+            ))}
+          </div>
+        </div> */}
       </div>
     </>
   );

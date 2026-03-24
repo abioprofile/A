@@ -21,6 +21,14 @@ export interface FontConfig {
   name: string;
   fillColor: string;
   strokeColor: string;
+  /** Font weight for link text (e.g. "400", "600", "700"). */
+  fontWeight?: string;
+  /** Font size in px for link text. */
+  fontSize?: number;
+  /** Font style: normal or italic. */
+  fontStyle?: "normal" | "italic";
+  /** Text decoration: none, underline, line-through. */
+  textDecoration?: string;
 }
 
 export interface ImageWallpaperConfig {

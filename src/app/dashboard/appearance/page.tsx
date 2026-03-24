@@ -107,6 +107,10 @@ const AppearancePage: React.FC = () => {
     fillColor: "#000000",
     strokeColor: "none",
     opacity: 100,
+    fontWeight: "400",
+    fontSize: 14,
+    fontStyle: "normal",
+    textDecoration: "none",
   });
 
   const [selectedTheme, setSelectedTheme] =

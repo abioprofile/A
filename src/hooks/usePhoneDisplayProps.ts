@@ -25,6 +25,10 @@ const DEFAULT_FONT_STYLE: FontStyle = {
   fillColor: "#000000",
   strokeColor: "none",
   opacity: 100,
+  fontWeight: "400",
+  fontSize: 14,
+  fontStyle: "normal",
+  textDecoration: "none",
 };
 
 const DEFAULT_THEME = "/themes/theme1.png";
