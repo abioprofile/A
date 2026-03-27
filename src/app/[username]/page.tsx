@@ -31,10 +31,8 @@ interface UserLink {
 
 // ─── Helper: convert any hex/rgb color + separate opacity into a single rgba() ─
 function applyOpacityToColor(color: string, opacity: number): string {
-  // opacity is 0–1
   const alpha = Math.max(0, Math.min(1, opacity));
 
-  // Already rgba — replace alpha channel
   const rgbaMatch = color.match(
     /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/,
   );
@@ -42,7 +40,6 @@ function applyOpacityToColor(color: string, opacity: number): string {
     return `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${alpha})`;
   }
 
-  // Hex — convert to rgba
   let hex = color.replace("#", "");
   if (hex.length === 3)
     hex = hex
@@ -56,7 +53,6 @@ function applyOpacityToColor(color: string, opacity: number): string {
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
 
-  // Fallback — return as-is with CSS color-mix if supported, else original
   return color;
 }
 
@@ -111,6 +107,31 @@ export default function PublicProfilePage() {
     error: profileErrorData,
   } = useUserProfileByUsername(username);
 
+  // ─── Derive display config early (before any early returns) ───────────────
+  const profileDisplay = profileData?.data?.display;
+  const fc = profileDisplay?.font_config;
+  const fontName = (fc as { name?: string })?.name ?? null;
+
+  // ✅ useEffect is now above all early returns — no hooks-order violation
+  useEffect(() => {
+    if (!fontName || typeof document === "undefined") return;
+    const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@400;500;600;700&display=swap`;
+    const id = "profile-font-link";
+    let link = document.getElementById(id) as HTMLLinkElement | null;
+    if (!link) {
+      link = document.createElement("link");
+      link.id = id;
+      link.rel = "stylesheet";
+      document.head.appendChild(link);
+    }
+    if (link.getAttribute("href") !== href) link.href = href;
+    return () => {
+      const el = document.getElementById(id);
+      if (el?.parentNode) el.parentNode.removeChild(el);
+    };
+  }, [fontName]);
+
+  // ─── Early returns ─────────────────────────────────────────────────────────
   const profileLinks = profileData?.data?.links || [];
 
   const links: UserLink[] = profileLinks.map((link) => ({
@@ -181,6 +202,7 @@ export default function PublicProfilePage() {
     );
   }
 
+  // ─── Safe to access profileData.data past this point ──────────────────────
   const profile = profileData.data;
   const userData = {
     name: profile.user.name || undefined,
@@ -191,9 +213,6 @@ export default function PublicProfilePage() {
     links,
   };
 
-  const profileDisplay = profileData.data.display;
-
-  const fc = profileDisplay?.font_config;
   const cc = profileDisplay?.corner_config;
   const wc =
     profileDisplay?.wallpaper_config ??
@@ -207,37 +226,15 @@ export default function PublicProfilePage() {
     (profileDisplay as { selectedTheme?: string | null })?.selectedTheme ??
     null;
 
-  const fontStyle = fc ? createTextStyle(fc, (fc as { strokeWidth?: number }).strokeWidth || 0) : undefined;
+  const fontStyle = fc
+    ? createTextStyle(fc, (fc as { strokeWidth?: number }).strokeWidth || 0)
+    : undefined;
 
-  // Load the profile font on the page so it renders (username preview doesn't use next/font)
-  useEffect(() => {
-    const name = (fc as { name?: string })?.name;
-    if (!name || typeof document === "undefined") return;
-    const family = name.replace(/\s+/g, "+");
-    const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(name)}:wght@400;500;600;700&display=swap`;
-    const id = "profile-font-link";
-    let link = document.getElementById(id) as HTMLLinkElement | null;
-    if (!link) {
-      link = document.createElement("link");
-      link.id = id;
-      link.rel = "stylesheet";
-      document.head.appendChild(link);
-    }
-    if (link.getAttribute("href") !== href) link.href = href;
-    return () => {
-      const el = document.getElementById(id);
-      if (el?.parentNode) el.parentNode.removeChild(el);
-    };
-  }, [(fc as { name?: string })?.name]);
-
-  // ─── FIX: build buttonStyle WITHOUT element-level opacity ──────────────────
-  // Instead, bake the opacity directly into backgroundColor via rgba so only
-  // the fill is transparent — text and icons remain fully visible.
+  // ─── Build buttonStyle with opacity baked into backgroundColor ────────────
   const buttonStyle = cc
     ? (() => {
         const rawBg = cc.fillColor ?? "#ffffff";
         const opacity = cc.opacity ?? 1;
-        // Bake opacity into the background color only
         const backgroundColorWithOpacity = applyOpacityToColor(rawBg, opacity);
 
         return {
@@ -250,7 +247,6 @@ export default function PublicProfilePage() {
                   ? "100px"
                   : "12px",
           backgroundColor: backgroundColorWithOpacity,
-          // ← NO `opacity` property here anymore
           boxShadow:
             cc.shadowSize === "hard"
               ? `4px 4px 0px 0px ${cc.shadowColor || "#000000"}`
@@ -320,7 +316,7 @@ export default function PublicProfilePage() {
     }
   }
 
-  // ─── Shared link button style (no opacity on element) ─────────────────────
+  // ─── Shared link button style ──────────────────────────────────────────────
   const linkButtonStyle: React.CSSProperties = {
     borderRadius: buttonStyle?.borderRadius || "0px",
     border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
@@ -332,7 +328,6 @@ export default function PublicProfilePage() {
     fontStyle: fontStyle?.fontStyle,
     textShadow: fontStyle?.textShadow,
     backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
-    // ← opacity intentionally omitted here
   };
 
   return (
@@ -513,7 +508,10 @@ export default function PublicProfilePage() {
                         {links.length > 0 ? (
                           links
                             .filter((link: UserLink) => link.isVisible !== false)
-                            .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
+                            .sort(
+                              (a: UserLink, b: UserLink) =>
+                                a.displayOrder - b.displayOrder,
+                            )
                             .map((link: UserLink, index: number) => (
                               <motion.a
                                 key={link.id}
@@ -732,7 +730,10 @@ export default function PublicProfilePage() {
                     {links.length > 0 ? (
                       links
                         .filter((link: UserLink) => link.isVisible !== false)
-                        .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
+                        .sort(
+                          (a: UserLink, b: UserLink) =>
+                            a.displayOrder - b.displayOrder,
+                        )
                         .map((link: UserLink, index: number) => (
                           <motion.a
                             key={link.id}
