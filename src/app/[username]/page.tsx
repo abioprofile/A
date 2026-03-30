@@ -453,7 +453,7 @@ export default function PublicProfilePage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       transition={{ delay: 0.8 }}
-                      className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
+                      className="mt-2 text-[10px] text-left font-medium line-clamp-2"
                     >
                       {userData.bio}
                     </motion.p>
@@ -690,7 +690,7 @@ export default function PublicProfilePage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
-                  className="mt-2 text-[13px] text-left font-semibold line-clamp-2"
+                  className="mt-2 text-[13px] text-left font-medium line-clamp-2"
                 >
                   {userData.bio}
                 </motion.p>
