@@ -815,7 +815,7 @@ export default function PublicProfilePage() {
           </div>
         </motion.div>
 
-        {/* Shareable profile QR — scans to this public profile URL */}
+        
         {profileShareUrl ? (
           <a
             href={profileShareUrl}
