@@ -19,6 +19,7 @@ import {
   linkItemVariants,
   blurSideVariants,
 } from "@/lib/animations";
+import { QRCodeSVG } from "qrcode.react";
 
 interface UserLink {
   id: string;
@@ -99,6 +100,12 @@ export default function PublicProfilePage() {
   const username = params?.username as string;
   const usernameData = useAppSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState<"links" | "menu">("links");
+  const [profileShareUrl, setProfileShareUrl] = useState("");
+
+  useEffect(() => {
+    if (typeof window === "undefined" || !username) return;
+    setProfileShareUrl(`${window.location.origin}/${username}`);
+  }, [username]);
 
   const {
     data: profileData,
@@ -419,13 +426,24 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
                     >
-                      <p className="font-bold text-[14px]">
+                      <div className="flex items-center ">
+                          <p className="font-bold text-[14px]">
                         {isOotnUser
                           ? "one of those nights"
                           : userData?.name || userData?.username || "User"}
-                      </p>
+                        </p>
+                          <Image
+                            src="/icons/verification.svg"
+                            alt="Verified"
+                            width={18}
+                            height={18}
+                            className="inline-block ml-1"
+                          />
+                      </div>
+                      
+                      
                       <p className="text-[10px] text-gray-500">
-                        @{userData.username || "username"}
+                        /{userData.username || "username"}
                       </p>
                     </motion.div>
                   </motion.div>
@@ -646,13 +664,23 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
+                  <div className="flex items-center">
+                    
                   <p className="font-bold text-[14px]">
                     {isOotnUser
                       ? "one of those nights"
                       : userData?.name || userData?.username || "User"}
-                  </p>
+                    </p>
+                    <Image
+                      src="/icons/verification.svg"
+                      alt="Verified"
+                      width={18}
+                      height={18}
+                      className="inline-block ml-1"
+                    />
+                  </div>
                   <p className="text-[13px] text-gray-500">
-                    @{userData.username || "username"}
+                    /{userData.username || "username"}
                   </p>
                 </motion.div>
               </div>
@@ -786,6 +814,30 @@ export default function PublicProfilePage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Shareable profile QR — scans to this public profile URL */}
+        {profileShareUrl ? (
+          <a
+            href={profileShareUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fixed bottom-4 right-4 z-[100] flex flex-col items-center gap-1 hidden md:block  border border-gray-200 bg-white p-2 shadow-lg transition-opacity hover:opacity-95"
+            title={`Open profile: ${profileShareUrl}`}
+            aria-label={`QR code linking to ${profileShareUrl}`}
+          >
+            <QRCodeSVG
+              value={profileShareUrl}
+              size={88}
+              level="M"
+              includeMargin={false}
+              bgColor="#ffffff"
+              fgColor="#000000"
+            />
+            <span className="max-w-[96px] truncate text-[9px] font-medium text-gray-600">
+              Scan to open
+            </span>
+          </a>
+        ) : null}
       </motion.div>
     </AnimatePresence>
   );
