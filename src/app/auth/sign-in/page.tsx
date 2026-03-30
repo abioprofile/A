@@ -177,7 +177,10 @@ const SignIn = () => {
       {/* Centered Form Container - fills remaining space, no scroll */}
       <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden p-3 sm:p-4">
         <motion.div variants={formVariants} className="w-full max-w-md">
-          <motion.div variants={itemVariants} className="mb-3 text-center sm:mb-6">
+          <motion.div
+            variants={itemVariants}
+            className="mb-3 text-center sm:mb-6"
+          >
             <motion.h1
               className="mb-1 text-[20px] font-extrabold text-[#331400] md:mb-4 md:text-[24px]"
               whileHover={{ scale: 1.02 }}
@@ -198,7 +201,10 @@ const SignIn = () => {
             onSubmit={handleSubmit(onSubmit)}
             className="w-full space-y-2 sm:space-y-4"
           >
-            <motion.div variants={itemVariants} className="space-y-1.5 sm:space-y-2">
+            <motion.div
+              variants={itemVariants}
+              className="space-y-1.5 sm:space-y-2"
+            >
               <Label htmlFor="email" className="font-semibold text-sm">
                 Email Address
               </Label>
@@ -227,7 +233,10 @@ const SignIn = () => {
               </AnimatePresence>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="space-y-1.5 sm:space-y-2">
+            <motion.div
+              variants={itemVariants}
+              className="space-y-1.5 sm:space-y-2"
+            >
               <Label htmlFor="password" className="font-semibold text-sm">
                 Password
               </Label>
@@ -351,18 +360,21 @@ const SignIn = () => {
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
               >
-                <Button
-                  variant="outline"
-                  className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
-                >
-                  <Image
-                    src="/assets/icons/auth/google.svg"
-                    alt="google icon"
-                    width={20}
-                    height={20}
-                  />
-                  Google
-                </Button>
+                <a href={"http://localhost:9800/api/v1/auth/google"}>
+                  <Button
+                    variant="outline"
+                    className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
+                    type="button"
+                  >
+                    <Image
+                      src="/assets/icons/auth/google.svg"
+                      alt="google icon"
+                      width={20}
+                      height={20}
+                    />
+                    Google
+                  </Button>
+                </a>
               </motion.div>
             </motion.div>
 
@@ -389,10 +401,7 @@ const SignIn = () => {
           </motion.form>
 
           {/* Privacy Policy */}
-          <motion.div
-            variants={itemVariants}
-            className="mt-8 pt-4 text-center"
-          >
+          <motion.div variants={itemVariants} className="mt-8 pt-4 text-center">
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/privacy-policy"
