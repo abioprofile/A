@@ -2,19 +2,24 @@
 
 import { getCurrentUser } from "@/lib/api/auth.api";
 import { redirect, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useAppDispatch } from "@/stores/hooks";
 import { updateUser } from "@/stores/slices/auth.slice";
 
-export default function GoogleLogin() {
+export default function Page() {
+  return (
+    <Suspense>
+      <GoogleLogin />
+    </Suspense>
+  );
+}
+
+export function GoogleLogin() {
   const dispatch = useAppDispatch();
 
   const params = useSearchParams();
 
   const token = params.get("token");
-  // if (!token) {
-  //     return redirect('/');
-  // }
 
   useEffect(() => {
     const fetchUser = async () => {
