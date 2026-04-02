@@ -335,9 +335,9 @@ const SignIn = () => {
 
             <motion.div
               variants={itemVariants}
-              className="grid grid-cols-2 gap-3"
+              className="grid grid-cols-1 gap-3"
             >
-              <motion.div
+              {/* <motion.div
                 variants={socialButtonHoverVariants}
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
@@ -354,13 +354,13 @@ const SignIn = () => {
                   />
                   Apple
                 </Button>
-              </motion.div>
+              </motion.div> */}
               <motion.div
                 variants={socialButtonHoverVariants}
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
               >
-                <a href={"http://localhost:9800/api/v1/auth/google"}>
+                <a href={"https://api.abio.site/api/v1/auth/google"}>
                   <Button
                     variant="outline"
                     className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
