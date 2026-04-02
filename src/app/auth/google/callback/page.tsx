@@ -24,7 +24,7 @@ export default function GoogleLogin() {
       dispatch(updateUser(user));
 
       // console.log(user);
-      localStorage.setItem("auth_token", token);
+      localStorage.setItem("auth_token", token!);
       localStorage.setItem("user_data", JSON.stringify(user));
       return redirect("/dashboard");
     };

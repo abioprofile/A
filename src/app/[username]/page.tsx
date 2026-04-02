@@ -815,7 +815,14 @@ export default function PublicProfilePage() {
           </div>
         </motion.div>
 
-        
+        <a
+          href="/auth/sign-up"
+          className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2  bg-white shadow-blur-md px-5 py-3 text-[12px] font-semibold text-black shadow-lg transition hover:bg-[#4a2207] md:text-sm"
+          aria-label={`Join ${userData?.username || username} on Abio`}
+        >
+          Join {userData?.username || username} on Abio
+        </a>
+
         {profileShareUrl ? (
           <a
             href={profileShareUrl}
