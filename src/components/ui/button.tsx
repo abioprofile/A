@@ -86,8 +86,14 @@ function Button({
       aria-busy={isLoading || undefined}
       {...props}
     >
-      {isLoading && <ButtonSpinner />}
-      {children}
+      {isLoading ? (
+        <>
+          <ButtonSpinner />
+          {children}
+        </>
+      ) : (
+        children
+      )}
     </Comp>
   )
 }
