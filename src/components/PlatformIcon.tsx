@@ -1,80 +1,87 @@
 "use client";
 
-import React from "react";
-import {
-  FaInstagram,
-  FaTiktok,
-  FaPinterest,
-  FaTwitter,
-  FaLinkedinIn,
-  FaBehance,
-  FaLink,
-  FaWhatsapp,
-  FaXTwitter,
-  FaFacebook,
-  FaSnapchat,
-  FaYoutube,
-  FaGithub,
-  FaSpotify,
-  FaApple,
-  FaGoogle,
-  FaAmazon,
-  FaFigma,
-  FaDribbble,
-  FaTelegram,
-} from "react-icons/fa6";
+import React, { useState, useEffect } from "react";
+import { FaLink } from "react-icons/fa6";
+import { getPlatformIconUrl } from "@/data/platformIconMap";
 
-const DEFAULT_ICON_CLASS = "w-5 h-5";
+// Module-level cache: key = "platform:variant" → processed SVG string
+const svgCache = new Map<string, string>();
+
+interface PlatformSvgIconProps {
+  platform: string;
+  className?: string;
+  /** "black" = uses currentColor (responds to parent color). "colored" = original colors. */
+  variant?: "black" | "colored";
+}
 
 /**
- * Returns the platform icon for link buttons. Uses currentColor so the parent
- * can control icon color via fontStyle.fillColor (e.g. in PhoneDisplay and [username] page).
- * Same icon set everywhere for a uniform look.
+ * Renders a platform icon as an inline SVG so it responds to CSS `color`
+ * (via currentColor) just like text. Black variant is the default — it will
+ * follow whatever color you set on the parent element.
+ */
+export function PlatformSvgIcon({
+  platform,
+  className = "w-5 h-5",
+  variant = "black",
+}: PlatformSvgIconProps) {
+  const cacheKey = `${platform}:${variant}`;
+  const [svgHtml, setSvgHtml] = useState<string>(svgCache.get(cacheKey) ?? "");
+
+  useEffect(() => {
+    if (svgCache.has(cacheKey)) {
+      setSvgHtml(svgCache.get(cacheKey)!);
+      return;
+    }
+    const url = getPlatformIconUrl(platform, variant);
+    if (!url) return;
+
+    fetch(url)
+      .then((r) => r.text())
+      .then((raw) => {
+        let svg = raw;
+        if (variant === "black") {
+          // Replace all fill/stroke that aren't "none" with currentColor so the
+          // icon inherits the CSS color property from its container.
+          svg = svg
+            .replace(/fill="(?!none\b)[^"]*"/gi, 'fill="currentColor"')
+            .replace(/stroke="(?!none\b)[^"]*"/gi, 'stroke="currentColor"');
+        }
+        // Strip fixed width/height so the SVG scales with the wrapper span
+        svg = svg.replace(/(<svg\b[^>]*?)\s+width="[^"]*"/i, "$1");
+        svg = svg.replace(/(<svg\b[^>]*?)\s+height="[^"]*"/i, "$1");
+        // Set explicit 100% so it fills the container
+        svg = svg.replace(/<svg\b/, '<svg width="100%" height="100%"');
+        svgCache.set(cacheKey, svg);
+        setSvgHtml(svg);
+      })
+      .catch(() => {
+        /* no icon available — fallback renders */
+      });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cacheKey]);
+
+  if (!svgHtml) {
+    // Fallback: generic link icon while loading or if platform not in icon pack
+    return <FaLink className={className} />;
+  }
+
+  return (
+    <span
+      className={`inline-flex items-center justify-center shrink-0 ${className}`}
+      style={{ fontSize: 0, lineHeight: 0 }}
+      // SVG is from our own public folder — safe to inject
+      dangerouslySetInnerHTML={{ __html: svgHtml }}
+    />
+  );
+}
+
+/**
+ * Returns a platform icon node. Used in PhoneDisplay, [username]/page, etc.
+ * The icon inherits color from the parent via CSS `color` (currentColor).
  */
 export function getPlatformIcon(
   platform: string,
-  className: string = DEFAULT_ICON_CLASS
+  className: string = "w-5 h-5",
 ): React.ReactNode {
-  const platformLower = platform.toLowerCase();
-
-  if (platformLower.includes("instagram"))
-    return <FaInstagram className={className} />;
-  if (platformLower.includes("behance"))
-    return <FaBehance className={className} />;
-  if (platformLower.includes("snapchat"))
-    return <FaSnapchat className={className} />;
-  if (platformLower.includes("x") || platformLower.includes("twitter")) {
-    if (platformLower.includes("x")) return <FaXTwitter className={className} />;
-    return <FaTwitter className={className} />;
-  }
-  if (platformLower.includes("linkedin"))
-    return <FaLinkedinIn className={className} />;
-  if (platformLower.includes("facebook"))
-    return <FaFacebook className={className} />;
-  if (platformLower.includes("youtube"))
-    return <FaYoutube className={className} />;
-  if (platformLower.includes("tiktok"))
-    return <FaTiktok className={className} />;
-  if (platformLower.includes("github"))
-    return <FaGithub className={className} />;
-  if (platformLower.includes("whatsapp"))
-    return <FaWhatsapp className={className} />;
-  if (platformLower.includes("pinterest"))
-    return <FaPinterest className={className} />;
-  if (platformLower.includes("spotify"))
-    return <FaSpotify className={className} />;
-  if (platformLower.includes("apple"))
-    return <FaApple className={className} />;
-  if (platformLower.includes("google"))
-    return <FaGoogle className={className} />;
-  if (platformLower.includes("amazon"))
-    return <FaAmazon className={className} />;
-  if (platformLower.includes("figma"))
-    return <FaFigma className={className} />;
-  if (platformLower.includes("dribbble"))
-    return <FaDribbble className={className} />;
-  if (platformLower.includes("telegram"))
-    return <FaTelegram className={className} />;
-
-  return <FaLink className={className} />;
+  return <PlatformSvgIcon platform={platform} className={className} variant="black" />;
 }

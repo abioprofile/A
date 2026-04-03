@@ -134,16 +134,26 @@ export const offers = [
 ];
 
 export const PLATFORMS: Platform[] = [
-    { id: "youtube", name: "YouTube", icon: "/assets/icons/youtube.svg" },
-    { id: "tiktok", name: "Tiktok", icon: "/assets/icons/tiktok.svg" },
-    { id: "instagram", name: "Instagram", icon: "/assets/icons/instagram.svg" },
-    { id: "snapchat", name: "Snapchat", icon: "/assets/icons/snapchat.svg" },
-    { id: "facebook", name: "Facebook", icon: "/assets/icons/facebook.svg" },
-    { id: "pinterest", name: "Pinterest", icon: "/assets/icons/pinterest.svg" },
-    { id: "whatsapp", name: "WhatsApp", icon: "/assets/icons/whatsapp.svg" },
-    { id: "telegram", name: "Telegram", icon: "/assets/icons/telegram.svg" },
-    { id: "linkedin", name: "LinkedIn", icon: "/assets/icons/linkedin.svg" },
+    { id: "youtube", name: "YouTube", icon: "/assets/icons/youtube.svg", type: "social" },
+    { id: "tiktok", name: "Tiktok", icon: "/assets/icons/tiktok.svg", type: "social" },
+    { id: "instagram", name: "Instagram", icon: "/assets/icons/instagram.svg", type: "social" },
+    { id: "snapchat", name: "Snapchat", icon: "/assets/icons/snapchat.svg", type: "social" },
+    { id: "facebook", name: "Facebook", icon: "/assets/icons/facebook.svg", type: "social" },
+    { id: "pinterest", name: "Pinterest", icon: "/assets/icons/pinterest.svg", type: "social" },
+    { id: "whatsapp", name: "WhatsApp", icon: "/assets/icons/whatsapp.svg", type: "social" },
+    { id: "telegram", name: "Telegram", icon: "/assets/icons/telegram.svg", type: "social" },
+    { id: "linkedin", name: "LinkedIn", icon: "/assets/icons/linkedin.svg", type: "social" },
 ]
+
+export const STREAMING_PLATFORMS: Platform[] = [
+    { id: "spotify", name: "Spotify", icon: "/assets/icons/social/colored/Social=Spotify,Style=Original.svg", type: "streaming", color: "#1DB954" },
+    { id: "apple-music", name: "Apple Music", icon: "/assets/icons/social/colored/Social=Apple Music,Style=Original.svg", type: "streaming", color: "#FC3C44" },
+    { id: "soundcloud", name: "SoundCloud", icon: "/assets/icons/social/colored/Social=SoundCloud,Style=Original.svg", type: "streaming", color: "#FF5500" },
+    { id: "tidal", name: "Tidal", icon: "/assets/icons/tidal.svg", type: "streaming", color: "#000000" },
+    { id: "amazon-music", name: "Amazon Music", icon: "/assets/icons/amazon-music.svg", type: "streaming", color: "#25D1DA" },
+]
+
+export const STREAMING_PLATFORM_IDS = new Set(STREAMING_PLATFORMS.map((p) => p.id))
 
 // Sample profile for templates
 const defaultProfile: ProfileInfo = {

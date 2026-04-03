@@ -94,6 +94,7 @@ const AppearancePage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<number | null>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
 
+
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
     borderRadius: "0px",
     backgroundColor: "transparent",

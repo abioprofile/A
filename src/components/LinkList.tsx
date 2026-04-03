@@ -44,8 +44,7 @@ import {
   sortableItemVariants,
 } from "@/lib/animations";
 
-// Suggested platforms
-const PLATFORMS = [
+const SOCIAL_PLATFORMS = [
   "INSTAGRAM",
   "TIKTOK",
   "PINTEREST",
@@ -57,6 +56,14 @@ const PLATFORMS = [
   "GITHUB",
   "WHATSAPP",
   "CUSTOM",
+] as const;
+
+const STREAMING_PLATFORMS = [
+  "SPOTIFY",
+  "APPLE-MUSIC",
+  "SOUNDCLOUD",
+  "TIDAL",
+  "AMAZON-MUSIC",
 ] as const;
 
 export default function LinkList({
@@ -450,13 +457,18 @@ export default function LinkList({
                     onChange={(e) =>
                       setNewLink({ ...newLink, platform: e.target.value })
                     }
-                    className="w-full border border-[#4B2E1E] bg-transparent cursor-pointer text-[16px] placeholder:text-[16px] text-[#4B2E1E] px-3 py-2 "
+                    className="w-full border border-[#4B2E1E] bg-transparent cursor-pointer text-[16px] placeholder:text-[16px] text-[#4B2E1E] px-3 py-2"
                   >
-                    {PLATFORMS.map((platform) => (
-                      <option key={platform} className="text-[12px] cursor-pointer" value={platform}>
-                        {platform}
-                      </option>
-                    ))}
+                    <optgroup label="Social">
+                      {SOCIAL_PLATFORMS.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </optgroup>
+                    <optgroup label="🎵 Streaming">
+                      {STREAMING_PLATFORMS.map((p) => (
+                        <option key={p} value={p}>{p}</option>
+                      ))}
+                    </optgroup>
                   </select>
                 </div>
 
@@ -593,13 +605,18 @@ export default function LinkList({
                       onChange={(e) =>
                         setNewLink({ ...newLink, platform: e.target.value })
                       }
-                      className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] px-3 py-2 "
+                      className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] px-3 py-2"
                     >
-                      {PLATFORMS.map((platform) => (
-                        <option key={platform} value={platform}>
-                          {platform}
-                        </option>
-                      ))}
+                      <optgroup label="Social">
+                        {SOCIAL_PLATFORMS.map((p) => (
+                          <option key={p} value={p}>{p}</option>
+                        ))}
+                      </optgroup>
+                      <optgroup label=" Streaming">
+                        {STREAMING_PLATFORMS.map((p) => (
+                          <option key={p} value={p}>{p}</option>
+                        ))}
+                      </optgroup>
                     </select>
                   </div>
 

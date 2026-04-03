@@ -307,12 +307,10 @@ const SignIn = () => {
               >
                 <Button
                   type="submit"
-                  disabled={isSubmitting || signInMutation.isPending}
+                  isLoading={isSubmitting || signInMutation.isPending}
                   className="w-full h-10 bg-[#FED45C] text-[#331400] text-sm font-semibold hover:bg-[#FED45C]/90"
                 >
-                  {isSubmitting || signInMutation.isPending
-                    ? "Logging in..."
-                    : "Login"}
+                  Login
                 </Button>
               </motion.div>
             </motion.div>

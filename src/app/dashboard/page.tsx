@@ -19,6 +19,7 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { containerVariants, itemVariants } from "@/lib/animations";
+import { SkeletonDashboardProfile, SkeletonLinkList } from "@/components/AppSkeletons";
 
 interface UserLink {
   id: string;
@@ -54,7 +55,6 @@ export default function DashboardPage() {
     setUsername(getUsername());
   }, [user, userData]);
 
-  const [loading, setLoading] = useState(true);
   const [activeModal, setActiveModal] = useState<string | null>(null);
   const [bio, setBio] = useState("UI/UX Designer");
   const [location, setLocation] = useState("Lagos, Nigeria");
@@ -70,12 +70,8 @@ export default function DashboardPage() {
     selectedTheme,
     profile: phoneProfile,
     links: profileLinks,
+    isLoading: dataLoading,
   } = usePhoneDisplayProps();
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 2000);
-    return () => clearTimeout(timer);
-  }, []);
 
   const openModal = (type: string) => {
     if (type === "editLocation") {
@@ -145,21 +141,6 @@ export default function DashboardPage() {
     setShowMobileLinks(true);
   };
 
-  // if (loading) {
-  //   return (
-  //     <div className="flex items-center justify-center min-h-screen bg-[#fff]">
-  //       <motion.div
-  //         animate={{ rotate: 360 }}
-  //         transition={{
-  //           duration: 1,
-  //           repeat: Infinity,
-  //           ease: "linear"
-  //         }}
-  //         className="rounded-full h-12 w-12 border-b-2 border-[#331400]"
-  //       />
-  //     </div>
-  //   );
-  // }
 
   return (
     <ProtectedRoute>
@@ -177,59 +158,69 @@ export default function DashboardPage() {
             Hi, {username}
           </motion.h1>
 
-          <motion.div
-            variants={itemVariants}
-            className="max-w-3xl flex gap-4 items-center px-8"
-          >
-            <div>
-              <Image
-                src={
-                  userData?.profile?.avatarUrl || "/icons/Profile Picture.png"
-                }
-                alt="Profile"
-                width={80}
-                height={80}
-                className="object-cover shadow-md w-24 h-24  rounded-full"
-              />
-            </div>
-
+          {dataLoading ? (
             <motion.div variants={itemVariants}>
-              <div className="mb-1">
-                <h1 className="font-semibold text-[24px]">
-                  {displayName || "User"}
-                </h1>
-                <p className="font-thin text-[10px] mt-2 md:text-[14px]">
-                  @{userData?.profile?.username || "username"}
-                </p>
-              </div>
-
-              <p className="font-bold my-2 text-[14px]">
-                {userData?.profile?.bio || bio}
-              </p>
-
-              <div className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500  px-1 py-1">
-                <Image
-                  src="/icons/location1.png"
-                  alt="Location"
-                  width={12}
-                  height={12}
-                  className="w-fit h-3"
-                />
-                <span className="truncate">
-                  {userData?.profile?.location || "No location"}
-                </span>
-              </div>
+              <SkeletonDashboardProfile />
             </motion.div>
-          </motion.div>
+          ) : (
+            <motion.div
+              variants={itemVariants}
+              className="max-w-3xl flex gap-4 items-center px-8"
+            >
+              <div>
+                <Image
+                  src={
+                    userData?.profile?.avatarUrl || "/icons/Profile Picture.png"
+                  }
+                  alt="Profile"
+                  width={80}
+                  height={80}
+                  className="object-cover shadow-md w-24 h-24 rounded-full"
+                />
+              </div>
 
-          {/* Other modals with similar animation patterns... */}
+              <motion.div variants={itemVariants}>
+                <div className="mb-1">
+                  <h1 className="font-semibold text-[24px]">
+                    {displayName || "User"}
+                  </h1>
+                  <p className="font-thin text-[10px] mt-2 md:text-[14px]">
+                    @{userData?.profile?.username || "username"}
+                  </p>
+                </div>
+
+                <p className="font-bold my-2 text-[14px]">
+                  {userData?.profile?.bio || bio}
+                </p>
+
+                <div className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500 px-1 py-1">
+                  <Image
+                    src="/icons/location1.png"
+                    alt="Location"
+                    width={12}
+                    height={12}
+                    className="w-fit h-3"
+                  />
+                  <span className="truncate">
+                    {userData?.profile?.location || "No location"}
+                  </span>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
 
           <motion.div variants={itemVariants}>
-            <LinkList
-              linksDataData={profileLinks.sort(
-                (a, b) => a.displayOrder - b.displayOrder,
-              )}
-            />
+            {dataLoading ? (
+              <div className="px-6">
+                <SkeletonLinkList count={4} />
+              </div>
+            ) : (
+              <LinkList
+                linksDataData={profileLinks.sort(
+                  (a, b) => a.displayOrder - b.displayOrder,
+                )}
+              />
+            )}
           </motion.div>
         </main>
 
@@ -247,7 +238,7 @@ export default function DashboardPage() {
             transition={{ type: "spring", stiffness: 300 }}
           >
             <PhoneDisplay
-              phoneDisplayLoading={loading}
+              phoneDisplayLoading={dataLoading}
               buttonStyle={buttonStyle}
               fontStyle={fontStyle}
               selectedTheme={selectedTheme}
@@ -347,14 +338,19 @@ export default function DashboardPage() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className=""
               >
-                <LinkList
-                  linksDataData={profileLinks.sort(
-                    (a: ProfileLink, b: ProfileLink) =>
-                      a.displayOrder - b.displayOrder,
-                  )}
-                />
+                {dataLoading ? (
+                  <div className="px-4">
+                    <SkeletonLinkList count={4} />
+                  </div>
+                ) : (
+                  <LinkList
+                    linksDataData={profileLinks.sort(
+                      (a: ProfileLink, b: ProfileLink) =>
+                        a.displayOrder - b.displayOrder,
+                    )}
+                  />
+                )}
               </motion.div>
             </div>
           )}

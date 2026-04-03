@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores/user.store";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { PLATFORMS } from "@/data";
+import { PLATFORMS, STREAMING_PLATFORMS } from "@/data"
 import { toast } from "sonner";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
@@ -128,7 +128,7 @@ const Platforms = () => {
   }
 
   return (
-    <ProtectedRoute>
+    <>
       <motion.main
         initial="hidden"
         animate="visible"
@@ -187,13 +187,14 @@ const Platforms = () => {
             </motion.p>
           </motion.div>
 
-          <motion.div 
+          {/* Social Platforms */}
+          <motion.div
             variants={itemVariants}
-            className="flex flex-wrap justify-center gap-4 mb-8 max-w-2xl"
+            className="flex flex-wrap justify-center gap-4 mb-6 max-w-2xl"
           >
             {PLATFORMS.map((platform, index) => {
               const isSelected = selectedPlatforms.some((p) => p.id === platform.id);
-              
+
               return (
                 <motion.button
                   key={platform.id}
@@ -221,6 +222,53 @@ const Platforms = () => {
                 </motion.button>
               );
             })}
+          </motion.div>
+
+          {/* Streaming Platforms */}
+          <motion.div variants={itemVariants} className="w-full max-w-2xl mb-8">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="h-px flex-1 bg-[#331400]/20" />
+              <span className="text-[11px] font-semibold text-[#331400]/60 uppercase tracking-widest">
+                Streaming
+              </span>
+              <div className="h-px flex-1 bg-[#331400]/20" />
+            </div>
+            <div className="flex flex-wrap justify-center gap-4">
+              {STREAMING_PLATFORMS.map((platform, index) => {
+                const isSelected = selectedPlatforms.some((p) => p.id === platform.id);
+
+                return (
+                  <motion.button
+                    key={platform.id}
+                    custom={index}
+                    variants={platformVariants}
+                    initial="unselected"
+                    animate={isSelected ? "selected" : "unselected"}
+                    whileHover="hover"
+                    whileTap="tap"
+                    className={`cursor-pointer flex flex-col w-20 h-20 md:h-24 md:w-24 items-center justify-center p-4 border-2 ${
+                      isSelected ? "border-[#331400]" : "border-transparent"
+                    }`}
+                    onClick={() => handlePlatformClick(platform)}
+                  >
+                    <div
+                      className="w-9 h-9 mb-2 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: `${platform.color}20` }}
+                    >
+                      <Image
+                        src={platform.icon}
+                        alt={platform.name}
+                        width={24}
+                        height={24}
+                      />
+                    </div>
+                    <span className="text-[12px] md:text-sm text-center">
+                      {platform.name}
+                    </span>
+                  </motion.button>
+                );
+              })}
+            </div>
           </motion.div>
 
           <motion.div 
@@ -280,7 +328,7 @@ const Platforms = () => {
           </motion.a>
         </motion.footer>
       </motion.main>
-    </ProtectedRoute>
+    </>
   );
 };
 

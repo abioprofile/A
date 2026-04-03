@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, JSX, useEffect } from "react";
+import { SkeletonPublicProfile } from "@/components/AppSkeletons";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { FaMapMarkerAlt } from "react-icons/fa";
@@ -12,6 +13,7 @@ import { useAppSelector } from "@/stores/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import DnaFormV1 from "@/components/dnabygaza/form";
 import MenuAccordion from "@/app/menu/page";
+import { hasStreamingLinks, getStreamingLinks, STREAMING_PLATFORM_IDS_SET } from "@/components/StreamingEmbed";
 import {
   pageVariants,
   phoneContainerVariants,
@@ -99,8 +101,9 @@ export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
   const usernameData = useAppSelector((state) => state.auth.user);
-  const [activeTab, setActiveTab] = useState<"links" | "menu">("links");
+  const [activeTab, setActiveTab] = useState<"links" | "listen" | "menu">("links");
   const [profileShareUrl, setProfileShareUrl] = useState("");
+
 
   useEffect(() => {
     if (typeof window === "undefined" || !username) return;
@@ -157,23 +160,8 @@ export default function PublicProfilePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="min-h-screen flex items-center justify-center bg-neutral-100"
       >
-        <div className="text-center">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-12 w-12 border-b-2 border-[#331400] mx-auto mb-4"
-          />
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-[#331400]"
-          >
-            Loading profile...
-          </motion.p>
-        </div>
+        <SkeletonPublicProfile />
       </motion.div>
     );
   }
@@ -492,6 +480,26 @@ export default function PublicProfilePage() {
                         />
                       )}
                     </button>
+                    {hasStreamingLinks(links) && (
+                      <button
+                        onClick={() => setActiveTab("listen")}
+                        className="relative flex flex-col items-center pb-2 group"
+                      >
+                        <span
+                          className={`text-[9px] -mb-2 font-medium transition-colors ${
+                            activeTab === "listen" ? "text-black" : "text-gray-400"
+                          }`}
+                        >
+                          Listen
+                        </span>
+                        {activeTab === "listen" && (
+                          <motion.div
+                            layoutId="activeTabDesktop"
+                            className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
+                          />
+                        )}
+                      </button>
+                    )}
                     {isDnaByGazaUser && (
                       <button
                         onClick={() => setActiveTab("menu")}
@@ -517,19 +525,16 @@ export default function PublicProfilePage() {
                 </motion.div>
 
                 <div
-                  className="relative z-20 px-6 pt-4 pb-6 space-y-3 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
+                  className="relative z-20 px-6 pt-4 pb-6 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
                   style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
-                  {activeTab === "links" ? (
+                  {activeTab === "links" && (
                     <>
                       <AnimatePresence>
                         {links.length > 0 ? (
                           links
-                            .filter((link: UserLink) => link.isVisible !== false)
-                            .sort(
-                              (a: UserLink, b: UserLink) =>
-                                a.displayOrder - b.displayOrder,
-                            )
+                            .filter((link: UserLink) => link.isVisible !== false && !STREAMING_PLATFORM_IDS_SET.has(link.platform.toLowerCase().replace(/\s+/g, "-")))
+                            .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
                             .map((link: UserLink, index: number) => (
                               <motion.a
                                 key={link.id}
@@ -539,42 +544,62 @@ export default function PublicProfilePage() {
                                 href={link.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
+                                className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer mb-3"
                                 style={linkButtonStyle}
                               >
-                                <motion.span
-                                  whileHover={{ rotate: 10 }}
-                                  transition={{ type: "spring", stiffness: 300 }}
-                                  style={{ color: fontStyle?.color }}
-                                >
+                                <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
                                   {getPlatformIcon(link.platform, "w-4 h-4")}
                                 </motion.span>
-                                <span className="truncate" style={fontStyle}>
-                                  {link.title}
-                                </span>
+                                <span className="truncate" style={fontStyle}>{link.title}</span>
                               </motion.a>
                             ))
                         ) : (
-                          <motion.p
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: 0.5 }}
-                            className="text-xs text-gray-500 text-center py-4"
-                            style={fontStyle}
-                          >
+                          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
                             No links added yet.
                           </motion.p>
                         )}
                       </AnimatePresence>
                       {isDnaByGazaUser && <DnaFormV1 />}
                     </>
-                  ) : (
+                  )}
+
+                  {activeTab === "listen" && (
                     <motion.div
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ duration: 0.3 }}
+                      exit={{ opacity: 0, x: -10 }}
+                      transition={{ duration: 0.25 }}
+                      className="space-y-3"
                     >
+                      {getStreamingLinks(links).length > 0 ? (
+                        getStreamingLinks(links).map((link, index) => (
+                          <motion.a
+                            key={link.id}
+                            variants={linkItemVariants}
+                            whileHover="hover"
+                            custom={index}
+                            href={link.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
+                            style={linkButtonStyle}
+                          >
+                            <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
+                              {getPlatformIcon(link.platform, "w-4 h-4")}
+                            </motion.span>
+                            <span className="truncate" style={fontStyle}>{link.title}</span>
+                          </motion.a>
+                        ))
+                      ) : (
+                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
+                          No streaming links added yet.
+                        </motion.p>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {activeTab === "menu" && (
+                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
                       <MenuAccordion />
                     </motion.div>
                   )}
@@ -727,6 +752,26 @@ export default function PublicProfilePage() {
                     />
                   )}
                 </button>
+                {hasStreamingLinks(links) && (
+                  <button
+                    onClick={() => setActiveTab("listen")}
+                    className="relative flex flex-col items-center pb-2 group"
+                  >
+                    <span
+                      className={`text-[11px] -mb-2 font-medium transition-colors ${
+                        activeTab === "listen" ? "text-black" : "text-gray-400"
+                      }`}
+                    >
+                      Listen
+                    </span>
+                    {activeTab === "listen" && (
+                      <motion.div
+                        layoutId="activeTabMobile"
+                        className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
+                      />
+                    )}
+                  </button>
+                )}
                 {isDnaByGazaUser && (
                   <button
                     onClick={() => setActiveTab("menu")}
@@ -742,7 +787,7 @@ export default function PublicProfilePage() {
                     </span>
                     {activeTab === "menu" && (
                       <motion.div
-                        layoutId="activeTabDesktop"
+                        layoutId="activeTabMobile"
                         className="h-[3px] absolute bottom-0 w-6 bg-red-500"
                       />
                     )}
@@ -751,17 +796,17 @@ export default function PublicProfilePage() {
               </div>
             </motion.div>
 
-            <div className="px-10 pt-6 pb-6 space-y-4 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden">
-              {activeTab === "links" ? (
+            <div
+              className="overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden px-10 pt-6 pb-6"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+            >
+              {activeTab === "links" && (
                 <>
                   <AnimatePresence>
                     {links.length > 0 ? (
                       links
-                        .filter((link: UserLink) => link.isVisible !== false)
-                        .sort(
-                          (a: UserLink, b: UserLink) =>
-                            a.displayOrder - b.displayOrder,
-                        )
+                        .filter((link: UserLink) => link.isVisible !== false && !STREAMING_PLATFORM_IDS_SET.has(link.platform.toLowerCase().replace(/\s+/g, "-")))
+                        .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
                         .map((link: UserLink, index: number) => (
                           <motion.a
                             key={link.id}
@@ -769,39 +814,59 @@ export default function PublicProfilePage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer"
+                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer mb-4"
                             style={linkButtonStyle}
                           >
-                            <motion.span
-                              whileHover={{ rotate: 10 }}
-                              transition={{ type: "spring", stiffness: 300 }}
-                              style={{ color: fontStyle?.color }}
-                            >
+                            <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
                               {getPlatformIcon(link.platform, "w-4 h-4")}
                             </motion.span>
-                            <span
-                              className="truncate font-bold"
-                              style={fontStyle}
-                            >
-                              {link.title}
-                            </span>
+                            <span className="truncate font-bold" style={fontStyle}>{link.title}</span>
                           </motion.a>
                         ))
                     ) : (
-                      <motion.p
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 0.5 }}
-                        className="text-xs text-gray-500 text-center py-4"
-                        style={fontStyle}
-                      >
+                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
                         No links added yet.
                       </motion.p>
                     )}
                   </AnimatePresence>
                   {isDnaByGazaUser && <DnaFormV1 />}
                 </>
-              ) : (
+              )}
+
+              {activeTab === "listen" && (
+                <motion.div
+                  initial={{ opacity: 0, x: 10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -10 }}
+                  transition={{ duration: 0.25 }}
+                  className="space-y-4"
+                >
+                  {getStreamingLinks(links).length > 0 ? (
+                    getStreamingLinks(links).map((link, index) => (
+                      <motion.a
+                        key={link.id}
+                        whileHover={{ scale: 1.03, y: -2 }}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer"
+                        style={linkButtonStyle}
+                      >
+                        <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
+                          {getPlatformIcon(link.platform, "w-4 h-4")}
+                        </motion.span>
+                        <span className="truncate font-bold" style={fontStyle}>{link.title}</span>
+                      </motion.a>
+                    ))
+                  ) : (
+                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
+                      No streaming links added yet.
+                    </motion.p>
+                  )}
+                </motion.div>
+              )}
+
+              {activeTab === "menu" && (
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}

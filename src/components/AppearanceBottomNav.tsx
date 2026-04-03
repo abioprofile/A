@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { 
-  FaUser, 
-  FaPalette, 
-  FaPuzzlePiece, 
-  FaImage 
+import {
+  FaUser,
+  FaPalette,
+  FaPuzzlePiece,
+  FaImage,
 } from "react-icons/fa6";
 
 interface AppearanceBottomNavProps {

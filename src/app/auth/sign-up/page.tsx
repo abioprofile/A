@@ -414,12 +414,10 @@ const SignUp = () => {
                 <Button
                   type="submit"
                   className="w-full h-10 bg-[#FED45C] text-[#331400] text-sm font-semibold hover:bg-[#fecf4a] transition-colors"
-                  disabled={isSubmitting || signUpMutation.isPending}
+                  isLoading={isSubmitting || signUpMutation.isPending}
                   aria-label="Create account"
                 >
-                  {isSubmitting || signUpMutation.isPending
-                    ? "Creating Account..."
-                    : "Create Account"}
+                  Create Account
                 </Button>
               </motion.div>
             </motion.div>

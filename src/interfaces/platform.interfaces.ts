@@ -3,4 +3,5 @@ export interface PlatformInterface {
     name: string
     icon: string
     color?: string
+    type?: "social" | "streaming"
 }

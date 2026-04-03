@@ -15,28 +15,14 @@ import {
 import ReactCrop, { Crop, PixelCrop } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 
+import { FaLink } from "react-icons/fa6";
+import { PlatformSvgIcon } from "./PlatformIcon";
 import {
-  FaInstagram,
-  FaTiktok,
-  FaPinterest,
-  FaTwitter,
-  FaLinkedinIn,
-  FaBehance,
-  FaLink,
-  FaWhatsapp,
-  FaXTwitter,
-  FaFacebook,
-  FaSnapchat,
-  FaYoutube,
-  FaGithub,
-  FaSpotify,
-  FaApple,
-  FaGoogle,
-  FaAmazon,
-  FaFigma,
-  FaDribbble,
-  FaTelegram,
-} from "react-icons/fa6";
+  PLATFORM_ICON_FILES,
+  PLATFORM_DISPLAY_NAMES,
+  getPlatformIconUrl,
+  normalizePlatformId,
+} from "@/data/platformIconMap";
 
 type LinkItem = {
   id: string;
@@ -62,88 +48,8 @@ type Props = {
   dragHandleId?: string;
 };
 
-// Updated platformIcons with Font Awesome components - ALL IN BLACK AND WHITE
-const platformIcons: Record<
-  string,
-  { name: string; icon: React.ReactElement }
-> = {
-  snapchat: {
-    name: "Snapchat",
-    icon: <FaSnapchat className="w-6 h-6 text-black" />,
-  },
-  instagram: {
-    name: "Instagram",
-    icon: <FaInstagram className="w-6 h-6 text-black" />,
-  },
-  behance: {
-    name: "Behance",
-    icon: <FaBehance className="w-6 h-6 text-black" />,
-  },
-  linkedin: {
-    name: "LinkedIn",
-    icon: <FaLinkedinIn className="w-6 h-6 text-black" />,
-  },
-  tiktok: {
-    name: "TikTok",
-    icon: <FaTiktok className="w-6 h-6 text-black" />,
-  },
-  x: {
-    name: "X (Twitter)",
-    icon: <FaXTwitter className="w-6 h-6 text-black" />,
-  },
-  youtube: {
-    name: "YouTube",
-    icon: <FaYoutube className="w-6 h-6 text-black" />,
-  },
-  facebook: {
-    name: "Facebook",
-    icon: <FaFacebook className="w-6 h-6 text-black" />,
-  },
-  whatsapp: {
-    name: "WhatsApp",
-    icon: <FaWhatsapp className="w-6 h-6 text-black" />,
-  },
-  pinterest: {
-    name: "Pinterest",
-    icon: <FaPinterest className="w-6 h-6 text-black" />,
-  },
-  custom: {
-    name: "Custom Image",
-    icon: <FaLink className="w-6 h-6 text-gray-500" />,
-  },
-  github: {
-    name: "GitHub",
-    icon: <FaGithub className="w-6 h-6 text-black" />,
-  },
-  spotify: {
-    name: "Spotify",
-    icon: <FaSpotify className="w-6 h-6 text-black" />,
-  },
-  apple: {
-    name: "Apple",
-    icon: <FaApple className="w-6 h-6 text-black" />,
-  },
-  google: {
-    name: "Google",
-    icon: <FaGoogle className="w-6 h-6 text-black" />,
-  },
-  amazon: {
-    name: "Amazon",
-    icon: <FaAmazon className="w-6 h-6 text-black" />,
-  },
-  figma: {
-    name: "Figma",
-    icon: <FaFigma className="w-6 h-6 text-black" />,
-  },
-  dribbble: {
-    name: "Dribbble",
-    icon: <FaDribbble className="w-6 h-6 text-black" />,
-  },
-  telegram: {
-    name: "Telegram",
-    icon: <FaTelegram className="w-6 h-6 text-black" />,
-  },
-};
+// All platforms that have icons in our public icon pack
+const ICON_PICKER_PLATFORMS = Object.keys(PLATFORM_ICON_FILES);
 
 const LinkCard: FC<Props> = ({
   item,
@@ -238,153 +144,29 @@ const LinkCard: FC<Props> = ({
       );
     }
 
-    const platformIcon = platformIcons[item.platform?.toLowerCase?.()];
-    if (platformIcon) {
-      return platformIcon.icon;
+    const key = normalizePlatformId(item.platform ?? "");
+    if (PLATFORM_ICON_FILES[key]) {
+      return (
+        <PlatformSvgIcon
+          platform={key}
+          className="w-6 h-6 md:w-8 md:h-8"
+          variant="black"
+        />
+      );
     }
 
     // Default icon
     return <FaLink className="w-6 h-6 md:w-8 md:h-8 text-gray-500" />;
   };
 
-  // Convert platform icon to image file using SVG to canvas
-  const createIconFile = async (platformKey: string): Promise<File> => {
-    return new Promise(async (resolve, reject) => {
-      try {
-        // Get the icon component
-        const iconData = platformIcons[platformKey];
-        if (!iconData) {
-          reject(new Error(`Icon not found for platform: ${platformKey}`));
-          return;
-        }
-
-        // Create a temporary container to render the icon
-        const tempDiv = document.createElement("div");
-        tempDiv.style.width = "64px";
-        tempDiv.style.height = "64px";
-        tempDiv.style.display = "flex";
-        tempDiv.style.alignItems = "center";
-        tempDiv.style.justifyContent = "center";
-        tempDiv.style.backgroundColor = "white";
-        tempDiv.style.position = "fixed";
-        tempDiv.style.left = "-9999px";
-        tempDiv.style.top = "-9999px";
-        tempDiv.style.zIndex = "-9999";
-        document.body.appendChild(tempDiv);
-
-        // Use React 19's createRoot to render the icon
-        const { createRoot } = await import("react-dom/client");
-        const root = createRoot(tempDiv);
-
-        // Render the icon with proper styling
-        root.render(
-          <div
-            style={{
-              width: "64px",
-              height: "64px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              backgroundColor: "transparent",
-              color: "black",
-            }}
-          >
-            {iconData.icon}
-          </div>,
-        );
-
-        // Wait for React to render and SVG to load
-        await new Promise<void>((resolve) => setTimeout(resolve, 300));
-
-        // Get the SVG element from the rendered icon
-        const svgElement = tempDiv.querySelector("svg") as SVGSVGElement;
-
-        if (!svgElement) {
-          root.unmount();
-          document.body.removeChild(tempDiv);
-          reject(new Error("SVG element not found"));
-          return;
-        }
-
-        // Clone the SVG to avoid modifying the original
-        const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement;
-        clonedSvg.setAttribute("width", "64");
-        clonedSvg.setAttribute("height", "64");
-        const viewBox =
-          svgElement.getAttribute("viewBox") ||
-          svgElement.getAttribute("viewbox") ||
-          "0 0 24 24";
-        clonedSvg.setAttribute("viewBox", viewBox);
-
-        // Create SVG string
-        const svgString = new XMLSerializer().serializeToString(clonedSvg);
-        const svgBlob = new Blob([svgString], {
-          type: "image/svg+xml;charset=utf-8",
-        });
-        const svgUrl = URL.createObjectURL(svgBlob);
-
-        // Create an image element to load the SVG
-        const img = document.createElement("img");
-        img.crossOrigin = "anonymous";
-
-        img.onload = () => {
-          try {
-            // Create canvas and draw the image
-            const canvas = document.createElement("canvas");
-            canvas.width = 64;
-            canvas.height = 64;
-            const ctx = canvas.getContext("2d");
-
-            if (!ctx) {
-              URL.revokeObjectURL(svgUrl);
-              root.unmount();
-              document.body.removeChild(tempDiv);
-              reject(new Error("Could not get canvas context"));
-              return;
-            }
-
-            // Draw white background
-            ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, 64, 64);
-
-            // Draw the SVG image
-            ctx.drawImage(img, 0, 0, 64, 64);
-
-            // Convert canvas to blob, then to file
-            canvas.toBlob((blob) => {
-              URL.revokeObjectURL(svgUrl);
-              root.unmount();
-              document.body.removeChild(tempDiv);
-
-              if (blob) {
-                const file = new File([blob], `${platformKey}-icon.png`, {
-                  type: "image/png",
-                });
-                resolve(file);
-              } else {
-                reject(new Error("Failed to create icon blob"));
-              }
-            }, "image/png");
-          } catch (error) {
-            URL.revokeObjectURL(svgUrl);
-            root.unmount();
-            document.body.removeChild(tempDiv);
-            reject(error);
-          }
-        };
-
-        img.onerror = () => {
-          URL.revokeObjectURL(svgUrl);
-          root.unmount();
-          document.body.removeChild(tempDiv);
-          reject(new Error("Failed to load SVG image"));
-        };
-
-        img.src = svgUrl;
-      } catch (error) {
-        reject(error);
-      }
-    });
+  /** Fetches the colored SVG from the public icon pack and returns it as a File for upload */
+  const fetchColoredIconFile = async (platformKey: string): Promise<File> => {
+    const url = getPlatformIconUrl(platformKey, "colored");
+    if (!url) throw new Error(`No colored icon for platform: ${platformKey}`);
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch icon: ${url}`);
+    const blob = await response.blob();
+    return new File([blob], `${platformKey}-icon.svg`, { type: "image/svg+xml" });
   };
 
   const handleIconSelect = async (e: MouseEvent, platform: string) => {
@@ -392,20 +174,17 @@ const LinkCard: FC<Props> = ({
     e.preventDefault();
     if (platform === "custom") {
       setShowIconDropdown(false);
-      // Use setTimeout to ensure dropdown closes before opening file picker
       setTimeout(() => {
         fileInputRef.current?.click();
       }, 100);
     } else {
       try {
-        // Convert platform icon to file and upload
-        const iconFile = await createIconFile(platform);
+        const iconFile = await fetchColoredIconFile(platform);
         updateLinkIconMutation.mutate(
           { linkId: item.id, iconFile },
           {
             onSuccess: () => {
               setShowIconDropdown(false);
-              // Optionally call onIconChange for local state update
               if (onIconChange) {
                 onIconChange(item.id, "platform", platform);
               }
@@ -416,7 +195,7 @@ const LinkCard: FC<Props> = ({
           },
         );
       } catch (error) {
-        console.error("Failed to create icon file:", error);
+        console.error("Failed to fetch colored icon file:", error);
       }
     }
   };
@@ -607,9 +386,10 @@ const LinkCard: FC<Props> = ({
                         style={{ maxHeight: "200px" }}
                       >
                         <div className="grid grid-cols-3 gap-2 mb-3">
-                          {Object.entries(platformIcons)
-                            .filter(([key]) => key !== "custom")
-                            .map(([key, { name, icon }]) => (
+                          {ICON_PICKER_PLATFORMS.map((key) => {
+                            const coloredUrl = getPlatformIconUrl(key, "colored");
+                            const name = PLATFORM_DISPLAY_NAMES[key] ?? key;
+                            return (
                               <button
                                 key={key}
                                 type="button"
@@ -624,14 +404,27 @@ const LinkCard: FC<Props> = ({
                                 }}
                                 className="flex flex-col items-center p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
                               >
-                                <div className="w-6 h-6 flex items-center justify-center mb-1">
-                                  {icon}
+                                <div className="w-8 h-8 flex items-center justify-center mb-1">
+                                  {coloredUrl ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                      src={coloredUrl}
+                                      alt={name}
+                                      width={32}
+                                      height={32}
+                                      className="w-7 h-7 object-contain"
+                                      loading="lazy"
+                                    />
+                                  ) : (
+                                    <FaLink className="w-6 h-6 text-gray-400" />
+                                  )}
                                 </div>
                                 <span className="text-[10px] text-gray-600 truncate w-full text-center">
                                   {name}
                                 </span>
                               </button>
-                            ))}
+                            );
+                          })}
                         </div>
                       </div>
                       <div className="border-t pt-2 px-2 pb-2 shrink-0">

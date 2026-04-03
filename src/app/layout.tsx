@@ -7,6 +7,7 @@ import { CartProvider } from "@/context/CartContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { QueryProvider } from "@/providers/QueryProvider";
 import { ReduxProvider } from "@/providers/ReduxProvider";
+import { HapticsInit } from "@/components/HapticsInit";
 
 export const metadata: Metadata = {
   title: "A official website",
@@ -71,6 +72,7 @@ export default function RootLayout({
           <QueryProvider>
             <AuthProvider>
               <CartProvider>
+                <HapticsInit />
                 {children}
                 <Toaster theme="light" richColors />
               </CartProvider>
