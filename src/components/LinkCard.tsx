@@ -319,7 +319,7 @@ const LinkCard: FC<Props> = ({
           className={`p-px md:p-[2px] ${isActive ? "" : "border border-black"}`}
         >
           <div
-            className="bg-[#FAFAFC] shadow-lg p-4 md:p-4 relative"
+            className="bg-[#FAFAFC] shadow-lg p-4 md:p-4 relative card-hover"
             style={{ zIndex: showIconDropdown ? 1 : "auto" }}
           >
             {/* ================= TOP ROW ================= */}
@@ -575,10 +575,10 @@ const LinkCard: FC<Props> = ({
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 h-4 w-4 md:h-5 md:w-5 bg-white rounded-full transition-transform duration-200 ${
+                    className={`absolute top-0.5 h-4 w-4 md:h-5 md:w-5 bg-white rounded-full toggle-thumb ${
                       isActive
-                        ? "translate-x-4 md:translate-x-5 left-0.5" // On: move to right
-                        : "translate-x-0 left-0.5" // Off: stay on left
+                        ? "translate-x-4 md:translate-x-5 left-0.5"
+                        : "translate-x-0 left-0.5"
                     }`}
                   />
                 </button>
@@ -595,7 +595,7 @@ const LinkCard: FC<Props> = ({
                     e.preventDefault();
                     e.stopPropagation();
                   }}
-                  className="hover:opacity-70 transition-opacity cursor-pointer"
+                  className="press-target hover:opacity-70 cursor-pointer"
                 >
                   <PencilIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
                 </button>
@@ -612,7 +612,7 @@ const LinkCard: FC<Props> = ({
                     e.preventDefault();
                     e.stopPropagation();
                   }}
-                  className="hover:opacity-70 transition-opacity cursor-pointer"
+                  className="press-target hover:opacity-70 cursor-pointer"
                 >
                   <TrashIcon className="h-4 w-4 md:h-5 md:w-5 text-red-500" />
                 </button>

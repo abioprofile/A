@@ -1,7 +1,9 @@
+'use client'
 import React from 'react'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
 
 const GetStarted = ({ showBlur }: { showBlur?: boolean }) => {
     return (
@@ -10,7 +12,13 @@ const GetStarted = ({ showBlur }: { showBlur?: boolean }) => {
                 {showBlur && (
                     <div className="hidden md:block bg-gradient-to-r to-[#7140EB] from-[#FB8E8E] z-0 size-72 opacity-50 absolute -bottom-28 -left-20 filter blur-3xl" />
                 )}
-                <div className='md:px-20 md:w-[80%] md:mx-auto md:max-w-[844px] md:pt-20 md:pb-10 bg-[#E9E0FE] p-5 relative overflow-hidden'>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-64px" }}
+                  transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
+                  className='md:px-20 md:w-[80%] md:mx-auto md:max-w-[844px] md:pt-20 md:pb-10 bg-[#E9E0FE] p-5 relative overflow-hidden'
+                >
                     <div className="rounded-full bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] z-0 size-52 opacity-50 absolute -top-5 -left-5 filter blur-[60px]" />
                     <div className='relative max-w-96 z-10 mix-blend-inherit'>
                         <h1 className='text-3xl md:text-4xl tracking-tighter font-bold text-[#7140EB] mb-3'>Get started with A.bio</h1>
@@ -25,7 +33,7 @@ const GetStarted = ({ showBlur }: { showBlur?: boolean }) => {
                             </Button>
                         </div>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </section>
     )

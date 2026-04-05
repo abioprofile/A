@@ -1,6 +1,7 @@
 "use client"
 import React from "react"
 import Image from "next/image"
+import { motion } from "framer-motion"
 
 const faqs = [
   {
@@ -42,17 +43,36 @@ const Faq = () => {
       {/* Content on top */}
       <div className="relative z-10">
         {/* Header */}
-        <h2 className="text-center trialheader text-2xl md:text-5xl mb-2 text-red-600">
+        <motion.h2
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-48px" }}
+          transition={{ duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="text-center trialheader text-2xl md:text-5xl mb-2 text-red-600"
+        >
           Got Questions ?
-        </h2>
-        <p className="text-center text-[14px] text-[#5D2D2B] mb-10">
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true, margin: "-48px" }}
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="text-center text-[14px] text-[#5D2D2B] mb-10"
+        >
           Everything you need to know about A
-        </p>
+        </motion.p>
 
         {/* Accordion */}
         <div className="max-w-3xl mx-auto space-y-4">
           {faqs.map((faq, index) => (
-            <details key={index} className="group bg-[#FED45C] rounded-none">
+            <motion.details
+              key={index}
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-32px" }}
+              transition={{ duration: 0.28, delay: index * 0.07, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="group bg-[#FED45C] rounded-none"
+            >
               <summary className="flex justify-between items-center cursor-pointer font-semibold text-[14px] md:text-xl p-4 text-[#5D2D2B]">
                 {faq.question}
                 <span className="transition-transform duration-300 group-open:rotate-180">
@@ -62,7 +82,7 @@ const Faq = () => {
               <div className="p-4 pt-0 text-[13px] md:text-[14px] text-[#5D2D2B]">
                 <p>{faq.answer}</p>
               </div>
-            </details>
+            </motion.details>
           ))}
         </div>
       </div>

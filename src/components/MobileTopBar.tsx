@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { motion } from 'framer-motion';
 
 interface MobileTopBarProps {
   name: string;
@@ -26,19 +27,36 @@ export default function MobileTopBar({
 
         {/* RIGHT ICONS */}
         <div className="flex items-center gap-4">
-          <button>
-            <Image src="/icons/qr.svg" alt="QR" width={20} height={20} />
-          </button>
-          <button>
-            <Image src="/icons/share.svg" alt="Share" width={20} height={20} />
-          </button>
-          <button className="relative">
+          {[
+            { src: "/icons/qr.svg", alt: "QR" },
+            { src: "/icons/share.svg", alt: "Share" },
+          ].map(({ src, alt }) => (
+            <motion.button
+              key={alt}
+              whileHover={{ scale: 1.12 }}
+              whileTap={{ scale: 0.85, transition: { duration: 0.1 } }}
+              transition={{ duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="-webkit-tap-highlight-color-transparent"
+            >
+              <Image src={src} alt={alt} width={20} height={20} />
+            </motion.button>
+          ))}
+          <motion.button
+            whileHover={{ scale: 1.12 }}
+            whileTap={{ scale: 0.85, transition: { duration: 0.1 } }}
+            transition={{ duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="relative"
+          >
             <Image src="/icons/bell.svg" alt="Bell" width={20} height={20} />
             <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500" />
-          </button>
-          <button>
+          </motion.button>
+          <motion.button
+            whileHover={{ scale: 1.12 }}
+            whileTap={{ scale: 0.85, transition: { duration: 0.1 } }}
+            transition={{ duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
+          >
             <Image src="/icons/more.svg" alt="Menu" width={20} height={20} />
-          </button>
+          </motion.button>
         </div>
       </div>
     </header>

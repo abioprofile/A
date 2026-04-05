@@ -186,47 +186,137 @@ background-position: calc(100% + 80px) -50%;
   filter: brightness(0) saturate(100%) invert(66%) sepia(0%) saturate(0%) hue-rotate(174deg) brightness(94%) contrast(86%);
 }
 
-:root{
-  --skeleton-base: #e6e6e6;
-  --skeleton-accent: #f5f5f5;
+/* ─── Premium easing & timing variables ────────────────────────────────── */
+:root {
+  --ease-out:        cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-expo:       cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out:     cubic-bezier(0.45, 0, 0.55, 1);
+  --transition-fast: 160ms var(--ease-out);
+  --transition-base: 220ms var(--ease-out);
+  --transition-slow: 340ms var(--ease-out);
+
+  --skeleton-base:   #ebebeb;
+  --skeleton-shine:  #f6f6f6;
 }
 
-/* dark mode variables (Tailwind 'dark' class or body.dark) */
 .dark {
-  --skeleton-base: #2b2b2b;
-  --skeleton-accent: #3b3b3b;
+  --skeleton-base:   #252525;
+  --skeleton-shine:  #2f2f2f;
 }
 
+/* ─── Skeleton ──────────────────────────────────────────────────────────── */
 .skeleton {
   background-color: var(--skeleton-base);
   position: relative;
   overflow: hidden;
   border-radius: 6px;
+  will-change: transform; /* keep on own compositor layer */
 }
 
-/* shimmer overlay */
-.skeleton--shimmer::before {
+/*
+ * Premium shimmer — thin, fast, high-contrast gradient stripe.
+ * Mimics how Stripe, Notion, and Linear do it.
+ */
+.skeleton--shimmer::after {
   content: "";
   position: absolute;
-  left: -150%;
-  top: 0;
-  height: 100%;
-  width: 150%;
+  inset: 0;
   background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.5) 50%,
-    rgba(255,255,255,0) 100%
+    105deg,
+    transparent 30%,
+    rgba(255,255,255,0.55) 50%,
+    transparent 70%
   );
-  transform: skewX(-18deg);
-  animation: skeleton-shimmer 1.2s infinite;
+  background-size: 200% 100%;
+  animation: shimmer-sweep 1.4s ease-in-out infinite;
+  pointer-events: none;
 }
 
-@keyframes skeleton-shimmer {
-  100% { transform: translateX(220%) skewX(-18deg); }
+@keyframes shimmer-sweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
 }
 
-/* small helper sizes (can be extended) */
-.skeleton.inline { display:inline-block; vertical-align:middle; }
-.skeleton.round { border-radius: 9999px; }
+.skeleton.inline { display: inline-block; vertical-align: middle; }
+.skeleton.round  { border-radius: 9999px; }
+
+/* ─── Interactive element utilities ─────────────────────────────────────── */
+
+/* Generic press feedback — for plain <button> elements outside Framer Motion */
+.press-target {
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+.press-target:hover  { opacity: 0.82; }
+.press-target:active { transform: scale(0.94); opacity: 0.7; }
+
+/* Card hover lift — CSS-only, zero JS */
+.card-hover {
+  transition:
+    transform  var(--transition-base),
+    box-shadow var(--transition-base);
+  will-change: transform;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.05);
+}
+.card-hover:active {
+  transform: translateY(0px) scale(0.995);
+}
+
+/* Input focus glow — premium ring that expands in */
+input:focus-visible,
+textarea:focus-visible {
+  transition:
+    border-color var(--transition-fast),
+    box-shadow   var(--transition-fast),
+    outline      0s;
+}
+
+/* Link with underline that sweeps in from the left */
+.link-underline {
+  position: relative;
+  text-decoration: none;
+}
+.link-underline::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: currentColor;
+  transition: width var(--transition-base);
+}
+.link-underline:hover::after { width: 100%; }
+
+/* Smooth page-level fade-in (add to page wrappers) */
+.page-enter {
+  animation: page-fade-in 0.32s var(--ease-out) both;
+}
+
+@keyframes page-fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Toggle switch — premium spring-like thumb slide (CSS-only) */
+.toggle-thumb {
+  transition: transform 200ms var(--ease-expo), left 200ms var(--ease-expo);
+}
+
+/* Nav item active indicator slide */
+.nav-indicator {
+  transition: transform var(--transition-base), opacity var(--transition-base);
+}
+
+/* Fade-in animation for dropdowns (CSS fallback) */
+@keyframes dropdown-in {
+  from { opacity: 0; transform: scale(0.96) translateY(4px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0); }
+}
+.animate-dropdown {
+  animation: dropdown-in 180ms var(--ease-out) both;
+}
 

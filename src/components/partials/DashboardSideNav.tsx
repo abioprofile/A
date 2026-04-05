@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { dropdownVariants } from "@/lib/animations";
 import {
   Sidebar,
   SidebarContent,
@@ -90,20 +92,24 @@ const DashboardSideNav = ({
                     className="flex justify-center"
                   >
                     <SidebarMenuItem>
-                      <SidebarMenuButton
-                        className={`cursor-pointer w-12 h-12 flex items-center justify-center transition-all hover:bg-[#f4f4f4] ${
-                          isActive ? "bg-[#f4f4f4] shadow-sm" : ""
-                        }`}
+                      <motion.div
+                        whileHover={{ scale: 1.1, transition: { duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] } }}
+                        whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                       >
-                        {/* SVG as img element for direct control */}
-                        <div className="relative w-10 h-10">
-                          <img
-                            src={iconSrc}
-                            alt={`${item.title} Icon`}
-                            className="w-full h-full object-contain"
-                          />
-                        </div>
-                      </SidebarMenuButton>
+                        <SidebarMenuButton
+                          className={`cursor-pointer w-12 h-12 flex items-center justify-center transition-colors duration-150 hover:bg-[#f4f4f4] ${
+                            isActive ? "bg-[#f0f0f0] shadow-sm" : ""
+                          }`}
+                        >
+                          <div className="relative w-10 h-10">
+                            <img
+                              src={iconSrc}
+                              alt={`${item.title} Icon`}
+                              className="w-full h-full object-contain"
+                            />
+                          </div>
+                        </SidebarMenuButton>
+                      </motion.div>
                     </SidebarMenuItem>
                   </Link>
                 );
@@ -114,93 +120,112 @@ const DashboardSideNav = ({
 
         {/* Footer */}
         <SidebarFooter className="pb-6 w-full flex flex-col items-center space-y-3 relative">
-          {/* Settings icon with active state handling */}
+          {/* Settings icon */}
           <Link href="/dashboard/AccountSettings">
-            <button className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]">
-              <Settings 
-                size={25} 
-                color={pathname === "/dashboard/AccountSettings" ? "#FF0000" : "#331400"} 
+            <motion.button
+              whileHover={{ scale: 1.12, transition: { duration: 0.16 } }}
+              whileTap={{ scale: 0.88, transition: { duration: 0.1 } }}
+              className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4] transition-colors duration-150"
+            >
+              <Settings
+                size={25}
+                color={pathname === "/dashboard/AccountSettings" ? "#FF0000" : "#331400"}
               />
-            </button>
+            </motion.button>
           </Link>
 
           {/* More / Menu Button */}
-          <button
-            className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4]"
+          <motion.button
+            whileHover={{ scale: 1.12, transition: { duration: 0.16 } }}
+            whileTap={{ scale: 0.88, transition: { duration: 0.1 } }}
+            className="p-2 cursor-pointer rounded-lg hover:bg-[#f4f4f4] transition-colors duration-150"
             onClick={() => setShowMenu(!showMenu)}
           >
             <MoreHorizontal size={30} color="#331400" />
-          </button>
+          </motion.button>
         </SidebarFooter>
       </Sidebar>
 
       {/* Dropdown Menu */}
-      {showMenu && (
-        <>
-          {/* Transparent overlay to close */}
-          <div
-            className="fixed inset-0 bg-transparent z-[9998]"
-            onClick={() => setShowMenu(false)}
-          />
+      <AnimatePresence>
+        {showMenu && (
+          <>
+            {/* Transparent backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="fixed inset-0 bg-transparent z-[9998]"
+              onClick={() => setShowMenu(false)}
+            />
 
-          {/* Dropdown itself */}
-          <div className="fixed bottom-12 left-24 w-56 bg-white border border-gray-200 shadow-2xl z-[99999] animate-fadeIn">
-            {/* User Info */}
-            <div className="flex items-center gap-3 p-4 border-b border-gray-100">
-              <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
-                <Image
-                  src={currentUser?.profile?.avatarUrl || "/icons/Profile Picture.png"}
-                  alt="User Avatar"
-                  width={40}
-                  height={40}
-                  className="object-cover"
-                />
+            {/* Dropdown panel — scale-in from bottom-left origin */}
+            <motion.div
+              variants={dropdownVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              style={{ transformOrigin: "bottom left" }}
+              className="fixed bottom-12 left-24 w-56 bg-white border border-gray-100 shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-[99999]"
+            >
+              {/* User Info */}
+              <div className="flex items-center gap-3 p-4 border-b border-gray-100">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
+                  <Image
+                    src={currentUser?.profile?.avatarUrl || "/icons/Profile Picture.png"}
+                    alt="User Avatar"
+                    width={40}
+                    height={40}
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900 text-sm">
+                    {currentUser?.name}
+                  </h3>
+                  <p className="text-xs text-gray-500">@{currentUser?.profile?.username}</p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold text-gray-900 text-sm">
-                  {currentUser?.name}
-                </h3>
-                <p className="text-xs text-gray-500">@{currentUser?.profile?.username}</p>
+
+              {/* Menu Items */}
+              <div className="p-2">
+                {menuItems.map((item) => {
+                  const isActive = pathname === item.href;
+                  return (
+                    <Link
+                      key={item.label}
+                      href={item.href || "#"}
+                      className={`flex items-center gap-3 px-3 py-2.5 text-sm rounded-lg transition-colors duration-150 ${
+                        isActive
+                          ? "bg-gray-100 text-gray-900"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      <item.icon
+                        size={16}
+                        color={isActive ? "#FF0000" : "currentColor"}
+                      />
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </div>
-            </div>
 
-            {/* Menu Items */}
-            <div className="p-2">
-              {menuItems.map((item) => {
-                const isActive = pathname === item.href;
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href || "#"}
-                    className={`flex items-center gap-3 px-3 py-2 text-sm rounded-lg transition ${
-                      isActive 
-                        ? "bg-gray-100 text-gray-900" 
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    <item.icon 
-                      size={16} 
-                      color={isActive ? "#FF0000" : "currentColor"} 
-                    />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Logout */}
-            <div className="border-t border-gray-100 p-2">
-              <button 
-                onClick={handleLogout}
-                className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition"
-              >
-                <LogOut size={16} />
-                Log Out
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+              {/* Logout */}
+              <div className="border-t border-gray-100 p-2">
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-3 px-3 py-2.5 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition-colors duration-150"
+                >
+                  <LogOut size={16} />
+                  Log Out
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </>
   );
 };

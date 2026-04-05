@@ -5,6 +5,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { Cog6ToothIcon, LockClosedIcon } from '@heroicons/react/24/outline'
 import { useSidebarTitle } from '@/components/partials/SidebarTitleContext'
+import { motion, AnimatePresence } from 'framer-motion'
 
 const DashboardTopNav = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -54,26 +55,35 @@ const DashboardTopNav = () => {
             </div>
           </button>
 
-          {dropdownOpen && (
-            <div className='absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-50'>
-              <ul className='py-2 text-sm text-gray-700'>
-                <li
-                  className='flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer'
-                  onClick={navigateToAccountSettings}
-                >
-                  <Cog6ToothIcon className="w-4 h-4" />
-                  <span>Account Settings</span>
-                </li>
-                <li
-                  className='flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer'
-                  onClick={navigateBilling}
-                >
-                  <Cog6ToothIcon className="w-4 h-4" />
-                  <span>Billings</span>
-                </li>
-              </ul>
-            </div>
-          )}
+          <AnimatePresence>
+            {dropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95, y: 4 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.95, y: 4 }}
+                transition={{ duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] }}
+                style={{ transformOrigin: "top right" }}
+                className='absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border z-50'
+              >
+                <ul className='py-2 text-sm text-gray-700'>
+                  <li
+                    className='flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150'
+                    onClick={navigateToAccountSettings}
+                  >
+                    <Cog6ToothIcon className="w-4 h-4" />
+                    <span>Account Settings</span>
+                  </li>
+                  <li
+                    className='flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer transition-colors duration-150'
+                    onClick={navigateBilling}
+                  >
+                    <Cog6ToothIcon className="w-4 h-4" />
+                    <span>Billings</span>
+                  </li>
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

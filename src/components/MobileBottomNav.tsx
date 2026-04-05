@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { sidebarNav } from "@/data";
+import { motion } from "framer-motion";
 
 const MobileBottomNav = () => {
   const pathname = usePathname();
@@ -24,28 +25,35 @@ const MobileBottomNav = () => {
               <Link
                 key={item.url}
                 href={item.url}
-                className={`flex flex-col items-center justify-center px-3 rounded-lg transition-all ${
-                  isActive
-                    ? "text-[#331400]"
-                    : "text-gray-500 hover:text-gray-700"
+                className={`flex flex-col items-center justify-center px-3 rounded-lg ${
+                  isActive ? "text-[#331400]" : "text-gray-500"
                 }`}
               >
-                <Image
-                  src={iconSrc}
-                  alt={item.title}
-                  width={35}
-                  height={35}
-                  // Only apply filters if you don't have activeIcon images
-                  // If you have activeIcon images, you can remove the style prop entirely
-                  style={!item.activeIcon ? {
-                    filter: isActive
-                      ? "invert(27%) sepia(97%) saturate(7293%) hue-rotate(0deg) brightness(106%) contrast(106%)"
-                      : "invert(17%) sepia(31%) saturate(542%) hue-rotate(2deg) brightness(92%) contrast(88%)",
-                  } : undefined}
-                />
-                <span className="text-[10px] font-semibold whitespace-nowrap">
-                  {item.title}
-                </span>
+                <motion.div
+                  className="flex flex-col items-center gap-0.5"
+                  animate={{ scale: isActive ? 1.08 : 1 }}
+                  whileTap={{ scale: 0.82 }}
+                  transition={{ duration: 0.18, ease: [0.25, 0.46, 0.45, 0.94] }}
+                >
+                  <Image
+                    src={iconSrc}
+                    alt={item.title}
+                    width={35}
+                    height={35}
+                    style={!item.activeIcon ? {
+                      filter: isActive
+                        ? "invert(27%) sepia(97%) saturate(7293%) hue-rotate(0deg) brightness(106%) contrast(106%)"
+                        : "invert(17%) sepia(31%) saturate(542%) hue-rotate(2deg) brightness(92%) contrast(88%)",
+                    } : undefined}
+                  />
+                  <motion.span
+                    className="text-[10px] font-semibold whitespace-nowrap"
+                    animate={{ opacity: isActive ? 1 : 0.6 }}
+                    transition={{ duration: 0.18 }}
+                  >
+                    {item.title}
+                  </motion.span>
+                </motion.div>
               </Link>
             );
           })}

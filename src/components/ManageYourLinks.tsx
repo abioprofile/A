@@ -1,6 +1,8 @@
+'use client'
 import React from 'react'
 import Image from 'next/image'
-import { GripVertical, Trash2, Image as ImageIcon, Pencil } from "lucide-react";
+import { GripVertical, Trash2, Image as ImageIcon, Pencil } from "lucide-react"
+import { motion } from 'framer-motion'
 
 const platforms = [
   {
@@ -87,7 +89,13 @@ const ManageYourLinks = () => {
     <section className="bg-[#FED45C] mt-20 relative mb-10 lg:mb-0 mx-4 lg:mx-auto px-8 pt-8 pb-20">
       <div className="container mx-auto relative flex flex-col xl:grid lg:grid-cols-[1.2fr_1fr] gap-8 lg:gap-16 items-center">
         {/* Text Section */}
-        <div className="space-y-6">
+        <motion.div
+          initial={{ opacity: 0, x: -24 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-64px" }}
+          transition={{ duration: 0.38, ease: [0.25, 0.46, 0.45, 0.94] }}
+          className="space-y-6"
+        >
           <div className="space-y-4 max-w-xl">
             <h2 className="text-[35px] xl:text-5xl trialheader text-[#5D2D2B] font-bold tracking-none leading-tight">
               Integrate and Manage your Links
@@ -96,18 +104,25 @@ const ManageYourLinks = () => {
               Organize, prioritize, and update links anytime to guide your audience exactly where you want them.
             </p>
           </div>
-        </div>
+        </motion.div>
         <Image src="../assets/arrow.svg"
                 alt=""
                 height="50"
                 width="50"
-                
                 className="w-full hidden lg:block absolute -bottom-8 right-40 h-[250px]"
             />
         {/* Cards Section */}
         <div className="space-y-4">
           {platforms.map((platform, i) => (
-            <SocialLinkCard key={i} {...platform} />
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: 24 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, margin: "-32px" }}
+              transition={{ duration: 0.3, delay: i * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+            >
+              <SocialLinkCard {...platform} />
+            </motion.div>
           ))}
         </div>
       </div>
