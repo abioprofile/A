@@ -30,7 +30,7 @@ const FeaturesForYou = () => {
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true, margin: "-48px" }}
                       transition={{ duration: 0.28, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className='text-[#7140EB] text-[13px] font-bold text-center lg:mt-10 uppercase'
+                      className='text-[#7140EB] text-xs font-bold text-center lg:mt-10 uppercase'
                     >
                       MAKE IT EASY
                     </motion.h4>
@@ -42,7 +42,7 @@ const FeaturesForYou = () => {
                       className='space-y-4 mb-10 lg:mb-16'
                     >
                         <h3 className='text-3xl xl:text-5xl font-bold tracking-tighter text-center'>Features <br className='lg:hidden' />designed for you</h3>
-                        <p className='text-[13px] xl:text-[15px] text-center font-thin'>Combine everything in on link: Shop here, showcase your links <br />
+                        <p className='text-xs xl:text-sm text-center font-thin'>Combine everything in on link: Shop here, showcase your links <br />
                             and flex it all in.
                         </p>
                     </motion.div>
@@ -63,7 +63,7 @@ const FeaturesForYou = () => {
                             </div>
                             <div className='text-center mt-2 space-y-2'>
                                 <h1 className='font-semibold text-xl'>{card.title}</h1>
-                                <p className='text-[12px] font-thin text-center'>{card.desc}</p>
+                                <p className='text-xs font-thin text-center'>{card.desc}</p>
                             </div>
                           </motion.div>
                         ))}

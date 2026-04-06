@@ -57,7 +57,7 @@ const Faq = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, margin: "-48px" }}
           transition={{ duration: 0.3, delay: 0.1 }}
-          className="text-center text-[14px] text-[#5D2D2B] mb-10"
+          className="text-center text-sm text-[#5D2D2B] mb-10"
         >
           Everything you need to know about A
         </motion.p>
@@ -73,13 +73,13 @@ const Faq = () => {
               transition={{ duration: 0.28, delay: index * 0.07, ease: [0.25, 0.46, 0.45, 0.94] }}
               className="group bg-[#FED45C] rounded-none"
             >
-              <summary className="flex justify-between items-center cursor-pointer font-semibold text-[14px] md:text-xl p-4 text-[#5D2D2B]">
+              <summary className="flex justify-between items-center cursor-pointer font-semibold text-sm md:text-xl p-4 text-[#5D2D2B]">
                 {faq.question}
                 <span className="transition-transform duration-300 group-open:rotate-180">
                   ▼
                 </span>
               </summary>
-              <div className="p-4 pt-0 text-[13px] md:text-[14px] text-[#5D2D2B]">
+              <div className="p-4 pt-0 text-xs md:text-sm text-[#5D2D2B]">
                 <p>{faq.answer}</p>
               </div>
             </motion.details>

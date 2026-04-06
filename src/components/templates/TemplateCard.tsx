@@ -193,7 +193,7 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                             </Avatar>
                         </motion.div>
                         <motion.div variants={itemVariants}>
-                            <h3 className="font-bold text-[14px]" style={{ fontFamily: style.fontFamily }}>
+                            <h3 className="font-bold text-sm" style={{ fontFamily: style.fontFamily }}>
                                 {profile.name}
                             </h3>
                             <motion.p 

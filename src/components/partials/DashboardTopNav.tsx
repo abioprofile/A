@@ -34,7 +34,7 @@ const DashboardTopNav = () => {
   const { title } = useSidebarTitle();
   return (
     <div className='sticky top-0 hidden md:flex justify-between bg-white items-center px-8 py-2  relative z-50'>
-      <h1 className='text-xl font-bold w-full flex-1'>{title}</h1>
+      <h1 className='text-lg md:text-xl font-semibold w-full flex-1 tracking-tight'>{title}</h1>
 
       <div className='flex items-center gap-6 relative'>
         {/* <button className='relative'>

@@ -190,7 +190,7 @@ const SignUp = () => {
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-[#666464] capitalize text-sm lg:text-[14px] font-medium"
+              className="text-[#666464] capitalize text-sm font-medium"
             >
               Sign up for free!
             </motion.p>

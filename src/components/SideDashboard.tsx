@@ -299,8 +299,8 @@ export default function SideDashboard() {
           <XIcon className="w-5 h-5 text-gray-500" />
         </button>
       </div>
-      <h2 className="text-[20px] md:text-[24px] font-semibold">Here is your code!!!</h2>
-      <p className="text-[12px] md:text-sm text-gray-500 mt-1 mb-2">
+      <h2 className="text-xl md:text-2xl font-semibold">Here is your code!!!</h2>
+      <p className="text-xs md:text-sm text-gray-500 mt-1 mb-2">
         This is your unique code for another <br /> person to scan
       </p>
 
@@ -362,10 +362,10 @@ export default function SideDashboard() {
           </button>
         </div>
         <div className="text-center">
-          <h2 className="text-[20px] md:text-[24px] font-bold mb-2 text-gray-900">
+          <h2 className="text-xl md:text-2xl font-bold mb-2 text-gray-900">
             Share Your Profile
           </h2>
-          <p className="text-[12px] md:text-sm text-gray-500 mt-1">
+          <p className="text-xs md:text-sm text-gray-500 mt-1">
             Abio is more effective when you <br /> connect with friends!
           </p>
         </div>
@@ -423,7 +423,7 @@ export default function SideDashboard() {
       <div className="sticky top-0 z-40 mt-2 mb-4 w-full bg-[#Fff7de] md:hidden">
         <div className="px-8 py-2 sm:px-6">
           <div className="flex items-center justify-between gap-3">
-            <p className="min-w-0 flex-1 truncate text-left text-[20px] font-extrabold text-black">
+            <p className="min-w-0 flex-1 truncate text-left text-xl font-extrabold text-black">
               {userData?.name || userData?.profile?.username || "User"}
             </p>
             <div className="flex shrink-0 items-center gap-[0.5px] p-0">
@@ -515,7 +515,7 @@ export default function SideDashboard() {
             href={profileLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-0.5 block truncate text-left text-[12px] font-semibold text-gray-600 "
+            className="mt-0.5 block truncate text-left text-xs font-semibold text-gray-600"
           >
             {formatLink(profileLink)}
           </a>

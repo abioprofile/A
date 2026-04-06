@@ -155,34 +155,34 @@ export default function AccountSettings() {
       <div className="sticky top-0 z-50 px-4 py-6">
         <div className="flex md:hidden items-center justify-between">
           <button onClick={() => router.back()} className="p-2 flex gap-1 items-center -ml-2">
-            <ChevronLeft className="inline mr-2" />
-            <h1 className="font-extrabold text-[18px] text-[#331400]">Account Settings</h1>
+            <ChevronLeft className="w-5 h-5" />
+            <h1 className="font-bold text-base text-[#331400]">Account Settings</h1>
           </button>
         </div>
       </div>
 
       {/* Content */}
       <div className="p-4">
-        <h2 className="text-[20px] font-bold mb-6 text-gray-800">Personal Information</h2>
+        <h2 className="text-base md:text-lg font-bold mb-5 text-gray-800 tracking-tight">Personal Information</h2>
 
         {/* Username */}
         <div className="md:border-t md:border-gray-200 md:pt-6">
           <div className="flex justify-between items-start mb-2">
             <div>
               <h3 className="font-semibold text-sm text-gray-900">Username</h3>
-              <p className="text-gray-500 text-[12px] mt-1">The username associated with your account.</p>
+              <p className="text-gray-500 text-xs mt-1">The username associated with your account.</p>
             </div>
             <button
               onClick={() => openEditModal('username')}
-              className="flex items-center cursor-pointer gap-1 py-1 px-3 border border-gray-300 text-[12px] hover:bg-gray-50 hover:text-[#ff0000] transition-colors"
+              className="flex items-center cursor-pointer gap-1.5 py-1.5 px-3 border border-gray-300 text-xs hover:bg-gray-50 hover:text-[#ff0000] transition-colors shrink-0"
             >
-              Edit <PencilIcon className="w-3 h-3" />
+              Edit <PencilIcon className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </button>
           </div>
           <div className="hidden md:flex items-center justify-between mt-3">
             <p className="text-sm font-medium">@{username}</p>
-            <div className="flex items-center text-green-500 text-xs">
-              <CheckCircleIcon className="w-3 h-3 mr-1" /> Verified
+            <div className="flex items-center gap-1 text-green-500 text-xs">
+              <CheckCircleIcon className="w-3.5 h-3.5" /> Verified
             </div>
           </div>
         </div>
@@ -192,34 +192,34 @@ export default function AccountSettings() {
           <div className="flex justify-between items-start mb-2">
             <div>
               <h3 className="font-semibold text-sm text-gray-900">Email Address</h3>
-              <p className="text-gray-500 text-[12px] mt-1">The email address associated with your account.</p>
+              <p className="text-gray-500 text-xs mt-1">The email address associated with your account.</p>
             </div>
             <button
               onClick={() => openEditModal('email')}
-              className="flex items-center cursor-pointer gap-1 py-1 px-3 border border-gray-300 text-[12px] hover:bg-gray-50 hover:text-[#ff0000] transition-colors"
+              className="flex items-center cursor-pointer gap-1.5 py-1.5 px-3 border border-gray-300 text-xs hover:bg-gray-50 hover:text-[#ff0000] transition-colors shrink-0"
             >
-              Edit <PencilIcon className="w-3 h-3" />
+              Edit <PencilIcon className="w-3 h-3 md:w-3.5 md:h-3.5" />
             </button>
           </div>
           <div className="hidden md:flex items-center justify-between mt-3">
             <p className="text-sm font-medium">{email}</p>
-            <div className="flex items-center text-green-500 text-xs">
-              <CheckCircleIcon className="w-3 h-3 mr-1" /> Verified
+            <div className="flex items-center gap-1 text-green-500 text-xs">
+              <CheckCircleIcon className="w-3.5 h-3.5" /> Verified
             </div>
           </div>
         </div>
 
-        <h2 className="text-[20px] font-bold my-6 text-gray-800">Security</h2>
+        <h2 className="text-base md:text-lg font-bold my-5 text-gray-800 tracking-tight">Security</h2>
 
         {/* Password */}
         <div className="md:border-t md:border-gray-200 md:pt-6">
           <div className="flex justify-between items-start mb-3">
             <div>
               <h3 className="font-semibold text-sm text-gray-900">Password</h3>
-              <p className="text-gray-500 text-[12px] mt-1">Set a unique password to protect your account.</p>
+              <p className="text-gray-500 text-xs mt-1">Set a unique password to protect your account.</p>
             </div>
             <button
-              className="px-4 py-1 text-[12px] font-medium border cursor-pointer border-gray-500 hover:bg-[#FED45C] transition-colors"
+              className="px-4 py-1 text-xs font-medium border cursor-pointer border-gray-500 hover:bg-[#FED45C] transition-colors"
               onClick={openPasswordModal}
             >
               Change
@@ -232,7 +232,7 @@ export default function AccountSettings() {
           <div className="flex justify-between items-center">
             <div className="flex-1">
               <h3 className="font-semibold text-sm text-gray-900">Two-Factor Authentication</h3>
-              <p className="text-gray-500 text-[12px] mt-1">Add an extra layer of security to your account.</p>
+              <p className="text-gray-500 text-xs mt-1">Add an extra layer of security to your account.</p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer ml-4">
               <input type="checkbox" className="sr-only peer" checked={is2FAEnabled} onChange={() => setIs2FAEnabled(!is2FAEnabled)} />
@@ -249,7 +249,7 @@ export default function AccountSettings() {
           <div className="flex justify-between items-center">
             <div>
               <h3 className="font-semibold text-sm text-red-600">Delete Account</h3>
-              <p className="text-red-500 text-[12px] mt-1">Permanently delete your account and all associated data.</p>
+              <p className="text-red-500 text-xs mt-1">Permanently delete your account and all associated data.</p>
             </div>
             <button onClick={() => setShowDeleteModal(true)} className="text-sm cursor-pointer text-red-600 hover:underline transition-colors">
               Delete
@@ -303,7 +303,7 @@ export default function AccountSettings() {
                           : <AtSign className="w-4 h-4 text-[#331400]" />}
                       </div>
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#331400] leading-tight">
+                        <h3 className="text-sm md:text-base font-bold text-[#331400] leading-tight">
                           {isEmailModal ? 'Edit Email Address' : 'Edit Username'}
                         </h3>
                         <p className="text-[11px] text-gray-400 mt-0.5">
@@ -459,7 +459,7 @@ export default function AccountSettings() {
                         <KeyRound className="w-4 h-4 text-[#331400]" />
                       </div>
                       <div>
-                        <h3 className="text-[15px] font-bold text-[#331400] leading-tight">Change Password</h3>
+                        <h3 className="text-sm md:text-base font-bold text-[#331400] leading-tight">Change Password</h3>
                         <p className="text-[11px] text-gray-400 mt-0.5">Choose a strong, unique password</p>
                       </div>
                     </div>

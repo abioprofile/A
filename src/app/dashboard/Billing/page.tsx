@@ -76,16 +76,16 @@ export default function Billing() {
         
       <div className="bg-[#fff] p-6  text- mb-6">
         <h2 className="text-xl font-bold mb-1">Free Plan</h2>
-        <p className="text-[12px]  mb-6">You can edit your card details here</p>
+        <p className="text-xs mb-6">You can edit your card details here</p>
 
-        <p className="font-bold mb-2 text-[15px]">Payment method</p>
+        <p className="font-bold mb-2 text-sm md:text-base">Payment method</p>
         <div className="bg-[#FFE4A5] text-black p-4 flex items-center justify-between">
           <div className="flex items-center">
             <Image src="/icons/Visa icon.png" alt="Visa" width={60} height={40} className="mr-4" />
             <div className="text-sm">
               <p className="font-semibold mb-2">Visa ending in 1234</p>
-              <p className="text-[10px] text-gray-700 mb-2">Expiry 06/2024</p>
-              <p className="text-[10px] text-gray-700 mb-1">💳 davidosh2003@gmail.com</p>
+              <p className="text-[10px] sm:text-xs text-gray-700 mb-2">Expiry 06/2024</p>
+              <p className="text-[10px] sm:text-xs text-gray-700 mb-1">💳 davidosh2003@gmail.com</p>
             </div>
           </div>
           <button className="bg-[#5D2D2B] hover:bg-[#5D2D2a] text-white text-sm px-6 py-1 flex items-center gap-1 transition">
@@ -99,7 +99,7 @@ export default function Billing() {
       {/* Billing history */}
       <div className='bg-[#FEF4EA] p-6'>
         <h2 className="text-xl font-bold mb-1">Billing history</h2>
-        <p className="text-[12px] text-gray-600 mb-4">Get records of orders purchased</p>
+        <p className="text-xs text-gray-600 mb-4">Get records of orders purchased</p>
 
         <div className="overflow-x-auto border border-[#B698FF] ">
           <table className="min-w-full bg-white text-sm">
@@ -115,7 +115,7 @@ export default function Billing() {
             </thead>
             <tbody>
               {history.map((item, index) => (
-                <tr key={index} className="border-t text-[12px] border-gray-100 hover:bg-gray-50">
+                <tr key={index} className="border-t text-xs border-gray-100 hover:bg-gray-50">
                   <td className="py-3 px-4">{item.date}</td>
                   <td className="py-3 px-4">{item.order}</td>
                   <td className="py-3 px-4">{item.product}</td>

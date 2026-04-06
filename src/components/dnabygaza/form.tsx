@@ -153,7 +153,7 @@ export default function DnaFormV1() {
         onSubmit={submit}
         className="p-3 bg-[#000000]/35 backdrop-blur-md space-y-4 text-center border border-white/10"
       >
-        <h2 className="text-[14px] font-semibold text-white tracking-wide">
+        <h2 className="text-sm font-semibold text-white tracking-wide">
           DNA Checkup
         </h2>
 

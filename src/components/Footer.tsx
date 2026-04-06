@@ -34,7 +34,7 @@ const Footer = () => {
           {/* Product Links */}
           <div>
             <h3 className="font-bold trial text-xl mb-4">Product</h3>
-            <div className="flex flex-col space-y-4 font-thin text-[13px]">
+            <div className="flex flex-col space-y-4 font-thin text-xs md:text-sm">
               <Link href="#">Features</Link>
               <Link href="#">How it works</Link>
               <Link href="#">Setup</Link>
@@ -45,7 +45,7 @@ const Footer = () => {
           {/* Legal Links */}
           <div>
             <h3 className="font-bold trial text-xl mb-4">Legal</h3>
-            <div className="flex flex-col space-y-4 font-thin text-[13px]">
+            <div className="flex flex-col space-y-4 font-thin text-xs md:text-sm">
              
               <Link href="#">Privacy Policy</Link>
               

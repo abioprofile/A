@@ -31,7 +31,7 @@
     <div className="flex justify-end">
       <Link
         href="#"
-        className="font-bold trial text-[16px] md:text-[20px] hover:underline whitespace-nowrap"
+        className="font-bold trial text-base md:text-xl hover:underline whitespace-nowrap"
       >
         Privacy Policy
       </Link>
@@ -42,7 +42,7 @@
           {/* Bottom Section */}
           <div className="border-t border-[#FED45C] pt-4">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-              <p className="text-white font-semibold text-[12px] text-center md:text-left">
+              <p className="text-white font-semibold text-xs text-center md:text-left">
                 © {currentYear} 🅰bio — One Link, Endless Connections
               </p>
 

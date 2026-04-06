@@ -20,7 +20,7 @@ const Footer = () => {
                         <Link
                             href={item.href}
                             key={item.label}
-                            className={`${pathname === item.href ? "text-[#7140EB]" : ""} font-semibold transition-colors duration-200`}
+                            className={`${pathname === item.href ? "text-[#7140EB]" : ""} text-sm font-semibold transition-colors duration-200`}
                         >
                             {item.label}
                         </Link>
@@ -37,7 +37,7 @@ const Footer = () => {
             <Separator />
             <Logo showText textSize='text-sm' className='flex justify-center md:justify-start w-full lg:hidden' />
             <div className='flex flex-col md:flex-row justify-between items-center'>
-                <div className='font-medium flex items-center gap-1 -mt-1'>
+                <div className='text-sm font-medium flex items-center gap-1 -mt-1'>
                     ©{new Date().getFullYear()}  A.bio.Inc. <span className='flex lg:hidden'>All rights reserved</span>
                 </div>
                 <div className='flex justify-between gap-5 text-sm font-medium mt-2 lg:mt-0'>

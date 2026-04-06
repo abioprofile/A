@@ -325,7 +325,7 @@ export default function LinkList({
                 e.stopPropagation();
                 setIsAddModalOpen(true);
               }}
-              className="w-full py-3 mt-3 cursor-pointer md:mt-6 shadow-md bg-[#331400] text-[#FED45C] font-semibold"
+              className="w-full py-3 mt-3 cursor-pointer md:mt-6 shadow-md bg-[#331400] text-[#FED45C] text-sm md:text-base font-semibold tracking-wide"
             >
               + Add
             </button>
@@ -421,7 +421,7 @@ export default function LinkList({
                 className="flex-1 overflow-y-auto px-4 py-6 space-y-4"
               >
                 <div>
-                  <label className="block text-[14px] font-bold text-[#331400] mb-2">
+                  <label className="block text-sm font-bold text-[#331400] mb-2">
                     Title
                   </label>
                   <Input
@@ -435,7 +435,7 @@ export default function LinkList({
                 </div>
 
                 <div>
-                  <label className="block text-[14px] font-bold text-[#331400] mb-2">
+                  <label className="block text-sm font-bold text-[#331400] mb-2">
                     URL
                   </label>
                   <Input
@@ -449,7 +449,7 @@ export default function LinkList({
                 </div>
 
                 <div>
-                  <label className="block text-[14px] font-bold text-[#331400] mb-2">
+                  <label className="block text-sm font-bold text-[#331400] mb-2">
                     Platform
                   </label>
                   <select
@@ -476,7 +476,7 @@ export default function LinkList({
                   whileHover={{ x: 5 }}
                   className="flex items-center justify-between"
                 >
-                  <label className="text-[14px] font-bold text-[#331400]">
+                  <label className="text-sm font-bold text-[#331400]">
                     Visible
                   </label>
                   <button
@@ -557,7 +557,7 @@ export default function LinkList({
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 }}
-                  className="text-2xl font-bold mb-6 text-[#331400]"
+                  className="text-xl md:text-2xl font-bold mb-5 md:mb-6 text-[#331400]"
                 >
                   Add New Link
                 </motion.h2>

@@ -153,7 +153,7 @@ export default function DashboardPage() {
         <main className="hidden md:block w-full md:w-[60%] space-y-4">
           <motion.h1
             variants={itemVariants}
-            className="p-8 text-[30px] font-medium"
+            className="p-8 text-2xl md:text-[28px] lg:text-3xl font-medium"
           >
             Hi, {username}
           </motion.h1>
@@ -181,19 +181,19 @@ export default function DashboardPage() {
 
               <motion.div variants={itemVariants}>
                 <div className="mb-1">
-                  <h1 className="font-semibold text-[24px]">
+                  <h1 className="font-semibold text-xl md:text-2xl leading-tight">
                     {displayName || "User"}
                   </h1>
-                  <p className="font-thin text-[10px] mt-2 md:text-[14px]">
+                  <p className="font-normal text-xs md:text-sm text-gray-500 mt-1">
                     @{userData?.profile?.username || "username"}
                   </p>
                 </div>
 
-                <p className="font-bold my-2 text-[14px]">
+                <p className="font-medium my-2 text-sm text-gray-700">
                   {userData?.profile?.bio || bio}
                 </p>
 
-                <div className="flex items-center w-fit whitespace-nowrap border border-gray-400 gap-1 text-xs md:text-[12px] font-semibold text-gray-500 px-1 py-1">
+                <div className="flex items-center w-fit whitespace-nowrap border border-gray-300 gap-1.5 text-xs font-medium text-gray-500 px-2 py-1">
                   <Image
                     src="/icons/location1.png"
                     alt="Location"
@@ -263,9 +263,9 @@ export default function DashboardPage() {
                   <motion.button
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setShowMobileLinks(false)}
-                    className="font-extrabold text-[18px] text-[#331400]"
+                    className="font-bold text-base text-[#331400] flex items-center gap-1"
                   >
-                    <ChevronLeft className="inline mr-2" />
+                    <ChevronLeft className="w-5 h-5" />
                     Abio Links
                   </motion.button>
                 </div>
@@ -292,12 +292,12 @@ export default function DashboardPage() {
                         >
                           <motion.h1
                             whileHover={{ x: 5 }}
-                            className="font-extrabold text-[20px]"
+                            className="font-bold text-lg leading-tight"
                           >
                             {displayName || "User"}
                           </motion.h1>
-                          <p className="font-medium text-gray-500 text-[12px]">
-                            {userData?.profile?.username || "@username"}
+                          <p className="font-normal text-gray-500 text-xs mt-0.5">
+                            @{userData?.profile?.username || "username"}
                           </p>
                         </div>
                       </div>
@@ -305,7 +305,7 @@ export default function DashboardPage() {
                     <div>
                       <motion.p
                         whileHover={{ x: 5 }}
-                        className="font-medium my-2 text-[12px] cursor-pointer"
+                        className="font-medium my-2 text-sm text-gray-700 cursor-pointer"
                         onClick={() => openModal("editBio")}
                       >
                         {userData?.profile?.bio || bio}
@@ -314,7 +314,7 @@ export default function DashboardPage() {
                       <motion.div
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="flex items-center w-fit whitespace-nowrap border-1 border-gray-400 gap-1  text-xs md:text-[10px] text-gray-500 cursor-pointer px-1 py-1"
+                        className="flex items-center w-fit whitespace-nowrap border border-gray-300 gap-1.5 text-xs text-gray-500 cursor-pointer px-2 py-1"
                         onClick={() => openModal("editLocation")}
                       >
                         <Image
@@ -324,7 +324,7 @@ export default function DashboardPage() {
                           height={12}
                           className="w-3 h-3 flex-shrink-0"
                         />
-                        <span className="truncate text-[10px]">
+                        <span className="truncate text-xs">
                           {userData?.profile?.location || location}
                         </span>
                       </motion.div>

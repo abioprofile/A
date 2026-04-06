@@ -346,10 +346,10 @@ const LinkCard: FC<Props> = ({
                   onClick={handleToggleDropdown}
                   className="flex items-center gap-1 cursor-pointer hover:opacity-80 transition-opacity"
                 >
-                  <div className="w-6 h-6 md:w-8 md:h-8 flex items-center justify-center">
+                  <div className="w-7 h-7 md:w-8 md:h-8 lg:w-9 lg:h-9 flex items-center justify-center shrink-0">
                     {getIconElement()}
                   </div>
-                  <ChevronDownIcon className="h-3 w-3 text-gray-500" />
+                  <ChevronDownIcon className="h-3 w-3 md:h-3.5 md:w-3.5 text-gray-400 shrink-0" />
                 </button>
               </div>
 
@@ -465,7 +465,7 @@ const LinkCard: FC<Props> = ({
                 <button
                   type="button"
                   onClick={handlePlatformNameClick}
-                  className="block w-full text-left font-semibold text-[13px] md:text-[16px] truncate hover:text-gray-700 transition-colors"
+                  className="block w-full text-left font-semibold text-sm lg:text-base truncate hover:text-gray-700 transition-colors leading-snug"
                 >
                   {item.title}
                 </button>
@@ -473,7 +473,7 @@ const LinkCard: FC<Props> = ({
                 <button
                   type="button"
                   onClick={handleUrlClick}
-                  className="block w-full text-left text-[11px] md:text-[13px] text-gray-600 hover:text-gray-800 transition-colors"
+                  className="block w-full text-left text-xs text-gray-500 hover:text-gray-700 transition-colors mt-0.5"
                 >
                   {truncateUrl(item.url)}
                 </button>
@@ -545,19 +545,19 @@ const LinkCard: FC<Props> = ({
               )}
 
             {/* ================= ACTION ROW ================= */}
-            <div className="flex items-center justify-between mt-2 md:mt-4">
+            <div className="flex items-center justify-between mt-2 md:mt-3">
               {/* Analytics */}
               <button
                 type="button"
                 onClick={handleAnalyticsClick}
-                className="flex items-center gap-1 text-[10px] md:text-[12px] text-gray-500 hover:text-gray-700 transition-colors"
+                className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <ChartBarIcon className="h-3 w-3 md:h-4 md:w-4" />
-                {item.clickCount} clicks
+                <ChartBarIcon className="h-3.5 w-3.5 md:h-4 md:w-4 shrink-0" />
+                <span className="text-[11px] md:text-xs">{item.clickCount} clicks</span>
               </button>
 
               {/* Controls */}
-              <div className="flex items-center gap-2 md:gap-4">
+              <div className="flex items-center gap-3 md:gap-4">
                 {/* Toggle - Off (left) / On (right) */}
                 <button
                   type="button"
@@ -570,12 +570,12 @@ const LinkCard: FC<Props> = ({
                     e.preventDefault();
                     e.stopPropagation();
                   }}
-                  className={`relative h-5 w-9 md:h-6 md:w-11 rounded-full transition cursor-pointer ${
+                  className={`relative h-5 w-9 md:h-5 md:w-10 rounded-full transition cursor-pointer ${
                     isActive ? "bg-[#331400]" : "bg-gray-300"
                   }`}
                 >
                   <span
-                    className={`absolute top-0.5 h-4 w-4 md:h-5 md:w-5 bg-white rounded-full toggle-thumb ${
+                    className={`absolute top-0.5 h-4 w-4 bg-white rounded-full toggle-thumb ${
                       isActive
                         ? "translate-x-4 md:translate-x-5 left-0.5"
                         : "translate-x-0 left-0.5"
@@ -597,7 +597,7 @@ const LinkCard: FC<Props> = ({
                   }}
                   className="press-target hover:opacity-70 cursor-pointer"
                 >
-                  <PencilIcon className="h-4 w-4 md:h-5 md:w-5 text-gray-600" />
+                  <PencilIcon className="h-4 w-4 md:h-4 md:w-4 lg:h-5 lg:w-5 text-gray-500" />
                 </button>
 
                 {/* Delete */}
@@ -614,7 +614,7 @@ const LinkCard: FC<Props> = ({
                   }}
                   className="press-target hover:opacity-70 cursor-pointer"
                 >
-                  <TrashIcon className="h-4 w-4 md:h-5 md:w-5 text-red-500" />
+                  <TrashIcon className="h-4 w-4 md:h-4 md:w-4 lg:h-5 lg:w-5 text-red-400 hover:text-red-600" />
                 </button>
               </div>
             </div>

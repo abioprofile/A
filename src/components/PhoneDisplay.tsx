@@ -125,7 +125,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
               <img src={profileImage} alt="Profile" className="object-cover w-full h-full" />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-[14px] font-bold truncate" title={displayName}>{displayName}</h1>
+              <h1 className="text-sm font-bold truncate" title={displayName}>{displayName}</h1>
               <p className="text-[10px] font-medium text-gray-600 truncate">
                 @{String(userName).toLowerCase().replace(/\s+/g, "")}
               </p>
@@ -174,7 +174,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-4">
                   <FaLink className="w-8 h-8 text-gray-400 mb-2" />
-                  <p className="text-[12px] text-gray-500 font-medium" style={createTextStyle()}>No links added yet</p>
+                  <p className="text-xs text-gray-500 font-medium" style={createTextStyle()}>No links added yet</p>
                   <p className="text-[10px] text-gray-400 mt-1" style={createTextStyle()}>Add some links to see them here</p>
                 </div>
               )
@@ -185,7 +185,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-4">
                   <FaHeadphones className="w-8 h-8 text-gray-400 mb-2" />
-                  <p className="text-[12px] text-gray-500 font-medium" style={createTextStyle()}>No streaming links yet</p>
+                  <p className="text-xs text-gray-500 font-medium" style={createTextStyle()}>No streaming links yet</p>
                   <p className="text-[10px] text-gray-400 mt-1" style={createTextStyle()}>Add Spotify, Apple Music &amp; more</p>
                 </div>
               )

@@ -182,8 +182,8 @@ const StorePage = () => {
           <XIcon className="w-5 h-5 text-gray-500" />
         </button>
       </div>
-      <h2 className="text-[20px] md:text-[24px] font-semibold">Here is your code!!!</h2>
-      <p className="text-[12px] md:text-sm text-gray-500 mt-1 mb-2">This is your unique code for another <br /> person to scan</p>
+      <h2 className="text-xl md:text-2xl font-semibold">Here is your code!!!</h2>
+      <p className="text-xs md:text-sm text-gray-500 mt-1 mb-2">This is your unique code for another <br /> person to scan</p>
       <div className="flex justify-center mb-2" ref={qrCodeRef}>
         <QRCodeSVG value={profileLink} size={160} level="H" includeMargin bgColor="#ffffff" fgColor="#000000" />
       </div>
@@ -209,8 +209,8 @@ const StorePage = () => {
           </button>
         </div>
         <div className="text-center">
-          <h2 className="text-[20px] md:text-[24px] font-bold mb-2 text-gray-900">Share Your Profile</h2>
-          <p className="text-[12px] md:text-sm text-gray-500 mt-1">Abio is more effective when you <br /> connect with friends!</p>
+          <h2 className="text-xl md:text-2xl font-bold mb-2 text-gray-900">Share Your Profile</h2>
+          <p className="text-xs md:text-sm text-gray-500 mt-1">Abio is more effective when you <br /> connect with friends!</p>
         </div>
         <div className="mt-4">
           <p className="text-sm font-bold text-gray-700 mb-2">Share your link</p>
@@ -313,7 +313,7 @@ const StorePage = () => {
               <input
                 type="text"
                 placeholder="Search products..."
-                className="pl-9 pr-4 py-2 border border-gray-300 bg-white text-[12px] w-40 md:w-52 outline-none focus:border-gray-500"
+                className="pl-9 pr-4 py-2 border border-gray-300 bg-white text-xs w-40 md:w-52 outline-none focus:border-gray-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -379,7 +379,7 @@ const StorePage = () => {
                 <div>
                   {/* Name + Colors row (desktop: same row; mobile: name only in this block) */}
                   <div className="flex justify-between items-start gap-4 mb-1 md:flex-row flex-col">
-                    <h2 className="text-[14px] md:text-[20px] font-bold text-black pr-8 md:pr-0 leading-tight">
+                    <h2 className="text-sm md:text-xl font-bold text-black pr-8 md:pr-0 leading-tight">
                       {product.name}
                     </h2>
                     {product.colors && (
@@ -409,10 +409,10 @@ const StorePage = () => {
                       </div>
                     )}
                   </div>
-                  <p className="text-[12px] md:text-[13px] text-gray-400 font-light mt-0.5 mb-1 md:mb-3 line-clamp-2">
+                  <p className="text-xs text-gray-400 font-light mt-0.5 mb-1 md:mb-3 line-clamp-2">
                     {product.description}
                   </p>
-                  <p className="text-[12px] md:text-[20px] font-bold text-black">
+                  <p className="text-xs md:text-xl font-bold text-black">
                     ₦{product.basePrice.toLocaleString()}
                   </p>
                 </div>
@@ -442,7 +442,7 @@ const StorePage = () => {
                   )}
                   <button
                     onClick={() => router.push(`/dashboard/product/${product.id}`)}
-                    className="w-full mt-2 md:mt-4 bg-[#FED45C] text-black font-bold text-[13px] md:text-[15px] py-2.5 md:py-3 hover:bg-[#d4af3a] active:opacity-80 transition-colors shadow-[3px_3px_0_#1a1a1a] "
+                    className="w-full mt-2 md:mt-4 bg-[#FED45C] text-black font-bold text-xs md:text-sm py-2.5 md:py-3 hover:bg-[#d4af3a] active:opacity-80 transition-colors shadow-[3px_3px_0_#1a1a1a]"
                   >
                     Buy Now
                   </button>

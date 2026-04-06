@@ -53,7 +53,7 @@ const ListenStyleEditor: React.FC<ListenStyleEditorProps> = ({
       <div className="flex items-center gap-0 border-b">
         <button
           onClick={() => setTab("bg")}
-          className={`px-4 py-2 text-[14px] font-semibold relative ${
+          className={`px-4 py-2 text-sm font-semibold relative ${
             tab === "bg" ? "text-black" : "text-gray-400"
           }`}
         >
@@ -64,7 +64,7 @@ const ListenStyleEditor: React.FC<ListenStyleEditorProps> = ({
         </button>
         <button
           onClick={() => setTab("style")}
-          className={`px-4 py-2 text-[14px] font-semibold relative ${
+          className={`px-4 py-2 text-sm font-semibold relative ${
             tab === "style" ? "text-black" : "text-gray-400"
           }`}
         >
@@ -80,7 +80,7 @@ const ListenStyleEditor: React.FC<ListenStyleEditorProps> = ({
         <div className="space-y-5 px-1">
           {/* Preset swatches */}
           <div>
-            <p className="text-[12px] font-semibold text-gray-500 mb-3 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-gray-500 mb-3 uppercase tracking-wide">
               Presets
             </p>
             <div className="flex flex-wrap gap-2">
@@ -113,7 +113,7 @@ const ListenStyleEditor: React.FC<ListenStyleEditorProps> = ({
 
           {/* Solid color custom picker */}
           <div>
-            <p className="text-[12px] font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
               Custom Color
             </p>
             <div className="flex items-center gap-3">
@@ -131,7 +131,7 @@ const ListenStyleEditor: React.FC<ListenStyleEditorProps> = ({
 
           {/* Gradient picker */}
           <div>
-            <p className="text-[12px] font-semibold text-gray-500 mb-2 uppercase tracking-wide">
+            <p className="text-xs font-semibold text-gray-500 mb-2 uppercase tracking-wide">
               Custom Gradient
             </p>
             <div className="flex items-center gap-3">

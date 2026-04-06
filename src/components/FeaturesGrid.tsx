@@ -149,7 +149,7 @@ export default function FeaturesGrid() {
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="text-[15px] sm:text-2xl trial italic"
+              className="text-sm sm:text-2xl trial italic"
             >
               Dynamic
             </motion.p>
@@ -165,7 +165,7 @@ export default function FeaturesGrid() {
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ delay: 1.2 }}
-              className="text-[15px] trial sm:text-xl italic"
+              className="text-sm trial sm:text-xl italic"
             >
               in One Link
             </motion.p>
@@ -228,7 +228,7 @@ export default function FeaturesGrid() {
             >
               Realtime
             </motion.p>
-            <p className="text-[15px] trial sm:text-xl italic">Content Updates...</p>
+            <p className="text-sm sm:text-xl trial italic">Content Updates...</p>
           </div>
         </motion.div>
 
@@ -247,7 +247,7 @@ export default function FeaturesGrid() {
           />
           <div className="relative z-10">
             <p className="text-xl sm:text-3xl font-semibold italic">Multiple</p>
-            <p className="text-[15px] trial sm:text-xl italic">Integration...</p>
+            <p className="text-sm sm:text-xl trial italic">Integration...</p>
           </div>
         </motion.div>
 
@@ -280,7 +280,7 @@ export default function FeaturesGrid() {
             >
               Analytics
             </motion.p>
-            <p className="text-[15px] trial sm:text-xl italic">& Engagements</p>
+            <p className="text-sm sm:text-xl trial italic">& Engagements</p>
           </div>
         </motion.div>
       </motion.div>

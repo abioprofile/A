@@ -17,7 +17,7 @@ const TemplatePage = () => {
             A.Bio template to <br className='hidden md:block' />
             suit every brand and creator
           </h1>
-          <p className="text-center text-[13px] md:text-[15px] font-thin md:px-16 lg:px-24">
+          <p className="text-center text-xs md:text-sm font-thin md:px-16 lg:px-24">
             Different Link Apps, integrations and visual styles can help you create a Linktree that looks and feels like you and your
             brand. Explore our library of custom templates to grow and connect with your audience even more easily!
           </p>

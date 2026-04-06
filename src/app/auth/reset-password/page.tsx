@@ -140,7 +140,7 @@ const ResetPassword = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-[#666464] font-medium text-sm lg:text-[14px] md:w-3/4"
+            className="text-[#666464] font-medium text-sm md:w-3/4"
           >
             Kindly enter a new password to complete the reset process and secure
             your account.
@@ -228,7 +228,7 @@ const ResetPassword = () => {
             whileHover="hover"
             whileTap="tap"
             onClick={() => router.back()}
-            className="flex items-center md:hidden justify-start gap-2 text-[#331400] mt-4 text-[14px] font-semibold cursor-pointer hover:bg-[#4a2c1a] transition-colors w-full md:w-auto"
+            className="flex items-center md:hidden justify-start gap-2 text-[#331400] mt-4 text-sm font-semibold cursor-pointer hover:bg-[#4a2c1a] transition-colors w-full md:w-auto"
           >
             <ArrowLeft className="w-4 h-4" />
             Back

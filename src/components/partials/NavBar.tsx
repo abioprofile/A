@@ -55,7 +55,7 @@ const NavBar = () => {
                   href={link.href}
                   className={`${
                     pathname === link.href ? "text-[#FF0000]" : ""
-                  } text-[15px] font-medium transition-colors duration-200 hover:text-[#FF0000]/80`}
+                  } text-sm md:text-[15px] font-medium transition-colors duration-200 hover:text-[#FF0000]/80`}
                 >
                   {link.label}
                 </Link>
@@ -126,7 +126,7 @@ const NavBar = () => {
                         onClick={() => setIsOpen(false)}
                         className={`${
                           pathname === link.href ? "text-[#ff0000]" : "text-gray-800"
-                        } font-thin text-[14px] block hover:text-[#ff0000] transition-colors`}
+                        } font-thin text-sm block hover:text-[#ff0000] transition-colors`}
                       >
                         {link.label}
                       </Link>
@@ -142,14 +142,14 @@ const NavBar = () => {
                 >
                   <Link href={"/auth/sign-in"} className="flex-1">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button className="w-full text-[14px] font-semibold bg-[#ff0000] text-[#FED45C]">
+                      <Button className="w-full text-sm font-semibold bg-[#ff0000] text-[#FED45C]">
                         Log In
                       </Button>
                     </motion.div>
                   </Link>
                   <Link href={"/auth/sign-up"} className="flex-1">
                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button className="w-full text-[14px] font-semibold bg-[#ff0000] text-[#FED45C]">
+                      <Button className="w-full text-sm font-semibold bg-[#ff0000] text-[#FED45C]">
                         Sign Up
                       </Button>
                     </motion.div>

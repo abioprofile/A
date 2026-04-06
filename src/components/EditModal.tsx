@@ -202,7 +202,7 @@ const EditModal: FC<EditModalProps> = ({
                     variants={buttonVariants}
                     whileHover="hover"
                     whileTap="tap"
-                    className="bg-[#FED45C] w-full text-[#331400] px-4 py-3 text-sm md:text-[14px] font-bold  transition-all duration-200 relative overflow-hidden group"
+                    className="bg-[#FED45C] w-full text-[#331400] px-4 py-3 text-sm font-bold transition-all duration-200 relative overflow-hidden group"
                   >
                     {/* Button shine effect */}
                     <motion.span

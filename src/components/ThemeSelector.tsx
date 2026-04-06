@@ -158,7 +158,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
         {/* Theme name */}
         <p
-          className="text-[15px] font-bold text-center truncate w-full px-1"
+          className="text-sm font-bold text-center truncate w-full px-1"
           style={{ color: "#6b7280" }}
         >
           {theme.name}

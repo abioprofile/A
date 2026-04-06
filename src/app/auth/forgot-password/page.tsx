@@ -145,7 +145,7 @@ const ForgotPassword = () => {
           className="mb-8 text-center md:text-left"
         >
           <motion.h1
-            className="text-3xl lg:text-3xl font-extrabold mb-2 text-[#331400]"
+            className="text-2xl md:text-3xl font-extrabold mb-2 text-[#331400]"
             whileHover={{ scale: 1.02 }}
             transition={{ duration: 0.2 }}
           >
@@ -154,7 +154,7 @@ const ForgotPassword = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-[#666464] text-[12px] font-medium lg:text-[14px]"
+            className="text-[#666464] text-xs md:text-sm font-medium"
           >
             Opps. Enter your registered email to receive password reset instructions.
           </motion.p>
@@ -233,7 +233,7 @@ const ForgotPassword = () => {
                 whileHover="hover"
                 whileTap="tap"
                 onClick={() => router.back()}
-                className="flex items-center md:hidden justify-start gap-2 text-[#331400] mt-4 text-[14px] font-semibold cursor-pointer hover:bg-[#4a2c1a] transition-colors w-full md:w-auto"
+                className="flex items-center md:hidden justify-start gap-2 text-[#331400] mt-4 text-sm font-semibold cursor-pointer hover:bg-[#4a2c1a] transition-colors w-full md:w-auto"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Back

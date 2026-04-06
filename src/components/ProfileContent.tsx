@@ -217,7 +217,7 @@ const ProfileContent = ({
         <div className="flex flex-row md:flex-col gap-2 md:gap-0 md:space-y-2 mt-2">
           <button
             onClick={() => openModal("imageOptions")}
-            className="bg-black text-white text-[11px] md:text-[12px] px-3 md:px-4 py-[5px] md:py-[6px] cursor-pointer transition hover:opacity-90"
+            className="bg-black text-white text-[10px] md:text-xs px-3 md:px-4 py-[5px] md:py-[6px] cursor-pointer transition hover:opacity-90"
           >
             Upload Image
           </button>
@@ -234,7 +234,7 @@ const ProfileContent = ({
       <div className="w-full flex flex-col gap-1">
         <label
           htmlFor="displayName"
-          className="text-left text-[15px] md:text-[12px] font-semibold"
+          className="text-left text-sm md:text-xs font-semibold"
         >
           Display Name
         </label>
@@ -243,21 +243,21 @@ const ProfileContent = ({
           type="text"
           value={displayName}
           onChange={handleDisplayNameChange}
-          className="w-full border border-black px-3 py-2 focus:outline-none text-[16px] md:text-[14px] placeholder:text-[16px] md:placeholder:text-[14px] bg-transparent"
+          className="w-full border border-black px-3 py-2 focus:outline-none text-[16px] md:text-sm placeholder:text-[16px] md:placeholder:text-sm bg-transparent"
           placeholder="Enter your display name"
         />
       </div>
 
       {/* Bio */}
       <div className="w-full flex flex-col gap-1">
-        <label htmlFor="bio" className="text-left text-[15px] md:text-[12px] font-semibold">
+        <label htmlFor="bio" className="text-left text-sm md:text-xs font-semibold">
           Bio
         </label>
         <textarea
           id="bio"
           value={bio}
           onChange={handleBioChange}
-          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[15px] md:text-[14px] placeholder:text-[15px] md:placeholder:text-[14px] h-10 md:h-24 text-gray-800 focus:outline-none resize-none"
+          className="w-full border border-[#000] px-3 py-2 bg-transparent text-[16px] md:text-sm placeholder:text-sm h-10 md:h-24 text-gray-800 focus:outline-none resize-none"
           placeholder="Tell us about yourself (max 15 words)..."
         />
         <p className="text-[11px] hidden md:block text-gray-500 text-right">
@@ -281,7 +281,7 @@ const ProfileContent = ({
       {/* --- MODALS --- */}
       <Modal isOpen={activeModal === "imageOptions"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center bg-white space-y-3 md:space-y-4">
-          <h2 className="text-[14px] md:text-[16px] font-bold text-[#331400]">
+          <h2 className="text-sm md:text-base font-bold text-[#331400]">
             Profile Picture
           </h2>
           <div className="flex flex-col gap-3 md:gap-4">
@@ -316,7 +316,7 @@ const ProfileContent = ({
       {/* Upload Image */}
       <Modal isOpen={activeModal === "uploadImage"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center">
-          <h2 className="text-[14px] md:text-[16px] font-semibold mb-3 md:mb-4">
+          <h2 className="text-sm md:text-base font-semibold mb-3 md:mb-4">
             Profile Picture
           </h2>
           <label className={`flex flex-col items-center justify-center w-full h-32 md:h-40 border-2 border-dashed border-gray-300 ${isUploadingAvatar ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
@@ -359,7 +359,7 @@ const ProfileContent = ({
       {/* Upload Icon */}
       <Modal isOpen={activeModal === "uploadIcon"} onClose={closeModal}>
         <div className="w-[280px] md:w-[320px] mx-auto text-center">
-          <h2 className="text-[14px] md:text-[16px] font-semibold mb-3 md:mb-4">
+          <h2 className="text-sm md:text-base font-semibold mb-3 md:mb-4">
             Upload Icon
           </h2>
           <label className="flex flex-col items-center justify-center w-full h-32 md:h-40 border-2 border-dashed border-gray-300 cursor-pointer">

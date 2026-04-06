@@ -479,7 +479,7 @@ const AppearancePage: React.FC = () => {
       <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] px-2 py-3 flex items-center justify-between">
         <button
           onClick={handleBackClick}
-          className="font-extrabold text-[20px] text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
+          className="font-extrabold text-xl text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
         >
           <ChevronLeft className="inline" />
           Appearance
@@ -497,7 +497,7 @@ const AppearancePage: React.FC = () => {
                 variant="outline"
                 size="sm"
                 onClick={handleThemeUploadClick}
-                className="gap-1.5 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-[12px] px-3 py-1.5"
+                className="gap-1.5 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-xs px-3 py-1.5"
               >
                 <Upload className="w-3.5 h-3.5" />
                 Upload theme
@@ -509,7 +509,7 @@ const AppearancePage: React.FC = () => {
               <button
                 onClick={undo}
                 disabled={historyIndex <= 0}
-                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
+                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-xs font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
                 title="Undo"
               >
                 <RotateCcw size={18} />
@@ -517,7 +517,7 @@ const AppearancePage: React.FC = () => {
               <button
                 onClick={redo}
                 disabled={historyIndex >= history.length - 1}
-                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-[13px] font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
+                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-xs font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
                 title="Redo"
               >
                 <RotateCw size={18} />
@@ -526,7 +526,7 @@ const AppearancePage: React.FC = () => {
                 type="button"
                 onClick={handleSaveAll}
                 disabled={isSavingAll}
-                className="text-[#331400] text-[13px] shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="text-[#331400] text-xs shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSavingAll ? "Saving…" : "Save"}
               </button>
@@ -651,7 +651,7 @@ const AppearancePage: React.FC = () => {
               </div>
               <SheetHeader>
                 <div className="flex items-center justify-center">
-                  <SheetTitle className="text-[15px] font-semibold">
+                  <SheetTitle className="text-sm md:text-base font-semibold">
                     {activeTab !== null ? menuItems[activeTab] : ""}
                   </SheetTitle>
                 </div>

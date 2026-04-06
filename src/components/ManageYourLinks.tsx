@@ -60,7 +60,7 @@ function SocialLinkCard({
           <img src={icon} alt={name} className="w-5 h-5" />
           <div className="flex flex-col">
             <div className="flex items-center gap-1">
-              <p className="text-[14px] font-semibold">{name}</p>
+              <p className="text-sm font-semibold">{name}</p>
               <Pencil className="w-3 h-3 text-gray-500 cursor-pointer" />
             </div>
             <div className="flex items-center gap-1">
@@ -100,7 +100,7 @@ const ManageYourLinks = () => {
             <h2 className="text-[35px] xl:text-5xl trialheader text-[#5D2D2B] font-bold tracking-none leading-tight">
               Integrate and Manage your Links
             </h2>
-            <p className="text-[13px] w-[90%] xl:w-full xl:text-[15px] font-thin">
+            <p className="text-xs w-[90%] xl:w-full xl:text-sm font-thin">
               Organize, prioritize, and update links anytime to guide your audience exactly where you want them.
             </p>
           </div>

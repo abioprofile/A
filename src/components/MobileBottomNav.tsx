@@ -47,7 +47,7 @@ const MobileBottomNav = () => {
                     } : undefined}
                   />
                   <motion.span
-                    className="text-[10px] font-semibold whitespace-nowrap"
+                    className="text-[10px] sm:text-xs font-semibold whitespace-nowrap"
                     animate={{ opacity: isActive ? 1 : 0.6 }}
                     transition={{ duration: 0.18 }}
                   >

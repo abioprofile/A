@@ -442,7 +442,7 @@ const LinksScreen = () => {
           className="mb-4 mt-2 md:mb-8 flex justify-center items-center flex-col"
         >
           <motion.h1
-            className="text-[20px] md:text-[24px] font-bold mb-2 text-[#331400]"
+            className="text-xl md:text-2xl font-bold mb-2 text-[#331400]"
             whileHover={{ scale: 1.01 }}
             transition={{ duration: 0.2 }}
           >
@@ -450,7 +450,7 @@ const LinksScreen = () => {
           </motion.h1>
           <motion.p
             variants={itemVariants}
-            className=" text-sm text-[#666464] md:text-[14px] md:px-16 text-center"
+            className="text-sm text-[#666464] md:px-16 text-center"
           >
             Fill the fields below to add content to your Biography
           </motion.p>
@@ -460,7 +460,7 @@ const LinksScreen = () => {
         <div className="flex justify-center items-start w-full flex-grow">
           <div className="w-[90%] md:max-w-md mx-auto flex flex-col justify-start space-y-5 pb-10">
             <motion.div variants={itemVariants} className="space-y-2 sm:space-y-4">
-              <h2 className="text-center font-semibold text-sm md:text-[16px]">
+              <h2 className="text-center font-semibold text-sm md:text-base">
                 Selected Platforms
               </h2>
 
@@ -489,7 +489,7 @@ const LinksScreen = () => {
 
               <motion.h2
                 variants={itemVariants}
-                className="font-semibold text-sm md:text-[16px] pt-4 text-center"
+                className="font-semibold text-sm md:text-base pt-4 text-center"
               >
                 Optional Additions
               </motion.h2>

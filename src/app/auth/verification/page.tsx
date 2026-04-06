@@ -199,7 +199,7 @@ const OTPVerificationContent = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-[13px] font-medium text-[#666464]"
+            className="text-xs md:text-sm font-medium text-[#666464]"
           >
             {`We have sent an OTP code to your email ${maskEmail(
               email || ""
@@ -284,7 +284,7 @@ const OTPVerificationContent = () => {
               >
                 <Button
                   type="submit"
-                  className="w-full h-12 text-md bg-[#FED45C] text-black lg:text-[16px] font-semibold hover:bg-[#FED45C]/90"
+                  className="w-full h-12 text-sm md:text-base bg-[#FED45C] text-black font-semibold hover:bg-[#FED45C]/90"
                   disabled={isSubmitting || verifyOtpMutation.isPending}
                 >
                   {isSubmitting || verifyOtpMutation.isPending
@@ -326,7 +326,7 @@ const OTPVerificationContent = () => {
             whileHover="hover"
             whileTap="tap"
             onClick={() => router.back()}
-            className="flex items-center md:hidden justify-start gap-2 text-[#331400] mt-4 text-[14px] font-semibold cursor-pointer transition-colors w-full md:w-auto"
+            className="flex items-center md:hidden justify-start gap-2 text-[#331400] mt-4 text-sm font-semibold cursor-pointer transition-colors w-full md:w-auto"
           >
             <ArrowLeft className="w-4 h-4" />
             Back
@@ -343,7 +343,7 @@ const OTPVerificationContent = () => {
             >
               <Link 
                 href="/privacy-policy" 
-                className="text-[12px] font-semibold hover:underline"
+                className="text-xs font-semibold hover:underline"
               >
                 Privacy Policy
               </Link>

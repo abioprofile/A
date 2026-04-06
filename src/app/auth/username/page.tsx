@@ -240,14 +240,14 @@ const UsernamePage = () => {
               className="mb-6 text-center"
             >
               <motion.h1
-                className="text-[20px] font-bold text-[#331400] mb-1 md:hidden"
+                className="text-xl font-bold text-[#331400] mb-1 md:hidden"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
                 Create Username
               </motion.h1>
               <motion.h1
-                className="hidden md:block text-[22px] md:text-[24px] font-bold text-[#331400] mb-1"
+                className="hidden md:block text-xl md:text-2xl font-bold text-[#331400] mb-1"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
               >
@@ -255,7 +255,7 @@ const UsernamePage = () => {
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="text-[#666666] text-[12px]  "
+                className="text-[#666666] text-xs md:text-sm"
               >
                 Choose a unique username that represents you.
               </motion.p>
@@ -278,7 +278,7 @@ const UsernamePage = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase())}
                   placeholder="Enter unique username"
-                  className="pl-[85px] pr-12 h-10 text-base md:text-[14px] placeholder:text-sm font-medium placeholder:font-medium placeholder:text-gray-500"
+                  className="pl-[85px] pr-12 h-10 text-base md:text-sm placeholder:text-sm font-medium placeholder:font-medium placeholder:text-gray-500"
                   aria-label="Username"
                   autoComplete="off"
                 />
@@ -359,7 +359,7 @@ const UsernamePage = () => {
                         animate="visible"
                         exit="exit"
                         variants={statusMessageVariants}
-                        className="text-[12px] font-semibold overflow-hidden text-green-600"
+                        className="text-xs font-semibold overflow-hidden text-green-600"
                       >
                         ✓ This is your current username
                       </motion.p>
@@ -374,7 +374,7 @@ const UsernamePage = () => {
                           animate="visible"
                           exit="exit"
                           variants={statusMessageVariants}
-                          className={`text-[12px] font-semibold overflow-hidden ${usernameData.data.isAvailable &&
+                          className={`text-xs font-semibold overflow-hidden ${usernameData.data.isAvailable &&
                               usernameData.data.isValid
                               ? "text-green-600"
                               : "text-red-600"
@@ -394,7 +394,7 @@ const UsernamePage = () => {
               {/* Mobile terms note */}
               <motion.div
                 variants={itemVariants}
-                className="min-w-0 max-w-full px-1 text-center text-[10px] font-semibold md:hidden"
+                className="min-w-0 max-w-full px-1 text-center text-[10px] sm:text-xs font-semibold md:hidden"
               >
                 <p className="break-words">
                   By continuing, you agree to receive offers, news and updates

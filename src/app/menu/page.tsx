@@ -58,7 +58,7 @@ function Accordion({
         aria-expanded={isOpen}
         className="w-full flex justify-between items-center px-4 py-2 bg-black/35 transition-all duration-300"
       >
-        <span className="text-[13px] font-semibold uppercase text-white">
+        <span className="text-xs font-semibold uppercase text-white">
           {title}
         </span>
 
@@ -84,7 +84,7 @@ function Accordion({
               key={i}
               className="flex justify-between items-center px-4 py-3"
             >
-              <span className="text-[13px] font-semibold text-white">
+              <span className="text-xs font-semibold text-white">
                 {item.name}
               </span>
               <span className="text-[#FFD700] font-semibold text-sm">

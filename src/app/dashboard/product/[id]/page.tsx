@@ -134,10 +134,10 @@ const ProductDetailPage = () => {
                     <Star key={i} className="w-5 h-5 fill-current" />
                   ))}
                 </div>
-                <span className="text-[13px] font-semibold">4.9 (205 reviews)</span>
+                <span className="text-xs md:text-sm font-semibold">4.9 (205 reviews)</span>
               </div>
 
-              <p className="text-[12px] font-bold mb-0">Price</p>
+              <p className="text-xs font-bold mb-0">Price</p>
               <div className="text-3xl font-bold mb-[16px]">
                 ₦{product.basePrice.toLocaleString()}
               </div>
@@ -174,7 +174,7 @@ const ProductDetailPage = () => {
                   {product.features.map((feature, index) => (
                     <li key={index} className="flex items-center gap-2">
                       <CheckCircle className="w-3 h-3 text-green-500" />
-                      <span className="text-[12px]">{feature}</span>
+                      <span className="text-xs md:text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -210,13 +210,13 @@ const ProductDetailPage = () => {
           <h1 className="text-center font-bold">Customize your card</h1>
           <div className="border border-dashed border-gray-400 p-6 flex flex-col items-center justify-center text-center">
             <Image src="/icons/upload.svg" alt="Upload" width={40} height={40} />
-            <p className="text-[15px] font-thin mt-2">Select file to upload,<br />Allowed file types: Jpeg, PNG</p>
+            <p className="text-sm font-thin mt-2">Select file to upload,<br />Allowed file types: Jpeg, PNG</p>
           </div>
           <input type="text" placeholder="User name" className="w-full border px-4 py-2 text-sm" />
           <input type="text" placeholder="Preferred Color" className="w-full border px-4 py-2 text-sm" />
           <textarea
             placeholder="Describe how you want this image to appear on the card and other information you would be needing..."
-            className="w-full placeholder:text-[13px] border px-4 py-2 text-sm"
+            className="w-full placeholder:text-xs border px-4 py-2 text-sm"
             rows={4}
           />
           <button

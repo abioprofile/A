@@ -32,7 +32,7 @@ export default function FAQs() {
                 <Image src="/icons/link.png" alt="link" width={80} height={80} />
               </div>
             </div>
-            <p className="mt-4 mb-8 md:mb-0 text-[14px] leading-relaxed max-w-xl">
+            <p className="mt-4 mb-8 md:mb-0 text-sm leading-relaxed max-w-xl">
               When you sign up on abio.site you get  a unique link (abio.site/yourname) and a personalized QR code that houses all your other links (contact, social, website and portfolio).
             </p>
           </div>
@@ -49,7 +49,7 @@ export default function FAQs() {
                 <Image src="/icons/nfc.png" alt="nfc" width={80} height={80} />
               </div>
             </div>
-            <p className="mt-4 mb-8 md:mb-0  text-[14px] leading-relaxed max-w-xs">
+            <p className="mt-4 mb-8 md:mb-0 text-sm leading-relaxed max-w-xs">
               Get your customizable Acard and other NFC enabled accessories (stickers, keyholders and more...) from our store when we launch Astore.
             </p>
           </div>
@@ -66,7 +66,7 @@ export default function FAQs() {
                 <Image src="/icons/infinity.png" alt="infinity" width={80} height={80} />
               </div>
             </div>
-            <p className="mt-4 text-[14px] leading-relaxed max-w-xs">
+            <p className="mt-4 text-sm leading-relaxed max-w-xs">
               No Apps. No hassle. One Link, One card, Endless connections.
             </p>
           </div>

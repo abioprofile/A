@@ -31,7 +31,7 @@ const DetailedAnalytics = () => {
             height={400}
             className="w-[250px] sm:w-[300px] md:w-[400px] h-auto"
           />
-          <p className="text-[13px] text-left sm:text-[14px] text-[#5D2D2B] max-w-md leading-relaxed">
+          <p className="text-xs text-left sm:text-sm text-[#5D2D2B] max-w-md leading-relaxed">
             Track exactly who clicks and views your A.bio, see when, where, and
             how they visit — gain deeper insights and understand your audience better.
           </p>
@@ -43,7 +43,7 @@ const DetailedAnalytics = () => {
             Get detailed <br className="hidden sm:block" /> Analytics
           </h2>
 
-          <p className="text-[#5D2D2B] text-[13px] sm:text-base max-w-md mx-auto md:mx-0 leading-relaxed">
+          <p className="text-[#5D2D2B] text-xs sm:text-base max-w-md mx-auto md:mx-0 leading-relaxed">
             See who clicks and views your Abio profile. Track engagement over time,
             measure click rate, and learn what’s converting your audience.
           </p>
@@ -59,15 +59,15 @@ const DetailedAnalytics = () => {
           <div className="flex flex-row sm:justify-start justify-between sm:gap-10 mt-6">
             <div className="text-center">
               <p className="text-2xl sm:text-6xl font-extrabold text-red-600">{views}+</p>
-              <p className="text-[13px] sm:text-lg text-red-600 font-medium">Views</p>
+              <p className="text-xs sm:text-lg text-red-600 font-medium">Views</p>
             </div>
             <div className="text-center">
               <p className="text-2xl sm:text-6xl font-extrabold text-red-600">{clicks}+</p>
-              <p className="text-[13px] sm:text-lg text-red-600 font-medium">Clicks</p>
+              <p className="text-xs sm:text-lg text-red-600 font-medium">Clicks</p>
             </div>
             <div className="text-center">
               <p className="text-2xl sm:text-6xl font-extrabold text-red-600">{rate}%</p>
-              <p className="text-[13px] sm:text-lg text-red-600 font-medium">Click Rate</p>
+              <p className="text-xs sm:text-lg text-red-600 font-medium">Click Rate</p>
             </div>
           </div>
         </div>

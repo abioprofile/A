@@ -13,7 +13,7 @@ const ContactPage = () => {
         <h1 className="text-3xl text-[#331400] trialheader mb-4 font-semibold">
           Let us know how we can help.
         </h1>
-        <p className="text-[15px] font-light text-gray-700">
+        <p className="text-sm md:text-base font-light text-gray-700">
           Whether you're curious about features, plans, or need support — just drop us a
           message and we&apos;ll get back to you soon.
         </p>
@@ -25,7 +25,7 @@ const ContactPage = () => {
           <h1 className="trialheader text-[#331400] capitalize text-4xl font-medium">
             Contact
           </h1>
-          <p className="text-[14px]">
+          <p className="text-sm">
             Questions, feedback, or support — we&apos;re just a message away.
           </p>
         </div>
@@ -58,7 +58,7 @@ const ContactPage = () => {
         <h2 className="text-3xl trialheader font-medium text-[#331400]">
           Subscribe to Our Newsletter
         </h2>
-        <p className="text-[13px] text-gray-700">
+        <p className="text-xs md:text-sm text-gray-700">
           Loved by creators, influencers, artists, musicians, coaches, and entrepreneurs worldwide.
         </p>
 

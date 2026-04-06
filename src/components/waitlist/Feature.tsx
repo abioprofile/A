@@ -113,7 +113,7 @@ const Features = () => {
           </div>
 
           <div className="relative">
-            <p className="mt-6 text-[15px] max-w-lg mx-auto font-thin text-[#331400]/80 leading-relaxed">
+            <p className="mt-6 text-sm md:text-base max-w-lg mx-auto font-thin text-[#331400]/80 leading-relaxed">
               🅰bio is a next-gen link-in-bio tool that gives you a personalized
               link (abio.site/yourname) and QR code to showcase your
               socials, contact info and portfolio all in one sleek page.

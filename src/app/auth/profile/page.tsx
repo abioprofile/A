@@ -130,16 +130,16 @@ export default function ProfileScreen() {
           </div>
         </div>
         {/* Header */}
-        <h1 className="text-center hidden md:block text-[#4B2E1E] text-[24px] font-semibold mt-6 mb-10 leading-snug max-w-md">
+        <h1 className="text-center hidden md:block text-[#4B2E1E] text-xl md:text-2xl font-semibold mt-6 mb-10 leading-snug max-w-md">
           Add your bio and location to make <br /> your Profile more you
         </h1>
-        <h1 className="text-center md:hidden text-[#4B2E1E] text-[20px] mb-2 font-bold mt-2 md:mb-10 leading-snug max-w-md">
+        <h1 className="text-center md:hidden text-[#4B2E1E] text-xl mb-2 font-bold mt-2 md:mb-10 leading-snug max-w-md">
           Add Profile Details
         </h1>
 
         {/* Gradient Card */}
         <div className="md:bg-gradient-to-b from-[#FFE9B1] to-[#FDF6E3] px-6 md:py-10 w-full max-w-xl flex flex-col items-center md:shadow-sm relative overflow-visible">
-          <p className="text-[#4B2E1E] text-[14px] md:text-[16px] font-semibold mb-8">
+          <p className="text-[#4B2E1E] text-sm md:text-base font-semibold mb-8">
             Add Bio and Location
           </p>
 
@@ -204,7 +204,7 @@ export default function ProfileScreen() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="bio"
-                className="text-[14px] font-semibold uppercase tracking-widest text-[#6B3F18]"
+                className="text-xs md:text-sm font-semibold uppercase tracking-widest text-[#6B3F18]"
               >
                 Bio
               </label>
@@ -229,7 +229,7 @@ export default function ProfileScreen() {
                 {/* character count */}
                 <span
                   className={`
-                    absolute bottom-2.5 right-3 text-[10px] font-medium pointer-events-none
+                    absolute bottom-2.5 right-3 text-[10px] sm:text-xs font-medium pointer-events-none
                     ${bio.length > 180 ? "text-red-500" : "text-[#4B2E1E]/30"}
                   `}
                 >
@@ -242,7 +242,7 @@ export default function ProfileScreen() {
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="location"
-                className="text-[14px] font-semibold uppercase  text-[#6B3F18]"
+                className="text-xs md:text-sm font-semibold uppercase text-[#6B3F18]"
               >
                 Location
               </label>

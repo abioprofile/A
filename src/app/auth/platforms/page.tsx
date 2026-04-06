@@ -173,7 +173,7 @@ const Platforms = () => {
             className="text-center mb-8"
           >
             <motion.h1 
-              className="text-[20px] md:text-[24px] font-semibold my-2 text-[#331400]"
+              className="text-xl md:text-2xl font-semibold my-2 text-[#331400]"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -181,7 +181,7 @@ const Platforms = () => {
             </motion.h1>
             <motion.p 
               variants={itemVariants}
-              className="text-[#666464] text-sm lg:text-[14px] font-medium max-w-2xl"
+              className="text-[#666464] text-sm font-medium max-w-2xl"
             >
               Pick a maximum of 5 platforms to get started. You can update later
             </motion.p>
@@ -216,7 +216,7 @@ const Platforms = () => {
                     height={35}
                     className="mb-2"
                   />
-                  <span className="text-[12px] md:text-sm  text-center">
+                  <span className="text-xs md:text-sm text-center">
                     {platform.name}
                   </span>
                 </motion.button>
@@ -251,18 +251,14 @@ const Platforms = () => {
                     }`}
                     onClick={() => handlePlatformClick(platform)}
                   >
-                    <div
-                      className="w-9 h-9 mb-2 rounded-full flex items-center justify-center"
-                      style={{ backgroundColor: `${platform.color}20` }}
-                    >
-                      <Image
-                        src={platform.icon}
-                        alt={platform.name}
-                        width={24}
-                        height={24}
-                      />
-                    </div>
-                    <span className="text-[12px] md:text-sm text-center">
+                    <Image
+                      src={platform.icon}
+                      alt={platform.name}
+                      width={35}
+                      height={35}
+                      className="mb-2"
+                    />
+                    <span className="text-xs md:text-sm text-center">
                       {platform.name}
                     </span>
                   </motion.button>

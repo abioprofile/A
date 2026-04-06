@@ -41,12 +41,12 @@ const CustomNfcCardSection = () => {
           </h1>
         </div>
 
-        <p className="text-[14px] sm:text-[18px] md:text-[20px] max-w-xl mx-auto md:mx-0 leading-[26px] sm:leading-[30px] font-light text-[#3B3B3B]">
+        <p className="text-sm sm:text-lg md:text-xl max-w-xl mx-auto md:mx-0 leading-[26px] sm:leading-[30px] font-light text-[#3B3B3B]">
           Personalize your NFC card with your name, logo, and brand style.  
           One tap shares your A.bio — no app needed.
         </p>
 
-        <p className="text-[16px] sm:text-[18px] md:text-[20px] text-[#5D2D2B] trial italic font-light">
+        <p className="text-base sm:text-lg md:text-xl text-[#5D2D2B] trial italic font-light">
           One card. Endless connections...
         </p>
 

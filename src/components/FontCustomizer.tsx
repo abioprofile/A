@@ -388,7 +388,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
                       : "none",
                   }}
                 >
-                  <span className="text-[14px] font-bold text-black">+</span>
+                  <span className="text-sm font-bold text-black">+</span>
                 </div>
                 <input
                   type="color"
@@ -486,10 +486,10 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
       <div className="hidden md:block bg-white p-6 w-full relative">
         {/* Font Selector */}
         <div className="mb-4 w-full">
-          <label className="block text-[13px] font-semibold mb-2">Font</label>
+          <label className="block text-xs font-semibold mb-2">Font</label>
           <button
             onClick={() => setOpen((prev) => !prev)}
-            className="w-full cursor-pointer flex justify-between items-center border text-[12px] border-[#000] bg-[#ECECED] px-4 py-[6px]"
+            className="w-full cursor-pointer flex justify-between items-center border text-xs border-[#000] bg-[#ECECED] px-4 py-[6px]"
             style={{ fontFamily: selectedFont.font.style.fontFamily }}
           >
             <span className="truncate">{selectedFont.label}</span>
@@ -531,7 +531,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
 
         {/* Font style icons - Desktop */}
         <div className="mb-4 w-full">
-          <label className="block text-[13px] font-semibold mb-2">Style</label>
+          <label className="block text-xs font-semibold mb-2">Style</label>
           <div className="flex gap-2">
             {FONT_STYLE_ICONS.map(({ id, Icon, styleProps }) => {
               const isActive =
@@ -562,7 +562,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
 
         {/* Fill Color */}
         <div className="mb-4 w-full">
-          <label className="block text-[13px] font-semibold mb-2">
+          <label className="block text-xs font-semibold mb-2">
             Fill Color
           </label>
           <div className="flex items-center gap-3 w-full">
@@ -620,7 +620,7 @@ export default function FontCustomizer({ fontStyle, setFontStyle }: Props) {
 
         {/* Text weight - Desktop */}
         <div className="mb-4 w-full">
-          <label className="block text-[13px] font-semibold mb-2">
+          <label className="block text-xs font-semibold mb-2">
             Text weight
           </label>
           <div className="flex gap-2 flex-wrap">

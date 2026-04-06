@@ -215,7 +215,7 @@ const Hero = () => {
 
           <p
             ref={paragraphRef}
-            className="text-[15px] text-center font-thin text-[#5D2D2B] mt-4 mb-6 max-w-xl mx-auto"
+            className="text-sm md:text-base text-center font-thin text-[#5D2D2B] mt-4 mb-6 max-w-xl mx-auto"
           >
             Tired of juggling multiple links and hoping someone types your name
             correctly? 🅰bio is a new platform that combines the power of a
@@ -260,7 +260,7 @@ const Hero = () => {
             </button>
           </form>
           
-          <p className="text-[13px] my-4">
+          <p className="text-xs my-4">
             We Promise to protect your information and keep it confidential
           </p>
         </div>

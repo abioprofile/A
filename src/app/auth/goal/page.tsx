@@ -241,12 +241,12 @@ const SelectGoalPage = () => {
               variants={itemVariants}
               className="text-center space-y-4 mb-6 w-full"
             >
-              <motion.h1 className="text-[20px] md:text-[24px] font-extrabold text-[#331400] leading-tight">
+              <motion.h1 className="text-xl md:text-2xl font-extrabold text-[#331400] leading-tight">
                 What best describes your goal for using Abio?
               </motion.h1>
               <motion.p
                 variants={itemVariants}
-                className="text-[#666666] text-[14px]"
+                className="text-[#666666] text-sm"
               >
                 Helps us personalize your experience.
               </motion.p>
@@ -294,10 +294,10 @@ const SelectGoalPage = () => {
 
                       {/* Text Section */}
                       <div className="flex-1">
-                        <h3 className="font-bold text-[16px] text-gray-900">
+                        <h3 className="font-bold text-base text-gray-900">
                           {goal.title}
                         </h3>
-                        <p className="text-[12px]  text-gray-600 mt-1">
+                        <p className="text-xs md:text-sm text-gray-600 mt-1">
                           {goal.description}
                         </p>
                       </div>

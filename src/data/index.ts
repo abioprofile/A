@@ -146,11 +146,11 @@ export const PLATFORMS: Platform[] = [
 ]
 
 export const STREAMING_PLATFORMS: Platform[] = [
-    { id: "spotify", name: "Spotify", icon: "/assets/icons/social/colored/Social=Spotify,Style=Original.svg", type: "streaming", color: "#1DB954" },
-    { id: "apple-music", name: "Apple Music", icon: "/assets/icons/social/colored/Social=Apple Music,Style=Original.svg", type: "streaming", color: "#FC3C44" },
-    { id: "soundcloud", name: "SoundCloud", icon: "/assets/icons/social/colored/Social=SoundCloud,Style=Original.svg", type: "streaming", color: "#FF5500" },
-    { id: "tidal", name: "Tidal", icon: "/assets/icons/tidal.svg", type: "streaming", color: "#000000" },
-    { id: "amazon-music", name: "Amazon Music", icon: "/assets/icons/amazon-music.svg", type: "streaming", color: "#25D1DA" },
+    { id: "spotify", name: "Spotify", icon: "/assets/platform-icons/colored/Social=Spotify,Style=Original.svg", type: "streaming", color: "#1DB954" },
+    { id: "apple-music", name: "Apple Music", icon: "/assets/platform-icons/colored/Social=Apple Music,Style=Original.svg", type: "streaming", color: "#FC3C44" },
+    { id: "soundcloud", name: "SoundCloud", icon: "/assets/platform-icons/colored/Social=SoundCloud,Style=Original.svg", type: "streaming", color: "#FF5500" },
+    { id: "youtube-music", name: "YouTube Music", icon: "/assets/platform-icons/colored/Social=Youtube Music,Style=Original.svg", type: "streaming", color: "#FF0000" },
+    { id: "apple-podcasts", name: "Apple Podcasts", icon: "/assets/platform-icons/colored/Social=Apple Podcasts,Style=Original.svg", type: "streaming", color: "#9933CC" },
 ]
 
 export const STREAMING_PLATFORM_IDS = new Set(STREAMING_PLATFORMS.map((p) => p.id))

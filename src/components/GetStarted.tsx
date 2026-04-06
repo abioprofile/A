@@ -22,7 +22,7 @@ const GetStarted = ({ showBlur }: { showBlur?: boolean }) => {
                     <div className="rounded-full bg-gradient-to-r from-[#7140EB] to-[#FB8E8E] z-0 size-52 opacity-50 absolute -top-5 -left-5 filter blur-[60px]" />
                     <div className='relative max-w-96 z-10 mix-blend-inherit'>
                         <h1 className='text-3xl md:text-4xl tracking-tighter font-bold text-[#7140EB] mb-3'>Get started with A.bio</h1>
-                        <p className='text-[13px] font-semibold'>Loved by creators, influencers, artists, musicians, coaches, and entrepreneurs worldwide.</p>
+                        <p className='text-xs md:text-sm font-semibold'>Loved by creators, influencers, artists, musicians, coaches, and entrepreneurs worldwide.</p>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto lg:mx-0 mt-10">
                         <div className="flex-1 relative">

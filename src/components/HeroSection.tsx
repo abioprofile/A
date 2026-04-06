@@ -27,7 +27,7 @@ const HeroSection = () => {
             transition={{ delay: 0.2, duration: 0.6 }}
             className="relative inline-block"
           >
-            <p className="text-[28px] sm:text-[40px] trial md:text-[50px] lg:text-[60px] text-[#5D2D2B] italic mb-3 -mt-5">
+            <p className="text-3xl sm:text-4xl trial md:text-5xl lg:text-6xl text-[#5D2D2B] italic mb-3 -mt-5">
               In just A Biography.
             </p>
             <motion.div
@@ -54,7 +54,7 @@ const HeroSection = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6, duration: 0.6 }}
-            className="text-[16px] leading-[26px] md:leading-[30px] font-thin max-w-xl mx-auto md:mx-0 text-[#5D2D2B]"
+            className="text-base leading-[26px] md:leading-[30px] font-thin max-w-xl mx-auto md:mx-0 text-[#5D2D2B]"
           >
             With Abio, a simple biography becomes more than just words—it becomes your bridge to endless connections.
             Abio helps you showcase your essential details, achievements, and social links all in a single link and dynamic profile.

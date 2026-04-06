@@ -14,15 +14,15 @@ const ContactUs = () => {
                     <h1 className='text-[#7140EB] capitalize text-3xl md:text-4xl font-bold tracking-tighter'>Contact Us</h1>
                     <Link href='mailto:abioprofile@gmail.com' className='flex items-center gap-1 hover:underline text-[#7140EB] font-semibold'>
                         <Mail className='size-5' />
-                        <span className='text-[13px]'>abioprofile@gmail.com</span>
+                        <span className='text-xs md:text-sm'>abioprofile@gmail.com</span>
                     </Link>
                     <div className='flex items-center gap-1 text-[#7140EB] font-semibold'>
                         <MapPinIcon className='size-5' />
-                        <span className='text-[13px]'>Lagos, Nigeria</span>
+                        <span className='text-xs md:text-sm'>Lagos, Nigeria</span>
                     </div>
                     <Link href='tel:+2348163746282' className='flex items-center gap-1 hover:underline md:mb-20 text-[#7140EB] font-semibold'>
                         <Phone className='size-5' />
-                        <span className='text-[13px]'>+234 816 374 6282</span>
+                        <span className='text-xs md:text-sm'>+234 816 374 6282</span>
                     </Link>
                 </div>
                 <div className='space-y-5'>

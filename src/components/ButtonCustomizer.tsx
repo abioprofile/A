@@ -95,13 +95,13 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({
 
         {/* Color */}
         <div>
-          <h3 className="font-semibold text-[15px] mb-3 relative inline-block">
+          <h3 className="font-semibold text-sm md:text-[15px] mb-3 relative inline-block">
             Color
           </h3>
 
           {/* Fill Color */}
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-[12px] font-semibold">Fill</label>
+            <label className="block text-xs font-semibold">Fill</label>
             <label className="relative cursor-pointer">
               <input
                 type="color"
@@ -166,7 +166,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({
                       : "none",
                   }}
                 >
-                  <span className="text-[14px] font-bold text-black">+</span>
+                  <span className="text-sm font-bold text-black">+</span>
                 </div>
                 <input
                   type="color"
@@ -247,7 +247,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({
 
           {/* Stroke Color */}
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-[12px] font-semibold">Stroke</label>
+            <label className="block text-xs font-semibold">Stroke</label>
             <label className="relative cursor-pointer">
               <input
                 type="color"
@@ -361,10 +361,10 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({
 
         {/* Effect */}
         <div>
-          <h3 className="font-semibold text-[15px] mb-2 relative inline-block">
+          <h3 className="font-semibold text-sm md:text-[15px] mb-2 relative inline-block">
             Effect
           </h3>
-          <p className="text-[12px] font-medium">Drop Shadow</p>
+          <p className="text-xs font-medium">Drop Shadow</p>
           <div className="flex w-full gap-4 my-2">
             {/* No Shadow */}
             <button
@@ -571,7 +571,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({
 
         {/* Color */}
         <div>
-          <h3 className="font-semibold text-[15px] mb-1 relative inline-block">
+          <h3 className="font-semibold text-sm md:text-[15px] mb-1 relative inline-block">
             Color
           </h3>
 
@@ -721,10 +721,10 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({
 
         {/* Effect */}
         <div>
-          <h3 className="font-semibold text-[15px] mb-2 relative inline-block">
+          <h3 className="font-semibold text-sm md:text-[15px] mb-2 relative inline-block">
             Effect
           </h3>
-          <p className="text-[12px] font-medium">Drop Shadow</p>
+          <p className="text-xs font-medium">Drop Shadow</p>
           <div className="flex w-full gap-4 my-2">
             {/* No Shadow */}
             <button

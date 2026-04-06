@@ -28,7 +28,7 @@ const TemplateGallery = () => {
           <h1 className="text-3xl lg:text-4xl font-extrabold mb-4 bg-[#331400] text-transparent bg-clip-text">
             Select Template
           </h1>
-          <p className="md:font-medium text-sm md:text-[14px] px-16 text-center">
+          <p className="md:font-medium text-sm px-16 text-center">
             Pick the style that feels right - you can add your content later.
           </p>
         </div>

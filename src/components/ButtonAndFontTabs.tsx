@@ -25,7 +25,7 @@ const ButtonAndFontTabs: React.FC<Props> = ({
       <div className="flex justify-center items-center -mt-6 md:mt-0 md:justify-start mb-4">
         <button
           onClick={() => setSubTab('corner')}
-          className={`px-4 py-2 font-semibold text-[15px] relative ${
+          className={`px-4 py-2 font-semibold text-sm md:text-[15px] relative ${
             subTab === 'corner'
               ? 'text-black'
               : 'text-gray-400 hover:text-gray-700'
@@ -39,7 +39,7 @@ const ButtonAndFontTabs: React.FC<Props> = ({
 
         <button
           onClick={() => setSubTab('font')}
-          className={`px-4 py-2 font-semibold text-[15px] relative ${
+          className={`px-4 py-2 font-semibold text-sm md:text-[15px] relative ${
             subTab === 'font'
               ? 'text-black'
               : 'text-gray-400 hover:text-gray-700'

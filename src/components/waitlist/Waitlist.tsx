@@ -142,10 +142,10 @@ const Waitlist = () => {
           Join our Waitlist
         </h2>
 
-        <p className="text-[14px] md:text-[15px]">
+        <p className="text-sm md:text-base">
           Showcase your links, get closer to your audience faster.
         </p>
-        <p className="text-[14px] md:text-[15px] mb-4">All possible with 🅰bio</p>
+        <p className="text-sm md:text-base mb-4">All possible with 🅰bio</p>
 
         {/* Statistics */}
         <div className="grid grid-cols-1 bg-[#FFDCE3] md:grid-cols-3 gap-8 mb-12">
@@ -206,7 +206,7 @@ const Waitlist = () => {
           </button>
         </form>
 
-        <p className="text-[13px] my-4">
+        <p className="text-xs my-4">
           We Promise to protect your information and keep it confidential
         </p>
 

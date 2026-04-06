@@ -182,7 +182,7 @@ const SignIn = () => {
             className="mb-3 text-center sm:mb-6"
           >
             <motion.h1
-              className="mb-1 text-[20px] font-extrabold text-[#331400] md:mb-4 md:text-[24px]"
+              className="mb-1 text-xl font-extrabold text-[#331400] md:mb-4 md:text-2xl"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
@@ -190,7 +190,7 @@ const SignIn = () => {
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-[#666464] text-sm lg:text-[14px] font-medium"
+              className="text-[#666464] text-sm font-medium"
             >
               Enter your biography!
             </motion.p>
@@ -403,7 +403,7 @@ const SignIn = () => {
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <Link
                 href="/privacy-policy"
-                className="text-[12px] font-semibold hover:underline text-[#666464]"
+                className="text-xs font-semibold hover:underline text-[#666464]"
               >
                 Privacy Policy
               </Link>

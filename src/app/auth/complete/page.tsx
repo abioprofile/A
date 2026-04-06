@@ -396,7 +396,7 @@ export default function ProfileLivePage() {
                     </Avatar>
 
                     <div>
-                      <h2 className="font-bold text-sm md:text-[14px] text-[#2C1C0D]">
+                      <h2 className="font-bold text-sm text-[#2C1C0D]">
                         {userData.name ||
                           userData.displayName ||
                           userData.username ||
@@ -517,7 +517,7 @@ export default function ProfileLivePage() {
           >
             <motion.h1
               variants={itemVariants}
-              className="text-[20px] md:text-[24px] font-semibold text-[#331400] mb-3"
+              className="text-xl md:text-2xl font-semibold text-[#331400] mb-3"
             >
               Your profile is now live!
             </motion.h1>
@@ -536,7 +536,7 @@ export default function ProfileLivePage() {
               <input
                 readOnly
                 value={profileLink}
-                className="border-0 w-full text-[#4B2E1E] text-[12px] font-medium bg-transparent px-3 py-2 focus-visible:ring-0"
+                className="border-0 w-full text-[#4B2E1E] text-xs md:text-sm font-medium bg-transparent px-3 py-2 focus-visible:ring-0"
               />
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -588,13 +588,13 @@ export default function ProfileLivePage() {
         >
           <Button
             onClick={() => router.push("/dashboard")}
-            className="flex-1 bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E] text-[12px] py-4 transition-colors"
+            className="flex-1 bg-[#FED45C] hover:bg-[#f5ca4f] text-[#4B2E1E] text-sm py-4 transition-colors"
           >
             Continue Editing
           </Button>
           <Button
             onClick={() => setShowShareBox(true)}
-            className="flex-1 bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5] text-[12px] py-4 transition-colors"
+            className="flex-1 bg-[#331400] hover:bg-[#4B2E1E] text-[#FFE4A5] text-sm py-4 transition-colors"
           >
             Share
           </Button>

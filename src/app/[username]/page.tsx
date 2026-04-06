@@ -415,7 +415,7 @@ export default function PublicProfilePage() {
                       transition={{ delay: 0.7 }}
                     >
                       <div className="flex items-center ">
-                          <p className="font-bold text-[14px]">
+                          <p className="font-bold text-sm">
                         {isOotnUser
                           ? "one of those nights"
                           : userData?.name || userData?.username || "User"}
@@ -691,7 +691,7 @@ export default function PublicProfilePage() {
                 >
                   <div className="flex items-center">
                     
-                  <p className="font-bold text-[14px]">
+                  <p className="font-bold text-sm">
                     {isOotnUser
                       ? "one of those nights"
                       : userData?.name || userData?.username || "User"}
@@ -704,7 +704,7 @@ export default function PublicProfilePage() {
                       className="inline-block ml-1"
                     />
                   </div>
-                  <p className="text-[13px] text-gray-500">
+                  <p className="text-xs md:text-sm text-gray-500">
                     /{userData.username || "username"}
                   </p>
                 </motion.div>
@@ -715,7 +715,7 @@ export default function PublicProfilePage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
                   transition={{ delay: 0.5 }}
-                  className="mt-2 text-[13px] text-left font-medium line-clamp-2"
+                  className="mt-2 text-xs md:text-sm text-left font-medium line-clamp-2"
                 >
                   {userData.bio}
                 </motion.p>
@@ -882,7 +882,7 @@ export default function PublicProfilePage() {
 
         <a
           href="/auth/sign-up"
-          className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2  bg-white shadow-blur-md px-5 py-3 text-[12px] font-semibold text-black shadow-lg transition hover:bg-[#4a2207] md:text-sm"
+          className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2  bg-white shadow-blur-md px-5 py-3 text-xs md:text-sm font-semibold text-black shadow-lg transition hover:bg-[#4a2207]"
           aria-label={`Join ${userData?.username || username} on Abio`}
         >
           Join {userData?.username || username} on Abio

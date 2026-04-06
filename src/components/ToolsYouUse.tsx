@@ -51,7 +51,7 @@ const ToolsYouUse = () => {
 
                         <div className="space-y-6 lg:pt-10">
                             <div className="space-y-4">
-                                <h4 className="text-[#7140EB] text-[13px] uppercase font-bold">
+                                <h4 className="text-[#7140EB] text-xs uppercase font-bold">
                                     15,000+ INTEGRATION
                                 </h4>
                                 <h2 className="text-3xl xl:text-5xl font-bold tracking-tight">
@@ -59,7 +59,7 @@ const ToolsYouUse = () => {
                                     <br />
                                     tools you already use
                                 </h2>
-                                <p className="font-thin text-[13px]  xl:text-[15px]">
+                                <p className="font-thin text-xs xl:text-sm">
                                     With Abio, enjoy seamless native integrations with all major platforms automating workflows,
                                     eliminating manual tasks, and accelerating your path to value.
                                 </p>

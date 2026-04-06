@@ -342,7 +342,7 @@ export default function PublicProfilePage() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.7 }}
                     >
-                      <p className="font-bold text-[14px]">
+                      <p className="font-bold text-sm">
                         {userData?.name || userData?.username || "User"}
                       </p>
                       <p className="text-[10px] text-gray-500">
@@ -567,7 +567,7 @@ export default function PublicProfilePage() {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.4 }}
                 >
-                  <p className="font-bold text-[14px] capitalize mb-1">
+                  <p className="font-bold text-sm capitalize mb-1">
                     {userData?.name || userData?.username || "User"}
                   </p>
                   <p className="text-[10px] text-gray-500">
