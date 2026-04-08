@@ -256,6 +256,8 @@ export default function PublicProfilePage() {
 
   let backgroundStyle: React.CSSProperties = {};
   let backgroundImageSrc = "/themes/theme7.jpg";
+  // Built after backgroundStyle/backgroundImageSrc are set below
+  let contentBgStyle: React.CSSProperties = {};
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
 
@@ -311,6 +313,21 @@ export default function PublicProfilePage() {
     }
   }
 
+  // Unified bg for the content area — mirrors PhoneDisplay bgStyle logic exactly
+  if (!isOotnUser) {
+    if (Object.keys(backgroundStyle).length > 0) {
+      contentBgStyle = backgroundStyle;
+    } else {
+      contentBgStyle = {
+        backgroundImage: `url(${backgroundImageSrc})`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundColor: "#000000",
+      };
+    }
+  }
+
   // ─── Shared link button style ──────────────────────────────────────────────
   const linkButtonStyle: React.CSSProperties = {
     borderRadius: buttonStyle?.borderRadius || "0px",
@@ -356,25 +373,6 @@ export default function PublicProfilePage() {
               className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl"
             >
               <div className="w-full h-full bg-white overflow-hidden relative flex flex-col">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.5 }}
-                  className="absolute inset-0"
-                >
-                  {isOotnUser ? null : Object.keys(backgroundStyle).length > 0 ? (
-                    <div className="absolute inset-0" style={backgroundStyle} />
-                  ) : (
-                    <Image
-                      src={backgroundImageSrc}
-                      alt="background"
-                      fill
-                      className="object-cover"
-                      priority
-                    />
-                  )}
-                </motion.div>
-
                 <motion.div
                   variants={profileCardVariants}
                   initial="initial"
@@ -526,7 +524,7 @@ export default function PublicProfilePage() {
 
                 <div
                   className="relative z-20 px-6 pt-4 pb-6 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
-                  style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  style={{ ...contentBgStyle, scrollbarWidth: "none", msOverflowStyle: "none" }}
                 >
                   {activeTab === "links" && (
                     <>
@@ -623,35 +621,23 @@ export default function PublicProfilePage() {
           transition={{ duration: 0.4 }}
           className="lg:hidden w-full min-h-screen bg-[#FEF4EA]"
         >
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className="fixed inset-0"
-          >
-            {isOotnUser ? (
-              <>
-                <Image
-                  src="/themes/ootn.jpeg"
-                  alt="background"
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                <div className="absolute inset-0 bg-black/65" />
-              </>
-            ) : Object.keys(backgroundStyle).length > 0 ? (
-              <div className="absolute inset-0" style={backgroundStyle} />
-            ) : (
+          {isOotnUser && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="fixed inset-0"
+            >
               <Image
-                src={backgroundImageSrc}
+                src="/themes/ootn.jpeg"
                 alt="background"
                 fill
                 className="object-cover"
                 priority
               />
-            )}
-          </motion.div>
+              <div className="absolute inset-0 bg-black/65" />
+            </motion.div>
+          )}
 
           <div className="relative z-10 w-full min-h-screen flex flex-col">
             <motion.div
@@ -670,7 +656,7 @@ export default function PublicProfilePage() {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.3 }}
                 >
-                  <Avatar className="w-[66px] h-[66px] border">
+                  <Avatar className="w-[50px] h-[50px] border">
                     <AvatarImage
                       src={userData.avatarUrl || "/icons/Profile Picture.png"}
                       alt={userData.name || userData.username || "Profile"}
@@ -797,8 +783,8 @@ export default function PublicProfilePage() {
             </motion.div>
 
             <div
-              className="overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden px-10 pt-6 pb-6"
-              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              className="overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden px-6 pt-4 pb-6"
+              style={{ ...contentBgStyle, scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               {activeTab === "links" && (
                 <>
@@ -814,13 +800,13 @@ export default function PublicProfilePage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer mb-4"
+                            className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm  transition-all cursor-pointer mb-3"
                             style={linkButtonStyle}
                           >
                             <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
                               {getPlatformIcon(link.platform, "w-4 h-4")}
                             </motion.span>
-                            <span className="truncate font-bold" style={fontStyle}>{link.title}</span>
+                            <span className="truncate" style={fontStyle}>{link.title}</span>
                           </motion.a>
                         ))
                     ) : (
@@ -849,13 +835,13 @@ export default function PublicProfilePage() {
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer"
+                        className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer"
                         style={linkButtonStyle}
                       >
                         <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
                           {getPlatformIcon(link.platform, "w-4 h-4")}
                         </motion.span>
-                        <span className="truncate font-bold" style={fontStyle}>{link.title}</span>
+                        <span className="truncate" style={fontStyle}>{link.title}</span>
                       </motion.a>
                     ))
                   ) : (

@@ -87,7 +87,7 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     const [, start, end] = selectedTheme.split(":");
     bgStyle = { backgroundImage: `linear-gradient(to bottom, ${start ?? "#000"}, ${end ?? "#fff"})` };
   } else if (selectedTheme && (selectedTheme.startsWith("blob:") || selectedTheme.startsWith("http") || selectedTheme.startsWith("/"))) {
-    bgStyle = { backgroundImage: `url(${selectedTheme})`, backgroundSize: "100% 100%", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundColor: "#000000" };
+    bgStyle = { backgroundImage: `url(${selectedTheme})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundColor: "#000000" };
   }
 
   const renderButtonStack = (items: ProfileLink[]) =>

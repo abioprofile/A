@@ -311,20 +311,27 @@ export default function WallpaperSelector({
   const getCroppedImageBlob = (): Promise<Blob | null> => {
     const img = cropImgRef.current;
     if (!img || !completedCrop?.width || !completedCrop?.height) return Promise.resolve(null);
+    // Map CSS-pixel crop coords back to natural image pixels
     const scaleX = img.naturalWidth / img.width;
     const scaleY = img.naturalHeight / img.height;
     const srcX = completedCrop.x * scaleX;
     const srcY = completedCrop.y * scaleY;
     const srcW = completedCrop.width * scaleX;
     const srcH = completedCrop.height * scaleY;
+    // Output canvas = natural crop dimensions — pure crop, zero downscaling, full quality
+    const outW = Math.round(srcW);
+    const outH = Math.round(srcH);
     const canvas = document.createElement("canvas");
-    canvas.width = PHONE_WALLPAPER_WIDTH;
-    canvas.height = PHONE_WALLPAPER_HEIGHT;
+    canvas.width = outW;
+    canvas.height = outH;
     const ctx = canvas.getContext("2d");
     if (!ctx) return Promise.resolve(null);
-    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, PHONE_WALLPAPER_WIDTH, PHONE_WALLPAPER_HEIGHT);
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = "high";
+    // Draw 1:1 — source region maps exactly to canvas, no scaling loss
+    ctx.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, outW, outH);
     return new Promise((resolve) => {
-      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
+      canvas.toBlob((blob) => resolve(blob), "image/jpeg", 1.0);
     });
   };
 

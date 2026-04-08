@@ -179,7 +179,7 @@ export default function DashboardPage() {
                 />
               </div>
 
-              <motion.div variants={itemVariants}>
+              <motion.div>
                 <div className="mb-1">
                   <h1 className="font-semibold text-xl md:text-2xl leading-tight">
                     {displayName || "User"}
