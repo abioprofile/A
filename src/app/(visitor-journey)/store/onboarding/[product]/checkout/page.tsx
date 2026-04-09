@@ -71,7 +71,7 @@ export default function StoreCheckoutPage() {
   };
 
   const inputClass = (hasError?: boolean) =>
-    `w-full bg-white border text-[16px] text-[#331400] placeholder-[#331400]/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FED45C] transition appearance-none ${hasError ? "border-red-400" : "border-[#331400]/15"}`;
+    `w-full  h-9 border-2 border-[#331400] text-base placeholder:text-sm sm:h-10 md:text-sm  border text-[16px] text-[#331400] placeholder-[#331400]/30 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#FED45C] transition appearance-none ${hasError ? "border-red-400" : ""}`;
 
   return (
     <main className="min-h-screen bg-[#FEF4EA]">
@@ -97,13 +97,13 @@ export default function StoreCheckoutPage() {
           <motion.div variants={item} className="flex items-center gap-3 mb-6">
             <Link
               href={`/store/onboarding/${product.id}/links?firstName=${firstName}&username=${username}&email=${email}`}
-              className="text-[#331400]/40 hover:text-[#331400] transition text-sm font-medium"
+              className="text-[#331400] hover:text-[#331400] transition text-sm font-medium"
             >
               ← Back
             </Link>
             <div>
               <h1 className="text-2xl font-extrabold text-[#1a0800] leading-tight">Shipping Details</h1>
-              <p className="text-sm text-[#331400]/50">Where should we deliver your card?</p>
+              <p className="text-sm text-[#331400] mt-2">Where should we deliver your card?</p>
             </div>
           </motion.div>
 
@@ -112,7 +112,7 @@ export default function StoreCheckoutPage() {
 
               {/* Street */}
               <motion.div variants={item}>
-                <label className="block text-xs font-bold text-[#331400]/60 uppercase tracking-wide mb-1">Street Address</label>
+                <label className="block text-xs font-bold text-[#331400] uppercase tracking-wide mb-1">Street Address</label>
                 <input type="text" value={street} onChange={(e) => { setStreet(e.target.value); clear("street"); }}
                   placeholder="12 Victoria Island Way" className={inputClass(!!errors.street)} />
                 {errors.street && <p className="text-red-500 text-[11px] mt-1">{errors.street}</p>}
@@ -193,27 +193,27 @@ export default function StoreCheckoutPage() {
           transition={{ duration: 0.5, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
           <div className="bg-white border border-[#331400]/10 p-6 space-y-4 shadow-sm">
-            <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest">Order Summary</p>
+            <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest">Order Summary</p>
             <div className="flex items-center gap-4 pb-4 border-b border-[#331400]/10">
               <div className="w-14 h-9 bg-gradient-to-br from-[#FED45C] to-[#f5a623] flex items-center justify-center flex-shrink-0">
                 <span className="text-[#331400] font-black text-[10px]">NFC</span>
               </div>
               <div>
                 <p className="font-semibold text-sm text-[#1a0800]">{product.name}</p>
-                <p className="text-[11px] text-[#331400]/40">{product.description}</p>
+                <p className="text-[11px] text-[#331400]">{product.description}</p>
               </div>
             </div>
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
-                <span className="text-[#331400]/50">Original price</span>
-                <span className="line-through text-[#331400]/30">₦{product.basePrice.toLocaleString()}</span>
+                <span className="text-[#331400]">Original price</span>
+                <span className="line-through text-[#331400]">₦{product.basePrice.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[#331400]/50">Pre-order discount (15%)</span>
+                <span className="text-[#331400]">Pre-order discount (15%)</span>
                 <span className="text-green-600 font-medium">−₦{discount.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-[#331400]/50">Delivery</span>
+                <span className="text-[#331400]">Delivery</span>
                 <span className="text-green-600 font-medium">Free</span>
               </div>
               <div className="border-t border-[#331400]/10 pt-3 flex justify-between font-bold text-[#1a0800]">
@@ -224,10 +224,10 @@ export default function StoreCheckoutPage() {
           </div>
 
           <div className="bg-white border border-[#331400]/10 p-5 space-y-2 shadow-sm">
-            <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest mb-3">Account Details</p>
+            <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest mb-3">Account Details</p>
             {[["Name", firstName || "—"], ["Username", `@${username || "—"}`], ["Email", email || "—"]].map(([label, val]) => (
               <div key={label} className="flex justify-between text-sm">
-                <span className="text-[#331400]/50">{label}</span>
+                <span className="text-[#331400]">{label}</span>
                 <span className="font-medium text-[#1a0800] text-right max-w-[180px] truncate">{val}</span>
               </div>
             ))}

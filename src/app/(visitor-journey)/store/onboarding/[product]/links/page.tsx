@@ -88,7 +88,7 @@ export default function StoreLinksPage() {
 
           <motion.div variants={item}>
             <h1 className="text-2xl font-extrabold text-[#1a0800] mb-1">Add Your Links</h1>
-            <p className="text-sm text-[#331400]/50 mb-6">Choose which platforms to show on your Abio profile card.</p>
+            <p className="text-sm text-[#331400] mb-6">Choose which platforms to show on your Abio profile card.</p>
           </motion.div>
 
           {/* Added links */}
@@ -101,7 +101,7 @@ export default function StoreLinksPage() {
                 transition={{ duration: 0.3 }}
                 className="mb-6 overflow-hidden"
               >
-                <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest mb-2">Added ({links.length})</p>
+                <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest mb-2">Added ({links.length})</p>
                 <div className="space-y-2">
                   <AnimatePresence>
                     {links.map((link) => (
@@ -116,9 +116,9 @@ export default function StoreLinksPage() {
                         <span className="text-[#331400] flex-shrink-0">{getPlatformIcon(link.platform)}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-semibold text-[#1a0800] truncate">{link.title}</p>
-                          <p className="text-[11px] text-[#331400]/40 truncate">{link.url}</p>
+                          <p className="text-[11px] text-[#331400] truncate">{link.url}</p>
                         </div>
-                        <button onClick={() => removeLink(link.id)} className="text-[#331400]/30 hover:text-red-500 text-xs transition px-1 flex-shrink-0">✕</button>
+                        <button onClick={() => removeLink(link.id)} className="text-[#331400] hover:text-red-500 text-xs transition px-1 flex-shrink-0">✕</button>
                       </motion.div>
                     ))}
                   </AnimatePresence>
@@ -181,7 +181,7 @@ export default function StoreLinksPage() {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest mb-4">Profile Preview</p>
+          <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest mb-4">Profile Preview</p>
           <motion.div
             className="max-w-[240px] mx-auto bg-white border border-[#331400]/10 overflow-hidden shadow-sm"
             layout
@@ -283,7 +283,7 @@ export default function StoreLinksPage() {
                   type="text"
                   value={linkTitle}
                   onChange={(e) => setLinkTitle(e.target.value)}
-                  className="w-full bg-[#FEF4EA] border border-[#331400]/15 text-[16px] text-[#331400] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#FED45C] placeholder-[#331400]/30"
+                  className="w-full bg-[#FEF4EA] h-8 border border-[#331400]/15 text-[15px] text-[#331400] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#FED45C] placeholder-[#331400]/30"
                   placeholder="Button label"
                 />
               </div>
@@ -294,14 +294,14 @@ export default function StoreLinksPage() {
                   type="url"
                   value={linkUrl}
                   onChange={(e) => { setLinkUrl(e.target.value); if (urlError) setUrlError(""); }}
-                  className={`w-full bg-[#FEF4EA] border text-[16px] text-[#331400] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#FED45C] placeholder-[#331400]/30 ${urlError ? "border-red-400" : "border-[#331400]/15"}`}
+                  className={`w-full bg-[#FEF4EA] border text-[15px] h-8 text-[#331400] px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#FED45C] placeholder-[#331400]/30 ${urlError ? "border-red-400" : "border-[#331400]/15"}`}
                   placeholder="https://instagram.com/yourname"
                 />
                 {urlError && <p className="text-red-500 text-[11px] mt-1">{urlError}</p>}
               </div>
 
               <div className="flex gap-3 pt-1">
-                <button onClick={closeModal} className="flex-1 border border-[#331400]/15 text-[#331400]/60 text-sm py-3 hover:border-[#331400]/30 hover:text-[#331400] transition">Cancel</button>
+                <button onClick={closeModal} className="flex-1 border border-[#331400]/15 text-[#331400] text-sm py-3 hover:border-[#331400]/30 hover:text-[#331400] transition">Cancel</button>
                 <button onClick={addLink} className="flex-1 bg-[#331400] text-white text-sm font-bold py-3 hover:bg-[#4a2207] transition">Add Link</button>
               </div>
             </motion.div>

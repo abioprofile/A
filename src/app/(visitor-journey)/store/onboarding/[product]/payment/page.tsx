@@ -64,7 +64,12 @@ export default function StorePaymentPage() {
       },
       onClose: () => setLoading(false),
     });
-    if (handler) { handler.openIframe(); } else { setError("Payment service unavailable. Please try again."); setLoading(false); }
+    if (handler) {
+      handler.openIframe();
+    } else {
+      setError("Payment service unavailable. Please try again.");
+      setLoading(false);
+    }
   };
 
   const backUrl = () => {
@@ -97,21 +102,21 @@ export default function StorePaymentPage() {
             </motion.div>
 
             <motion.div variants={item} className="flex items-center gap-3 mb-6">
-              <Link href={backUrl()} className="text-[#331400]/40 hover:text-[#331400] transition text-sm font-medium">← Back</Link>
+              <Link href={backUrl()} className="text-[#331400] transition text-sm font-medium">← Back</Link>
               <div>
                 <h1 className="text-2xl font-extrabold text-[#1a0800] leading-tight">Payment</h1>
-                <p className="text-sm text-[#331400]/50">Secure checkout via Paystack</p>
+                <p className="text-sm text-[#331400]">Secure checkout via Paystack</p>
               </div>
             </motion.div>
 
             {/* Amount due */}
             <motion.div variants={item} className="border border-[#331400]/15 bg-white p-5 mb-6 shadow-sm">
-              <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest mb-2">Amount Due</p>
+              <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest mb-2">Amount Due</p>
               <div className="flex items-baseline gap-3">
                 <span className="text-3xl font-extrabold text-[#1a0800]">₦{discountedPrice.toLocaleString()}</span>
-                <span className="text-[#331400]/30 line-through text-sm">₦{product.basePrice.toLocaleString()}</span>
+                <span className="text-[#331400] line-through text-sm">₦{product.basePrice.toLocaleString()}</span>
               </div>
-              <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#331400]/50">
+              <div className="mt-2 flex flex-wrap gap-3 text-xs text-[#331400]">
                 <span>✅ 15% pre-order discount applied</span>
                 <span>🚚 Free delivery included</span>
               </div>
@@ -119,10 +124,10 @@ export default function StorePaymentPage() {
 
             {/* Order review */}
             <motion.div variants={item} className="border border-[#331400]/10 bg-white p-4 mb-6 space-y-2 text-sm shadow-sm">
-              <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest mb-3">Order Review</p>
+              <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest mb-3">Order Review</p>
               {[["Product", product.name], ["Delivery to", `${city}, ${state}`], ["Account", `@${username}`]].map(([label, val]) => (
                 <div key={label} className="flex justify-between">
-                  <span className="text-[#331400]/50">{label}</span>
+                  <span className="text-[#331400]">{label}</span>
                   <span className="font-medium text-[#1a0800] text-right max-w-[200px] truncate">{val}</span>
                 </div>
               ))}
@@ -154,9 +159,29 @@ export default function StorePaymentPage() {
               </motion.button>
             </motion.div>
 
-            <motion.p variants={item} className="text-center text-[11px] text-[#331400]/35 mt-3 flex items-center justify-center gap-1">
+            <motion.p variants={item} className="text-center text-[11px] text-[#331400] mt-3 flex items-center justify-center gap-1">
               <span>🔒</span> Payments are encrypted and processed by Paystack
             </motion.p>
+
+            {process.env.NODE_ENV !== "production" && (
+              <motion.div variants={item} className="mt-4 border border-dashed border-[#331400]/20 p-3">
+                <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest mb-2 text-center">Dev — Skip Payment</p>
+                <button
+                  onClick={() => {
+                    const q = new URLSearchParams({
+                      firstName, username, email,
+                      ref: `TEST-${Date.now()}`,
+                      amount: String(discountedPrice),
+                      product: product.id,
+                    });
+                    router.push(`/store/onboarding/${product.id}/complete?${q}`);
+                  }}
+                  className="w-full border border-[#331400]/20 text-[#331400]/50 text-xs py-2 hover:bg-[#331400]/5 hover:text-[#331400] transition"
+                >
+                  → Go to Order Complete (test)
+                </button>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* ── Right: summary (desktop) ── */}
@@ -166,28 +191,28 @@ export default function StorePaymentPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            <div className="bg-white border border-[#331400]/10 p-6 space-y-4 shadow-sm">
-              <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest">Order Summary</p>
+            <div className="bg-white border border-[#331400] p-6 space-y-4 shadow-sm">
+              <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest">Order Summary</p>
               <div className="flex items-center gap-4 pb-4 border-b border-[#331400]/10">
                 <div className="w-14 h-9 bg-gradient-to-br from-[#FED45C] to-[#f5a623] flex items-center justify-center flex-shrink-0">
                   <span className="text-[#331400] font-black text-[10px]">NFC</span>
                 </div>
                 <div>
                   <p className="font-semibold text-sm text-[#1a0800]">{product.name}</p>
-                  <p className="text-[11px] text-[#331400]/40">{product.description}</p>
+                  <p className="text-[11px] text-[#331400]">{product.description}</p>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#331400]/50">Original price</span>
-                  <span className="line-through text-[#331400]/30">₦{product.basePrice.toLocaleString()}</span>
+                  <span className="text-[#331400]">Original price</span>
+                  <span className="line-through text-[#331400]">₦{product.basePrice.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#331400]/50">Discount (15%)</span>
+                  <span className="text-[#331400]">Discount (15%)</span>
                   <span className="text-green-600 font-medium">−₦{discount.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#331400]/50">Delivery</span>
+                  <span className="text-[#331400]">Delivery</span>
                   <span className="text-green-600 font-medium">Free</span>
                 </div>
                 <div className="border-t border-[#331400]/10 pt-3 flex justify-between font-bold text-[#1a0800]">
@@ -197,12 +222,13 @@ export default function StorePaymentPage() {
               </div>
             </div>
 
+            {/* ✅ Fixed: was text-[#3314 (missing closing bracket) */}
             <div className="bg-white border border-[#331400]/10 p-5 space-y-2 text-sm shadow-sm">
-              <p className="text-[10px] font-bold text-[#331400]/40 uppercase tracking-widest mb-3">Shipping To</p>
+              <p className="text-[10px] font-bold text-[#331400] uppercase tracking-widest mb-3">Shipping To</p>
               <p className="font-medium text-[#1a0800]">{firstName}</p>
-              <p className="text-[#331400]/50">{street}</p>
-              <p className="text-[#331400]/50">{city}, {state}</p>
-              <p className="text-[#331400]/50">{phone}</p>
+              <p className="text-[#331400]">{street}</p>
+              <p className="text-[#331400]">{city}, {state}</p>
+              <p className="text-[#331400]">{phone}</p>
             </div>
 
             <div className="space-y-2">
