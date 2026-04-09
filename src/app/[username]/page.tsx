@@ -328,7 +328,7 @@ export default function PublicProfilePage() {
     }
   }
 
-  // ─── Shared link button style ──────────────────────────────────────────────
+  // ─── Shared link button style 
   const linkButtonStyle: React.CSSProperties = {
     borderRadius: buttonStyle?.borderRadius || "0px",
     border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
@@ -800,7 +800,7 @@ export default function PublicProfilePage() {
                             href={link.url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm  transition-all cursor-pointer mb-3"
+                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm  transition-all cursor-pointer mb-3"
                             style={linkButtonStyle}
                           >
                             <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
