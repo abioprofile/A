@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { getStoreProduct } from "@/lib/store-onboarding";
 import { getPlatformIcon } from "@/components/PlatformIcon";
+import { addLinks as apiAddLink } from "@/lib/api/auth.api";
 
 const PLATFORMS = [
   "Instagram","TikTok","Twitter","YouTube","Facebook",
@@ -40,6 +41,8 @@ export default function StoreLinksPage() {
   const [linkTitle, setLinkTitle] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
   const [urlError, setUrlError] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [saveStep, setSaveStep] = useState("");
 
   if (!product) return null;
 
@@ -55,7 +58,21 @@ export default function StoreLinksPage() {
 
   const removeLink = (id: string) => setLinks((prev) => prev.filter((l) => l.id !== id));
 
-  const proceed = () => {
+  const proceed = async () => {
+    setSaving(true);
+    if (links.length > 0) {
+      for (let i = 0; i < links.length; i++) {
+        const link = links[i];
+        setSaveStep(`Saving link ${i + 1} of ${links.length}…`);
+        try {
+          await apiAddLink({ title: link.title, url: link.url, platform: link.platform });
+        } catch {
+          // continue — best-effort, don't block checkout for a single link failure
+        }
+      }
+    }
+    setSaving(false);
+    setSaveStep("");
     const q = new URLSearchParams({ firstName, username, email });
     if (links.length > 0) q.set("links", JSON.stringify(links));
     router.push(`/store/onboarding/${product.id}/checkout?${q}`);
@@ -157,17 +174,24 @@ export default function StoreLinksPage() {
           <motion.div variants={item} className="flex flex-col gap-3">
             <motion.button
               onClick={proceed}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full bg-[#331400] text-white text-sm font-bold py-4 hover:bg-[#4a2207] transition"
+              disabled={saving}
+              whileHover={{ scale: saving ? 1 : 1.01 }}
+              whileTap={{ scale: saving ? 1 : 0.98 }}
+              className="w-full bg-[#331400] text-white text-sm font-bold py-4 hover:bg-[#4a2207] transition disabled:opacity-70 flex items-center justify-center gap-2"
             >
-              Continue →
+              {saving ? (
+                <>
+                  <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin flex-shrink-0" />
+                  {saveStep || "Saving links…"}
+                </>
+              ) : "Continue →"}
             </motion.button>
             <motion.button
               onClick={skip}
+              disabled={saving}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
-              className="w-full border border-[#331400]/15 text-[#331400]/50 text-sm py-3 hover:border-[#331400]/30 hover:text-[#331400] transition"
+              className="w-full border border-[#331400]/15 text-[#331400]/50 text-sm py-3 hover:border-[#331400]/30 hover:text-[#331400] transition disabled:opacity-40"
             >
               Skip for now
             </motion.button>

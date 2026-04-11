@@ -1,4 +1,4 @@
-"use client"; // Add this at the very top
+"use client"; 
 
 import Image from 'next/image'
 import React from 'react'
@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 
 const HeroSection = () => {
   return (
-    <section className="min-h-[75vh] lg:min-h-screen mt-20 lg:mt-4 w-full bg-[#FEF4EA] flex items-center">
+    <section className="min-h-[75vh] lg:min-h-screen mt-20 lg:mt-0 w-full bg-[#FEF4EA] flex items-center">
       <div className="container mx-auto px-4 lg:mt-16 grid md:grid-cols-2 gap-10 items-center">
         
         {/* Left Side */}
