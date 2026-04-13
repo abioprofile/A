@@ -170,20 +170,21 @@ export default function LinkList({
   // Handle toggle visibility
   const handleToggleVisibility = useCallback(
     async (link: ProfileLink) => {
+      const newVisibility = !link.isVisible;
+      setLinksData((prev) =>
+        prev.map((l) => (l.id === link.id ? { ...l, isVisible: newVisibility } : l))
+      );
       try {
         await updateLinkMutation.mutateAsync({
           linkId: link.id,
-          isVisible: !link.isVisible,
+          isVisible: newVisibility,
           platform: link.platform,
         });
-        // Optimistically update local state
-        setLinksData((prev) =>
-          prev.map((l) =>
-            l.id === link.id ? { ...l, isVisible: !l.isVisible } : l
-          )
-        );
         await refetchLinks();
       } catch (error) {
+        setLinksData((prev) =>
+          prev.map((l) => (l.id === link.id ? { ...l, isVisible: !newVisibility } : l))
+        );
         console.error("Failed to toggle visibility:", error);
       }
     },

@@ -104,7 +104,6 @@ export default function PublicProfilePage() {
   const [activeTab, setActiveTab] = useState<"links" | "listen" | "menu">("links");
   const [profileShareUrl, setProfileShareUrl] = useState("");
 
-
   useEffect(() => {
     if (typeof window === "undefined" || !username) return;
     setProfileShareUrl(`${window.location.origin}/${username}`);

@@ -3,98 +3,91 @@
 import Link from "next/link";
 import { FaInstagram, FaTiktok, FaPinterest, FaTwitter } from "react-icons/fa";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[#331400] text-white py-10">
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
-          {/* Brand Section */}
-          <div className="md:col-span-2">
-            <div className="flex items-center">
-           <Link href="/" className="flex items-center gap-1 group">
-            <Image
-              src="/icons/A.Bio.png"
-              alt="A.Bio Logo"
-              width={28}
-              height={28}
-              priority
-              className="cursor-pointer select-none transition-transform group-hover:scale-105"
-            />
-            <span className="font-bold text-xl md:text-2xl text-white tracking-wide ">
-              bio
-            </span>
-          </Link>
-
+    <footer className="bg-[#331400] text-white pt-14 pb-8">
+      <div className="max-w-7xl mx-auto px-6 md:px-10 lg:px-16">
+        {/* Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-10 mb-14">
+          {/* Brand */}
+          <div className="col-span-2 sm:col-span-2 md:col-span-1">
+            <Link href="/" className="flex items-center gap-1 group w-fit mb-5">
+              <Image
+                src="/icons/A.Bio.png"
+                alt="A.Bio Logo"
+                width={28}
+                height={28}
+                priority
+                className="cursor-pointer select-none transition-transform group-hover:scale-105"
+              />
+              <span className="font-bold text-xl text-white tracking-wide">bio</span>
+            </Link>
+            <p className="text-xs text-white/60 leading-6 max-w-[200px]">
+              One link. Endless connections.
+            </p>
           </div>
-          </div>
 
-          {/* Product Links */}
+          {/* Product */}
           <div>
-            <h3 className="font-bold trial text-xl mb-4">Product</h3>
-            <div className="flex flex-col space-y-4 font-thin text-xs md:text-sm">
-              <Link href="#">Features</Link>
-              <Link href="#">How it works</Link>
-              <Link href="#">Setup</Link>
-              <Link href="#">FAQ</Link>
+            <h3 className="font-bold trial text-base mb-5 text-white">Product</h3>
+            <div className="flex flex-col space-y-3 text-xs text-white/70">
+              <Link href="#" className="hover:text-white transition-colors duration-200">Templates</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Store</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Contact Us</Link>
             </div>
           </div>
 
-          {/* Legal Links */}
+          {/* Company */}
           <div>
-            <h3 className="font-bold trial text-xl mb-4">Legal</h3>
-            <div className="flex flex-col space-y-4 font-thin text-xs md:text-sm">
-             
-              <Link href="#">Privacy Policy</Link>
-              
+            <h3 className="font-bold trial text-base mb-5 text-white">Company</h3>
+            <div className="flex flex-col space-y-3 text-xs text-white/70">
+              <Link href="#" className="hover:text-white transition-colors duration-200">About</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">FAQ</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Careers</Link>
+            </div>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="font-bold trial text-base mb-5 text-white">Legal</h3>
+            <div className="flex flex-col space-y-3 text-xs text-white/70">
+              <Link href="#" className="hover:text-white transition-colors duration-200">Terms of Service</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Privacy Policy</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Community Guidelines</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Cookie Policy</Link>
             </div>
           </div>
         </div>
 
-        {/* Bottom Section */}
-        <div className="border-t border-[#FED45C] pt-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-white font-semibold text-sm mb-4 md:mb-0">
-              © {currentYear} abio One Link Endless Connections
-            </p>
+        {/* Bottom */}
+        <div className="border-t border-[#FED45C]/30 pt-7 flex flex-col sm:flex-row justify-between items-center gap-5">
+          <p className="text-white/60 text-xs">
+            © {currentYear} A.Bio — One Link Endless Connections
+          </p>
 
-            {/* Social Icons */}
-            <div className="flex space-x-4 text-lg">
-              <a
-                href="https://www.instagram.com/abio.site?igsh=MXhjYmtvOWlvbXBpeg%3D%3D&utm_source=qr"
+          <div className="flex space-x-3">
+            {[
+              { href: "https://www.instagram.com/abio.site?igsh=MXhjYmtvOWlvbXBpeg%3D%3D&utm_source=qr", icon: <FaInstagram /> },
+              { href: "https://www.tiktok.com/@abio.site?_t=ZS-90XaM2rHhp4&_r=1", icon: <FaTiktok /> },
+              { href: "https://pin.it/4rk3x7b28", icon: <FaPinterest /> },
+              { href: "https://x.com/abioprofile?s=21", icon: <FaTwitter /> },
+            ].map(({ href, icon }, i) => (
+              <motion.a
+                key={i}
+                href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2  transition-all"
+                whileHover={{ scale: 1.15, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                className="border border-white/30 p-2 text-white/70 hover:text-white hover:border-white transition-colors duration-200"
               >
-                <FaInstagram />
-              </a>
-              <a
-                href="https://www.tiktok.com/@abio.site?_t=ZS-90XaM2rHhp4&_r=1"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2 transition-all"
-              >
-                <FaTiktok />
-              </a>
-              <a
-                href="https://pin.it/4rk3x7b28"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2 transition-all"
-              >
-                <FaPinterest />
-              </a>
-              <a
-                href="https://x.com/abioprofile?s=21"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="border-1 border-[#fff] shadow-[1px_1px_0px_0px_#fff] p-2 transition-all"
-              >
-                <FaTwitter />
-              </a>
-            </div>
+                {icon}
+              </motion.a>
+            ))}
           </div>
         </div>
       </div>

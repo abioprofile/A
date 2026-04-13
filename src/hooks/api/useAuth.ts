@@ -445,7 +445,7 @@ export const useUserProfileByUsername = (username: string) => {
       return await getUserProfileByUsername(username);
     },
     enabled: !!username,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
   });
 };
 

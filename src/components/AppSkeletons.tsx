@@ -87,7 +87,7 @@ export function SkeletonDashboardProfile() {
   );
 }
 
-// ─── Public profile page skeleton (full-page) ────────────────────────────
+// ─── Public profile page skeleton (full-page) 
 export function SkeletonPublicProfile() {
   return (
     <div className="min-h-screen bg-neutral-100 flex flex-col items-center pt-10 px-4">
@@ -95,8 +95,8 @@ export function SkeletonPublicProfile() {
       <Bone className="h-6 w-36 mb-2" />
       <Bone className="h-3 w-24 mb-3" />
       <Bone className="h-3 w-64 mb-1.5" />
-      <Bone className="h-3 w-48 mb-5" />
-      <Bone className="h-5 w-28 mb-7" />
+      <Bone className="h-3 w-20 mb-5" />
+      {/* <Bone className="h-5 w-28 mb-7" /> */}
       <div className="flex gap-6 mb-6">
         <Bone className="h-4 w-12" />
         <Bone className="h-4 w-16" />
@@ -110,7 +110,7 @@ export function SkeletonPublicProfile() {
   );
 }
 
-// ─── Phone display skeleton ───────────────────────────────────────────────
+// ─── Phone display skeleton ─
 export function SkeletonPhoneDisplay() {
   return (
     <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto border-[2px] border-gray-200 overflow-hidden bg-[#f5f5f5]">
@@ -139,7 +139,7 @@ export function SkeletonPhoneDisplay() {
   );
 }
 
-// ─── Stat card skeleton ───────────────────────────────────────────────────
+// ─── Stat card skeleton ─
 export function SkeletonStatCard() {
   return (
     <div className="bg-white border p-4 space-y-3">

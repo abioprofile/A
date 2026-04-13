@@ -1,288 +1,342 @@
 "use client";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1, delayChildren: 0.05 },
+  },
+};
+const cardVariants: Variants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: { type: "spring", stiffness: 80, damping: 16 },
+  },
+};
+
+const PhoneMockup = () => (
+  <div className="mx-auto mt-3 w-[68px] h-[130px] border-[1.5px] border-[#FEF4EA]/20 rounded-[12px] overflow-hidden bg-[#FEF4EA]/[0.07]">
+    <div className="w-5 h-[3px] bg-[#FEF4EA]/18 rounded-full mx-auto mt-2 mb-2" />
+    <div className="w-[22px] h-[22px] rounded-full bg-[#FED45C]/65 mx-auto mb-1" />
+    <div className="h-1 bg-[#FEF4EA]/13 rounded-full mx-5 mb-1" />
+    {[1, 2, 3].map((i) => (
+      <div
+        key={i}
+        className="h-[15px] bg-[#FEF4EA]/10 border border-[#FEF4EA]/8 mx-1.5 mb-1"
+      />
+    ))}
+  </div>
+);
+
+const AnalyticsBars = () => (
+  <div className="flex items-end gap-[3px] h-10 w-full mt-auto">
+    {[30, 50, 38, 70, 45, 88, 62, 95, 72, 100, 82, 92].map((h, i) => (
+      <motion.div
+        key={i}
+        animate={{ scaleY: [1, 1.18, 1] }}
+        transition={{
+          duration: 2.5,
+          repeat: Infinity,
+          delay: i * 0.18,
+          ease: "easeInOut",
+        }}
+        className="flex-1 bg-[#5D2D2B]/18 origin-bottom"
+        style={{ height: `${h}%` }}
+      />
+    ))}
+  </div>
+);
+
+const platforms = [
+  "Instagram",
+  "TikTok",
+  "YouTube",
+  "Spotify",
+  "Twitter",
+  "LinkedIn",
+  "Snapchat",
+  "WhatsApp",
+  "Facebook",
+  "Pinterest",
+  "Figma",
+  "Behance",
+  "Twitch",
+  "Discord",
+  "Reddit",
+  "SoundCloud",
+];
+const allPlatforms = [...platforms, ...platforms];
+
+const themes = [
+  { name: "Warm", bg: "#FEF4EA", card: "#5D2D2B", text: "#5D2D2B" },
+  { name: "Noir", bg: "#120600", card: "#FED45C", text: "#FEF4EA" },
+  { name: "Mint", bg: "#E8F8F2", card: "#3EB489", text: "#0F6E56" },
+  { name: "Blaze", bg: "#FFF1EB", card: "#FF854A", text: "#FF854A" },
+  { name: "Slate", bg: "#1A1A2E", card: "#4A4A8A", text: "#FFF" },
+  { name: "Butter", bg: "#FFFBEA", card: "#FED45C", text: "#5D2D2B" },
+];
+const allThemes = [...themes, ...themes];
+
+const ThemeCarousel = () => (
+  <div className="overflow-hidden mt-4 -mx-1">
+    <motion.div
+      animate={{ x: ["0%", "-50%"] }}
+      transition={{ duration: 14, repeat: Infinity, ease: "linear" }}
+      className="flex gap-2 w-max"
+    >
+      {allThemes.map((t, i) => (
+        <div
+          key={i}
+          className="flex-shrink-0 w-[68px] rounded-[10px] overflow-hidden border border-white/10"
+          style={{ background: t.bg }}
+        >
+          <div className="p-1.5 flex flex-col gap-1">
+            <div className="flex items-center gap-1 mt-0.5">
+              <div
+                className="w-4 h-4 rounded-full flex-shrink-0"
+                style={{ background: t.card }}
+              />
+              <div
+                className="flex-1 h-1.5 rounded-full opacity-30"
+                style={{ background: t.card }}
+              />
+            </div>
+            {[1, 2, 3].map((j) => (
+              <div
+                key={j}
+                className="w-full h-4 rounded-[3px]"
+                style={{ background: j === 1 ? t.card : `${t.card}30` }}
+              />
+            ))}
+            <div className="flex justify-center gap-1 mt-0.5 pb-0.5">
+              {[1, 2, 3].map((j) => (
+                <div
+                  key={j}
+                  className="w-2.5 h-2.5 rounded-full"
+                  style={{ background: `${t.card}40` }}
+                />
+              ))}
+            </div>
+          </div>
+          <div
+            className="text-center text-[8px] font-bold py-1 tracking-wide"
+            style={{ color: t.text, background: `${t.card}18` }}
+          >
+            {t.name}
+          </div>
+        </div>
+      ))}
+    </motion.div>
+  </div>
+);
 
 export default function FeaturesGrid() {
-  // Animation variants for staggered children
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2,
-        delayChildren: 0.1,
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 100, damping: 15 }
-    }
-  };
-
-  const floatVariants = {
-    initial: { y: 0 },
-    float: {
-      y: [-5, 5, -5],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        repeatType: "reverse",
-        ease: "easeInOut"
-      }
-    }
-  };
-
-  const scaleVariants = {
-    hidden: { scale: 0.8, opacity: 0 },
-    visible: {
-      scale: 1,
-      opacity: 1,
-      transition: { type: "spring", stiffness: 200, damping: 15 }
-    }
-  };
-
-  const rotateVariants = {
-    hidden: { rotate: -180, scale: 0 },
-    visible: {
-      rotate: 0,
-      scale: 1,
-      transition: { type: "spring", stiffness: 150, damping: 15 }
-    }
-  };
-
   return (
-    <section className="container relative mx-auto px-4 sm:px-6 md:px-8 py-12 bg-[#FFDCE3] overflow-hidden">
-      {/* Decorative Stars with animation */}
+    <section className="w-full bg-[#FFDCE3] px-4 sm:px-8 md:px-12 lg:px-20 py-16 md:py-24 relative overflow-hidden">
+      {/* Spinning stars */}
       <motion.div
-        initial={{ rotate: 0 }}
         animate={{ rotate: 360 }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+        className="absolute top-5 left-5 sm:top-7 sm:left-7"
       >
         <Image
           src="/images/Star 6.svg"
           alt=""
-          height={40}
-          width={40}
-          className="absolute top-2 left-2 sm:top-4 sm:left-4 w-8 h-8 sm:w-10 sm:h-10"
+          height={32}
+          width={32}
+          className="w-7 h-7 sm:w-8 sm:h-8"
         />
       </motion.div>
-
       <motion.div
-        initial={{ rotate: 0 }}
         animate={{ rotate: -360 }}
-        transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+        transition={{ duration: 26, repeat: Infinity, ease: "linear" }}
+        className="absolute top-5 right-5 sm:top-7 sm:right-7"
       >
         <Image
           src="/images/Star 6.svg"
           alt=""
-          height={40}
-          width={40}
-          className="absolute top-2 right-2 sm:top-4 sm:right-4 w-8 h-8 sm:w-10 sm:h-10"
+          height={32}
+          width={32}
+          className="w-7 h-7 sm:w-8 sm:h-8"
         />
       </motion.div>
 
-      {/* Heading with fade-in */}
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="text-center trialheader text-3xl sm:text-4xl md:text-5xl font-bold mb-4 text-[#4B2C2C]"
-      >
-        Features
-      </motion.h2>
-
+      {/* Section Header */}
       <motion.div
-        initial={{ opacity: 0, scaleX: 0 }}
-        animate={{ opacity: 1, scaleX: 1 }}
-        transition={{ delay: 0.2, duration: 0.5 }}
-        className="flex gap-2 items-center justify-center mb-8"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="mb-10 md:mb-14"
       >
-        <div className="w-3 h-2 bg-[#D9D9D9]" />
-        <div className="w-8 h-2 bg-[#FF854A]" />
-        <div className="w-3 h-2 bg-[#D9D9D9]" />
+        <p className="text-[12px] font-black tracking-[0.2em] text-[#5D2D2B]/40 uppercase mb-2">
+          What you get
+        </p>
+        <h2 className="text-[40px] xl:text-[60px] trialheader font-[400] text-[#5D2D2B] leading-[1.2] tracking-tight">
+          Everything you need.
+          <br />
+          <span className="text-[#FF854A]">Nothing you don't.</span>
+        </h2>
       </motion.div>
 
-      {/* Grid Layout with staggered animation */}
+      {/* Bento Grid — 2 cols mobile, 3 cols desktop */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, amount: 0.2 }}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto"
+        viewport={{ once: true, amount: 0.08 }}
+        className="grid grid-cols-3 gap-3 md:gap-4"
       >
-        {/* Dynamic Profile */}
+        {/* 1. Bio Profile — 1 col */}
         <motion.div
-          variants={itemVariants}
-          className="relative row-span-2 bg-[#FF854A] p-6 sm:p-8 text-white flex flex-col justify-between overflow-hidden"
+          variants={cardVariants}
+          className="relative bg-[#5D2D2B] p-4 md:p-6 overflow-hidden flex flex-col
+               col-span-1 min-h-[210px] md:min-h-[230px] lg:min-h-[250px]"
         >
-          {/* Animated shape */}
-          <motion.div
-            variants={rotateVariants}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.5 }}
-          >
-            <svg
-              className="absolute top-6 right-0 w-16 sm:w-20 h-16 sm:h-20 opacity-50"
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#FFB68A"
-            >
-              <path d="M94.4 57.5c.4-2.4.6-4.9.6-7.5s-.2-5.1-.6-7.5l9.1-7.1c.8-.7 1.1-1.8.5-2.7l-8.6-14.9c-.6-1-1.7-1.3-2.7-.9l-10.7 4.3c-3.9-3-8.2-5.4-12.9-7.1l-1.6-11.3c-.2-1.1-1.1-2-2.2-2h-17c-1.1 0-2 .9-2.2 2l-1.6 11.3c-4.7 1.7-9 4.1-12.9 7.1L7.3 17.9c-1-.4-2.1-.1-2.7.9L-4 33.7c-.6.9-.3 2 .5 2.7l9.1 7.1c-.4 2.4-.6 4.9-.6 7.5s.2 5.1.6 7.5l-9.1 7.1c-.8.7-1.1 1.8-.5 2.7l8.6 14.9c.6 1 1.7 1.3 2.7.9l10.7-4.3c3.9 3 8.2 5.4 12.9 7.1l1.6 11.3c.2 1.1 1.1 2 2.2 2h17c1.1 0 2-.9 2.2-2l1.6-11.3c4.7-1.7 9-4.1 12.9-7.1l10.7 4.3c1 .4 2.1.1 2.7-.9l8.6-14.9c.6-.9.3-2-.5-2.7l-9.1-7.1z"/>
-            </svg>
-          </motion.div>
-
-          <motion.div
-            variants={floatVariants}
-            initial="initial"
-            animate="float"
-            className="absolute bottom-12 right-10 w-20 sm:w-28 h-20 sm:h-28 bg-[#F77F3C] rounded-full opacity-30"
-          />
-
+          <div className="absolute w-20 h-20 bg-[#4A2422] rounded-full -bottom-6 -right-6" />
           <div className="relative z-10">
-            <motion.p
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="text-sm sm:text-2xl trial italic"
-            >
-              Dynamic
-            </motion.p>
-            <motion.p
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 1 }}
-              className="text-3xl sm:text-3xl font-bold italic"
-            >
-              Profile
-            </motion.p>
-            <motion.p
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ delay: 1.2 }}
-              className="text-sm trial sm:text-xl italic"
-            >
-              in One Link
-            </motion.p>
-            <motion.p
-              whileHover={{ scale: 1.05 }}
-              className="bg-white text-black text-xs sm:text-sm inline-block px-3 py-1 mt-4 italic font-semibold"
-            >
-              one easy bio link.
-            </motion.p>
+            <span className="inline-block bg-[#FED45C] text-[#5D2D2B] text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase px-2 py-0.5 mb-2">
+              Bio Link
+            </span>
+            <h3 className="text-[16px] md:text-[26px] font-[400] text-[#FEF4EA] leading-tight trialheader">
+              Your link.
+              <br />
+              Your world.
+            </h3>
           </div>
-
-          {/* Phone Image with float animation */}
           <motion.div
-            variants={floatVariants}
-            initial="initial"
-            animate="float"
-            className="relative z-10 flex justify-center mt-6 sm:mt-8"
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className="relative z-10 mt-auto"
           >
-            <Image
-              src="/images/den.svg"
-              alt="Phone"
-              width={200}
-              height={500}
-              className="object-contain w-[250px] sm:w-[250px] md:w-[320px] max-h-[400px]"
+            <PhoneMockup />
+          </motion.div>
+        </motion.div>
+
+        {/* 2. Themes — 2 cols */}
+        <motion.div
+          variants={cardVariants}
+          className="relative bg-[#120600] p-4 md:p-6 overflow-hidden flex flex-col justify-between
+               col-span-2 min-h-[210px] md:min-h-[230px] lg:min-h-[250px]"
+        >
+          <div className="absolute w-24 h-24 bg-[#FED45C]/05 rounded-full -top-8 -right-8" />
+          <div>
+            <span className="inline-block text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase px-2 py-0.5 mb-2 bg-[#FED45C]/15 text-[#FED45C]">
+              Themes
+            </span>
+            <h3 className="text-[18px] md:text-[26px] font-[400] text-[#FEF4EA] trialheader leading-tight">
+              Make it
+              <br />
+              yours.
+            </h3>
+            <p className="text-[#FEF4EA]/35 text-[10px] md:text-[11px] mt-1.5">
+              Your brand. Your style.
+            </p>
+          </div>
+          <ThemeCarousel />
+        </motion.div>
+
+        {/* 3. Realtime — 2 cols */}
+        <motion.div
+          variants={cardVariants}
+          className="relative bg-[#FF854A] p-4 md:p-6 overflow-hidden flex flex-col justify-between
+               col-span-2 min-h-[210px] md:min-h-[230px] lg:min-h-[250px]"
+        >
+          <div className="absolute w-20 h-20 bg-[#E6703B]/40 rounded-full -bottom-6 -left-6" />
+          <div className="relative z-10 flex items-center gap-2">
+            <motion.div
+              animate={{ scale: [1, 1.4, 1], opacity: [1, 0.4, 1] }}
+              transition={{ duration: 1.4, repeat: Infinity }}
+              className="w-2 h-2 bg-white rounded-full"
             />
-          </motion.div>
-        </motion.div>
-
-        {/* Realtime Updates */}
-        <motion.div
-          variants={itemVariants}
-          className="relative bg-[#5C2E2E] col-span-1 sm:col-span-2 p-6 sm:p-8 text-white flex flex-col justify-center overflow-hidden"
-        >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-          >
-            <svg
-              className="absolute -top-4 -left-8 w-16 sm:w-24 h-16 sm:h-24 opacity-40"
-              viewBox="0 0 100 100"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="#875651"
-            >
-              <path d="M50 5 L57 18 A35 35 0 0 1 74 26 L88 19 L93 32 L81 41 A35 35 0 0 1 81 59 L93 68 L88 81 L74 74 A35 35 0 0 1 57 82 L50 95 L43 82 A35 35 0 0 1 26 74 L12 81 L7 68 L19 59 A35 35 0 0 1 19 41 L7 32 L12 19 L26 26 A35 35 0 0 1 43 18 Z" />
-            </svg>
-          </motion.div>
-
-          <motion.div
-            variants={scaleVariants}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.8 }}
-            className="absolute bottom-6 right-6 w-24 sm:w-32 h-24 sm:h-32 bg-[#875651] rounded-full opacity-30"
-          />
-
+            <span className="text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase text-white/80">
+              Live
+            </span>
+          </div>
           <div className="relative z-10">
-            <motion.p
-              whileHover={{ scale: 1.05 }}
-              className="text-xl sm:text-3xl md:text-4xl font-semibold italic"
-            >
+            <h3 className="text-[18px] md:text-[26px] font-[400] text-white trialheader leading-tight">
               Realtime
-            </motion.p>
-            <p className="text-sm sm:text-xl trial italic">Content Updates...</p>
+              <br />
+              Updates
+            </h3>
+            <p className="text-white/60 text-[10px] md:text-[11px] mt-1.5 leading-relaxed">
+              Changes go live instantly. No refresh needed.
+            </p>
           </div>
         </motion.div>
 
-        {/* Multiple Integration */}
+        {/* 4. Analytics — 1 col */}
         <motion.div
-          variants={itemVariants}
-          whileHover={{ scale: 1.05 }}
-          className="relative bg-[#3EB489] p-6 sm:p-8 text-white flex flex-col justify-center overflow-hidden"
+          variants={cardVariants}
+          className="relative bg-[#FED45C] p-4 md:p-6 overflow-hidden flex flex-col
+               col-span-1 min-h-[210px] md:min-h-[230px] lg:min-h-[250px]"
         >
-          <motion.div
-            variants={scaleVariants}
-            initial="hidden"
-            animate="visible"
-            transition={{ delay: 0.7 }}
-            className="absolute -top-4 -right-8 w-20 sm:w-28 h-20 sm:h-28 bg-[#63C9A5] rounded-full opacity-40"
-          />
+          <div className="absolute w-24 h-24 bg-[#F5C840]/40 rounded-full -top-8 -right-8" />
           <div className="relative z-10">
-            <p className="text-xl sm:text-3xl font-semibold italic">Multiple</p>
-            <p className="text-sm sm:text-xl trial italic">Integration...</p>
-          </div>
-        </motion.div>
-
-        {/* Analytics */}
-        <motion.div
-          variants={itemVariants}
-          className="relative bg-[#FFD65A] p-6 sm:p-8 text-[#4B2C2C] flex flex-col justify-center overflow-hidden"
-        >
-          <div className="absolute left-6 bottom-6 flex gap-2">
-            {[1, 2, 3].map((height, index) => (
-              <motion.div
-                key={index}
-                initial={{ height: 0 }}
-                animate={{ height: ["2rem", "4rem", "2rem"][index] }}
-                transition={{
-                  delay: 1 + index * 0.2,
-                  duration: 0.8,
-                  repeat: Infinity,
-                  repeatType: "reverse"
-                }}
-                className="w-2 sm:w-3 bg-[#FFF3C2] rounded"
-              />
-            ))}
-          </div>
-
-          <div className="relative z-10 ml-auto text-right">
-            <motion.p
-              whileHover={{ x: 5 }}
-              className="text-xl sm:text-3xl font-semibold italic"
-            >
+            <span className="inline-block text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase px-2 py-0.5 mb-2 bg-[#5D2D2B] text-[#FED45C]">
               Analytics
-            </motion.p>
-            <p className="text-sm sm:text-xl trial italic">& Engagements</p>
+            </span>
+            <div className="text-[24px] md:text-[48px] font-[400] text-[#5D2D2B] leading-none trialheader">
+              43.5K
+            </div>
+            <p className="text-[#5D2D2B]/60 text-[10px] md:text-[11px] font-semibold">
+              clicks this month
+            </p>
+            <div className="inline-flex items-center bg-[#5D2D2B] text-[#FED45C] text-[8px] md:text-[9px] font-black px-2 py-0.5 mt-1">
+              ↑ 24%
+            </div>
           </div>
+          <AnalyticsBars />
         </motion.div>
+
+        {/* 5. Integrations — always full width */}
+        {/* <motion.div
+          variants={cardVariants}
+          className="relative bg-[#3EB489] p-4 md:p-6 overflow-hidden
+               col-span-3 min-h-[160px]"
+        >
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <span className="inline-block text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase px-2 py-0.5 mb-2 bg-white/20 text-white">
+                Integrations
+              </span>
+              <h3 className="text-[18px] md:text-[26px] font-[400] text-white trialheader leading-tight">
+                50+ Platforms
+              </h3>
+            </div>
+            <p className="text-white/50 text-[10px] font-semibold text-right leading-relaxed hidden sm:block">
+              All your socials.
+              <br />
+              One place.
+            </p>
+          </div>
+          <div className="overflow-hidden">
+            <motion.div
+              animate={{ x: ["0%", "-50%"] }}
+              transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
+              className="flex gap-2.5 w-max"
+            >
+              {allPlatforms.map((name, i) => (
+                <div
+                  key={`${name}-${i}`}
+                  className="w-11 h-11 md:w-12 md:h-12 bg-white/15 flex items-center justify-center flex-shrink-0"
+                >
+                  <Image
+                    src={`/assets/platform-icons/colored/Social=${name},Style=Original.svg`}
+                    alt={name}
+                    width={28}
+                    height={28}
+                    className="w-6 h-6 md:w-7 md:h-7 object-contain"
+                  />
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </motion.div> */}
       </motion.div>
     </section>
   );

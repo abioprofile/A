@@ -472,23 +472,25 @@ const SignUp = () => {
                 whileHover="hover"
                 whileTap={{ scale: 0.98 }}
               >
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
-                  disabled={isSubmitting || signUpMutation.isPending}
-                  aria-label="Sign up with Google"
-                >
-                  <Image
-                    src="/assets/icons/auth/google.svg"
-                    alt="Google icon"
-                    width={16}
-                    height={16}
-                    priority
-                    className="select-none"
-                  />
-                  Google
-                </Button>
+                <a href="https://api.abio.site/api/v1/auth/google">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-10 text-sm font-medium flex items-center justify-center gap-2 w-full"
+                    disabled={isSubmitting || signUpMutation.isPending}
+                    aria-label="Sign up with Google"
+                  >
+                    <Image
+                      src="/assets/icons/auth/google.svg"
+                      alt="Google icon"
+                      width={16}
+                      height={16}
+                      priority
+                      className="select-none"
+                    />
+                    Google
+                  </Button>
+                </a>
               </motion.div>
             </motion.div>
 
