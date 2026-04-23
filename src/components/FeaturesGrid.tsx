@@ -176,7 +176,7 @@ export default function FeaturesGrid() {
         <p className="text-[12px] font-black tracking-[0.2em] text-[#5D2D2B]/40 uppercase mb-2">
           What you get
         </p>
-        <h2 className="text-[40px] xl:text-[60px] trialheader font-[400] text-[#5D2D2B] leading-[1.2] tracking-tight">
+        <h2 className="text-[40px] xl:text-[50px] trialheader font-[400] text-[#5D2D2B] leading-[1.2] tracking-tight">
           Everything you need.
           <br />
           <span className="text-[#FF854A]">Nothing you don't.</span>

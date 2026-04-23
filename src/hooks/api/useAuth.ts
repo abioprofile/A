@@ -27,6 +27,7 @@ import {
   updateAppearanceImage,
   getThemes,
   createTheme,
+  resetPassword,
 } from "@/lib/api/auth.api";
 import {
   SignUpRequest,
@@ -930,4 +931,29 @@ export const useCreateTheme = () => {
       });
     },
   });
-}
+};
+
+export const useResetPassword = () => {
+  const router = useRouter();
+  return useMutation({
+    mutationFn: async (data: { token: string; password: string; passwordConfirm: string }) => {
+      return await resetPassword(data.token, data.password, data.passwordConfirm);
+    },
+    onSuccess: (response: { success: boolean; message: string }) => {
+      toast.success("Password reset successful", {
+        description:
+          response.message || "You can now sign in with your new password",
+      });
+      router.push("/auth/sign-in");
+    },
+    onError: (error: any) => {
+      const errorMessage =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to reset password. Please try again.";
+      toast.error("Failed to reset password", {
+        description: errorMessage,
+      });
+    },
+  });
+};

@@ -27,12 +27,13 @@ const faqs = [
 ];
 
 const Faq = () => {
-  const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const toggle = (i: number) => setOpenIndex(openIndex === i ? null : i);
 
   return (
-    <section className="relative w-full py-16 md:py-24 px-4 sm:px-6 md:px-8 overflow-hidden">
+    <section className="relative w-full py-16 md:py-24 px-4 sm:px-8 md:px-12 lg:px-20 overflow-hidden bg-[#FEF4EA]">
+
       {/* Watermark logo */}
       <div className="absolute inset-0 flex justify-center items-center pointer-events-none opacity-[0.04]">
         <Image
@@ -44,23 +45,26 @@ const Faq = () => {
         />
       </div>
 
-      <div className="relative z-10 max-w-3xl mx-auto">
+      <div className="relative z-10 max-w-4xl mx-auto">
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.5 }}
           transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center mb-10"
+          className="text-center mb-12 md:mb-16"
         >
-          <h2 className="trialheader text-3xl sm:text-4xl md:text-5xl text-red-600 mb-2">
+          <h2 className="trialheader text-[40px] xl:text-[50px] text-[#5D2D2B] font-[400] leading-tight mb-3">
             Got Questions?
           </h2>
-          <p className="text-sm text-[#5D2D2B]">Everything you need to know about A</p>
+          <p className="text-base text-[#5D2D2B]/60 font-light">
+            Everything you need to know about Abio
+          </p>
         </motion.div>
 
         {/* Accordion */}
-        <div className="space-y-3">
+        <div className="space-y-4 md:space-y-5">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
             return (
@@ -68,29 +72,62 @@ const Faq = () => {
                 key={index}
                 initial={{ opacity: 0, y: 14 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.3 }}
+                viewport={{ once: true, amount: 0.2 }}
                 transition={{
-                  duration: 0.3,
+                  duration: 0.35,
                   delay: index * 0.07,
                   ease: [0.25, 0.46, 0.45, 0.94],
                 }}
               >
-                <div className="bg-[#FED45C] border border-[#FED45C] hover:border-[#5D2D2B] transition-colors duration-200">
+                <div
+                  className=" overflow-hidden transition-all duration-300"
+                  style={{
+                    background: isOpen ? "#5D2D2B" : "#FED45C",
+                    boxShadow: isOpen
+                      ? "0 8px 32px rgba(93,45,43,0.18)"
+                      : "0 2px 12px rgba(0,0,0,0.06)",
+                  }}
+                >
+                  {/* Question row */}
                   <button
                     onClick={() => toggle(index)}
-                    className="w-full flex justify-between items-center p-4 sm:p-5 text-left font-semibold text-sm sm:text-base md:text-lg text-[#5D2D2B] cursor-pointer min-h-[54px]"
+                    className="w-full flex justify-between items-center px-7 md:px-10 py-7 md:py-9 text-left cursor-pointer"
                     aria-expanded={isOpen}
                   >
-                    <span className="pr-4">{faq.question}</span>
-                    <motion.span
-                      animate={{ rotate: isOpen ? 180 : 0 }}
-                      transition={{ duration: 0.25, ease: "easeInOut" }}
-                      className="flex-shrink-0 text-sm"
+                    <span
+                      className="pr-6 text-[18px] sm:text-[22px] md:text-[26px] font-bold leading-snug transition-colors duration-300"
+                      style={{ color: isOpen ? "#FEF4EA" : "#5D2D2B" }}
                     >
-                      ▼
-                    </motion.span>
+                      {faq.question}
+                    </span>
+
+                    {/* Chevron */}
+                    <motion.div
+                      animate={{ rotate: isOpen ? 180 : 0 }}
+                      transition={{ duration: 0.28, ease: "easeInOut" }}
+                      className="flex-shrink-0 w-9 h-9 md:w-11 md:h-11 rounded-full flex items-center justify-center transition-colors duration-300"
+                      style={{
+                        background: isOpen ? "rgba(254,212,92,0.18)" : "rgba(93,45,43,0.12)",
+                      }}
+                    >
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                      >
+                        <path
+                          d="M4 6.5L9 11.5L14 6.5"
+                          stroke={isOpen ? "#FED45C" : "#5D2D2B"}
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </motion.div>
                   </button>
 
+                  {/* Answer */}
                   <AnimatePresence initial={false}>
                     {isOpen && (
                       <motion.div
@@ -98,10 +135,12 @@ const Faq = () => {
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+                        transition={{ duration: 0.32, ease: [0.25, 0.46, 0.45, 0.94] }}
                         className="overflow-hidden"
                       >
-                        <p className="px-4 sm:px-5 pb-4 sm:pb-5 text-xs sm:text-sm text-[#5D2D2B]/80 leading-6">
+                        {/* Divider */}
+                        <div className="mx-7 md:mx-10 h-px bg-[#FEF4EA]/15" />
+                        <p className="px-7 md:px-10 py-7 md:py-8 text-[15px] sm:text-[17px] md:text-[18px] text-[#FEF4EA]/80 leading-[1.85] font-light">
                           {faq.answer}
                         </p>
                       </motion.div>
@@ -112,6 +151,7 @@ const Faq = () => {
             );
           })}
         </div>
+
       </div>
     </section>
   );

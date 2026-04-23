@@ -5,13 +5,13 @@ import { GripVertical, Trash2, BarChart2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const platforms = [
-  { name: "TikTok",    link: "https://www.tiktok.com/@danibush",      icon: "/assets/platform-icons/colored/Social=TikTok,Style=Original.svg",             active: false },
-  { name: "Snapchat",  link: "https://www.snapchat.com/add/danibush",  icon: "/assets/platform-icons/colored/Social=Snapchat,Style=Original.svg",           active: true  },
-  { name: "Instagram", link: "https://www.instagram.com/danibush",     icon: "/assets/platform-icons/colored/Social=Instagram,Style=Original.svg",          active: true  },
-  { name: "WhatsApp",  link: "https://wa.me/2348163746282",            icon: "/assets/platform-icons/colored/Social=WhatsApp,Style=Original.svg",           active: false },
-  { name: "Pinterest", link: "https://pin.it/3oCPlWHLV",               icon: "/assets/platform-icons/colored/Social=Pinterest,Style=Original.svg",          active: true  },
-  { name: "YouTube",   link: "https://youtube.com/@danibush",          icon: "/assets/platform-icons/colored/Social=YouTube,Style=Original.svg",            active: true  },
-  { name: "Twitter",   link: "https://twitter.com/danibush",           icon: "/assets/platform-icons/colored/Social=X ex Twitter,Style=Original.svg",       active: false },
+  { name: "TikTok",    link: "https://www.tiktok.com/@danibush",     icon: "/assets/platform-icons/colored/Social=TikTok,Style=Original.svg",        active: false },
+  { name: "Snapchat",  link: "https://www.snapchat.com/add/danibush", icon: "/assets/platform-icons/colored/Social=Snapchat,Style=Original.svg",      active: true  },
+  { name: "Instagram", link: "https://www.instagram.com/danibush",    icon: "/assets/platform-icons/colored/Social=Instagram,Style=Original.svg",     active: true  },
+  { name: "WhatsApp",  link: "https://wa.me/2348163746282",           icon: "/assets/platform-icons/colored/Social=WhatsApp,Style=Original.svg",      active: false },
+  { name: "Pinterest", link: "https://pin.it/3oCPlWHLV",              icon: "/assets/platform-icons/colored/Social=Pinterest,Style=Original.svg",     active: true  },
+  { name: "YouTube",   link: "https://youtube.com/@danibush",         icon: "/assets/platform-icons/colored/Social=YouTube,Style=Original.svg",       active: true  },
+  { name: "Twitter",   link: "https://twitter.com/danibush",          icon: "/assets/platform-icons/colored/Social=X ex Twitter,Style=Original.svg", active: false },
 ];
 
 const Toggle = ({ active }: { active: boolean }) => (
@@ -22,32 +22,32 @@ const Toggle = ({ active }: { active: boolean }) => (
 
 function SocialLinkCard({ name, link, icon, active }: { name: string; link: string; icon: string; active: boolean }) {
   return (
-    <div className="bg-white border border-[#e5e5e5] shadow-[2px_2px_0px_0px_#000] xl:shadow-[3px_3px_0px_0px_#000] w-full px-2.5 xl:px-4 py-2 xl:py-3 flex flex-col gap-1.5 xl:gap-2">
+    <div className="bg-white border border-[#e5e5e5] shadow-[1px_1px_0px_0px_#000] xl:shadow-[3px_3px_0px_0px_#000] w-full px-2 py-1.5 xl:px-4 xl:py-3 flex flex-col gap-1 xl:gap-2">
       <div className="flex items-center gap-1.5 xl:gap-3">
-        <GripVertical className="w-3 h-3 xl:w-4 xl:h-4 flex-shrink-0" style={{ color: "#FF0000" }} />
+        <GripVertical className="w-2.5 h-2.5 xl:w-4 xl:h-4 flex-shrink-0" style={{ color: "#FF0000" }} />
         <Image
           src={icon}
           alt={name}
           width={28}
           height={28}
-          className="w-5 h-5 xl:w-7 xl:h-7 flex-shrink-0 object-contain"
+          className="w-4 h-4 xl:w-7 xl:h-7 flex-shrink-0 object-contain"
         />
         <div className="flex flex-col flex-1 min-w-0">
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] xl:text-[13px] font-bold text-black leading-none">{name}</span>
-            <Pencil className="w-2.5 h-2.5 xl:w-3 xl:h-3 text-gray-400" />
+          <div className="flex items-center gap-0.5">
+            <span className="text-[9px] xl:text-[13px] font-bold text-black leading-none">{name}</span>
+            <Pencil className="w-2 h-2 xl:w-3 xl:h-3 text-gray-400" />
           </div>
-          <div className="flex items-center gap-1 min-w-0">
-            <span className="text-[8px] xl:text-[11px] text-gray-400 truncate max-w-[80px] xl:max-w-none">{link}</span>
-            <Pencil className="w-2 h-2 xl:w-3 xl:h-3 text-gray-400 flex-shrink-0" />
+          <div className="flex items-center gap-0.5 min-w-0">
+            <span className="text-[7px] xl:text-[11px] text-gray-400 truncate max-w-[90px] xl:max-w-none">{link}</span>
+            <Pencil className="w-1.5 h-1.5 xl:w-3 xl:h-3 text-gray-400 flex-shrink-0" />
           </div>
         </div>
         <Toggle active={active} />
-        <Trash2 className="w-3 h-3 xl:w-4 xl:h-4 flex-shrink-0" style={{ color: "#FF0000" }} />
+        <Trash2 className="w-2.5 h-2.5 xl:w-4 xl:h-4 flex-shrink-0" style={{ color: "#FF0000" }} />
       </div>
-      <div className="flex items-center gap-1 xl:gap-1.5 pt-1 xl:pt-1.5 border-t border-gray-100">
-        <BarChart2 className="w-2.5 h-2.5 xl:w-3.5 xl:h-3.5 text-gray-300" />
-        <span className="text-[8px] xl:text-[10px] text-gray-400 font-medium">0 clicks</span>
+      <div className="flex items-center gap-1 pt-1 xl:pt-1.5 border-t border-gray-100">
+        <BarChart2 className="w-2 h-2 xl:w-3.5 xl:h-3.5 text-gray-300" />
+        <span className="text-[7px] xl:text-[10px] text-gray-400 font-medium">0 clicks</span>
       </div>
     </div>
   );
@@ -55,13 +55,12 @@ function SocialLinkCard({ name, link, icon, active }: { name: string; link: stri
 
 const VISIBLE = 4;
 
-// mobile offsets smaller so cards don't overflow, desktop larger
-const mobileOffsets = [8, -8, 8, -8];
+const mobileOffsets  = [8, -8, 8, -8];
 const desktopOffsets = [24, -24, 24, -24];
 
 const ManageYourLinks = () => {
   const [startIndex, setStartIndex] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile]     = useState(false);
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 1280);
@@ -107,7 +106,8 @@ const ManageYourLinks = () => {
           </motion.div>
 
           {/* Right — Offset animated stack */}
-          <div className="w-full flex flex-col gap-1.5 xl:gap-3 xl:pl-8">
+          {/* px-6 → px-10 → px-16 collapses to xl:px-0 + xl:pl-8 on desktop */}
+          <div className="w-full flex flex-col gap-1.5 xl:gap-3 px-6 sm:px-10 md:px-16 xl:px-0 xl:pl-8">
             <AnimatePresence mode="popLayout">
               {visible.map((platform) => {
                 const xOffset = offsets[platform.slotIndex];

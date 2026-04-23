@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Suspense, useState, useEffect } from "react";
 import { maskEmail } from "@/lib/helpers/mask-email";
 import Link from "next/link";
-import { useResendOtp, useVerifyOtp } from "@/hooks/api/useAuth";
+import { useResendOtp, useVerifyOtp, useForgotPassword } from "@/hooks/api/useAuth";
 import { useForm, Controller } from "react-hook-form";
 import {
   VerifyOtpFormData,
@@ -35,6 +35,8 @@ const OTPVerificationContent = () => {
   const [isMounted, setIsMounted] = useState(false);
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email");
+  const prevParam = searchParams.get("prev");
+  const isForgotPasswordFlow = prevParam === "forgot-password";
 
   const email = emailParam
     ? (() => {
@@ -63,19 +65,31 @@ const OTPVerificationContent = () => {
   });
 
   const onSubmit = async (data: VerifyOtpFormData) => {
+    if (isForgotPasswordFlow) {
+      // For forgot-password, pass the OTP token to the reset-password page
+      router.push(
+        `/auth/reset-password?token=${encodeURIComponent(data.token)}&email=${encodeURIComponent(email || "")}`,
+      );
+      return;
+    }
     verifyOtpMutation.mutate(data);
   };
 
   const resendOtpMutation = useResendOtp();
+  const forgotPasswordMutation = useForgotPassword();
 
   const onResendOtp = () => {
     if (!email) {
       toast.error("Email not found", {
-        description: "Please sign up again",
+        description: "Please go back and enter your email again",
       });
       return;
     }
-    resendOtpMutation.mutate({ email: email });
+    if (isForgotPasswordFlow) {
+      forgotPasswordMutation.mutate({ email });
+    } else {
+      resendOtpMutation.mutate({ email: email });
+    }
   };
 
   useEffect(() => {
@@ -305,9 +319,9 @@ const OTPVerificationContent = () => {
                   variant="outline"
                   className="w-full h-10 text-sm font-semibold hover:bg-gray-50"
                   onClick={onResendOtp}
-                  disabled={resendOtpMutation.isPending}
+                  disabled={resendOtpMutation.isPending || forgotPasswordMutation.isPending}
                 >
-                  {resendOtpMutation.isPending
+                  {resendOtpMutation.isPending || forgotPasswordMutation.isPending
                     ? "Resending OTP..."
                     : "Resend OTP"}
                 </Button>

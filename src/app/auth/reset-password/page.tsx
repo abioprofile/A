@@ -1,48 +1,64 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ResetPasswordFormData,
+  resetPasswordSchema,
+} from "@/lib/validations/auth.schema";
+import { useResetPassword } from "@/hooks/api/useAuth";
 
 const ResetPassword = () => {
+  return (
+    <Suspense>
+      <ResetPasswordContent />
+    </Suspense>
+  );
+};
+
+const ResetPasswordContent = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get("token") || "";
+  const email = searchParams.get("email") || "";
+
   const [isMounted, setIsMounted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const resetPasswordMutation = useResetPassword();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      newPassword: "",
+      confirmNewPassword: "",
+    },
+  });
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    // Basic validation
-    if (!newPassword || !confirmNewPassword) {
-      toast.error("Please fill in all fields");
+  const onSubmit = async (data: ResetPasswordFormData) => {
+    if (!token) {
       return;
     }
-
-    if (newPassword !== confirmNewPassword) {
-      toast.error("Passwords do not match");
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      toast.success("Password Reset Successful", {
-        description: "You have successfully reset your password",
-      });
-      setIsSubmitting(false);
-      router.push("/auth/sign-in");
-    }, 1500);
+    resetPasswordMutation.mutate({
+      token,
+      password: data.newPassword,
+      passwordConfirm: data.confirmNewPassword,
+    });
   };
 
   const containerVariants: Variants = {
@@ -114,8 +130,50 @@ const ResetPassword = () => {
     },
   };
 
+  const errorVariants: Variants = {
+    hidden: { opacity: 0, height: 0 },
+    visible: {
+      opacity: 1,
+      height: "auto",
+      transition: {
+        duration: 0.3,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+    },
+    exit: {
+      opacity: 0,
+      height: 0,
+      transition: {
+        duration: 0.2,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+    },
+  };
+
   if (!isMounted) {
     return null;
+  }
+
+  if (!token) {
+    return (
+      <div className="min-h-screen w-full bg-[#FEF4EA] flex justify-center items-center p-5">
+        <div className="w-full max-w-md mx-auto text-center">
+          <h1 className="text-2xl font-extrabold mb-4 text-[#331400]">
+            Invalid Reset Link
+          </h1>
+          <p className="text-[#666464] mb-6 text-sm">
+            This password reset link is invalid or has expired. Please request a
+            new one.
+          </p>
+          <Button
+            onClick={() => router.push("/auth/forgot-password")}
+            className="bg-[#FED45C] text-black font-semibold h-12 hover:bg-[#FED45C]/90"
+          >
+            Request New Link
+          </Button>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -142,15 +200,16 @@ const ResetPassword = () => {
             variants={itemVariants}
             className="text-[#666464] font-medium text-sm md:w-3/4"
           >
-            Kindly enter a new password to complete the reset process and secure
-            your account.
+            {email
+              ? `Enter a new password for ${email}`
+              : "Kindly enter a new password to complete the reset process and secure your account."}
           </motion.p>
         </motion.div>
 
         <motion.form
           variants={itemVariants}
           className="space-y-4"
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
         >
           {/* New Password */}
           <motion.div variants={itemVariants} className="space-y-2.5">
@@ -160,13 +219,39 @@ const ResetPassword = () => {
             <div className="relative">
               <Input
                 id="new_password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                type={showNewPassword ? "text" : "password"}
+                {...register("newPassword")}
                 placeholder="Enter new password"
                 className="h-12 w-full pr-10 text-base md:text-sm border-1 border-[#331400]"
-                disabled={isSubmitting}
+                disabled={isSubmitting || resetPasswordMutation.isPending}
               />
+              <button
+                type="button"
+                onClick={() => setShowNewPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666464] hover:text-[#331400]"
+                tabIndex={-1}
+              >
+                {showNewPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
+            <AnimatePresence mode="wait">
+              {errors.newPassword && (
+                <motion.p
+                  key="new-password-error"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={errorVariants}
+                  className="text-xs text-red-500 overflow-hidden"
+                >
+                  {errors.newPassword.message}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           {/* Confirm New Password */}
@@ -177,13 +262,39 @@ const ResetPassword = () => {
             <div className="relative">
               <Input
                 id="confirm_new_password"
-                value={confirmNewPassword}
-                onChange={(e) => setConfirmNewPassword(e.target.value)}
+                type={showConfirmPassword ? "text" : "password"}
+                {...register("confirmNewPassword")}
                 placeholder="Re-enter your password"
                 className="h-12 w-full pr-10 text-base md:text-sm border-1 border-[#331400]"
-                disabled={isSubmitting}
+                disabled={isSubmitting || resetPasswordMutation.isPending}
               />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#666464] hover:text-[#331400]"
+                tabIndex={-1}
+              >
+                {showConfirmPassword ? (
+                  <EyeOff className="w-4 h-4" />
+                ) : (
+                  <Eye className="w-4 h-4" />
+                )}
+              </button>
             </div>
+            <AnimatePresence mode="wait">
+              {errors.confirmNewPassword && (
+                <motion.p
+                  key="confirm-password-error"
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={errorVariants}
+                  className="text-xs text-red-500 overflow-hidden"
+                >
+                  {errors.confirmNewPassword.message}
+                </motion.p>
+              )}
+            </AnimatePresence>
           </motion.div>
 
           <motion.div variants={itemVariants} className="space-y-3">
@@ -195,9 +306,9 @@ const ResetPassword = () => {
               <Button
                 type="submit"
                 className="w-full bg-[#FED45C] text-black font-semibold h-12 hover:bg-[#FED45C]/90"
-                disabled={isSubmitting}
+                disabled={isSubmitting || resetPasswordMutation.isPending}
               >
-                {isSubmitting ? (
+                {isSubmitting || resetPasswordMutation.isPending ? (
                   <motion.div
                     initial={{ rotate: 0 }}
                     animate={{ rotate: 360 }}
@@ -218,7 +329,7 @@ const ResetPassword = () => {
           </motion.div>
         </motion.form>
 
-        {/* Back Button - Placed under the confirm button */}
+        {/* Back Button */}
         <motion.div
           variants={itemVariants}
           className="flex justify-center md:justify-start"
@@ -238,4 +349,5 @@ const ResetPassword = () => {
     </motion.div>
   );
 };
+
 export default ResetPassword;

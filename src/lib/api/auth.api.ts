@@ -79,10 +79,12 @@ export const forgotPassword = async (
 export const resetPassword = async (
   token: string,
   password: string,
+  passwordConfirm: string,
 ): Promise<{ success: boolean; message: string }> => {
   const response = await apiClient.post("/auth/reset-password", {
     token,
     password,
+    passwordConfirm,
   });
   return response.data;
 };

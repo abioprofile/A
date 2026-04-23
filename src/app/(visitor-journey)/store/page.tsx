@@ -3,7 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, AnimatePresence, useScroll } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import NavBar from "@/components/partials/NavBar";
 
 /* ─── Types (aligned to products.ts) ──────────────────────────────────── */
 interface ProductColor { code: string; name: string; mainImage: string; gallery: string[]; }
@@ -158,41 +159,6 @@ function PageLoader({ onDone }: { onDone: () => void }) {
   );
 }
 
-/* ─── Navbar ─────────────────────────────────────────────────────────────── */
-function StoreNav({ cartCount }: { cartCount: number }) {
-  const { scrollY } = useScroll();
-  const [scrolled, setScrolled] = useState(false);
-  useEffect(() => scrollY.onChange((v) => setScrolled(v > 20)), [scrollY]);
-  return (
-    <motion.nav
-      initial={{ y: -60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-      className={`fixed top-0 left-0 right-0 z-30 transition-all duration-300 ${scrolled ? "bg-[#FEF4EA]/90 backdrop-blur-md border-b border-[#331400]/10 shadow-sm" : "bg-transparent"}`}
-    >
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-2 group">
-          <motion.div whileHover={{ scale: 1.05 }} className="relative w-24 h-8">
-            <Image src="/icons/logo.svg" alt="Abio" fill className="object-contain object-left" />
-          </motion.div>
-        </Link>
-        <motion.button
-          whileHover={{ scale: 1.08 }}
-          whileTap={{ scale: 0.94 }}
-          className="relative w-9 h-9 flex items-center justify-center border border-[#331400]/15 hover:border-[#331400]/40 bg-white/60 transition-colors"
-        >
-          <Image src="/icons/cart.svg" alt="Cart" width={16} height={16} />
-          {cartCount > 0 && (
-            <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-[#FED45C] text-[#331400] text-[9px] font-black flex items-center justify-center">
-              {cartCount}
-            </motion.span>
-          )}
-        </motion.button>
-      </div>
-    </motion.nav>
-  );
-}
-
 /* ─── Image skeleton ─────────────────────────────────────────────────────── */
 function ImageSkeleton() {
   return (
@@ -250,7 +216,7 @@ export default function Store() {
         className="min-h-screen bg-[#FEF4EA] relative overflow-x-hidden"
         style={{ backgroundImage: "radial-gradient(circle, #33140010 1px, transparent 1px)", backgroundSize: "32px 32px" }}
       >
-        <StoreNav cartCount={0} />
+        <NavBar />
 
         {/* ── Hero band ── */}
         <motion.div className="pt-20 pb-0" initial={{ opacity: 0 }} animate={loaded ? { opacity: 1 } : {}} transition={{ duration: 0.6, delay: 0.15 }}>

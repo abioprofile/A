@@ -392,7 +392,7 @@ export default function PublicProfilePage() {
                       whileHover={{ scale: 1.1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 15 }}
                     >
-                      <Avatar className="w-[56px] h-[56px] border">
+                      <Avatar className="w-[60px] h-[60px] border">
                         <AvatarImage
                           src={userData.avatarUrl || "/icons/Profile Picture.png"}
                           alt={userData.name || userData.username || "Profile"}
@@ -655,7 +655,7 @@ export default function PublicProfilePage() {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.3 }}
                 >
-                  <Avatar className="w-[50px] h-[50px] border">
+                  <Avatar className="w-[70px] h-[70px] border">
                     <AvatarImage
                       src={userData.avatarUrl || "/icons/Profile Picture.png"}
                       alt={userData.name || userData.username || "Profile"}
