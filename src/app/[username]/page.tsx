@@ -13,6 +13,7 @@ import { useAppSelector } from "@/stores/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import DnaFormV1 from "@/components/dnabygaza/form";
 import MenuAccordion from "@/app/menu/page";
+import ClubSixSevenMenu from "@/components/clubsix7even/ClubSixSevenMenu";
 import { hasStreamingLinks, getStreamingLinks, STREAMING_PLATFORM_IDS_SET } from "@/components/StreamingEmbed";
 import {
   pageVariants,
@@ -259,6 +260,8 @@ export default function PublicProfilePage() {
   let contentBgStyle: React.CSSProperties = {};
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
+  const isClubSixSevenUser = userData?.username === "clubsix7even";
+  const hasMenuTab = isDnaByGazaUser || isClubSixSevenUser;
 
   const bgColors =
     normalizeWallpaperBackgroundColor(
@@ -497,7 +500,7 @@ export default function PublicProfilePage() {
                         )}
                       </button>
                     )}
-                    {isDnaByGazaUser && (
+                    {hasMenuTab && (
                       <button
                         onClick={() => setActiveTab("menu")}
                         className="relative flex flex-col items-center pb-2 group"
@@ -506,7 +509,6 @@ export default function PublicProfilePage() {
                           className={`text-[9px] font-medium transition-colors ${
                             activeTab === "menu" ? "text-black" : "text-gray-400"
                           }`}
-                          style={activeTab === "menu" ? fontStyle : undefined}
                         >
                           Menu
                         </span>
@@ -597,7 +599,7 @@ export default function PublicProfilePage() {
 
                   {activeTab === "menu" && (
                     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                      <MenuAccordion />
+                      {isClubSixSevenUser ? <ClubSixSevenMenu /> : <MenuAccordion />}
                     </motion.div>
                   )}
                 </div>
@@ -757,7 +759,7 @@ export default function PublicProfilePage() {
                     )}
                   </button>
                 )}
-                {isDnaByGazaUser && (
+                {hasMenuTab && (
                   <button
                     onClick={() => setActiveTab("menu")}
                     className="relative flex flex-col items-center pb-2 group"
@@ -766,7 +768,6 @@ export default function PublicProfilePage() {
                       className={`text-[11px] font-medium transition-colors ${
                         activeTab === "menu" ? "text-black" : "text-gray-400"
                       }`}
-                      style={activeTab === "menu" ? fontStyle : undefined}
                     >
                       Menu
                     </span>
@@ -858,7 +859,7 @@ export default function PublicProfilePage() {
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.3 }}
                 >
-                  <MenuAccordion />
+                  {isClubSixSevenUser ? <ClubSixSevenMenu /> : <MenuAccordion />}
                 </motion.div>
               )}
             </div>

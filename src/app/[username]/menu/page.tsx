@@ -102,7 +102,7 @@ export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
   const usernameData = useAppSelector((state) => state.auth.user);
-  const [activeTab, setActiveTab] = useState<"links" | "listen" | "menu">("links");
+  const [activeTab, setActiveTab] = useState<"links" | "listen" | "menu">("menu");
   const [profileShareUrl, setProfileShareUrl] = useState("");
 
   useEffect(() => {
@@ -732,7 +732,7 @@ export default function PublicProfilePage() {
                     onClick={() => setActiveTab("menu")}
                     className="relative flex flex-col items-center pb-2 group"
                   >
-                    <span className={`text-[11px] -mb-2 font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-gray-400"}`}>
+                    <span className={`text-[11px] -mb-2 font-medium transition-colors ${activeTab === "menu" ? "text-black" : "text-black"}`}>
                       Menu
                     </span>
                     {activeTab === "menu" && (
