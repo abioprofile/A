@@ -3,10 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ─── REALISTIC CARD DESIGNS ───────────────────────────────────────────────────
+// ─── REALISTIC CARD DESIGNS 
 
 const ComicalCard1 = () => (
-  <div className="w-full h-full rounded-[20px] overflow-hidden relative select-none">
+  <div className="w-full h-full rounded-[0px] overflow-hidden relative select-none">
     {/* Sky */}
     <div
       className="absolute inset-0"
@@ -464,21 +464,21 @@ const ComicalCard1 = () => (
     ))}
     {/* Card shine */}
     <div
-      className="absolute inset-0 rounded-[20px] pointer-events-none"
+      className="absolute inset-0 rounded-[0px] pointer-events-none"
       style={{
         background:
           "linear-gradient(135deg,rgba(255,255,255,0.25) 0%,transparent 50%,rgba(0,0,0,0.08) 100%)",
       }}
     />
     <div
-      className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-[20px]"
+      className="absolute top-0 left-0 right-0 h-[2.5px] rounded-t-[0px]"
       style={{ background: "rgba(255,255,255,0.6)" }}
     />
   </div>
 );
 
 const MetalCard = () => (
-  <div className="w-full h-full rounded-[20px] overflow-hidden relative select-none">
+  <div className="w-full h-full rounded-[0px] overflow-hidden relative select-none">
     {/* Base metal */}
     <div
       className="absolute inset-0"
@@ -628,17 +628,17 @@ const MetalCard = () => (
     />
     {/* Top highlight edge */}
     <div
-      className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[20px]"
+      className="absolute top-0 left-0 right-0 h-[2px] rounded-t-[0px]"
       style={{ background: "rgba(255,255,255,0.75)" }}
     />
     {/* Bottom shadow edge */}
     <div
-      className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-[20px]"
+      className="absolute bottom-0 left-0 right-0 h-[3px] rounded-b-[0px]"
       style={{ background: "rgba(0,0,0,0.2)" }}
     />
     {/* Overall gloss */}
     <div
-      className="absolute inset-0 rounded-[20px] pointer-events-none"
+      className="absolute inset-0 rounded-[0px] pointer-events-none"
       style={{
         background:
           "linear-gradient(150deg,rgba(255,255,255,0.22) 0%,transparent 50%,rgba(0,0,0,0.06) 100%)",
@@ -648,7 +648,7 @@ const MetalCard = () => (
 );
 const WoodenCard = () => (
   <div
-    className="w-full h-full rounded-[20px] overflow-hidden relative select-none"
+    className="w-full h-full rounded-[0px] overflow-hidden relative select-none"
     style={{ background: "#7a4a2a" }}
   >
     {/* Wood grain */}
@@ -701,7 +701,7 @@ const WoodenCard = () => (
 
     {/* Varnish overlay */}
     <div
-      className="absolute inset-0 rounded-[20px]"
+      className="absolute inset-0 rounded-[0px]"
       style={{
         background:
           "linear-gradient(160deg,rgba(255,220,160,0.22) 0%,rgba(255,200,120,0.08) 30%,transparent 60%,rgba(0,0,0,0.22) 100%)",
@@ -847,15 +847,15 @@ const WoodenCard = () => (
 
     {/* Edges */}
     <div
-      className="absolute top-0 left-0 right-0 rounded-t-[20px]"
+      className="absolute top-0 left-0 right-0 rounded-t-[0px]"
       style={{ height: 3, background: "rgba(255,230,170,0.55)" }}
     />
     <div
-      className="absolute bottom-0 left-0 right-0 rounded-b-[20px]"
+      className="absolute bottom-0 left-0 right-0 rounded-b-[0px]"
       style={{ height: 4, background: "rgba(0,0,0,0.38)" }}
     />
     <div
-      className="absolute top-0 bottom-0 left-0 rounded-l-[20px]"
+      className="absolute top-0 bottom-0 left-0 rounded-l-[0px]"
       style={{ width: 3, background: "rgba(0,0,0,0.25)" }}
     />
     {/* Specular spot */}
@@ -871,7 +871,7 @@ const WoodenCard = () => (
 
 const ComicalCard2 = () => (
   <div
-    className="w-full h-full rounded-[20px] overflow-hidden relative select-none"
+    className="w-full h-full rounded-[0px] overflow-hidden relative select-none"
     style={{ background: "#080808" }}
   >
     {/* Fine dot grid */}
@@ -902,7 +902,7 @@ const ComicalCard2 = () => (
 
     {/* Top accent bar */}
     <div
-      className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[20px]"
+      className="absolute top-0 left-0 right-0 h-[3px] rounded-t-[0px]"
       style={{
         background:
           "linear-gradient(90deg, #FED45C 0%, #FF854A 50%, #FED45C 100%)",
@@ -1030,7 +1030,7 @@ const ComicalCard2 = () => (
 
     {/* Bottom accent */}
     <div
-      className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-[20px]"
+      className="absolute bottom-0 left-0 right-0 h-[2px] rounded-b-[0px]"
       style={{
         background:
           "linear-gradient(90deg, transparent 0%, rgba(254,212,92,0.3) 50%, transparent 100%)",
@@ -1039,7 +1039,7 @@ const ComicalCard2 = () => (
 
     {/* Overall gloss */}
     <div
-      className="absolute inset-0 rounded-[20px] pointer-events-none"
+      className="absolute inset-0 rounded-[0px] pointer-events-none"
       style={{
         background:
           "linear-gradient(150deg,rgba(255,255,255,0.06) 0%,transparent 50%)",
@@ -1328,7 +1328,7 @@ const stats = [
   { val: "0", label: "Apps needed" },
 ];
 
-// ─── Section ──────────────────────────────────────────────────────────────────
+// ─── Section 
 const CustomNfcCardSection = () => (
   <section className="relative w-full bg-white py-12 sm:py-16 md:py-20 lg:py-28 px-4 sm:px-6 md:px-12 lg:px-20 overflow-hidden">
     <Image

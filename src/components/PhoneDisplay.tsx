@@ -10,7 +10,11 @@ import { motion } from "framer-motion";
 
 import { FaLink, FaHeadphones } from "react-icons/fa6";
 import { getPlatformIcon } from "./PlatformIcon";
-import { STREAMING_PLATFORM_IDS_SET, getStreamingLinks, hasStreamingLinks } from "./StreamingEmbed";
+import {
+  STREAMING_PLATFORM_IDS_SET,
+  getStreamingLinks,
+  hasStreamingLinks,
+} from "./StreamingEmbed";
 
 interface PhoneDisplayProps {
   buttonStyle: ButtonStyle;
@@ -40,11 +44,18 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 
   const showListenTab = hasStreamingLinks(links);
 
-  const displayName = profile?.displayName ?? userDataProfile?.name ?? "Your Name";
-  const userName = profile?.userName ?? userDataProfile?.profile?.username ?? "username";
-  const profileImage = profile?.profileImage ?? userDataProfile?.profile?.avatarUrl ?? "/icons/Profile Picture.png";
-  const bio = profile?.bio ?? userDataProfile?.profile?.bio ?? "Add a short bio here...";
-  const location = profile?.location ?? userDataProfile?.profile?.location ?? "Add location";
+  const displayName =
+    profile?.displayName ?? userDataProfile?.name ?? "Your Name";
+  const userName =
+    profile?.userName ?? userDataProfile?.profile?.username ?? "username";
+  const profileImage =
+    profile?.profileImage ??
+    userDataProfile?.profile?.avatarUrl ??
+    "/icons/Profile Picture.png";
+  const bio =
+    profile?.bio ?? userDataProfile?.profile?.bio ?? "Add a short bio here...";
+  const location =
+    profile?.location ?? userDataProfile?.profile?.location ?? "Add location";
 
   const createTextStyle = (strokeWidth = 0): React.CSSProperties => {
     const base: React.CSSProperties = {
@@ -56,7 +67,11 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
       fontSize: fontStyle.fontSize ? `${fontStyle.fontSize}px` : undefined,
       textDecoration: fontStyle.textDecoration || "none",
     };
-    if (strokeWidth > 0 && fontStyle.strokeColor && fontStyle.strokeColor !== "transparent") {
+    if (
+      strokeWidth > 0 &&
+      fontStyle.strokeColor &&
+      fontStyle.strokeColor !== "transparent"
+    ) {
       const s = Math.max(1, Math.round(strokeWidth));
       return {
         ...base,
@@ -71,7 +86,9 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     .filter(
       (l) =>
         l.isVisible !== false &&
-        !STREAMING_PLATFORM_IDS_SET.has(l.platform.toLowerCase().replace(/\s+/g, "-")),
+        !STREAMING_PLATFORM_IDS_SET.has(
+          l.platform.toLowerCase().replace(/\s+/g, "-"),
+        ),
     )
     .sort((a, b) => a.displayOrder - b.displayOrder)
     .slice(0, 8);
@@ -85,9 +102,22 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
     bgStyle = { backgroundColor: selectedTheme.split(":")[1] || "#000" };
   } else if (selectedTheme.startsWith("gradient:")) {
     const [, start, end] = selectedTheme.split(":");
-    bgStyle = { backgroundImage: `linear-gradient(to bottom, ${start ?? "#000"}, ${end ?? "#fff"})` };
-  } else if (selectedTheme && (selectedTheme.startsWith("blob:") || selectedTheme.startsWith("http") || selectedTheme.startsWith("/"))) {
-    bgStyle = { backgroundImage: `url(${selectedTheme})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat", backgroundColor: "#000000" };
+    bgStyle = {
+      backgroundImage: `linear-gradient(to bottom, ${start ?? "#000"}, ${end ?? "#fff"})`,
+    };
+  } else if (
+    selectedTheme &&
+    (selectedTheme.startsWith("blob:") ||
+      selectedTheme.startsWith("http") ||
+      selectedTheme.startsWith("/"))
+  ) {
+    bgStyle = {
+      backgroundImage: `url(${selectedTheme})`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      backgroundColor: "#000000",
+    };
   }
 
   const renderButtonStack = (items: ProfileLink[]) =>
@@ -106,10 +136,23 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
           minHeight: "30px",
         }}
       >
-        <span className="absolute inset-0" style={{ backgroundColor: buttonStyle.backgroundColor, opacity: buttonStyle.opacity }} />
-        <span className="relative flex items-center gap-3 text-sm font-semibold w-full" style={createTextStyle(fontStyle.strokeWidth || 0)}>
-          <div style={{ color: fontStyle.fillColor }}>{getPlatformIcon(link.platform)}</div>
-          <span className="truncate break-words max-w-[calc(100%-2rem)]">{link.title || link.platform}</span>
+        <span
+          className="absolute inset-0"
+          style={{
+            backgroundColor: buttonStyle.backgroundColor,
+            opacity: buttonStyle.opacity,
+          }}
+        />
+        <span
+          className="relative flex items-center gap-3 text-sm font-semibold w-full"
+          style={createTextStyle(fontStyle.strokeWidth || 0)}
+        >
+          <div style={{ color: fontStyle.fillColor }}>
+            {getPlatformIcon(link.platform)}
+          </div>
+          <span className="truncate break-words max-w-[calc(100%-2rem)]">
+            {link.title || link.platform}
+          </span>
         </span>
       </a>
     ));
@@ -117,45 +160,88 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   return (
     <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto border-[2px] border-black overflow-hidden bg-white">
       <div className="relative z-10 h-full flex flex-col">
-
         {/* Profile Section */}
         <div className="p-4 flex flex-col relative items-start bg-white/90 backdrop-blur-xl">
           <div className="flex gap-3 items-center">
             <div className="w-[50px] h-[50px] rounded-full overflow-hidden shadow-md border border-gray-300">
-              <img src={profileImage} alt="Profile" className="object-cover w-full h-full" />
+              <img
+                src={profileImage}
+                alt="Profile"
+                className="object-cover w-full h-full"
+              />
             </div>
             <div className="flex-1 min-w-0">
-              <h1 className="text-sm font-bold truncate" title={displayName}>{displayName}</h1>
+              <div className="flex gap-[.9px] items-center">
+                <h1 className="text-sm font-bold truncate" title={displayName}>
+                {displayName}
+              </h1>
+              <Image
+                src="/icons/verification.svg"
+                alt="Verified"
+                width={15}
+                height={15}
+                className="inline-block ml-1"
+              />
+              </div>
               <p className="text-[10px] font-medium text-gray-600 truncate">
-                @{String(userName).toLowerCase().replace(/\s+/g, "")}
+                /{String(userName).toLowerCase().replace(/\s+/g, "")}
               </p>
             </div>
           </div>
 
-          <p className="mt-2 text-[10px] text-left font-semibold line-clamp-2" title={bio}>{bio}</p>
+          <p
+            className="mt-2 text-[10px] text-left font-semibold line-clamp-2"
+            title={bio}
+          >
+            {bio}
+          </p>
 
           <div className="mt-2 mb-2 flex items-center p-[2px] border text-[10px] border-[#4e4e4e] bg-white/70">
-            <Image src="/icons/location1.png" alt="Location" width={10} height={10} className="w-fit h-2 flex-shrink-0" />
-            <span className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]">{location}</span>
+            <Image
+              src="/icons/location1.png"
+              alt="Location"
+              width={10}
+              height={10}
+              className="w-fit h-2 flex-shrink-0"
+            />
+            <span className="text-[7px] text-[#4e4e4e] font-medium truncate max-w-[180px]">
+              {location}
+            </span>
           </div>
 
           {/* Tabs */}
           <div className="mt-4 flex absolute bottom-0 gap-6">
-            <button onClick={() => setActiveTab("links")} className="relative flex flex-col items-center pb-2">
-              <span className={`text-[9px] -mb-2 font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}>
+            <button
+              onClick={() => setActiveTab("links")}
+              className="relative flex flex-col items-center pb-2"
+            >
+              <span
+                className={`text-[9px] -mb-2 font-medium transition-colors ${activeTab === "links" ? "text-black" : "text-gray-400"}`}
+              >
                 Links
               </span>
               {activeTab === "links" && (
-                <motion.div layoutId="phoneTab" className="h-[3px] absolute -bottom-[2px] w-6 bg-red-500" />
+                <motion.div
+                  layoutId="phoneTab"
+                  className="h-[3px] absolute -bottom-[2px] w-6 bg-red-500"
+                />
               )}
             </button>
             {showListenTab && (
-              <button onClick={() => setActiveTab("listen")} className="relative flex flex-col items-center pb-2">
-                <span className={`text-[9px] -mb-2 font-medium transition-colors ${activeTab === "listen" ? "text-black" : "text-gray-400"}`}>
+              <button
+                onClick={() => setActiveTab("listen")}
+                className="relative flex flex-col items-center pb-2"
+              >
+                <span
+                  className={`text-[9px] -mb-2 font-medium transition-colors ${activeTab === "listen" ? "text-black" : "text-gray-400"}`}
+                >
                   Listen
                 </span>
                 {activeTab === "listen" && (
-                  <motion.div layoutId="phoneTab" className="h-[3px] absolute -bottom-[2px] w-6 bg-red-500" />
+                  <motion.div
+                    layoutId="phoneTab"
+                    className="h-[3px] absolute -bottom-[2px] w-6 bg-red-500"
+                  />
                 )}
               </button>
             )}
@@ -166,30 +252,56 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
         {!phoneDisplayLoading ? (
           <div
             className="flex-1 py-4 px-6 overflow-y-auto [&::-webkit-scrollbar]:hidden"
-            style={{ ...bgStyle, scrollbarWidth: "none", msOverflowStyle: "none" }}
+            style={{
+              ...bgStyle,
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
           >
-            {activeTab === "links" && (
-              socialLinks.length > 0 ? (
-                <div className="space-y-3">{renderButtonStack(socialLinks)}</div>
+            {activeTab === "links" &&
+              (socialLinks.length > 0 ? (
+                <div className="space-y-3">
+                  {renderButtonStack(socialLinks)}
+                </div>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-4">
                   <FaLink className="w-8 h-8 text-gray-400 mb-2" />
-                  <p className="text-xs text-gray-500 font-medium" style={createTextStyle()}>No links added yet</p>
-                  <p className="text-[10px] text-gray-400 mt-1" style={createTextStyle()}>Add some links to see them here</p>
+                  <p
+                    className="text-xs text-gray-500 font-medium"
+                    style={createTextStyle()}
+                  >
+                    No links added yet
+                  </p>
+                  <p
+                    className="text-[10px] text-gray-400 mt-1"
+                    style={createTextStyle()}
+                  >
+                    Add some links to see them here
+                  </p>
                 </div>
-              )
-            )}
-            {activeTab === "listen" && (
-              streamingLinks.length > 0 ? (
-                <div className="space-y-3">{renderButtonStack(streamingLinks)}</div>
+              ))}
+            {activeTab === "listen" &&
+              (streamingLinks.length > 0 ? (
+                <div className="space-y-3">
+                  {renderButtonStack(streamingLinks)}
+                </div>
               ) : (
                 <div className="h-full flex flex-col items-center justify-center text-center p-4">
                   <FaHeadphones className="w-8 h-8 text-gray-400 mb-2" />
-                  <p className="text-xs text-gray-500 font-medium" style={createTextStyle()}>No streaming links yet</p>
-                  <p className="text-[10px] text-gray-400 mt-1" style={createTextStyle()}>Add Spotify, Apple Music &amp; more</p>
+                  <p
+                    className="text-xs text-gray-500 font-medium"
+                    style={createTextStyle()}
+                  >
+                    No streaming links yet
+                  </p>
+                  <p
+                    className="text-[10px] text-gray-400 mt-1"
+                    style={createTextStyle()}
+                  >
+                    Add Spotify, Apple Music &amp; more
+                  </p>
                 </div>
-              )
-            )}
+              ))}
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center">

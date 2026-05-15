@@ -4,7 +4,7 @@ import React, { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, RotateCcw, RotateCw, Upload } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import PhoneDisplay from "@/components/PhoneDisplay";
@@ -93,7 +93,6 @@ const AppearancePage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<number | null>(0);
   const [isSheetOpen, setIsSheetOpen] = useState<boolean>(false);
-
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
     borderRadius: "0px",
@@ -476,7 +475,7 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Mobile: Header fixed at top (TikTok-style) — Save + Undo/Redo only when an edit has been made */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] px-2 py-3 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] px-2 pt-2 flex items-center justify-between">
         <button
           onClick={handleBackClick}
           className="font-extrabold text-xl text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
@@ -535,26 +534,35 @@ const AppearancePage: React.FC = () => {
         </div>
       </div>
       {/* Spacer so content below doesn't sit under fixed header on mobile */}
-      <div className="md:hidden h-14 flex-shrink-0" aria-hidden />
+      <div className="md:hidden h-2 flex-shrink-0" aria-hidden />
 
-      {/* Main Layout — mobile: min-height so section fills viewport (fixed PhoneDisplay overlays); desktop: normal flex */}
+      {/* Main Layout — mobile: fixed fullscreen stage with transform-only animation */}
       <div className="flex flex-1 gap-8 min-h-[calc(100vh-3.5rem)] md:min-h-0">
-        {/* PhoneDisplay: desktop = in-flow; mobile = TikTok-style fixed fullscreen → floating card when sheet open */}
+        {/* PhoneDisplay: FIXED fullscreen stage on mobile — NO HEIGHT CHANGE */}
         <aside
           className={`
             flex w-full md:w-[450px] md:min-w-[450px] justify-center items-center md:items-start md:mt-6
-            md:relative
-            transition-[height,transform,border-radius] duration-[280ms] ease-out
-            ${isMobile ? "fixed inset-0 top-0 left-0 right-0 bottom-0 z-0" : ""}
-            ${isMobile && isSheetOpen ? "h-[60vh] -translate-y-[5%] rounded-2xl overflow-hidden" : ""}
-            ${isMobile && !isSheetOpen ? "h-full w-full rounded-none" : ""}
+            ${isMobile ? "fixed inset-0 z-0 pointer-events-none" : "relative"}
           `}
         >
-          <div
-            className={`relative w-full max-w-[360px] md:max-w-[420px] mx-auto h-full max-h-full md:max-h-none origin-top transition-transform duration-[280ms] ease-out ${isMobile && isSheetOpen ? "scale-[0.895]" : ""}`}
-            style={{ transformOrigin: "top center" }}
+          {/* Animated Preview Wrapper — ONLY scale + translateY, NO height change */}
+          <motion.div
+            className="relative w-full max-w-[360px] md:max-w-[420px] mx-auto"
+            animate={{
+              scale: isMobile && isSheetOpen ? 0.82 : 1,
+              y: isMobile && isSheetOpen ? -80 : 0,
+            }}
+            transition={{
+              type: "spring",
+              stiffness: 350,
+              damping: 30,
+              mass: 0.8,
+            }}
+            style={{
+              transformOrigin: "top center",
+            }}
           >
-            <div className="overflow-hidden w-full h-full flex items-center justify-center md:block md:h-auto">
+            <div className="overflow-visible w-full h-full flex items-center justify-center md:block md:h-auto">
               <PhoneDisplay
                 buttonStyle={buttonStyle}
                 fontStyle={fontStyle}
@@ -564,7 +572,7 @@ const AppearancePage: React.FC = () => {
                 phoneDisplayLoading={phoneDisplayLoading}
               />
             </div>
-          </div>
+          </motion.div>
         </aside>
 
         {/* Desktop Editor */}
@@ -630,7 +638,7 @@ const AppearancePage: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Sheet (WallpaperSheets): TikTok-style bottom sheet — mobile only */}
+      {/* Mobile Sheet (WallpaperSheets): TikTok-style bottom sheet — overlays on top, doesn't push layout */}
       <Sheet
         open={isMobile ? isSheetOpen : false}
         onOpenChange={(open) => {
@@ -640,7 +648,7 @@ const AppearancePage: React.FC = () => {
       >
         <SheetContent
           side="bottom"
-          className="md:hidden bg-white shadow-lg p-0 overflow-hidden rounded-t-2xl border-t border-gray-200/80 h-[40vh] max-h-[40vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom data-[state=open]:duration-300 data-[state=closed]:duration-250"
+          className="md:hidden bg-white shadow-lg p-0 overflow-hidden rounded-t-2xl border-t border-gray-200/80 h-[45vh] max-h-[45vh] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom data-[state=open]:duration-300 data-[state=closed]:duration-250 z-50"
           style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
         >
           <div className="h-full flex flex-col min-h-0">
@@ -658,7 +666,7 @@ const AppearancePage: React.FC = () => {
               </SheetHeader>
             </div>
 
-            {/* Sheet Content: scrollable area (keyboard opens = only this scrolls; PhoneDisplay does not move) */}
+            {/* Sheet Content: scrollable area */}
             <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-3 pt-2 pb-3">
               {activeTab === 0 && (
                 <ProfileContent
@@ -708,7 +716,7 @@ const AppearancePage: React.FC = () => {
 
       {/* Mobile Bottom Nav */}
       <AppearanceBottomNav
-        activeTab={activeTab || 0} // default to profile tab if no tab is selected
+        activeTab={activeTab || 0}
         setActiveTab={handleTabClick}
       />
 

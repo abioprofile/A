@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   DndContext,
   closestCenter,
@@ -18,11 +18,11 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-
+import { useQueryClient } from "@tanstack/react-query";
 import LinkCard from "./LinkCard";
 import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
-import { X } from "lucide-react";
+import { X, ChevronDown, Check } from "lucide-react";
 import { ProfileLink } from "@/types/auth.types";
 import {
   useAddLinks,
@@ -66,6 +66,140 @@ const STREAMING_PLATFORMS = [
   "AMAZON-MUSIC",
 ] as const;
 
+// Helper function to get platform-specific URL placeholder
+const getUrlPlaceholder = (platform: string): string => {
+  const platformLower = platform.toLowerCase();
+  
+  const placeholders: Record<string, string> = {
+    instagram: "https://instagram.com/username",
+    tiktok: "https://tiktok.com/@username",
+    pinterest: "https://pinterest.com/username",
+    twitter: "https://twitter.com/username",
+    facebook: "https://facebook.com/username",
+    snapchat: "https://snapchat.com/add/username",
+    youtube: "https://youtube.com/@channelname",
+    linkedin: "https://linkedin.com/in/username",
+    github: "https://github.com/username",
+    whatsapp: "https://wa.me/1234567890",
+    spotify: "https://open.spotify.com/user/username",
+    "apple-music": "https://music.apple.com/profile/username",
+    soundcloud: "https://soundcloud.com/username",
+    tidal: "https://tidal.com/browse/playlist/ID",
+    "amazon-music": "https://music.amazon.com/artist/ID",
+    custom: "https://yourwebsite.com"
+  };
+  
+  return placeholders[platformLower] || placeholders.custom;
+};
+
+// Helper function to validate URL based on platform
+const getUrlValidationHint = (platform: string, url: string): string | null => {
+  if (!url) return null;
+  
+  const platformLower = platform.toLowerCase();
+  const validations: Record<string, RegExp> = {
+    instagram: /instagram\.com\//i,
+    tiktok: /tiktok\.com\/@/i,
+    twitter: /twitter\.com\//i,
+    youtube: /youtube\.com\/@|youtube\.com\/channel\//i,
+    whatsapp: /wa\.me\/|whatsapp\.com\//i,
+    snapchat: /snapchat\.com\/add\//i,
+    facebook: /facebook\.com\//i,
+    linkedin: /linkedin\.com\/in\//i,
+    github: /github\.com\//i,
+  };
+  
+  const pattern = validations[platformLower];
+  if (pattern && !pattern.test(url)) {
+    return `⚠️ URL doesn't look like a valid ${platform} link`;
+  }
+  
+  return null;
+};
+
+// Custom Select Component
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  placeholder = "Select a platform",
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  options: { label: string; options: readonly string[] }[];
+  placeholder?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const selectRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const selectedLabel = value || placeholder;
+
+  return (
+    <div ref={selectRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full bg-[#331400] text-white px-3 py-2 flex items-center justify-between focus:outline-none focus:ring-2 focus:ring-[#FED45C]"
+      >
+        <span className={!value ? "text-white/70" : "text-white"}>
+          {selectedLabel}
+        </span>
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute z-50 w-full mt-1 bg-white border border-gray-200 shadow-lg max-h-60 overflow-y-auto"
+          >
+            {options.map((group, groupIdx) => (
+              <div key={groupIdx}>
+                <div className="px-3 py-2 text-xs font-semibold text-gray-500 bg-gray-50">
+                  {group.label}
+                </div>
+                {group.options.map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => {
+                      onChange(option);
+                      setIsOpen(false);
+                    }}
+                    className="w-full px-3 py-2 text-left text-sm text-gray-700 hover:bg-[#FED45C] hover:text-[#331400] transition-colors flex items-center justify-between group"
+                  >
+                    <span>{option}</span>
+                    {value === option && (
+                      <Check className="w-4 h-4 text-[#331400]" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
 export default function LinkList({
   linksDataData,
 }: {
@@ -73,6 +207,8 @@ export default function LinkList({
 }) {
   const [linksData, setLinksData] = useState<ProfileLink[]>(linksDataData);
   const { refetch: refetchLinks } = useGetAllLinks();
+  const queryClient = useQueryClient();
+  
 
   // Update linksData when prop changes
   useEffect(() => {
@@ -154,70 +290,75 @@ export default function LinkList({
 
   // Handle delete
   const handleDelete = useCallback(
-    async (linkId: string) => {
-      try {
-        await deleteLinkMutation.mutateAsync({ linkId });
-        setDeleteId(null);
-        // Refetch to get updated list
-        await refetchLinks();
-      } catch (error) {
-        console.error("Failed to delete link:", error);
-      }
-    },
-    [deleteLinkMutation, refetchLinks]
-  );
+  async (linkId: string) => {
+    try {
+      await deleteLinkMutation.mutateAsync({ linkId });
+      setDeleteId(null);
+      await refetchLinks();
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    } catch (error) {
+      console.error("Failed to delete link:", error);
+    }
+  },
+  [deleteLinkMutation, refetchLinks, queryClient]
+);
 
   // Handle toggle visibility
-  const handleToggleVisibility = useCallback(
-    async (link: ProfileLink) => {
-      const newVisibility = !link.isVisible;
+   const handleToggleVisibility = useCallback(
+  async (link: ProfileLink) => {
+    const newVisibility = !link.isVisible;
+    setLinksData((prev) =>
+      prev.map((l) => (l.id === link.id ? { ...l, isVisible: newVisibility } : l))
+    );
+    try {
+      await updateLinkMutation.mutateAsync({
+        linkId: link.id,
+        isVisible: newVisibility,
+        platform: link.platform,
+      });
+      await refetchLinks();
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    } catch (error) {
       setLinksData((prev) =>
-        prev.map((l) => (l.id === link.id ? { ...l, isVisible: newVisibility } : l))
+        prev.map((l) => (l.id === link.id ? { ...l, isVisible: !newVisibility } : l))
       );
-      try {
-        await updateLinkMutation.mutateAsync({
-          linkId: link.id,
-          isVisible: newVisibility,
-          platform: link.platform,
-        });
-        await refetchLinks();
-      } catch (error) {
-        setLinksData((prev) =>
-          prev.map((l) => (l.id === link.id ? { ...l, isVisible: !newVisibility } : l))
-        );
-        console.error("Failed to toggle visibility:", error);
-      }
-    },
-    [updateLinkMutation, refetchLinks]
-  );
+      console.error("Failed to toggle visibility:", error);
+    }
+  },
+  [updateLinkMutation, refetchLinks, queryClient]
+);
   
   // Handle edit
   const handleEdit = useCallback(
-    async (link: ProfileLink, title: string, url: string) => {
-      try {
-        await updateLinkMutation.mutateAsync({
-          linkId: link.id,
-          title,
-          url,
-          platform: link.platform,
-        });
-        setEditItem(null);
-        await refetchLinks();
-      } catch (error) {
-        console.error("Failed to update link:", error);
-      }
-    },
-    [updateLinkMutation, refetchLinks]
-  );
+  async (link: ProfileLink, title: string, url: string) => {
+    try {
+      await updateLinkMutation.mutateAsync({
+        linkId: link.id,
+        title,
+        url,
+        platform: link.platform,
+      });
+      setEditItem(null);
+      await refetchLinks();
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+    } catch (error) {
+      console.error("Failed to update link:", error);
+    }
+  },
+  [updateLinkMutation, refetchLinks, queryClient]
+);
 
- 
   const handleAddLink = useCallback(async () => {
     if (!newLink.title.trim() || !newLink.url.trim()) {
       toast.error("Please fill in all fields");
       return;
     }
 
-    // Format URL
+    if (!newLink.platform) {
+      toast.error("Please select a platform");
+      return;
+    }
+
     const formatUrl = (url: string): string => {
       const trimmed = url.trim();
       if (!trimmed) return trimmed;
@@ -237,9 +378,10 @@ export default function LinkList({
         platform: newLink.platform,
       });
 
-      // If visibility is false, update it
+      await refetchLinks();
+      queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+
       if (!newLink.isVisible) {
-        await refetchLinks();
         const updatedLinks = await refetchLinks();
         if (updatedLinks.data?.data && updatedLinks.data.data.length > 0) {
           const lastLink = updatedLinks.data.data[updatedLinks.data.data.length - 1];
@@ -247,25 +389,21 @@ export default function LinkList({
             linkId: lastLink.id,
             isVisible: false,
           });
+          queryClient.invalidateQueries({ queryKey: ["user-profile"] });
         }
-      } else {
-        await refetchLinks();
       }
 
-      // Reset form
-      setNewLink({
-        title: "",
-        url: "",
-        platform: "INSTAGRAM",
-        isVisible: true,
-      });
+      setNewLink({ title: "", url: "", platform: "", isVisible: false });
       setIsAddModalOpen(false);
     } catch (error) {
       console.error("Failed to add link:", error);
     }
-  }, [newLink, addLinksMutation, updateLinkMutation, refetchLinks]);
+  }, [newLink, addLinksMutation, updateLinkMutation, refetchLinks, queryClient]);   
 
-
+  const selectOptions = [
+    { label: "Social", options: SOCIAL_PLATFORMS },
+    { label: "🎵 Streaming", options: STREAMING_PLATFORMS },
+  ];
 
   return (
     <>
@@ -394,8 +532,7 @@ export default function LinkList({
         {isAddModalOpen && (
           <>
             <div
-              
-            className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col"
+              className="fixed inset-0 z-[999] bg-[#FFF7DE] md:hidden flex flex-col"
             >
               <motion.div
                 initial={{ y: -20, opacity: 0 }}
@@ -444,33 +581,34 @@ export default function LinkList({
                     onChange={(e) =>
                       setNewLink({ ...newLink, url: e.target.value })
                     }
-                    placeholder="https://instagram.com/username"
-                    className="w-full text-[16px] placeholder:text-[16px]"
+                    placeholder={getUrlPlaceholder(newLink.platform)}
+                    className="w-full text-[16px] placeholder:text-[16px] placeholder:text-gray-400"
                   />
+                  {newLink.platform && newLink.url && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`text-xs mt-1 ${
+                        getUrlValidationHint(newLink.platform, newLink.url) 
+                          ? 'text-red-500' 
+                          : 'text-green-500'
+                      }`}
+                    >
+                      {getUrlValidationHint(newLink.platform, newLink.url) || '✓ Valid URL format'}
+                    </motion.p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-bold text-[#331400] mb-2">
                     Platform
                   </label>
-                  <select
+                  <CustomSelect
                     value={newLink.platform}
-                    onChange={(e) =>
-                      setNewLink({ ...newLink, platform: e.target.value })
-                    }
-                    className="w-full border border-[#4B2E1E] bg-transparent cursor-pointer text-[16px] placeholder:text-[16px] text-[#4B2E1E] px-3 py-2"
-                  >
-                    <optgroup label="Social">
-                      {SOCIAL_PLATFORMS.map((p) => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </optgroup>
-                    <optgroup label="🎵 Streaming">
-                      {STREAMING_PLATFORMS.map((p) => (
-                        <option key={p} value={p}>{p}</option>
-                      ))}
-                    </optgroup>
-                  </select>
+                    onChange={(value) => setNewLink({ ...newLink, platform: value })}
+                    options={selectOptions}
+                    placeholder="Select a platform"
+                  />
                 </div>
 
                 <motion.div
@@ -592,33 +730,34 @@ export default function LinkList({
                       onChange={(e) =>
                         setNewLink({ ...newLink, url: e.target.value })
                       }
-                      placeholder="https://instagram.com/username"
+                      placeholder={getUrlPlaceholder(newLink.platform)}
                       className="w-full"
                     />
+                    {newLink.platform && newLink.url && (
+                      <motion.p
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={`text-xs mt-1 ${
+                          getUrlValidationHint(newLink.platform, newLink.url) 
+                            ? 'text-red-500' 
+                            : 'text-green-500'
+                        }`}
+                      >
+                        {getUrlValidationHint(newLink.platform, newLink.url) || '✓ Valid URL format'}
+                      </motion.p>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-[#331400] mb-2">
                       Platform
                     </label>
-                    <select
+                    <CustomSelect
                       value={newLink.platform}
-                      onChange={(e) =>
-                        setNewLink({ ...newLink, platform: e.target.value })
-                      }
-                      className="w-full border border-[#4B2E1E] bg-transparent text-[#4B2E1E] px-3 py-2"
-                    >
-                      <optgroup label="Social">
-                        {SOCIAL_PLATFORMS.map((p) => (
-                          <option key={p} value={p}>{p}</option>
-                        ))}
-                      </optgroup>
-                      <optgroup label=" Streaming">
-                        {STREAMING_PLATFORMS.map((p) => (
-                          <option key={p} value={p}>{p}</option>
-                        ))}
-                      </optgroup>
-                    </select>
+                      onChange={(value) => setNewLink({ ...newLink, platform: value })}
+                      options={selectOptions}
+                      placeholder="Select a platform"
+                    />
                   </div>
 
                   <motion.div
@@ -695,13 +834,12 @@ function SortableItem({
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id });
 
- const style = {
-  transform: transform
-    ? `translate3d(${transform.x}px, ${transform.y}px, 0)${transform.scaleX ? ` scaleX(${transform.scaleX})` : ''}${transform.scaleY ? ` scaleY(${transform.scaleY})` : ''}`
-    : undefined,
-  transition,
-};
-
+  const style = {
+    transform: transform
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)${transform.scaleX ? ` scaleX(${transform.scaleX})` : ''}${transform.scaleY ? ` scaleY(${transform.scaleY})` : ''}`
+      : undefined,
+    transition,
+  };
 
   return (
     <motion.div

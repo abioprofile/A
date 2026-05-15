@@ -104,6 +104,7 @@ export default function PublicProfilePage() {
   const usernameData = useAppSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState<"links" | "listen" | "menu">("links");
   const [profileShareUrl, setProfileShareUrl] = useState("");
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined" || !username) return;
@@ -115,9 +116,9 @@ export default function PublicProfilePage() {
     isLoading: profileLoading,
     isError: profileError,
     error: profileErrorData,
-  } = useUserProfileByUsername(username);
+  } = useUserProfileByUsername(username) ;
 
-  // ─── Derive display config early (before any early returns) ───────────────
+  // ─── Derive display config early (before any early returns) 
   const profileDisplay = profileData?.data?.display;
   const fc = profileDisplay?.font_config;
   const fontName = (fc as { name?: string })?.name ?? null;
@@ -141,7 +142,7 @@ export default function PublicProfilePage() {
     };
   }, [fontName]);
 
-  // ─── Early returns ─────────────────────────────────────────────────────────
+  // ─── Early returns 
   const profileLinks = profileData?.data?.links || [];
 
   const links: UserLink[] = profileLinks.map((link) => ({
@@ -197,7 +198,7 @@ export default function PublicProfilePage() {
     );
   }
 
-  // ─── Safe to access profileData.data past this point ──────────────────────
+  // ─── Safe to access profileData.data past this point 
   const profile = profileData.data;
   const userData = {
     name: profile.user.name || undefined,
@@ -394,12 +395,14 @@ export default function PublicProfilePage() {
                     <motion.div
                       whileHover={{ scale: 1.1 }}
                       transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                      className="cursor-pointer"
+                      onClick={() => setIsAvatarModalOpen(true)}
                     >
                       <Avatar className="w-[60px] h-[60px] border">
                         <AvatarImage
                           src={userData.avatarUrl || "/icons/Profile Picture.png"}
                           alt={userData.name || userData.username || "Profile"}
-                          className="object-cover"
+                          className="object-cover cursor-pointer"
                         />
                         <AvatarFallback>
                           {(userData.name || userData.username || "U")
@@ -656,12 +659,14 @@ export default function PublicProfilePage() {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", delay: 0.3 }}
+                  className="cursor-pointer"
+                  onClick={() => setIsAvatarModalOpen(true)}
                 >
                   <Avatar className="w-[70px] h-[70px] border">
                     <AvatarImage
                       src={userData.avatarUrl || "/icons/Profile Picture.png"}
                       alt={userData.name || userData.username || "Profile"}
-                      className="object-cover"
+                      className="object-cover cursor-pointer"
                     />
                     <AvatarFallback>
                       {(userData.name || userData.username || "U")
@@ -865,6 +870,55 @@ export default function PublicProfilePage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Avatar Preview Modal - Instagram Style */}
+        {isAvatarModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center cursor-pointer"
+            onClick={() => setIsAvatarModalOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="relative max-w-[90vw] max-h-[90vh]"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <img
+                src={userData.avatarUrl || "/icons/Profile Picture.png"}
+                alt={userData.name || userData.username || "Profile"}
+                className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain "
+              />
+              
+              {/* Close Button */}
+              <button
+                onClick={() => setIsAvatarModalOpen(false)}
+                className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
+                aria-label="Close preview"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              </button>
+              
+              {/* User Info at bottom */}
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-2xl">
+                <p className="text-white font-semibold text-center">
+                  {isOotnUser ? "one of those nights" : userData?.name || userData?.username || "User"}
+                </p>
+                <p className="text-white/70 text-sm text-center">
+                  @{userData.username || "username"}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
 
         <a
           href="/auth/sign-up"

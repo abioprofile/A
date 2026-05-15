@@ -163,7 +163,7 @@ const LinksScreen = () => {
   const { refetch: refetchCurrentUser } = useCurrentUser();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [visibleCount, setVisibleCount] = useState(1);
-  
+
   const platforms =
     selectedPlatforms.length > 0
       ? selectedPlatforms
@@ -299,6 +299,7 @@ const LinksScreen = () => {
       } catch (_) {
         // non-critical
       }
+      toast.dismiss(); // clears all toasts fired during the loop
       toast.success("All links saved successfully!", {
         description: `Added ${linksToSave.length} link${linksToSave.length > 1 ? "s" : ""}`,
       });
@@ -375,8 +376,6 @@ const LinksScreen = () => {
         variants={containerVariants}
         className="min-h-screen bg-[#FEF4EA] flex flex-col pt-6 pb-10"
       >
-        
-
         {/* Nav */}
         <motion.div
           variants={itemVariants}
@@ -435,7 +434,7 @@ const LinksScreen = () => {
           </motion.div>
         </motion.div>
 
-          <OnboardingProgressWithSteps currentStep={4} totalSteps={5} />
+        <OnboardingProgressWithSteps currentStep={4} totalSteps={5} />
         {/* Header */}
         <motion.div
           variants={itemVariants}
@@ -459,7 +458,10 @@ const LinksScreen = () => {
         {/* Form */}
         <div className="flex justify-center items-start w-full flex-grow">
           <div className="w-[90%] md:max-w-md mx-auto flex flex-col justify-start space-y-5 pb-10">
-            <motion.div variants={itemVariants} className="space-y-2 sm:space-y-4">
+            <motion.div
+              variants={itemVariants}
+              className="space-y-2 sm:space-y-4"
+            >
               <h2 className="text-center font-semibold text-sm md:text-base">
                 Selected Platforms
               </h2>
@@ -494,7 +496,7 @@ const LinksScreen = () => {
                 Optional Additions
               </motion.h2>
 
-                   <AnimatePresence>
+              <AnimatePresence>
                 {customLinks.slice(0, visibleCount).map((link, index) => (
                   <motion.div
                     key={link.id}
@@ -514,7 +516,13 @@ const LinksScreen = () => {
                       className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors relative overflow-hidden cursor-pointer flex-shrink-0"
                     >
                       {link.iconUrl ? (
-                        <Image src={link.iconUrl} alt="Custom icon" width={32} height={32} className="rounded-full object-cover" />
+                        <Image
+                          src={link.iconUrl}
+                          alt="Custom icon"
+                          width={32}
+                          height={32}
+                          className="rounded-full object-cover"
+                        />
                       ) : (
                         <LinkIcon className="text-[#331400] w-4 h-4" />
                       )}
@@ -522,7 +530,9 @@ const LinksScreen = () => {
 
                     <input
                       type="file"
-                      ref={(el) => { fileInputRefs.current[index] = el; }}
+                      ref={(el) => {
+                        fileInputRefs.current[index] = el;
+                      }}
                       onChange={(e) => handleFileChange(e, index)}
                       accept="image/*"
                       className="hidden"
@@ -531,7 +541,9 @@ const LinksScreen = () => {
                     <Input
                       placeholder="add link"
                       value={link.url}
-                      onChange={(e) => handleCustomLinkChange(e.target.value, index)}
+                      onChange={(e) =>
+                        handleCustomLinkChange(e.target.value, index)
+                      }
                       className="h-10! text-[16px] placeholder:text-[16px]"
                     />
                   </motion.div>
@@ -560,7 +572,9 @@ const LinksScreen = () => {
                   type="button"
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => setVisibleCount((c) => Math.min(customLinks.length, c + 1))}
+                  onClick={() =>
+                    setVisibleCount((c) => Math.min(customLinks.length, c + 1))
+                  }
                   disabled={visibleCount >= customLinks.length}
                   className="w-8 h-8 flex items-center justify-center rounded-full border border-[#331400]/30 text-[#331400] text-xl font-light disabled:opacity-20 disabled:cursor-not-allowed transition-opacity"
                   aria-label="Add link field"

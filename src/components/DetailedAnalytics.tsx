@@ -76,7 +76,7 @@ const DetailedAnalytics = () => {
               {DAY_DATA.map((v, i) => (
                 <div key={i} className="flex-1 flex flex-col items-center justify-end h-full">
                   <motion.div
-                    className="w-full rounded-t-[4px]"
+                    className="w-full rounded-t-[0px]"
                     initial={{ height: 0 }}
                     animate={inView ? { height: `${(v / max) * 100}%` } : {}}
                     transition={{ duration: 0.6, delay: 0.3 + i * 0.06, ease: [0.25, 0.46, 0.45, 0.94] }}

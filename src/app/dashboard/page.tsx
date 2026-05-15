@@ -19,7 +19,10 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { ChevronLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { containerVariants, itemVariants } from "@/lib/animations";
-import { SkeletonDashboardProfile, SkeletonLinkList } from "@/components/AppSkeletons";
+import {
+  SkeletonDashboardProfile,
+  SkeletonLinkList,
+} from "@/components/AppSkeletons";
 
 interface UserLink {
   id: string;
@@ -141,7 +144,6 @@ export default function DashboardPage() {
     setShowMobileLinks(true);
   };
 
-
   return (
     <ProtectedRoute>
       <motion.section
@@ -181,11 +183,20 @@ export default function DashboardPage() {
 
               <motion.div>
                 <div className="mb-1">
-                  <h1 className="font-semibold text-xl md:text-2xl leading-tight">
-                    {displayName || "User"}
-                  </h1>
+                  <div className="flex gap-1 items-center">
+                    <h1 className="font-semibold text-xl md:text-2xl leading-tight">
+                      {displayName || "User"}
+                    </h1>
+                    <Image
+                      src="/icons/verification.svg"
+                      alt="Verified"
+                      width={18}
+                      height={18}
+                      className="inline-block ml-1"
+                    />
+                  </div>
                   <p className="font-normal text-xs md:text-sm text-gray-500 mt-1">
-                    @{userData?.profile?.username || "username"}
+                    /{userData?.profile?.username || "username"}
                   </p>
                 </div>
 

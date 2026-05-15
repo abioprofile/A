@@ -97,7 +97,6 @@ function ResponsiveSheet({
               md:hidden
             "
           >
-            
             {children}
           </motion.div>
 
@@ -287,7 +286,7 @@ export default function SideDashboard() {
     },
   ];
 
-  // ── Shared modal inner content 
+  // ── Shared modal inner content
 
   const QRModalContent = () => (
     <div className="relative   text-center w-full z-[999] p-2 md:p-6 ">
@@ -299,7 +298,9 @@ export default function SideDashboard() {
           <XIcon className="w-5 h-5 text-gray-500" />
         </button>
       </div>
-      <h2 className="text-xl md:text-2xl font-semibold">Here is your code!!!</h2>
+      <h2 className="text-xl md:text-2xl font-semibold">
+        Here is your code!!!
+      </h2>
       <p className="text-xs md:text-sm text-gray-500 mt-1 mb-2">
         This is your unique code for another <br /> person to scan
       </p>
@@ -396,22 +397,24 @@ export default function SideDashboard() {
       <div className="p-4 md:p-6 bg-white md:rounded-b-2xl">
         <p className="text-sm font-bold text-gray-700 mb-3">Share to</p>
         <div className="grid grid-cols-4 gap-3 pb-2">
-          {sharePlatforms.map(({ platform, icon: Icon, color, label, bgColor }) => (
-            <button
-              key={platform}
-              onClick={() => handleShare(platform)}
-              className="flex flex-col items-center gap-2 p-2 md:p-3 hover:bg-gray-50 rounded-xl transition-colors group"
-            >
-              <div
-                className={`w-10 h-10 md:w-12 md:h-12  ${bgColor} flex items-center justify-center group-hover:scale-105 transition-transform`}
+          {sharePlatforms.map(
+            ({ platform, icon: Icon, color, label, bgColor }) => (
+              <button
+                key={platform}
+                onClick={() => handleShare(platform)}
+                className="flex flex-col items-center gap-2 p-2 md:p-3 hover:bg-gray-50 rounded-xl transition-colors group"
               >
-                <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
-              </div>
-              <span className="text-xs font-medium text-gray-700 text-center line-clamp-2">
-                {label}
-              </span>
-            </button>
-          ))}
+                <div
+                  className={`w-10 h-10 md:w-12 md:h-12  ${bgColor} flex items-center justify-center group-hover:scale-105 transition-transform`}
+                >
+                  <Icon className={`w-5 h-5 md:w-6 md:h-6 ${color}`} />
+                </div>
+                <span className="text-xs font-medium text-gray-700 text-center line-clamp-2">
+                  {label}
+                </span>
+              </button>
+            ),
+          )}
         </div>
       </div>
     </div>
@@ -423,9 +426,19 @@ export default function SideDashboard() {
       <div className="sticky top-0 z-40 mt-2 mb-4 w-full bg-[#Fff7de] md:hidden">
         <div className="px-8 py-2 sm:px-6">
           <div className="flex items-center justify-between gap-3">
+            <div className="flex items-center gap-1">
+
             <p className="min-w-0 flex-1 truncate text-left text-xl font-extrabold text-black">
               {userData?.name || userData?.profile?.username || "User"}
             </p>
+            <Image
+              src="/icons/verification.svg"
+              alt="Verified"
+              width={18}
+              height={18}
+              className="inline-block ml-1"
+            />
+            </div>
             <div className="flex shrink-0 items-center gap-[0.5px] p-0">
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -454,20 +467,19 @@ export default function SideDashboard() {
                 />
               </button>
               <Link href="/dashboard/AccountSettings">
-            <button className="">
-             <Image
-                  src="/assets/icons/dashboard/settings-1.svg"
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="h-9 w-9 text-[#331400]"
-                />
-            </button>
-          </Link>
+                <button className="">
+                  <Image
+                    src="/assets/icons/dashboard/settings-1.svg"
+                    alt=""
+                    width={24}
+                    height={24}
+                    className="h-9 w-9 text-[#331400]"
+                  />
+                </button>
+              </Link>
 
               {/* More Button with Dropdown */}
               <div className="relative">
-               
                 <button
                   className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
                   onClick={() => setShowMenu(!showMenu)}
@@ -526,7 +538,10 @@ export default function SideDashboard() {
       <div className="hidden md:block p-4 sm:p-6 space-y-4 text-gray-800 max-w-[400px] mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 mb-6">
-            <button className="cursor-pointer" onClick={() => setIsModalOpen(true)}>
+            <button
+              className="cursor-pointer"
+              onClick={() => setIsModalOpen(true)}
+            >
               <Image
                 src="/assets/icons/dashboard/qrcode.svg"
                 alt="QR Code"
@@ -544,7 +559,10 @@ export default function SideDashboard() {
                 className="w-12 h-12 text-[#331400]"
               />
             </button>
-            <button className="cursor-pointer" onClick={() => setIsShareModalOpen(true)}>
+            <button
+              className="cursor-pointer"
+              onClick={() => setIsShareModalOpen(true)}
+            >
               <Image
                 src="/assets/icons/dashboard/share.svg"
                 alt="Share"
@@ -566,12 +584,18 @@ export default function SideDashboard() {
       </div>
 
       {/* ── QR Modal (bottom sheet on mobile, centred on desktop) ── */}
-      <ResponsiveSheet isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+      <ResponsiveSheet
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      >
         <QRModalContent />
       </ResponsiveSheet>
 
       {/* ── Share Modal (bottom sheet on mobile, centred on desktop) ── */}
-      <ResponsiveSheet isOpen={isShareModalOpen} onClose={() => setIsShareModalOpen(false)}>
+      <ResponsiveSheet
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+      >
         <ShareModalContent />
       </ResponsiveSheet>
     </>

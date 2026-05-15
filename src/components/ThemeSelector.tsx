@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import type { CSSProperties } from "react";
 import { useGetThemes } from "@/hooks/api/useAuth";
 import type { AppearanceTheme } from "@/types/appearance.types";
@@ -57,6 +57,25 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   const { data, isLoading, isError } = useGetThemes();
   const themes: AppearanceTheme[] = Array.isArray(data?.data) ? data.data : [];
 
+  // Sort themes by creation date (assuming newest first or by ID)
+  const sortedThemes = useMemo(() => {
+    return [...themes].sort((a, b) => {
+      // If there's a createdAt field
+      if (a.createdAt && b.createdAt) {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      }
+      // Otherwise assume array is in order
+      return 0;
+    });
+  }, [themes]);
+
+  // Only show the last theme (most recent)
+  const displayThemes = useMemo(() => {
+    if (sortedThemes.length === 0) return [];
+    // Show only the most recent theme
+    return [sortedThemes[0]];
+  }, [sortedThemes]);
+
   const getThemeString = (theme: AppearanceTheme) =>
     selectedThemeFromWallpaper(
       theme.wallpaper_config as Parameters<typeof selectedThemeFromWallpaper>[0],
@@ -108,7 +127,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
     return (
       <button
-        key={theme.name + index}
+        key={theme.name + index + theme.id}
         onClick={() => handleSelect(theme)}
         className="flex flex-col items-center gap-1.5 focus:outline-none group"
         aria-label={`Select theme: ${theme.name}`}
@@ -169,9 +188,6 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
   return (
     <div className="flex flex-col">
-    
-    
-
       {/* ── Content ─────────────────────────────   */}
       {isLoading ? (
         <div className="grid grid-cols-3 gap-3 px-1">
@@ -183,13 +199,16 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
         <p className="py-10 text-center text-sm text-gray-400">
           Could not load themes.
         </p>
-      ) : themes.length === 0 ? (
+      ) : displayThemes.length === 0 ? (
         <p className="py-10 text-center text-sm text-gray-400">
           No themes yet. Upload one to get started.
         </p>
       ) : (
         <div className="grid grid-cols-3 gap-3 px-1 md:overflow-y-auto max-h-[480px] pb-2">
-          {themes.map((theme, index) => renderCard(theme, index))}
+          {displayThemes.map((theme, index) => renderCard(theme, index))}
+          {/* Add empty placeholders to maintain grid layout and normal card sizes */}
+          <div className="invisible"></div>
+          <div className="invisible"></div>
         </div>
       )}
     </div>

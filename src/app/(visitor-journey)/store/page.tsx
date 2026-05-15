@@ -20,7 +20,7 @@ interface Product {
   badge?: string;
 }
 
-/* ─── Data ─────────────────────────────────────────────────────────────── */
+/* ─── Data  */
 const PRODUCTS: Product[] = [
   {
     id: "ap-card-5",
@@ -78,7 +78,7 @@ const PRODUCTS: Product[] = [
   },
 ];
 
-/* ─── Gallery helpers ───────────────────────────────────────────────────── */
+/* ─── Gallery helpers */
 function getGallery(product: Product, variantIdx: number): string[] {
   if (product.colors?.[variantIdx]) return product.colors[variantIdx].gallery;
   return product.defaultGallery ?? [product.defaultImage];
@@ -88,7 +88,7 @@ function getActiveImage(product: Product, variantIdx: number, imgIdx: number): s
   return getGallery(product, variantIdx)[imgIdx] ?? product.defaultImage;
 }
 
-/* ─── Animated counter ──────────────────────────────────────────────────── */
+/* ─── Animated counter */
 function Counter({ value, prefix = "" }: { value: number; prefix?: string }) {
   const [display, setDisplay] = useState(0);
   useEffect(() => {
@@ -220,9 +220,9 @@ export default function Store() {
 
         {/* ── Hero band ── */}
         <motion.div className="pt-20 pb-0" initial={{ opacity: 0 }} animate={loaded ? { opacity: 1 } : {}} transition={{ duration: 0.6, delay: 0.15 }}>
-          <div className="max-w-6xl mx-auto px-4 pt-8 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-[#331400]/10">
+          <div className="max-w-6xl mx-auto px-4  pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-3 border-b border-[#331400]/10">
             <div>
-              <motion.p initial={{ opacity: 0, x: -12 }} animate={loaded ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.4, delay: 0.3 }} className="text-[10px] font-bold text-[#331400] uppercase tracking-[0.25em] mb-1">
+              <motion.p initial={{ opacity: 0, x: -12 }} animate={loaded ? { opacity: 1, x: 0 } : {}} transition={{ duration: 0.4, delay: 0.3 }} className="text-[10px] font-bold text-[#331400] uppercase tracking-[0.25em] pt-14 mb-1">
                 ⚡ Pre-order open · Limited spots
               </motion.p>
               <motion.h1 initial={{ opacity: 0, y: 14 }} animate={loaded ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.45, delay: 0.35 }} className="text-3xl md:text-4xl font-extrabold text-[#1a0800] tracking-tight">
@@ -241,7 +241,7 @@ export default function Store() {
             {PRODUCTS.map((p) => (
               <button key={p.id} onClick={() => switchProduct(p.id)} className={`relative px-4 py-2 text-sm font-bold transition-colors ${activeId === p.id ? "text-[#331400]" : "text-[#331400]/35 hover:text-[#331400]/65"}`}>
                 {p.name}
-                {p.badge && <span className="ml-2 text-[8px] font-black bg-[#FED45C] text-[#331400] px-1.5 py-0.5 align-middle">{p.badge}</span>}
+                {p.badge && <span className="ml-1 text-[8px] font-black bg-[#FED45C] text-[#331400] px-1.5 py-0.5 align-middle">{p.badge}</span>}
                 {activeId === p.id && <motion.div layoutId="storeTab" className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#FED45C]" />}
               </button>
             ))}

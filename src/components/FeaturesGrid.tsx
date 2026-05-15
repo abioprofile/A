@@ -19,10 +19,17 @@ const cardVariants: Variants = {
 };
 
 const PhoneMockup = () => (
-  <div className="mx-auto mt-3 w-[68px] h-[130px] border-[1.5px] border-[#FEF4EA]/20 rounded-[12px] overflow-hidden bg-[#FEF4EA]/[0.07]">
-    <div className="w-5 h-[3px] bg-[#FEF4EA]/18 rounded-full mx-auto mt-2 mb-2" />
-    <div className="w-[22px] h-[22px] rounded-full bg-[#FED45C]/65 mx-auto mb-1" />
-    <div className="h-1 bg-[#FEF4EA]/13 rounded-full mx-5 mb-1" />
+  <div className="mx-auto mt-3 w-[68px] h-[130px] border-[1.5px] border-[#FEF4EA]/20 rounded-[0px] overflow-hidden bg-[#FEF4EA]/[0.07]">
+    
+    <div className="my-2 mx-2 flex gap-1 items-center">
+      
+       <div className="w-[22px] h-[22px] rounded-full bg-[#FED45C]/65  " />
+      <div>
+       <div className="h-1 bg-[#FEF4EA]/13  mb-1 " />
+       <div className="w-5 h-[3px] bg-[#FEF4EA]/18   " />
+      </div>
+    </div>
+    
     {[1, 2, 3].map((i) => (
       <div
         key={i}
@@ -32,24 +39,24 @@ const PhoneMockup = () => (
   </div>
 );
 
-const AnalyticsBars = () => (
-  <div className="flex items-end gap-[3px] h-10 w-full mt-auto">
-    {[30, 50, 38, 70, 45, 88, 62, 95, 72, 100, 82, 92].map((h, i) => (
-      <motion.div
-        key={i}
-        animate={{ scaleY: [1, 1.18, 1] }}
-        transition={{
-          duration: 2.5,
-          repeat: Infinity,
-          delay: i * 0.18,
-          ease: "easeInOut",
-        }}
-        className="flex-1 bg-[#5D2D2B]/18 origin-bottom"
-        style={{ height: `${h}%` }}
-      />
-    ))}
-  </div>
-);
+// const AnalyticsBars = () => (
+//   <div className="flex items-end gap-[3px] h-10 w-full mt-auto">
+//     {[30, 50, 38, 70, 45, 88, 62, 95, 72, 100, 82, 92].map((h, i) => (
+//       <motion.div
+//         key={i}
+//         animate={{ scaleY: [1, 1.18, 1] }}
+//         transition={{
+//           duration: 2.5,
+//           repeat: Infinity,
+//           delay: i * 0.18,
+//           ease: "easeInOut",
+//         }}
+//         className="flex-1 bg-[#5D2D2B]/18 origin-bottom"
+//         style={{ height: `${h}%` }}
+//       />
+//     ))}
+//   </div>
+// );
 
 const platforms = [
   "Instagram",
@@ -91,7 +98,7 @@ const ThemeCarousel = () => (
       {allThemes.map((t, i) => (
         <div
           key={i}
-          className="flex-shrink-0 w-[68px] rounded-[10px] overflow-hidden border border-white/10"
+          className="flex-shrink-0 w-[68px] rounded-[0px] overflow-hidden border border-white/10"
           style={{ background: t.bg }}
         >
           <div className="p-1.5 flex flex-col gap-1">
@@ -100,19 +107,30 @@ const ThemeCarousel = () => (
                 className="w-4 h-4 rounded-full flex-shrink-0"
                 style={{ background: t.card }}
               />
+              
+                {/* <div className="w-full h-1" style={{ background: t.card }} /> */}
+                <div className="w-full h-1" style={{ background: t.card }}/>
+              
+              <div>
+
               <div
                 className="flex-1 h-1.5 rounded-full opacity-30"
                 style={{ background: t.card }}
               />
+              <div
+                className="flex-1 h-1.5 rounded-full opacity-30"
+                style={{ background: t.card }}
+              />
+              </div>
             </div>
             {[1, 2, 3].map((j) => (
               <div
                 key={j}
-                className="w-full h-4 rounded-[3px]"
+                className="w-full h-4 rounded-[0px]"
                 style={{ background: j === 1 ? t.card : `${t.card}30` }}
               />
             ))}
-            <div className="flex justify-center gap-1 mt-0.5 pb-0.5">
+            {/* <div className="flex justify-center gap-1 mt-0.5 pb-0.5">
               {[1, 2, 3].map((j) => (
                 <div
                   key={j}
@@ -120,7 +138,7 @@ const ThemeCarousel = () => (
                   style={{ background: `${t.card}40` }}
                 />
               ))}
-            </div>
+            </div> */}
           </div>
           <div
             className="text-center text-[8px] font-bold py-1 tracking-wide"
@@ -269,29 +287,49 @@ export default function FeaturesGrid() {
           </div>
         </motion.div>
 
-        {/* 4. Analytics — 1 col */}
-        <motion.div
-          variants={cardVariants}
-          className="relative bg-[#FED45C] p-4 md:p-6 overflow-hidden flex flex-col
-               col-span-1 min-h-[210px] md:min-h-[230px] lg:min-h-[250px]"
+     {/* 4. Who It's For — 1 col */}
+<motion.div
+  variants={cardVariants}
+  className="relative bg-[#FED45C] p-4 md:p-6 overflow-hidden flex flex-col
+       col-span-1 min-h-[210px] md:min-h-[230px] lg:min-h-[250px]"
+>
+  <div className="absolute w-24 h-24 bg-[#F5C840]/40 rounded-full -top-8 -right-8" />
+  <div className="relative z-10 mb-2">
+    <span className="inline-block text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase px-2 py-0.5 mb-2 bg-[#5D2D2B] text-[#FED45C]">
+      Built for
+    </span>
+    <h3 className="text-[14px] md:text-[26px] font-[400] text-[#5D2D2B] leading-tight trialheader">
+      Everyone
+      <br />
+      online.
+    </h3>
+  </div>
+
+  {/* Vertical ticker — fixed height, doesn't stretch the card */}
+  <div className="relative h-[90px] overflow-hidden mt-auto">
+    <div className="absolute inset-x-0 top-0 h-4 bg-gradient-to-b from-[#FED45C] to-transparent z-10 pointer-events-none" />
+    <div className="absolute inset-x-0 bottom-0 h-4 bg-gradient-to-t from-[#FED45C] to-transparent z-10 pointer-events-none" />
+    <motion.div
+      animate={{ y: ["0%", "-50%"] }}
+      transition={{ duration: 9, repeat: Infinity, ease: "linear" }}
+      className="flex flex-col gap-1.5"
+    >
+      {[
+        "Musicians", "Designers", "Creators", "Freelancers",
+        "Athletes", "Podcasters", "Sellers", "Developers", "Influencers",
+        "Musicians", "Designers", "Creators", "Freelancers",
+        "Athletes", "Podcasters", "Sellers", "Developers", "Influencers",
+      ].map((label, i) => (
+        <div
+          key={i}
+          className="bg-[#5D2D2B]/10 text-[#5D2D2B] text-[9px] md:text-[10px] font-black tracking-wide px-2 py-1 whitespace-nowrap"
         >
-          <div className="absolute w-24 h-24 bg-[#F5C840]/40 rounded-full -top-8 -right-8" />
-          <div className="relative z-10">
-            <span className="inline-block text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase px-2 py-0.5 mb-2 bg-[#5D2D2B] text-[#FED45C]">
-              Analytics
-            </span>
-            <div className="text-[24px] md:text-[48px] font-[400] text-[#5D2D2B] leading-none trialheader">
-              43.5K
-            </div>
-            <p className="text-[#5D2D2B]/60 text-[10px] md:text-[11px] font-semibold">
-              clicks this month
-            </p>
-            <div className="inline-flex items-center bg-[#5D2D2B] text-[#FED45C] text-[8px] md:text-[9px] font-black px-2 py-0.5 mt-1">
-              ↑ 24%
-            </div>
-          </div>
-          <AnalyticsBars />
-        </motion.div>
+          {label}
+        </div>
+      ))}
+    </motion.div>
+  </div>
+</motion.div>
 
         {/* 5. Integrations — always full width */}
         {/* <motion.div

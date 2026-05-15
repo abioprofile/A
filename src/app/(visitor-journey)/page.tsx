@@ -14,7 +14,7 @@ import SignIn from "../auth/sign-in/page";
 export default function VisitorJourneyPage() {
   return (
     <main className="overflow-y-auto bg-[#FEF4EA] overflow-x-hidden scroll-smooth">
-      {/* <NavBar />
+      <NavBar />
       <HeroSection />
       <FeaturesGrid />
       <IntegrateSocials />
@@ -23,8 +23,8 @@ export default function VisitorJourneyPage() {
       <DetailedAnalytics />
       <Testimonials />
       <Faq />
-      <Footer /> */}
-      <SignIn/>
+      <Footer />
+      {/* <SignIn/> */}
     </main>
   );
 }
