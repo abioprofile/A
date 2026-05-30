@@ -9,7 +9,7 @@ import { PLATFORMS, STREAMING_PLATFORMS } from "@/data"
 import { toast } from "sonner";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, LucideIcon } from "lucide-react";
 import { OnboardingProgressWithSteps } from "@/components/ProgressBar";
 
 const MAX_PLATFORMS = 5;
@@ -18,7 +18,6 @@ const Platforms = () => {
   const [isMounted, setIsMounted] = useState(false);
   const { selectedPlatforms, togglePlatform } = useUserStore();
   const router = useRouter();
-  
 
   useEffect(() => {
     setIsMounted(true);
@@ -33,6 +32,37 @@ const Platforms = () => {
     }
 
     togglePlatform(platform);
+  };
+
+  // Helper function to render platform icon
+  const renderPlatformIcon = (platform: (typeof PLATFORMS)[number], size: number = 35) => {
+    // Check if it's a Lucide icon component
+    if (platform.isReactIcon && platform.icon) {
+      const IconComponent = platform.icon as LucideIcon;
+      // Set colors for specific icons
+      let color = "#331400";
+      if (platform.id === "gmail") {
+        color = "#EA4335";
+      } else if (platform.id === "phone") {
+        color = "#34A853";
+      }
+      return <IconComponent size={size} color={color} strokeWidth={1.5} className="mb-2" />;
+    }
+    
+    // For string paths (SVG files)
+    if (typeof platform.icon === "string") {
+      return (
+        <Image
+          src={platform.icon}
+          alt={platform.name}
+          width={size}
+          height={size}
+          className="mb-2"
+        />
+      );
+    }
+    
+    return null;
   };
 
   const containerVariants: Variants = {
@@ -136,7 +166,7 @@ const Platforms = () => {
         className="min-h-screen bg-[#FEF4EA] flex flex-col justify-center p-5"
       >
         <OnboardingProgressWithSteps currentStep={3} totalSteps={5} />
-        {/* 🔹 Full-width top bar - Skip button hidden on mobile */}
+        {/* Full-width top bar - Skip button hidden on mobile */}
         <motion.div 
           variants={itemVariants}
           className="flex justify-end items-center px-4 md:px-16 py-8 absolute top-0 right-0"
@@ -145,7 +175,7 @@ const Platforms = () => {
             variants={backButtonVariants}
             whileHover="hover"
             whileTap="tap"
-            className="bg-[#331400] px-4 py-2 hidden md:flex items-center gap-2 cursor-pointer  hover:bg-[#442000] transition-colors"
+            className="bg-[#331400] px-4 py-2 hidden md:flex items-center gap-2 cursor-pointer hover:bg-[#442000] transition-colors"
             onClick={() => router.push("/auth/links")}
           >
             <span className="text-[#FFE4A5] text-sm font-semibold">Skip</span>
@@ -166,7 +196,7 @@ const Platforms = () => {
           </motion.div>
         </motion.div>
 
-        {/* 🔹 Centered main content */}
+        {/* Centered main content */}
         <section className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
           <motion.div 
             variants={itemVariants}
@@ -204,18 +234,12 @@ const Platforms = () => {
                   animate={isSelected ? "selected" : "unselected"}
                   whileHover="hover"
                   whileTap="tap"
-                  className={`cursor-pointer flex flex-col w-20 h-20 md:h-24 md:w-24 items-center justify-center p-4 border-2  ${
+                  className={`cursor-pointer flex flex-col w-20 h-20 md:h-24 md:w-24 items-center justify-center p-4 border-2 ${
                     isSelected ? "border-[#331400]" : "border-transparent"
                   }`}
                   onClick={() => handlePlatformClick(platform)}
                 >
-                  <Image
-                    src={platform.icon}
-                    alt={platform.name}
-                    width={35}
-                    height={35}
-                    className="mb-2"
-                  />
+                  {renderPlatformIcon(platform, 35)}
                   <span className="text-xs md:text-sm text-center">
                     {platform.name}
                   </span>
@@ -252,7 +276,7 @@ const Platforms = () => {
                     onClick={() => handlePlatformClick(platform)}
                   >
                     <Image
-                      src={platform.icon}
+                      src={platform.icon as string}
                       alt={platform.name}
                       width={35}
                       height={35}
@@ -283,25 +307,25 @@ const Platforms = () => {
                 Continue
               </Button>
             </motion.div>
-
           </motion.div>
         </section>
-            {/* Back button below Continue button */}
-            <motion.div
-              variants={itemVariants}
-              className="flex justify-start "
-            >
-              <motion.button
-                variants={backButtonVariants}
-                whileHover="hover"
-                whileTap="tap"
-                onClick={() => router.back()}
-                className="flex items-center gap-2  md:hidden text-sm font-semibold  cursor-pointer hover:bg-[#4a2c1a] transition-colors"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Back
-              </motion.button>
-            </motion.div>
+        
+        {/* Back button below Continue button */}
+        <motion.div
+          variants={itemVariants}
+          className="flex justify-start"
+        >
+          <motion.button
+            variants={backButtonVariants}
+            whileHover="hover"
+            whileTap="tap"
+            onClick={() => router.back()}
+            className="flex items-center gap-2 md:hidden text-sm font-semibold cursor-pointer hover:bg-[#4a2c1a] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </motion.button>
+        </motion.div>
 
         {/* Footer - Mobile only */}
         <motion.footer 

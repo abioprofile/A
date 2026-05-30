@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, JSX, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { SkeletonPublicProfile } from "@/components/AppSkeletons";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -14,7 +14,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import DnaFormV1 from "@/components/dnabygaza/form";
 import MenuAccordion from "@/app/menu/page";
 import ClubSixSevenMenu from "@/components/clubsix7even/ClubSixSevenMenu";
-import { hasStreamingLinks, getStreamingLinks, STREAMING_PLATFORM_IDS_SET } from "@/components/StreamingEmbed";
+import {
+  hasStreamingLinks,
+  getStreamingLinks,
+  STREAMING_PLATFORM_IDS_SET,
+} from "@/components/StreamingEmbed";
 import {
   pageVariants,
   phoneContainerVariants,
@@ -23,6 +27,9 @@ import {
   blurSideVariants,
 } from "@/lib/animations";
 import { QRCodeSVG } from "qrcode.react";
+import ShareModal, { LinkShareButton } from "@/components/ShareModal";
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface UserLink {
   id: string;
@@ -33,17 +40,12 @@ interface UserLink {
   isVisible: boolean;
 }
 
-// ─── Helper: convert any hex/rgb color + separate opacity into a single rgba() ─
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
 function applyOpacityToColor(color: string, opacity: number): string {
   const alpha = Math.max(0, Math.min(1, opacity));
-
-  const rgbaMatch = color.match(
-    /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/,
-  );
-  if (rgbaMatch) {
-    return `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${alpha})`;
-  }
-
+  const m = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*[\d.]+)?\)/);
+  if (m) return `rgba(${m[1]}, ${m[2]}, ${m[3]}, ${alpha})`;
   let hex = color.replace("#", "");
   if (hex.length === 3)
     hex = hex
@@ -56,14 +58,15 @@ function applyOpacityToColor(color: string, opacity: number): string {
     const b = parseInt(hex.slice(4, 6), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
-
   return color;
 }
 
-const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
+const createTextStyle = (
+  fontConfig: any,
+  strokeWidth = 0,
+): React.CSSProperties | undefined => {
   if (!fontConfig) return undefined;
-
-  const baseStyle: React.CSSProperties = {
+  const base: React.CSSProperties = {
     fontFamily: fontConfig.name || "Poppins",
     color: fontConfig.fillColor ?? "#000000",
     opacity: fontConfig.opacity ? fontConfig.opacity / 100 : 1,
@@ -72,43 +75,74 @@ const createTextStyle = (fontConfig: any, strokeWidth = 0) => {
     fontSize: fontConfig.fontSize ? `${fontConfig.fontSize}px` : undefined,
     textDecoration: fontConfig.textDecoration || "none",
   };
-
   if (
     strokeWidth > 0 &&
     fontConfig.strokeColor &&
     fontConfig.strokeColor !== "none" &&
     fontConfig.strokeColor !== "transparent"
   ) {
-    const shadowSpread = Math.max(1, Math.round(strokeWidth));
+    const s = Math.max(1, Math.round(strokeWidth));
     return {
-      ...baseStyle,
-      textShadow: `
-        ${shadowSpread}px ${shadowSpread}px 0 ${fontConfig.strokeColor},
-        -${shadowSpread}px ${shadowSpread}px 0 ${fontConfig.strokeColor},
-        ${shadowSpread}px -${shadowSpread}px 0 ${fontConfig.strokeColor},
-        -${shadowSpread}px -${shadowSpread}px 0 ${fontConfig.strokeColor},
-        0 ${shadowSpread}px 0 ${fontConfig.strokeColor},
-        0 -${shadowSpread}px 0 ${fontConfig.strokeColor},
-        ${shadowSpread}px 0 0 ${fontConfig.strokeColor},
-        -${shadowSpread}px 0 0 ${fontConfig.strokeColor}
-      `,
+      ...base,
+      textShadow: `${s}px ${s}px 0 ${fontConfig.strokeColor},
+        -${s}px ${s}px 0 ${fontConfig.strokeColor},
+        ${s}px -${s}px 0 ${fontConfig.strokeColor},
+        -${s}px -${s}px 0 ${fontConfig.strokeColor},
+        0 ${s}px 0 ${fontConfig.strokeColor},
+        0 -${s}px 0 ${fontConfig.strokeColor},
+        ${s}px 0 0 ${fontConfig.strokeColor},
+        -${s}px 0 0 ${fontConfig.strokeColor}`,
     };
   }
-
-  return baseStyle;
+  return base;
 };
+
+// ─── Global share button (top-right) ─────────────────────────────────────────
+
+function GlobalShareButton({ profileLink }: { profileLink: string }) {
+  return (
+    <ShareModal
+      url={profileLink}
+      title="My Abio profile"
+      mode="profile"
+      trigger={
+        <motion.div
+          whileHover={{ scale: 1.08 }}
+          whileTap={{ scale: 0.92 }}
+          className="w-9 h-9 bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors cursor-pointer"
+        >
+          {/* Upload/share icon — matches Linktree's top-right icon exactly */}
+          <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white">
+            <path
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </motion.div>
+      }
+    />
+  );
+}
+
+// ─── Main component
 
 export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
-  const usernameData = useAppSelector((state) => state.auth.user);
-  const [activeTab, setActiveTab] = useState<"links" | "listen" | "menu">("links");
+  const [activeTab, setActiveTab] = useState<"links" | "listen" | "menu">(
+    "links",
+  );
   const [profileShareUrl, setProfileShareUrl] = useState("");
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+  const [profileLink, setProfileLink] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined" || !username) return;
     setProfileShareUrl(`${window.location.origin}/${username}`);
+    setProfileLink(`${window.location.origin}/${username}`);
   }, [username]);
 
   const {
@@ -116,14 +150,18 @@ export default function PublicProfilePage() {
     isLoading: profileLoading,
     isError: profileError,
     error: profileErrorData,
-  } = useUserProfileByUsername(username) ;
+    refetch,
+  } = useUserProfileByUsername(username);
 
-  // ─── Derive display config early (before any early returns) 
+  useEffect(() => {
+    if (username) refetch();
+  }, [username, refetch]);
+
+  // Font loading — must be above early returns
   const profileDisplay = profileData?.data?.display;
   const fc = profileDisplay?.font_config;
   const fontName = (fc as { name?: string })?.name ?? null;
 
-  // ✅ useEffect is now above all early returns — no hooks-order violation
   useEffect(() => {
     if (!fontName || typeof document === "undefined") return;
     const href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@400;500;600;700&display=swap`;
@@ -142,19 +180,9 @@ export default function PublicProfilePage() {
     };
   }, [fontName]);
 
-  // ─── Early returns 
-  const profileLinks = profileData?.data?.links || [];
+  // ─── Early returns ────────────────────────────────────────────────────────
 
-  const links: UserLink[] = profileLinks.map((link) => ({
-    id: link.id,
-    title: link.title,
-    url: link.url,
-    platform: link.platform,
-    displayOrder: link.displayOrder,
-    isVisible: link.isVisible,
-  }));
-
-  if (profileLoading) {
+  if (profileLoading)
     return (
       <motion.div
         key="loading"
@@ -165,14 +193,12 @@ export default function PublicProfilePage() {
         <SkeletonPublicProfile />
       </motion.div>
     );
-  }
 
   if (profileError || !profileData?.data) {
-    const errorMessage =
+    const msg =
       profileErrorData instanceof Error
         ? profileErrorData.message
         : "Profile not found";
-
     return (
       <motion.div
         key="error"
@@ -187,7 +213,7 @@ export default function PublicProfilePage() {
             animate={{ y: 0, opacity: 1 }}
             className="text-red-600 mb-4"
           >
-            {errorMessage}
+            {msg}
           </motion.p>
           <p className="text-gray-600 text-sm">
             The profile you&apos;re looking for doesn&apos;t exist or is not
@@ -198,8 +224,17 @@ export default function PublicProfilePage() {
     );
   }
 
-  // ─── Safe to access profileData.data past this point 
+  // ─── Data ─────────────────────────────────────────────────────────────────
   const profile = profileData.data;
+  const links: UserLink[] = (profileData?.data?.links || []).map((l) => ({
+    id: l.id,
+    title: l.title,
+    url: l.url,
+    platform: l.platform,
+    displayOrder: l.displayOrder,
+    isVisible: l.isVisible,
+  }));
+
   const userData = {
     name: profile.user.name || undefined,
     username: profile.username || undefined,
@@ -225,14 +260,12 @@ export default function PublicProfilePage() {
   const fontStyle = fc
     ? createTextStyle(fc, (fc as { strokeWidth?: number }).strokeWidth || 0)
     : undefined;
-
-  // ─── Build buttonStyle with opacity baked into backgroundColor ────────────
   const buttonStyle = cc
     ? (() => {
-        const rawBg = cc.fillColor ?? "#ffffff";
-        const opacity = cc.opacity ?? 1;
-        const backgroundColorWithOpacity = applyOpacityToColor(rawBg, opacity);
-
+        const backgroundColorWithOpacity = applyOpacityToColor(
+          cc.fillColor ?? "#ffffff",
+          cc.opacity ?? 1,
+        );
         return {
           borderRadius:
             cc.type === "sharp"
@@ -255,10 +288,12 @@ export default function PublicProfilePage() {
       })()
     : undefined;
 
+  // ─── Background ───────────────────────────────────────────────────────────
+
   let backgroundStyle: React.CSSProperties = {};
   let backgroundImageSrc = "/themes/theme7.jpg";
-  // Built after backgroundStyle/backgroundImageSrc are set below
   let contentBgStyle: React.CSSProperties = {};
+
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
   const isClubSixSevenUser = userData?.username === "clubsix7even";
@@ -272,8 +307,9 @@ export default function PublicProfilePage() {
   if (!isOotnUser && !isDnaByGazaUser) {
     if (selectedTheme && typeof selectedTheme === "string") {
       if (selectedTheme.startsWith("fill:")) {
-        const color = selectedTheme.split(":")[1] || "#000";
-        backgroundStyle = { backgroundColor: color };
+        backgroundStyle = {
+          backgroundColor: selectedTheme.split(":")[1] || "#000",
+        };
       } else if (selectedTheme.startsWith("gradient:")) {
         const [, start, end] = selectedTheme.split(":");
         backgroundStyle = {
@@ -282,20 +318,19 @@ export default function PublicProfilePage() {
       } else {
         backgroundImageSrc = selectedTheme;
       }
-    } else if (wc?.type == "fill" || wc?.type == "gradient") {
+    } else if (wc?.type === "fill" || wc?.type === "gradient") {
       const items = bgColors.map(
         (c: unknown) => c as { color: string; amount?: number },
       );
       if (items.length === 1) {
         backgroundStyle = { backgroundColor: items[0].color };
       } else {
-        const direction =
-          (wc as { direction?: string }).direction ?? "to bottom";
-        const hasAmounts = items.some((c) => c.amount != null);
-        if (hasAmounts) {
+        const dir = (wc as { direction?: string }).direction ?? "to bottom";
+        const hasAmts = items.some((c) => c.amount != null);
+        if (hasAmts) {
           const [start, end] = items;
           backgroundStyle = {
-            background: `linear-gradient(${direction}, ${start.color} 0%, ${end.color} ${
+            background: `linear-gradient(${dir}, ${start.color} 0%, ${end.color} ${
               typeof end.amount === "number"
                 ? end.amount <= 1
                   ? end.amount * 100
@@ -305,33 +340,32 @@ export default function PublicProfilePage() {
           };
         } else {
           backgroundStyle = {
-            background: `linear-gradient(${direction}, ${items.map((c) => c.color).join(", ")})`,
+            background: `linear-gradient(${dir}, ${items.map((c) => c.color).join(", ")})`,
           };
         }
       }
     } else if (wc?.type === "image") {
-      const wcImage = wc as { imageUrl?: string; image?: { url?: string } };
-      const imageUrl = wcImage.imageUrl ?? wcImage.image?.url;
-      if (imageUrl) backgroundImageSrc = imageUrl;
+      const wcImg = wc as { imageUrl?: string; image?: { url?: string } };
+      const imgUrl = wcImg.imageUrl ?? wcImg.image?.url;
+      if (imgUrl) backgroundImageSrc = imgUrl;
     }
   }
 
-  // Unified bg for the content area — mirrors PhoneDisplay bgStyle logic exactly
   if (!isOotnUser) {
-    if (Object.keys(backgroundStyle).length > 0) {
-      contentBgStyle = backgroundStyle;
-    } else {
-      contentBgStyle = {
-        backgroundImage: `url(${backgroundImageSrc})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundColor: "#000000",
-      };
-    }
+    contentBgStyle =
+      Object.keys(backgroundStyle).length > 0
+        ? backgroundStyle
+        : {
+            backgroundImage: `url(${backgroundImageSrc})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundColor: "#000000",
+          };
   }
 
-  // ─── Shared link button style 
+  // ─── Link button styles ───────────────────────────────────────────────────
+
   const linkButtonStyle: React.CSSProperties = {
     borderRadius: buttonStyle?.borderRadius || "0px",
     border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
@@ -345,6 +379,320 @@ export default function PublicProfilePage() {
     backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
   };
 
+  // Font color to pass down to the ⋮ so it always matches
+  const dotColor = (fontStyle?.color as string) || "#ffffff";
+
+  // ─── Renderers
+
+  /**
+   * ONE link row.
+   * The ⋮ button is rendered INSIDE the flex row as the rightmost child —
+   * visually inside the button's border, separated by a subtle divider.
+   */
+  const renderLinkRow = (link: UserLink, index: number, isMobile: boolean) => (
+    <div key={link.id} className="group relative mb-3">
+      <div
+        className="w-full relative flex items-center overflow-hidden transition-all duration-150 "
+        style={linkButtonStyle}
+      >
+        {/* Clickable link area */}
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          // justify-center keeps text dead center. px-12 prevents long text from overlapping the icons
+          className="w-full flex items-center justify-center px-12 py-2 font-semibold text-sm cursor-pointer"
+          style={{
+            textDecoration: "none",
+            color: linkButtonStyle.color,
+            fontFamily: linkButtonStyle.fontFamily,
+            fontWeight: linkButtonStyle.fontWeight,
+            fontStyle: linkButtonStyle.fontStyle,
+            textShadow: linkButtonStyle.textShadow,
+          }}
+          aria-label={link.title}
+        >
+          {/* Icon - Pinned absolutely to the left */}
+          <motion.span
+            className="absolute left-4 flex items-center justify-center"
+            whileHover={{ rotate: 10 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            style={{ color: dotColor }}
+            aria-hidden="true"
+          >
+            {/* Increased w-4 h-4 to w-6 h-6 to better match the size in your screenshot */}
+            {getPlatformIcon(link.platform, "w-6 h-6")} 
+          </motion.span>
+
+          {/* Centered Text */}
+          <span className="truncate block max-w-full">{link.title}</span>
+        </a>
+
+        {/* ⋮ share — Pinned absolutely to the right */}
+        <div className="absolute right-1 top-0 bottom-0 flex items-center z-10">
+          <LinkShareButton
+            url={link.url}
+            title={link.title}
+            fontColor={dotColor}
+            isMobile={isMobile}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderStreamingRow = (
+    link: UserLink,
+    index: number,
+    isMobile: boolean,
+  ) => (
+    <div key={link.id} className="group relative mb-3">
+      <div
+        className="w-full flex items-stretch overflow-hidden transition-all duration-150"
+        style={linkButtonStyle}
+      >
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-1 flex items-center gap-3 px-4 py-2 font-semibold text-sm cursor-pointer"
+          style={{
+            textDecoration: "none",
+            color: linkButtonStyle.color,
+            fontFamily: linkButtonStyle.fontFamily,
+            fontWeight: linkButtonStyle.fontWeight,
+            fontStyle: linkButtonStyle.fontStyle,
+            textShadow: linkButtonStyle.textShadow,
+          }}
+          aria-label={link.title}
+        >
+          <motion.span
+            whileHover={{ rotate: 10 }}
+            transition={{ type: "spring", stiffness: 300 }}
+            style={{ color: dotColor }}
+            aria-hidden="true"
+          >
+            {getPlatformIcon(link.platform, "w-4 h-4")}
+          </motion.span>
+          <span className="truncate">{link.title}</span>
+        </a>
+        <div
+          className={[
+            "w-px self-stretch my-2 flex-shrink-0 transition-opacity duration-150",
+            isMobile ? "opacity-30" : "opacity-0 group-hover:opacity-30",
+          ].join(" ")}
+          style={{ backgroundColor: dotColor }}
+          aria-hidden="true"
+        />
+        <LinkShareButton
+          url={link.url}
+          title={link.title}
+          fontColor={dotColor}
+          isMobile={isMobile}
+        />
+      </div>
+    </div>
+  );
+
+  const renderLinks = (isMobile: boolean) => {
+    const visible = links
+      .filter(
+        (l) =>
+          l.isVisible !== false &&
+          !STREAMING_PLATFORM_IDS_SET.has(
+            l.platform.toLowerCase().replace(/\s+/g, "-"),
+          ),
+      )
+      .sort((a, b) => a.displayOrder - b.displayOrder);
+    if (visible.length === 0)
+      return (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-xs text-gray-500 text-center py-4"
+          style={fontStyle}
+        >
+          No links added yet.
+        </motion.p>
+      );
+    return visible.map((l, i) => renderLinkRow(l, i, isMobile));
+  };
+
+  const renderStreamingLinks = (isMobile: boolean) => {
+    const streaming = getStreamingLinks(links);
+    if (streaming.length === 0)
+      return (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-xs text-gray-500 text-center py-4"
+          style={fontStyle}
+        >
+          No streaming links added yet.
+        </motion.p>
+      );
+    return streaming.map((l, i) => renderStreamingRow(l, i, isMobile));
+  };
+
+  const renderTabContent = (isMobile: boolean) => (
+    <>
+      {activeTab === "links" && (
+        <AnimatePresence>
+          <div>
+            {renderLinks(isMobile)}
+            {isDnaByGazaUser && <DnaFormV1 />}
+          </div>
+        </AnimatePresence>
+      )}
+      {activeTab === "listen" && (
+        <motion.div
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -10 }}
+          transition={{ duration: 0.25 }}
+          className="space-y-3"
+        >
+          {renderStreamingLinks(isMobile)}
+        </motion.div>
+      )}
+      {activeTab === "menu" && (
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.3 }}
+        >
+          {isClubSixSevenUser ? <ClubSixSevenMenu /> : <MenuAccordion />}
+        </motion.div>
+      )}
+    </>
+  );
+
+  const renderTabs = (layoutId: string) => (
+    <div className="mt-4 flex absolute bottom-0 gap-8">
+      {(
+        [
+          "links",
+          ...(hasStreamingLinks(links) ? ["listen"] : []),
+          ...(hasMenuTab ? ["menu"] : []),
+        ] as const
+      ).map((tab) => (
+        <button
+          key={tab}
+          onClick={() => setActiveTab(tab as any)}
+          className="relative flex flex-col items-center pb-2"
+        >
+          <span
+            className={`text-[9px] -mb-1 font-medium transition-colors ${activeTab === tab ? "text-black" : "text-gray-400"}`}
+          >
+            {tab.charAt(0).toUpperCase() + tab.slice(1)}
+          </span>
+          {activeTab === tab && (
+            <motion.div
+              layoutId={layoutId}
+              className="h-[3px] absolute -bottom-[1px] w-6 bg-red-500"
+            />
+          )}
+        </button>
+      ))}
+    </div>
+  );
+
+  const renderProfileCard = (isMobile: boolean, layoutId: string) => (
+    <div>
+      {/* Global share — absolute top-right */}
+      <div className="absolute top-4 right-4 z-30">
+        {profileLink && <GlobalShareButton profileLink={profileLink} />}
+      </div>
+
+      <div className="flex items-center gap-3">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", delay: 0.3 }}
+          className="cursor-pointer"
+          onClick={() => setIsAvatarModalOpen(true)}
+        >
+          <Avatar
+            className={
+              isMobile ? "w-[70px] h-[70px] border" : "w-[60px] h-[60px] border"
+            }
+          >
+            <AvatarImage
+              src={userData.avatarUrl || "/icons/Profile Picture.png"}
+              alt={userData.name || userData.username || "Profile"}
+              className="object-cover cursor-pointer"
+            />
+            <AvatarFallback>
+              {(userData.name || userData.username || "U")
+                .charAt(0)
+                .toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center">
+            <p className="font-bold text-sm">
+              {isOotnUser
+                ? "one of those nights"
+                : userData?.name || userData?.username || "User"}
+            </p>
+            <Image
+              src="/icons/verification.svg"
+              alt="Verified"
+              width={18}
+              height={18}
+              className="inline-block ml-1"
+            />
+          </div>
+          <p className="text-xs text-gray-500">
+            /{userData.username || "username"}
+          </p>
+        </motion.div>
+      </div>
+
+      {userData.bio && (
+        <motion.p
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ delay: 0.5 }}
+          className="mt-2 text-xs text-left font-semibold line-clamp-2"
+        >
+          {userData.bio}
+        </motion.p>
+      )}
+
+      {userData.location && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.6, type: "spring" }}
+          className="inline-flex items-center text-[9px] text-[#4e4e4e]  gap-1 mt-2 mb-4 border px-[2px] py-[2px] bg-white/80"
+        >
+          <Image
+            src="/icons/location1.png"
+            alt="Location"
+            width={10}
+            height={10}
+            className="w-fit h-2 flex-shrink-0"
+          />
+          <span className="truncate max-w-[180px]">{userData.location}</span>
+        </motion.div>
+      )}
+
+      {renderTabs(layoutId)}
+    </div>
+  );
+
+  // ─── Render
+
   return (
     <AnimatePresence mode="wait">
       <motion.div
@@ -355,7 +703,7 @@ export default function PublicProfilePage() {
         exit="exit"
         className="min-h-screen bg-[#FEF4EA] overflow-hidden"
       >
-        {/* Desktop Layout with Blurred Sides */}
+        {/* ── Desktop */}
         <div className="hidden lg:flex items-center justify-center min-h-screen">
           <motion.div
             variants={blurSideVariants}
@@ -382,229 +730,22 @@ export default function PublicProfilePage() {
                   animate="animate"
                   className="relative z-20 bg-white/90 p-4 backdrop-blur-xl"
                   style={{
-                    backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
+                    backgroundColor: fc?.cardBgColor ?? undefined,
                     opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
                   }}
                 >
-                  <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 }}
-                    className="flex items-center gap-3"
-                  >
-                    <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 15 }}
-                      className="cursor-pointer"
-                      onClick={() => setIsAvatarModalOpen(true)}
-                    >
-                      <Avatar className="w-[60px] h-[60px] border">
-                        <AvatarImage
-                          src={userData.avatarUrl || "/icons/Profile Picture.png"}
-                          alt={userData.name || userData.username || "Profile"}
-                          className="object-cover cursor-pointer"
-                        />
-                        <AvatarFallback>
-                          {(userData.name || userData.username || "U")
-                            .charAt(0)
-                            .toUpperCase()}
-                        </AvatarFallback>
-                      </Avatar>
-                    </motion.div>
-
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.7 }}
-                    >
-                      <div className="flex items-center ">
-                          <p className="font-bold text-sm">
-                        {isOotnUser
-                          ? "one of those nights"
-                          : userData?.name || userData?.username || "User"}
-                        </p>
-                          <Image
-                            src="/icons/verification.svg"
-                            alt="Verified"
-                            width={18}
-                            height={18}
-                            className="inline-block ml-1"
-                          />
-                      </div>
-                      
-                      
-                      <p className="text-[10px] text-gray-500">
-                        /{userData.username || "username"}
-                      </p>
-                    </motion.div>
-                  </motion.div>
-
-                  {userData.bio && (
-                    <motion.p
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: "auto" }}
-                      transition={{ delay: 0.8 }}
-                      className="mt-2 text-[10px] text-left font-medium line-clamp-2"
-                    >
-                      {userData.bio}
-                    </motion.p>
-                  )}
-
-                  {userData.location && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.9, type: "spring" }}
-                      className="inline-flex items-center gap-1 mb-5 mt-2 border px-2 py-[2px] text-[10px] bg-white/70"
-                    >
-                      <FaMapMarkerAlt className="w-2 h-2" />
-                      <span className="text-[7px] font-medium truncate max-w-[180px]">
-                        {userData.location}
-                      </span>
-                    </motion.div>
-                  )}
-
-                  <div className="mt-4 flex absolute bottom-0 gap-8">
-                    <button
-                      onClick={() => setActiveTab("links")}
-                      className="relative flex flex-col items-center pb-2 group"
-                    >
-                      <span
-                        className={`text-[9px] -mb-2 font-medium transition-colors ${
-                          activeTab === "links" ? "text-black" : "text-gray-400"
-                        }`}
-                      >
-                        Links
-                      </span>
-                      {activeTab === "links" && (
-                        <motion.div
-                          layoutId="activeTabDesktop"
-                          className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
-                        />
-                      )}
-                    </button>
-                    {hasStreamingLinks(links) && (
-                      <button
-                        onClick={() => setActiveTab("listen")}
-                        className="relative flex flex-col items-center pb-2 group"
-                      >
-                        <span
-                          className={`text-[9px] -mb-2 font-medium transition-colors ${
-                            activeTab === "listen" ? "text-black" : "text-gray-400"
-                          }`}
-                        >
-                          Listen
-                        </span>
-                        {activeTab === "listen" && (
-                          <motion.div
-                            layoutId="activeTabDesktop"
-                            className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
-                          />
-                        )}
-                      </button>
-                    )}
-                    {hasMenuTab && (
-                      <button
-                        onClick={() => setActiveTab("menu")}
-                        className="relative flex flex-col items-center pb-2 group"
-                      >
-                        <span
-                          className={`text-[9px] font-medium transition-colors ${
-                            activeTab === "menu" ? "text-black" : "text-gray-400"
-                          }`}
-                        >
-                          Menu
-                        </span>
-                        {activeTab === "menu" && (
-                          <motion.div
-                            layoutId="activeTabDesktop"
-                            className="h-[3px] absolute bottom-0 w-6 bg-red-500"
-                          />
-                        )}
-                      </button>
-                    )}
-                  </div>
+                  {renderProfileCard(false, "activeTabDesktop")}
                 </motion.div>
 
                 <div
                   className="relative z-20 px-6 pt-4 pb-6 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
-                  style={{ ...contentBgStyle, scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  style={{
+                    ...contentBgStyle,
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                  }}
                 >
-                  {activeTab === "links" && (
-                    <>
-                      <AnimatePresence>
-                        {links.length > 0 ? (
-                          links
-                            .filter((link: UserLink) => link.isVisible !== false && !STREAMING_PLATFORM_IDS_SET.has(link.platform.toLowerCase().replace(/\s+/g, "-")))
-                            .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
-                            .map((link: UserLink, index: number) => (
-                              <motion.a
-                                key={link.id}
-                                variants={linkItemVariants}
-                                whileHover="hover"
-                                custom={index}
-                                href={link.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer mb-3"
-                                style={linkButtonStyle}
-                              >
-                                <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
-                                  {getPlatformIcon(link.platform, "w-4 h-4")}
-                                </motion.span>
-                                <span className="truncate" style={fontStyle}>{link.title}</span>
-                              </motion.a>
-                            ))
-                        ) : (
-                          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
-                            No links added yet.
-                          </motion.p>
-                        )}
-                      </AnimatePresence>
-                      {isDnaByGazaUser && <DnaFormV1 />}
-                    </>
-                  )}
-
-                  {activeTab === "listen" && (
-                    <motion.div
-                      initial={{ opacity: 0, x: 10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      transition={{ duration: 0.25 }}
-                      className="space-y-3"
-                    >
-                      {getStreamingLinks(links).length > 0 ? (
-                        getStreamingLinks(links).map((link, index) => (
-                          <motion.a
-                            key={link.id}
-                            variants={linkItemVariants}
-                            whileHover="hover"
-                            custom={index}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md hover:translate-y-[2px] transition-all cursor-pointer"
-                            style={linkButtonStyle}
-                          >
-                            <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
-                              {getPlatformIcon(link.platform, "w-4 h-4")}
-                            </motion.span>
-                            <span className="truncate" style={fontStyle}>{link.title}</span>
-                          </motion.a>
-                        ))
-                      ) : (
-                        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
-                          No streaming links added yet.
-                        </motion.p>
-                      )}
-                    </motion.div>
-                  )}
-
-                  {activeTab === "menu" && (
-                    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} transition={{ duration: 0.3 }}>
-                      {isClubSixSevenUser ? <ClubSixSevenMenu /> : <MenuAccordion />}
-                    </motion.div>
-                  )}
+                  {renderTabContent(false)}
                 </div>
               </div>
             </motion.div>
@@ -618,7 +759,7 @@ export default function PublicProfilePage() {
           />
         </div>
 
-        {/* Mobile Layout */}
+        {/* ── Mobile */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -644,296 +785,108 @@ export default function PublicProfilePage() {
           )}
 
           <div className="relative z-10 w-full min-h-screen flex flex-col">
+            {/* Sticky header */}
             <motion.div
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/90 p-4 backdrop-blur-xl"
+              className="bg-white/90 p-4 backdrop-blur-xl relative sticky top-0 z-20"
               style={{
-                backgroundColor: fc?.cardBgColor ? fc.cardBgColor : undefined,
+                backgroundColor: fc?.cardBgColor ?? undefined,
                 opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
               }}
             >
-              <div className="flex items-center gap-3">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: "spring", delay: 0.3 }}
-                  className="cursor-pointer"
-                  onClick={() => setIsAvatarModalOpen(true)}
-                >
-                  <Avatar className="w-[70px] h-[70px] border">
-                    <AvatarImage
-                      src={userData.avatarUrl || "/icons/Profile Picture.png"}
-                      alt={userData.name || userData.username || "Profile"}
-                      className="object-cover cursor-pointer"
-                    />
-                    <AvatarFallback>
-                      {(userData.name || userData.username || "U")
-                        .charAt(0)
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <div className="flex items-center">
-                    
-                  <p className="font-bold text-sm">
-                    {isOotnUser
-                      ? "one of those nights"
-                      : userData?.name || userData?.username || "User"}
-                    </p>
-                    <Image
-                      src="/icons/verification.svg"
-                      alt="Verified"
-                      width={18}
-                      height={18}
-                      className="inline-block ml-1"
-                    />
-                  </div>
-                  <p className="text-xs md:text-sm text-gray-500">
-                    /{userData.username || "username"}
-                  </p>
-                </motion.div>
-              </div>
-
-              {userData.bio && (
-                <motion.p
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  transition={{ delay: 0.5 }}
-                  className="mt-2 text-xs md:text-sm text-left font-medium line-clamp-2"
-                >
-                  {userData.bio}
-                </motion.p>
-              )}
-
-              {userData.location && (
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.6, type: "spring" }}
-                  className="inline-flex items-center gap-1 mt-3 border px-2 py-[2px] text-[10px] mb-6 bg-white/80"
-                >
-                  <FaMapMarkerAlt className="w-3 h-3" />
-                  <span>{userData.location}</span>
-                </motion.div>
-              )}
-
-              <div className="mt-4 flex absolute bottom-0 gap-8">
-                <button
-                  onClick={() => setActiveTab("links")}
-                  className="relative flex flex-col items-center pb-2 group"
-                >
-                  <span
-                    className={`text-[11px] -mb-2 font-medium transition-colors ${
-                      activeTab === "links" ? "text-black" : "text-gray-400"
-                    }`}
-                  >
-                    Links
-                  </span>
-                  {activeTab === "links" && (
-                    <motion.div
-                      layoutId="activeTabMobile"
-                      className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
-                    />
-                  )}
-                </button>
-                {hasStreamingLinks(links) && (
-                  <button
-                    onClick={() => setActiveTab("listen")}
-                    className="relative flex flex-col items-center pb-2 group"
-                  >
-                    <span
-                      className={`text-[11px] -mb-2 font-medium transition-colors ${
-                        activeTab === "listen" ? "text-black" : "text-gray-400"
-                      }`}
-                    >
-                      Listen
-                    </span>
-                    {activeTab === "listen" && (
-                      <motion.div
-                        layoutId="activeTabMobile"
-                        className="h-[3px] absolute -bottom-0.5 w-6 bg-red-500"
-                      />
-                    )}
-                  </button>
-                )}
-                {hasMenuTab && (
-                  <button
-                    onClick={() => setActiveTab("menu")}
-                    className="relative flex flex-col items-center pb-2 group"
-                  >
-                    <span
-                      className={`text-[11px] font-medium transition-colors ${
-                        activeTab === "menu" ? "text-black" : "text-gray-400"
-                      }`}
-                    >
-                      Menu
-                    </span>
-                    {activeTab === "menu" && (
-                      <motion.div
-                        layoutId="activeTabMobile"
-                        className="h-[3px] absolute bottom-0 w-6 bg-red-500"
-                      />
-                    )}
-                  </button>
-                )}
-              </div>
+              {renderProfileCard(true, "activeTabMobile")}
             </motion.div>
 
             <div
               className="overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden px-6 pt-4 pb-6"
-              style={{ ...contentBgStyle, scrollbarWidth: "none", msOverflowStyle: "none" }}
+              style={{
+                ...contentBgStyle,
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
             >
-              {activeTab === "links" && (
-                <>
-                  <AnimatePresence>
-                    {links.length > 0 ? (
-                      links
-                        .filter((link: UserLink) => link.isVisible !== false && !STREAMING_PLATFORM_IDS_SET.has(link.platform.toLowerCase().replace(/\s+/g, "-")))
-                        .sort((a: UserLink, b: UserLink) => a.displayOrder - b.displayOrder)
-                        .map((link: UserLink, index: number) => (
-                          <motion.a
-                            key={link.id}
-                            whileHover={{ scale: 1.03, y: -2 }}
-                            href={link.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full flex items-center gap-3 px-4 py-3 font-semibold text-sm  transition-all cursor-pointer mb-3"
-                            style={linkButtonStyle}
-                          >
-                            <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
-                              {getPlatformIcon(link.platform, "w-4 h-4")}
-                            </motion.span>
-                            <span className="truncate" style={fontStyle}>{link.title}</span>
-                          </motion.a>
-                        ))
-                    ) : (
-                      <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
-                        No links added yet.
-                      </motion.p>
-                    )}
-                  </AnimatePresence>
-                  {isDnaByGazaUser && <DnaFormV1 />}
-                </>
-              )}
-
-              {activeTab === "listen" && (
-                <motion.div
-                  initial={{ opacity: 0, x: 10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -10 }}
-                  transition={{ duration: 0.25 }}
-                  className="space-y-4"
-                >
-                  {getStreamingLinks(links).length > 0 ? (
-                    getStreamingLinks(links).map((link, index) => (
-                      <motion.a
-                        key={link.id}
-                        whileHover={{ scale: 1.03, y: -2 }}
-                        href={link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-full flex items-center gap-3 px-4 py-2 font-semibold text-sm backdrop-blur-md transition-all cursor-pointer"
-                        style={linkButtonStyle}
-                      >
-                        <motion.span whileHover={{ rotate: 10 }} transition={{ type: "spring", stiffness: 300 }} style={{ color: fontStyle?.color }}>
-                          {getPlatformIcon(link.platform, "w-4 h-4")}
-                        </motion.span>
-                        <span className="truncate" style={fontStyle}>{link.title}</span>
-                      </motion.a>
-                    ))
-                  ) : (
-                    <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-xs text-gray-500 text-center py-4" style={fontStyle}>
-                      No streaming links added yet.
-                    </motion.p>
-                  )}
-                </motion.div>
-              )}
-
-              {activeTab === "menu" && (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {isClubSixSevenUser ? <ClubSixSevenMenu /> : <MenuAccordion />}
-                </motion.div>
-              )}
+              {renderTabContent(true)}
             </div>
           </div>
         </motion.div>
 
-        {/* Avatar Preview Modal - Instagram Style */}
-        {isAvatarModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center cursor-pointer"
-            onClick={() => setIsAvatarModalOpen(false)}
-          >
+        {/* ── Avatar modal ─────────────────────────────────────────────────── */}
+        <AnimatePresence>
+          {isAvatarModalOpen && (
             <motion.div
-              initial={{ scale: 0.8, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.8, opacity: 0 }}
-              transition={{ type: "spring", damping: 20, stiffness: 300 }}
-              className="relative max-w-[90vw] max-h-[90vh]"
-              onClick={(e) => e.stopPropagation()}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center cursor-pointer"
+              onClick={() => setIsAvatarModalOpen(false)}
             >
-              <img
-                src={userData.avatarUrl || "/icons/Profile Picture.png"}
-                alt={userData.name || userData.username || "Profile"}
-                className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain "
-              />
-              
-              {/* Close Button */}
-              <button
-                onClick={() => setIsAvatarModalOpen(false)}
-                className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
-                aria-label="Close preview"
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.8, opacity: 0 }}
+                transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                className="relative max-w-[90vw] max-h-[90vh]"
+                onClick={(e) => e.stopPropagation()}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              </button>
-              
-              {/* User Info at bottom */}
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-2xl">
-                <p className="text-white font-semibold text-center">
-                  {isOotnUser ? "one of those nights" : userData?.name || userData?.username || "User"}
-                </p>
-                <p className="text-white/70 text-sm text-center">
-                  @{userData.username || "username"}
-                </p>
-              </div>
+                <img
+                  src={userData.avatarUrl || "/icons/Profile Picture.png"}
+                  alt={userData.name || userData.username || "Profile"}
+                  className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain"
+                />
+                <button
+                  onClick={() => setIsAvatarModalOpen(false)}
+                  className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
+                  aria-label="Close preview"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-2xl">
+                  <p className="text-white font-semibold text-center">
+                    {isOotnUser
+                      ? "one of those nights"
+                      : userData?.name || userData?.username || "User"}
+                  </p>
+                  <p className="text-white/70 text-sm text-center">
+                    {userData.username || "username"}
+                  </p>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
+          )}
+        </AnimatePresence>
 
+        {/* ── Join CTA ─────────────────────────────────────────────────────── */}
         <a
           href="/auth/sign-up"
-          className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2  bg-white shadow-blur-md px-5 py-3 text-xs md:text-sm font-semibold text-black shadow-lg transition hover:bg-[#4a2207]"
+          className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2 bg-white shadow-lg px-5 py-3 text-xs md:text-sm font-semibold text-black transition hover:bg-[#4a2207] hover:text-white"
           aria-label={`Join ${userData?.username || username} on Abio`}
         >
           Join {userData?.username || username} on Abio
         </a>
 
-        {profileShareUrl ? (
+        {/* ── QR code ──────────────────────────────────────────────────────── */}
+        {profileShareUrl && (
           <a
             href={profileShareUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="fixed bottom-4 right-4 z-[100] flex flex-col items-center gap-1 hidden md:block  border border-gray-200 bg-white p-2 shadow-lg transition-opacity hover:opacity-95"
+            className="fixed bottom-4 right-4 z-[100] flex-col items-center gap-1 hidden md:flex border border-gray-200 bg-white p-2 shadow-lg transition-opacity hover:opacity-95"
             title={`Open profile: ${profileShareUrl}`}
             aria-label={`QR code linking to ${profileShareUrl}`}
           >
@@ -949,7 +902,7 @@ export default function PublicProfilePage() {
               Scan to open
             </span>
           </a>
-        ) : null}
+        )}
       </motion.div>
     </AnimatePresence>
   );

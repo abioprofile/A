@@ -320,3 +320,88 @@ textarea:focus-visible {
   animation: dropdown-in 180ms var(--ease-out) both;
 }
 
+/* globals.css - Add these styles at the bottom */
+
+/* Drag and Drop Performance Optimizations */
+.sortable-item {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transition: box-shadow 0.2s ease;
+}
+
+/* Dragging state optimizations */
+.dragging-active {
+  cursor: grabbing !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  touch-action: none !important;
+}
+
+.drag-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  will-change: transform;
+  filter: drop-shadow(0 20px 35px -8px rgba(0, 0, 0, 0.25));
+}
+
+/* Cursor styles for draggable elements */
+[draggable="true"],
+.grab-cursor {
+  cursor: grab;
+}
+
+[draggable="true"]:active,
+.grabbing-cursor {
+  cursor: grabbing;
+}
+
+/* Touch device optimizations */
+@media (max-width: 768px) {
+  .sortable-item {
+    touch-action: pan-y pinch-zoom;
+  }
+  
+  .dragging-active .sortable-item {
+    touch-action: none;
+  }
+  
+  /* Prevent accidental zoom during drag */
+  .no-touch-action {
+    touch-action: none;
+  }
+}
+
+/* Smooth scroll behavior for auto-scroll */
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .sortable-item,
+  .drag-layer {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Drag handle hover effect */
+.drag-handle:hover {
+  cursor: grab;
+  opacity: 0.8;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Elevated card during drag */
+.card-dragging {
+  transform: scale(1.02) translateY(-4px);
+  transition: transform 0.15s cubic-bezier(0.2, 0, 0, 1);
+}

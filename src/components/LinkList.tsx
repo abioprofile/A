@@ -9,20 +9,24 @@ import {
   KeyboardSensor,
   useSensor,
   useSensors,
+  DragStartEvent,
+  DragEndEvent,
+  DragOverlay,
+  defaultDropAnimationSideEffects,
 } from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
-  useSortable,
   verticalListSortingStrategy,
+  useSortable,
 } from "@dnd-kit/sortable";
 
 import { useQueryClient } from "@tanstack/react-query";
 import LinkCard from "./LinkCard";
 import DeleteModal from "./DeleteModal";
 import EditModal from "./EditModal";
-import { X, ChevronDown, Check } from "lucide-react";
+import { X, ChevronDown, Check, GripVertical } from "lucide-react";
 import { ProfileLink } from "@/types/auth.types";
 import {
   useAddLinks,
@@ -34,7 +38,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import {
   containerVariants,
   itemVariants,
@@ -206,6 +210,7 @@ export default function LinkList({
   linksDataData: ProfileLink[];
 }) {
   const [linksData, setLinksData] = useState<ProfileLink[]>(linksDataData);
+  const [activeId, setActiveId] = useState<string | null>(null);
   const { refetch: refetchLinks } = useGetAllLinks();
   const queryClient = useQueryClient();
   
@@ -228,19 +233,19 @@ export default function LinkList({
     title: "",
     url: "",
     platform: "",
-    isVisible: false,
+    isVisible: true,
   });
 
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 10,
+        distance: 5,
       },
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250,
-        tolerance: 5,
+        delay: 150,
+        tolerance: 3,
       },
     }),
     useSensor(KeyboardSensor, {
@@ -254,9 +259,17 @@ export default function LinkList({
   const deleteLinkMutation = useDeleteLink();
   const reorderLinksMutation = useReorderLinks();
 
+  // Handle drag start
+  const handleDragStart = useCallback((event: DragStartEvent) => {
+    setActiveId(event.active.id as string);
+  }, []);
+
   // Handle drag end - reorder links
   const handleDragEnd = useCallback(
-    async ({ active, over }: { active: any; over: any }) => {
+    async (event: DragEndEvent) => {
+      setActiveId(null);
+      const { active, over } = event;
+
       if (active.id !== over?.id) {
         const oldIndex = linksData.findIndex(
           (i: ProfileLink) => i.id === active.id
@@ -287,6 +300,11 @@ export default function LinkList({
     },
     [linksData, reorderLinksMutation]
   );
+
+  // Handle drag cancel
+  const handleDragCancel = useCallback(() => {
+    setActiveId(null);
+  }, []);
 
   // Handle delete
   const handleDelete = useCallback(
@@ -393,7 +411,7 @@ export default function LinkList({
         }
       }
 
-      setNewLink({ title: "", url: "", platform: "", isVisible: false });
+      setNewLink({ title: "", url: "", platform: "", isVisible: true });
       setIsAddModalOpen(false);
     } catch (error) {
       console.error("Failed to add link:", error);
@@ -405,12 +423,29 @@ export default function LinkList({
     { label: "🎵 Streaming", options: STREAMING_PLATFORMS },
   ];
 
+  // Find active link for drag overlay
+  const activeLink = activeId ? linksData.find(link => link.id === activeId) : null;
+
+  const dropAnimation = {
+    duration: 300,
+    easing: "cubic-bezier(0.2, 0.9, 0.4, 1.1)",
+    sideEffects: defaultDropAnimationSideEffects({
+      styles: {
+        active: {
+          opacity: '0.5',
+        },
+      },
+    }),
+  };
+
   return (
     <>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
+        onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
+        onDragCancel={handleDragCancel}
       >
         <motion.div 
           initial="hidden"
@@ -419,34 +454,22 @@ export default function LinkList({
           className="md:max-w-3xl mx-auto px-6 md:px-0 md:bg-white py-[2px] flex flex-col h-[calc(100vh-350px)] md:h-[calc(100vh-290px)]"
         >
           {/* STACK LIST */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
             <SortableContext
               items={linksData.map((link: ProfileLink) => link.id)}
               strategy={verticalListSortingStrategy}
             >
               <AnimatePresence mode="popLayout">
-                <div className="md:space-y-1 md:pr-2">
+                <div className="md:space-y-2 md:pr-2">
                   {linksData.map((item: ProfileLink, index) => (
-                    <motion.div
+                    <SortableItem
                       key={item.id}
-                      variants={itemVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      whileHover={{ 
-                        y: -2,
-                        transition: { duration: 0.2 }
-                      }}
-                      layout
-                      layoutId={item.id}
-                    >
-                      <SortableItem
-                        item={item}
-                        onDelete={() => setDeleteId(item.id)}
-                        onEdit={(item: ProfileLink) => setEditItem(item)}
-                        onToggleVisibility={() => handleToggleVisibility(item)}
-                      />
-                    </motion.div>
+                      item={item}
+                      onDelete={() => setDeleteId(item.id)}
+                      onEdit={(item: ProfileLink) => setEditItem(item)}
+                      onToggleVisibility={() => handleToggleVisibility(item)}
+                      isDragging={activeId === item.id}
+                    />
                   ))}
                 </div>
               </AnimatePresence>
@@ -455,21 +478,63 @@ export default function LinkList({
 
           {/* ADD BUTTON */}
           <motion.div
-            variants={itemVariants}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            className="mt-3 md:mt-6"
           >
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 setIsAddModalOpen(true);
               }}
-              className="w-full py-3 mt-3 cursor-pointer md:mt-6 shadow-md bg-[#331400] text-[#FED45C] text-sm md:text-base font-semibold tracking-wide"
+              className="w-full py-3 cursor-pointer shadow-md bg-[#331400] text-[#FED45C] text-sm md:text-base font-semibold tracking-wide transition-all hover:shadow-lg hover:bg-[#442000] active:scale-98"
             >
-              + Add
+              + Add new link
             </button>
           </motion.div>
         </motion.div>
+
+        {/* DRAG OVERLAY - Like Notion/Trello floating card */}
+        <DragOverlay dropAnimation={dropAnimation}>
+          {activeLink ? (
+            <motion.div
+              initial={{ scale: 1, opacity: 0.9, rotate: 0 }}
+              animate={{ 
+                scale: 1.05, 
+                opacity: 0.95,
+                rotate: 1,
+                transition: { type: "spring", stiffness: 300, damping: 20 }
+              }}
+              exit={{ scale: 1, opacity: 0, rotate: 0 }}
+              className="cursor-grabbing shadow-2xl"
+              style={{
+                filter: "drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08))",
+              }}
+            >
+              <LinkCard
+                item={{
+                  id: activeLink.id,
+                  title: activeLink.title,
+                  platform: activeLink.platform,
+                  url: activeLink.url,
+                  clickCount: activeLink.clickCount || 0,
+                  customIcon: activeLink.icon_link,
+                }}
+                onDelete={() => {}}
+                onEdit={() => {}}
+                onToggleVisibility={() => {}}
+                isVisible={activeLink.isVisible}
+                onIconChange={() => {}}
+                dragHandleProps={{}}
+                dragHandleId=""
+                isDraggingOverlay={true}
+              />
+            </motion.div>
+          ) : null}
+        </DragOverlay>
       </DndContext>
 
       {/* DELETE MODAL */}
@@ -825,20 +890,31 @@ function SortableItem({
   onDelete,
   onEdit,
   onToggleVisibility,
+  isDragging,
 }: {
   item: ProfileLink;
   onDelete: () => void;
   onEdit: (item: ProfileLink) => void;
   onToggleVisibility: () => void;
+  isDragging: boolean;
 }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id: item.id });
+  const { 
+    attributes, 
+    listeners, 
+    setNodeRef, 
+    transform, 
+    transition, 
+    isDragging: isSortableDragging 
+  } = useSortable({ 
+    id: item.id,
+  });
 
   const style = {
     transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0)${transform.scaleX ? ` scaleX(${transform.scaleX})` : ''}${transform.scaleY ? ` scaleY(${transform.scaleY})` : ''}`
+      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
       : undefined,
     transition,
+    zIndex: isSortableDragging ? 999 : 'auto',
   };
 
   return (
@@ -846,14 +922,24 @@ function SortableItem({
       ref={setNodeRef}
       style={style}
       {...attributes}
-      animate={isDragging ? "drag" : "visible"}
-      variants={sortableItemVariants}
-      transition={{
-        type: "spring",
-        stiffness: 200,
-        damping: 20
+      animate={{
+        scale: isSortableDragging ? 1.02 : 1,
+        opacity: isDragging ? 0.3 : 1,
+        transition: { type: "spring", stiffness: 500, damping: 30 }
       }}
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
+      className="relative group"
     >
+      {/* Drag handle indicator - appears on hover like Notion/Trello */}
+      <div 
+        {...listeners}
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing p-2 hover:bg-gray-100 rounded-lg"
+        style={{ touchAction: 'none' }}
+      >
+        <GripVertical className="w-4 h-4 text-gray-400" />
+      </div>
+      
       <LinkCard
         item={{
           id: item.id,

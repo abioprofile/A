@@ -177,7 +177,7 @@ const AppearancePage: React.FC = () => {
     }
   }, [userData]);
 
-  // ✅ Lock page scroll on mobile — ADDED ONLY THIS
+  // ✅ Lock page scroll on mobile
   useEffect(() => {
     if (!isMobile) return;
 
@@ -248,6 +248,25 @@ const AppearancePage: React.FC = () => {
       toast.error("Nothing to redo");
     }
   }, [history, historyIndex]);
+
+  // Add keyboard shortcuts for undo/redo on desktop
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ctrl/Cmd + Z for undo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      // Ctrl/Cmd + Shift + Z or Ctrl/Cmd + Y for redo
+      if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+        e.preventDefault();
+        redo();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo, redo]);
 
   const handleStateChange = useCallback(() => {
     addToHistory(getCurrentState());
@@ -423,7 +442,6 @@ const AppearancePage: React.FC = () => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (!file?.type.startsWith("image/")) return;
-      // TODO: wire to API to add theme to list (e.g. upload to storage and add to themes)
       toast.success(
         "Theme image selected. Upload integration can be wired here.",
       );
@@ -434,44 +452,65 @@ const AppearancePage: React.FC = () => {
 
   return (
     <section className="min-h-screen bg-[#FFF7DE] overflow-hidden h-screen md:bg-white md:pt-4 px-4 md:px-6 pb-20 md:pb-24 flex flex-col relative">
-      {/* Hidden file input for theme upload (used when canUploadThemes) */}
-      {/* <input
-        ref={themeUploadInputRef}
-        type="file"
-        accept="image/jpeg,image/png,image/gif,image/webp"
-        className="hidden"
-        onChange={handleThemeFileChange}
-      /> */}
+      {/* Desktop: Save Changes + Undo/Redo + Upload theme (when abio) */}
+      <div className="hidden md:flex justify-between items-center gap-3 mb-4">
+        {/* Left side - Undo/Redo buttons */}
+        <div className="flex items-center gap-2">
+          {hasEdits && (
+            <>
+              <button
+                onClick={undo}
+                disabled={historyIndex <= 0}
+                className="disabled:opacity-40 disabled:cursor-not-allowed text-[#331400] bg-[#FED45C] p-2  hover:bg-[#fdd935] transition-all duration-200 shadow-[2px_2px_0px_0px_#000] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+                title="Undo (Ctrl+Z)"
+              >
+                <RotateCcw size={18} />
+              </button>
+              <button
+                onClick={redo}
+                disabled={historyIndex >= history.length - 1}
+                className="disabled:opacity-40 disabled:cursor-not-allowed text-[#331400] bg-[#FED45C] p-2  hover:bg-[#fdd935] transition-all duration-200 shadow-[2px_2px_0px_0px_#000] active:shadow-none active:translate-x-[1px] active:translate-y-[1px]"
+                title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
+              >
+                <RotateCw size={18} />
+              </button>
+              
+            </>
+          )}
+        </div>
 
-      {/* Desktop: Save Changes + Upload theme (when abio) */}
-      <div className="hidden md:flex justify-end items-center gap-3 mb-4">
-        {canUploadThemes && (
-          <>
-            <Input
-              type="text"
-              value={themeName}
-              onChange={(e) => setThemeName(e.target.value)}
-            />
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleThemeUploadClick}
-              className="flex items-center gap-2 w-40 h-8 px-6 text-sm font-bold text-[#331400] border-[#331400] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#331400]/10 transition-colors"
-            >
-              <Upload className="w-3 h-3" />
-              Upload Theme
-            </Button>
-          </>
-        )}
+        {/* Right side - Save + Upload theme */}
+        <div className="flex items-center gap-3">
+          {canUploadThemes && (
+            <>
+              <Input
+                type="text"
+                value={themeName}
+                onChange={(e) => setThemeName(e.target.value)}
+                placeholder="Theme name..."
+                className="w-40 h-8 text-sm"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleThemeUploadClick}
+                className="flex items-center gap-2 h-8 px-4 text-sm font-bold text-[#331400] border-[#331400] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#331400]/10 transition-colors"
+              >
+                <Upload className="w-3 h-3" />
+                Upload Theme
+              </Button>
+            </>
+          )}
 
-        <button
-          type="button"
-          onClick={handleSaveAll}
-          disabled={isSavingAll}
-          className="h-10 px-6 text-sm font-bold text-[#331400] bg-[#FED45C] shadow-[2px_2px_0px_0px_#000] cursor-pointer transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSavingAll ? "Saving…" : "Save Changes"}
-        </button>
+          <button
+            type="button"
+            onClick={handleSaveAll}
+            disabled={isSavingAll}
+            className="h-10 px-6 text-sm font-bold text-[#331400] bg-[#FED45C] shadow-[2px_2px_0px_0px_#000] cursor-pointer transition-all duration-200 hover:bg-[#fdd935] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSavingAll ? "Saving…" : "Save Changes"}
+          </button>
+        </div>
       </div>
 
       {/* Mobile: Header fixed at top (TikTok-style) — Save + Undo/Redo only when an edit has been made */}
@@ -490,6 +529,8 @@ const AppearancePage: React.FC = () => {
                 type="text"
                 value={themeName}
                 onChange={(e) => setThemeName(e.target.value)}
+                placeholder="Theme name"
+                className="w-24 h-7 text-xs"
               />
               <Button
                 type="button"

@@ -5,14 +5,13 @@ import { useEffect, useState } from "react";
 
 type Phase = "orbit" | "absorb" | "grow" | "emit";
 
-// ── All icons same size on desktop — iconScale controls mobile reduction ──
 const ALL_INNER_ICONS = [
-  { name: "Instagram",    size: 32 },
-  { name: "TikTok",       size: 32 },
-  { name: "YouTube",      size: 32 },
-  { name: "Spotify",      size: 32 },
-  { name: "WhatsApp",     size: 32 },
-  { name: "Snapchat",     size: 32 },
+  { name: "Instagram", size: 32 },
+  { name: "TikTok",    size: 32 },
+  { name: "YouTube",   size: 32 },
+  { name: "Spotify",   size: 32 },
+  { name: "WhatsApp",  size: 32 },
+  { name: "Snapchat",  size: 32 },
 ];
 
 const OUTER_ICONS_ALL = [
@@ -39,17 +38,21 @@ const NEXT: Record<Phase, Phase> = {
   orbit: "absorb", absorb: "grow", grow: "emit", emit: "orbit",
 };
 
+// ─────────────────────────────────────────────
+// OrbitIcon
+// ─────────────────────────────────────────────
+
 interface OrbitIconProps {
-  icon:       { name: string; size: number };
-  slotIndex:  number;
-  total:      number;
-  radius:     number;
-  phase:      Phase;
-  globalRot:  ReturnType<typeof useMotionValue<number>>;
-  emitSnap:   number;
-  bgColor:    string;
+  icon:      { name: string; size: number };
+  slotIndex: number;
+  total:     number;
+  radius:    number;
+  phase:     Phase;
+  globalRot: ReturnType<typeof useMotionValue<number>>;
+  emitSnap:  number;
+  bgColor:   string;
   direction?: 1 | -1;
-  iconScale:  number;
+  iconScale: number;
 }
 
 function OrbitIcon({
@@ -77,14 +80,16 @@ function OrbitIcon({
 
   useEffect(() => {
     const d = slotIndex * 0.08;
+
     if (phase === "emit") {
       const snap  = emitSnap * direction;
       const angle = ((baseAngle + snap) * Math.PI) / 180;
-      animate(opacity, 1,  { duration: 0.3, delay: d });
-      animate(scale,   1,  { type: "spring", stiffness: 90, damping: 14, delay: d });
+      animate(opacity, 1, { duration: 0.3, delay: d });
+      animate(scale,   1, { type: "spring", stiffness: 90, damping: 14, delay: d });
       animate(x, Math.cos(angle) * radius, { type: "spring", stiffness: 90, damping: 14, delay: d });
       animate(y, Math.sin(angle) * radius, { type: "spring", stiffness: 90, damping: 14, delay: d });
     }
+
     if (phase === "absorb") {
       animate(x,       0,   { duration: 0.9, ease: [0.4, 0, 1, 1], delay: d });
       animate(y,       0,   { duration: 0.9, ease: [0.4, 0, 1, 1], delay: d });
@@ -117,11 +122,15 @@ function OrbitIcon({
   );
 }
 
+// ─────────────────────────────────────────────
+// Responsive config — same 6/8 icon count everywhere
+// ─────────────────────────────────────────────
+
 interface ResponsiveConfig {
   inner:      number;
   outer:      number;
   size:       number;
-  iconScale:  number; // single scale — same for inner + outer
+  iconScale:  number;
   innerCount: number;
   outerCount: number;
 }
@@ -137,14 +146,13 @@ function useResponsiveRadii(): ResponsiveConfig {
     const update = () => {
       const w = window.innerWidth;
       if (w < 380)
-        // fewest icons, smallest size — max breathing room
-        setCfg({ inner: 72,  outer: 130, size: 340, iconScale: 0.52, innerCount: 3, outerCount: 4 });
+        // bump radii slightly vs original to give 6/8 icons breathing room
+        setCfg({ inner: 76,  outer: 138, size: 340, iconScale: 0.78, innerCount: 6, outerCount: 8 });
       else if (w < 480)
-        setCfg({ inner: 80,  outer: 145, size: 370, iconScale: 0.58, innerCount: 4, outerCount: 5 });
+        setCfg({ inner: 84,  outer: 150, size: 370, iconScale: 0.84, innerCount: 6, outerCount: 8 });
       else if (w < 768)
-        setCfg({ inner: 90,  outer: 160, size: 408, iconScale: 0.65, innerCount: 4, outerCount: 6 });
+        setCfg({ inner: 96,  outer: 168, size: 410, iconScale: 0.90, innerCount: 6, outerCount: 8 });
       else
-        // desktop — full size, no scaling
         setCfg({ inner: 110, outer: 195, size: 500, iconScale: 1.0,  innerCount: 6, outerCount: 8 });
     };
     update();
@@ -155,11 +163,19 @@ function useResponsiveRadii(): ResponsiveConfig {
   return cfg;
 }
 
+// ─────────────────────────────────────────────
+// OrbitScene
+// ─────────────────────────────────────────────
+
 function OrbitScene() {
   const [phase, setPhase]                = useState<Phase>("emit");
   const [outerGroupIndex, setOuterGroup] = useState(0);
   const [emitSnap, setEmitSnap]          = useState(0);
   const globalRot                        = useMotionValue(0);
+
+  // Ring animation motion values
+  const ringScale   = useMotionValue(1);
+  const ringOpacity = useMotionValue(1);
 
   const {
     inner: INNER_RADIUS,
@@ -173,18 +189,40 @@ function OrbitScene() {
   const innerIcons       = ALL_INNER_ICONS.slice(0, innerCount);
   const totalOuterGroups = Math.ceil(OUTER_ICONS_ALL.length / outerCount);
 
+  // Spin the globalRot during orbit phase
   useAnimationFrame((_, delta) => {
     if (phase === "orbit") {
       globalRot.set((globalRot.get() + delta * 0.005) % 360);
     }
   });
 
+  // Phase transitions + ring animation
   useEffect(() => {
-    if (phase === "absorb") setEmitSnap(globalRot.get());
+    if (phase === "absorb") {
+      setEmitSnap(globalRot.get());
+      // Rings contract and fade with the icons
+      animate(ringScale,   0.25, { duration: 0.85, ease: [0.4, 0, 1, 1] });
+      animate(ringOpacity, 0,    { duration: 0.6 });
+    }
+
+    if (phase === "emit") {
+      // Rings spring back out as icons burst outward
+      animate(ringScale,   1, { type: "spring", stiffness: 80, damping: 14, delay: 0.05 });
+      animate(ringOpacity, 1, { duration: 0.35, delay: 0.05 });
+    }
+
+    if (phase === "orbit") {
+      animate(ringScale,   1, { duration: 0.3 });
+      animate(ringOpacity, 1, { duration: 0.25 });
+    }
+
+    // "grow" phase: rings stay invisible (no animate call)
+
     const t = setTimeout(() => {
       if (phase === "absorb") setOuterGroup((p) => (p + 1) % totalOuterGroups);
       setPhase(NEXT[phase]);
     }, DURATIONS[phase]);
+
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phase, outerCount]);
@@ -199,50 +237,63 @@ function OrbitScene() {
       className="relative flex items-center justify-center mx-auto flex-shrink-0"
       style={{ width: SIZE, height: SIZE }}
     >
-      {/* Dashed orbit rings */}
-      <svg
+      {/* Dashed orbit rings — animate in/out with icons */}
+      <motion.div
         className="absolute inset-0 pointer-events-none"
-        width={SIZE}
-        height={SIZE}
-        viewBox={`0 0 ${SIZE} ${SIZE}`}
+        style={{
+          scale:           ringScale,
+          opacity:         ringOpacity,
+          transformOrigin: "center center",
+        }}
       >
-        <circle
-          cx={SIZE / 2} cy={SIZE / 2} r={INNER_RADIUS}
-          fill="none"
-          stroke="rgba(93,45,43,0.55)"
-          strokeWidth="1.8"
-          strokeDasharray="5 6"
-          strokeLinecap="round"
-        />
-        <circle
-          cx={SIZE / 2} cy={SIZE / 2} r={OUTER_RADIUS}
-          fill="none"
-          stroke="rgba(93,45,43,0.38)"
-          strokeWidth="1.8"
-          strokeDasharray="5 8"
-          strokeLinecap="round"
-        />
-        {innerIcons.map((_, i) => {
-          const angle = (i * (360 / innerIcons.length) * Math.PI) / 180;
-          return (
-            <circle key={i}
-              cx={SIZE / 2 + Math.cos(angle) * INNER_RADIUS}
-              cy={SIZE / 2 + Math.sin(angle) * INNER_RADIUS}
-              r="3" fill="rgba(93,45,43,0.55)"
-            />
-          );
-        })}
-        {outerGroup.map((_, i) => {
-          const angle = (i * (360 / outerCount) * Math.PI) / 180;
-          return (
-            <circle key={i}
-              cx={SIZE / 2 + Math.cos(angle) * OUTER_RADIUS}
-              cy={SIZE / 2 + Math.sin(angle) * OUTER_RADIUS}
-              r="3" fill="rgba(93,45,43,0.38)"
-            />
-          );
-        })}
-      </svg>
+        <svg
+          className="absolute inset-0"
+          width={SIZE}
+          height={SIZE}
+          viewBox={`0 0 ${SIZE} ${SIZE}`}
+        >
+          {/* Inner ring */}
+          <circle
+            cx={SIZE / 2} cy={SIZE / 2} r={INNER_RADIUS}
+            fill="none"
+            stroke="rgba(93,45,43,0.55)"
+            strokeWidth="1.8"
+            strokeDasharray="5 6"
+            strokeLinecap="round"
+          />
+          {/* Outer ring */}
+          <circle
+            cx={SIZE / 2} cy={SIZE / 2} r={OUTER_RADIUS}
+            fill="none"
+            stroke="rgba(93,45,43,0.38)"
+            strokeWidth="1.8"
+            strokeDasharray="5 8"
+            strokeLinecap="round"
+          />
+          {/* Inner ring dots */}
+          {innerIcons.map((_, i) => {
+            const angle = (i * (360 / innerIcons.length) * Math.PI) / 180;
+            return (
+              <circle key={i}
+                cx={SIZE / 2 + Math.cos(angle) * INNER_RADIUS}
+                cy={SIZE / 2 + Math.sin(angle) * INNER_RADIUS}
+                r="3" fill="rgba(93,45,43,0.55)"
+              />
+            );
+          })}
+          {/* Outer ring dots */}
+          {outerGroup.map((_, i) => {
+            const angle = (i * (360 / outerCount) * Math.PI) / 180;
+            return (
+              <circle key={i}
+                cx={SIZE / 2 + Math.cos(angle) * OUTER_RADIUS}
+                cy={SIZE / 2 + Math.sin(angle) * OUTER_RADIUS}
+                r="3" fill="rgba(93,45,43,0.38)"
+              />
+            );
+          })}
+        </svg>
+      </motion.div>
 
       {/* Inner ring — clockwise */}
       {innerIcons.map((icon, i) => (
@@ -285,10 +336,7 @@ function OrbitScene() {
           scale: phase === "grow" ? 1.28 : phase === "absorb" ? 1.1 : 1,
         }}
         transition={{ type: "spring", stiffness: 80, damping: 16 }}
-        style={{
-          width: 64, height: 64,
-         
-        }}
+        style={{ width: 64, height: 64 }}
       >
         <Image
           src="/icons/A.Bio.png"
@@ -302,6 +350,10 @@ function OrbitScene() {
     </div>
   );
 }
+
+// ─────────────────────────────────────────────
+// Section
+// ─────────────────────────────────────────────
 
 export default function IntegrationsSection() {
   return (

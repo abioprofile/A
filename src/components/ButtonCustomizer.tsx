@@ -110,7 +110,7 @@ const ButtonCustomizer: React.FC<ButtonCustomizerProps> = ({
                   setButtonStyle((s) => ({
                     ...s,
                     backgroundColor: e.target.value,
-                  }))
+                  })) 
                 }
                 className="hidden"
                 aria-label="Custom fill color picker"

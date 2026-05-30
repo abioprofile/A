@@ -36,10 +36,10 @@ import {
 } from "next/font/google";
 
 // Load fonts
-const poppins = Poppins({ subsets: ["latin"], weight: ["400", "600"] });
-const roboto = Roboto({ subsets: ["latin"], weight: ["400", "500"] });
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500"] });
-const montserrat = Montserrat({ subsets: ["latin"], weight: ["400", "500"] });
+const poppins = Poppins({ subsets: ["latin"], weight: ["200", "400", "600","800"] });
+const roboto = Roboto({ subsets: ["latin"], weight: ["200", "400", "600","800"] });
+const inter = Inter({ subsets: ["latin"], weight: ["200", "400", "600","800"]});
+const montserrat = Montserrat({ subsets: ["latin"], weight: ["200", "400", "600","800"]});
 const lato = Lato({ subsets: ["latin"], weight: ["400", "700"] });
 const openSans = Open_Sans({ subsets: ["latin"], weight: ["400", "600"] });
 const raleway = Raleway({ subsets: ["latin"], weight: ["400", "600"] });
@@ -176,10 +176,10 @@ const isNone = (color: string) =>
   !color || color === "transparent" || color.toLowerCase() === "none";
 
 const FONT_WEIGHTS = [
-  { label: "Regular", value: "400" },
-  { label: "Medium", value: "500" },
+  { label: "Regular", value: "200" },
+  { label: "Medium", value: "400" },
   { label: "Semibold", value: "600" },
-  { label: "Bold", value: "700" },
+  { label: "Bold", value: "800" },
 ] as const;
 
 const FONT_SIZES = [12, 14, 16, 18, 20] as const;
@@ -220,7 +220,7 @@ const FONT_STYLE_ICONS = [
     styleProps: {
       fontStyle: "normal" as const,
       textDecoration: "none" as const,
-      fontWeight: "700",
+      fontWeight: "800",
     },
   },
 ] as const;

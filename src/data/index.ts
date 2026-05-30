@@ -1,6 +1,7 @@
 import { PlatformInterface as Platform } from "@/interfaces/platform.interfaces";
 import { LinkItem, ProfileInfo, TemplateConfig } from "@/interfaces/template.interface";
-import {ImageIcon, PencilLineIcon, MapPinIcon} from "lucide-react";
+import { ImageIcon, PencilLineIcon, MapPinIcon } from "lucide-react";
+import { LinkIcon, Phone, Mail } from "lucide-react"
 
 export const sidebarNav = [
     {
@@ -143,6 +144,8 @@ export const PLATFORMS: Platform[] = [
     { id: "whatsapp", name: "WhatsApp", icon: "/assets/icons/whatsapp.svg", type: "social" },
     { id: "telegram", name: "Telegram", icon: "/assets/icons/telegram.svg", type: "social" },
     { id: "linkedin", name: "LinkedIn", icon: "/assets/icons/linkedin.svg", type: "social" },
+    { id: "gmail", name: "Gmail", icon: Mail, type: "social", isReactIcon: true },
+      { id: "phone", name: "Phone Number", icon: Phone, type: "social", isReactIcon: true },
 ]
 
 export const STREAMING_PLATFORMS: Platform[] = [

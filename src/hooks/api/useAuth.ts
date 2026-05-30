@@ -446,10 +446,11 @@ export const useUserProfileByUsername = (username: string) => {
       return await getUserProfileByUsername(username);
     },
     enabled: !!username,
-    staleTime: 5 * 60 * 1000,
+    staleTime: 0, // Always refetch
+    refetchOnMount: true, // Refetch when component mounts
+    refetchOnWindowFocus: true, // Refetch when window regains focus
   });
 };
-
 export const useUpdateProfileAvatar = () => {
   const queryClient = useQueryClient();
   const dispatch = useAppDispatch();

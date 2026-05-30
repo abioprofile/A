@@ -5,7 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Input } from "./ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ─── TYPES 
+// ─── TYPES
 type ButtonStyle = {
   variant: "outline" | "solid" | "glass" | "brutal" | "pill" | "square" | "tag";
   bg?: string;
@@ -81,6 +81,7 @@ const PROFILES: Profile[] = [
     handle: "ammamusicng",
     bio: "Apple Music Up Next Nigeria ✦ Afrobeats",
     avatar: "AMMA",
+    avatarImg: "/images/amma.jpg", // ← drop her photo here
     avatarBg: "linear-gradient(135deg,#7c3aed,#4c1d95)",
     waveRGB: [124, 58, 237],
     verified: true,
@@ -131,6 +132,7 @@ const PROFILES: Profile[] = [
     handle: "Oshnova",
     bio: "Product Designer · NFC Card Pioneer 🪄",
     avatar: "",
+    avatarImg: "/images/Rectangle 1188.png",
     avatarBg: "linear-gradient(135deg,#5D2D2B,#331400)",
     waveRGB: [254, 212, 92],
     verified: true,
@@ -160,17 +162,6 @@ const PROFILES: Profile[] = [
           radius: "0px",
         },
       },
-      // {
-      //   label: "Book a call",
-      //   icon: "/assets/platform-icons/black/Social=Calendar,Style=Black.svg",
-      //   style: {
-      //     variant: "brutal",
-      //     bg: "#5D2D2B",
-      //     color: "#fff",
-      //     shadow: "4px 4px 0 #000",
-      //     radius: "0px",
-      //   },
-      // },
       {
         label: "Snapchat",
         icon: "/assets/platform-icons/black/Social=Snapchat,Style=Black.svg",
@@ -185,10 +176,11 @@ const PROFILES: Profile[] = [
     ],
   },
   {
-    name: "Maria Clay",
-    handle: "mariaclay",
+    name: "Eunice",
+    handle: "euniceaks",
     bio: "Ceramic artist🏺",
     avatar: "CLAY",
+    avatarImg: "/images/Rectangle 1189.png", // ← drop her photo here
     avatarBg: "linear-gradient(135deg,#db2777,#9d174d)",
     waveRGB: [219, 39, 119],
     verified: false,
@@ -196,28 +188,7 @@ const PROFILES: Profile[] = [
     patternColor: "rgba(157,23,77,0.2)",
     dotColor: "#db2777",
     links: [
-      {
-        label: "Shop ceramics",
-        icon: "/assets/platform-icons/black/Social=Shop,Style=Black.svg",
-        style: {
-          variant: "solid",
-          bg: "#db2777",
-          color: "#fff",
-          shadow: "0 8px 24px rgba(219,39,119,0.45)",
-          radius: "18px",
-        },
-      },
-      {
-        label: "Book workshop",
-        icon: "/assets/platform-icons/black/Social=Calendar,Style=Black.svg",
-        style: {
-          variant: "solid",
-          bg: "#db2777",
-          color: "#fff",
-          shadow: "0 8px 24px rgba(219,39,119,0.45)",
-          radius: "18px",
-        },
-      },
+      
       {
         label: "Follow on IG",
         icon: "/assets/platform-icons/black/Social=Instagram,Style=Black.svg",
@@ -397,7 +368,6 @@ const DotPattern = ({ color }: { color: string }) => {
 const LinkButton = ({ link }: { link: Link }) => {
   const { style } = link;
   const isLightIcon = ["#fff", "#FED45C", "#e9d5ff"].includes(style.color);
-
   const baseClass = style.variant === "tag" ? "px-2.5 py-1" : "px-3.5 py-1.5";
 
   return (
@@ -432,6 +402,30 @@ const LinkButton = ({ link }: { link: Link }) => {
   );
 };
 
+// ─── AVATAR
+// Renders a photo if avatarImg is set, otherwise falls back to the text initials.
+const Avatar = ({ profile }: { profile: Profile }) => (
+  <div
+    className="w-[48px] h-[48px] rounded-full flex items-center justify-center
+               flex-shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)] overflow-hidden"
+    style={{ background: profile.avatarBg }}
+  >
+    {profile.avatarImg ? (
+      <Image
+        src={profile.avatarImg}
+        alt={profile.name}
+        width={48}
+        height={48}
+        className="w-full h-full object-cover"
+      />
+    ) : (
+      <span className="text-white font-black text-[10px] tracking-[-0.3px] md:text-center leading-tight">
+        {profile.avatar}
+      </span>
+    )}
+  </div>
+);
+
 // ─── PROFILE CARD
 const ProfileCard = ({ profile }: { profile: Profile }) => (
   <div
@@ -439,58 +433,48 @@ const ProfileCard = ({ profile }: { profile: Profile }) => (
     style={{ background: "#fff" }}
   >
     {/* WHITE TOP */}
-      <div className="bg-white px-4 pt-6 pb-3 text-left flex-shrink-0">
-        <div className="flex items-start gap-2 mb-2.5">
-          <div
-            className="w-[48px] h-[48px] rounded-full flex items-center justify-center
-                      flex-shrink-0 shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-            style={{ background: profile.avatarBg }}
-          >
-            <span className="text-white font-black text-[10px] tracking-[-0.3px] md:text-center leading-tight">
-              {profile.avatar}
+    <div className="bg-white px-4 pt-6 pb-3 text-left flex-shrink-0">
+      <div className="flex items-start gap-2 mb-2.5">
+        <Avatar profile={profile} />
+        <div className="flex-1 min-w-0">
+          <div className="flex items-start gap-1.5 mb-0.5">
+            <span className="text-[12px] font-extrabold text-[#0a0a0a] leading-tight">
+              {profile.name}
             </span>
+            {profile.verified && (
+              <div
+                className="w-[16px] h-[16px] rounded-full bg-[#FF0000] flex items-center
+                    justify-center flex-shrink-0
+                    shadow-[0_2px_6px_rgba(255,0,0,0.3)]"
+              >
+                <svg width="7" height="7" viewBox="0 0 11 9" fill="none">
+                  <path
+                    d="M1 4.5L4 7.5L10 1.5"
+                    stroke="white"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            )}
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-1.5 mb-0.5">
-              <span className="text-[12px] font-extrabold text-[#0a0a0a] leading-tight">
-                {profile.name}
-              </span>
-              {profile.verified && (
-                <div
-                  className="w-[16px] h-[16px] rounded-full bg-[#FF0000] flex items-center
-                      justify-center flex-shrink-0
-                      shadow-[0_2px_6px_rgba(255,0,0,0.3)]"
-                >
-                  <svg width="7" height="7" viewBox="0 0 11 9" fill="none">
-                    <path
-                      d="M1 4.5L4 7.5L10 1.5"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
-              )}
-            </div>
-            <div className="text-[9px] text-[#999] font-medium">
-              /{profile.handle}
-            </div>
-            
-        <p className="text-[9px] mt-1 text-[#444] leading-[1.5] sm:truncate font-medium mb-3">
-          {profile.bio}
-        </p>
+          <div className="text-[9px] text-[#999] font-medium">
+            /{profile.handle}
           </div>
-        </div>
-
-
-        <div className="flex">
-          <div className="inline-flex flex-col items-center relative">
-            <span className="text-[10px] leading-none font-thin">Links</span>
-            <div className="absolute -bottom-3 -left-0.5 -right-0.5 h-[2.5px] bg-[#FF0000] rounded-sm" />
-          </div>
+          <p className="text-[9px] mt-1 text-[#444] leading-[1.5] sm:truncate font-medium mb-3">
+            {profile.bio}
+          </p>
         </div>
       </div>
+
+      <div className="flex">
+        <div className="inline-flex flex-col items-center relative">
+          <span className="text-[10px] leading-none font-thin">Links</span>
+          <div className="absolute -bottom-3 -left-0.5 -right-0.5 h-[2.5px] bg-[#FF0000] rounded-sm" />
+        </div>
+      </div>
+    </div>
 
     {/* COLORED BOTTOM */}
     <div
@@ -505,7 +489,7 @@ const ProfileCard = ({ profile }: { profile: Profile }) => (
   </div>
 );
 
-// ─── 3D TILTED CARD 
+// ─── 3D TILTED CARD
 const TiltedCard = () => {
   const [idx, setIdx] = useState(0);
   const [hovering, setHovering] = useState(false);
@@ -523,12 +507,9 @@ const TiltedCard = () => {
       className="relative flex flex-col items-center"
       style={{ perspective: 1400, perspectiveOrigin: "50% 45%" }}
     >
-     
-
       {/* Orbit rings */}
       <motion.div
-        className="absolute rounded-full border border-dashed border-[#5D2D2B]/10
-                   pointer-events-none"
+        className="absolute rounded-full border border-dashed border-[#5D2D2B]/10 pointer-events-none"
         style={{
           width: ringSm,
           height: ringSm,
@@ -542,14 +523,12 @@ const TiltedCard = () => {
         transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
       >
         <div
-          className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2
-                        rounded-full bg-[#FED45C]"
+          className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-[#FED45C]"
           style={{ boxShadow: "0 0 12px #FED45C" }}
         />
       </motion.div>
       <motion.div
-        className="absolute rounded-full border border-dashed border-[#5D2D2B]/[0.06]
-                   pointer-events-none"
+        className="absolute rounded-full border border-dashed border-[#5D2D2B]/[0.06] pointer-events-none"
         style={{
           width: ringLg,
           height: ringLg,
@@ -619,7 +598,7 @@ const TiltedCard = () => {
           <motion.div
             key={b.label}
             className="absolute flex items-center gap-1.5 px-3 py-1.5 rounded-full z-[5]
-                     pointer-events-none whitespace-nowrap"
+                       pointer-events-none whitespace-nowrap"
             style={{
               background: b.bg,
               color: b.color,
@@ -702,21 +681,20 @@ const TiltedCard = () => {
   );
 };
 
-// ─── HERO SECTION 
+// ─── HERO SECTION
 const HeroSection = () => {
   return (
     <section
       className="min-h-screen w-full bg-[#FEF4EA] flex items-center
-                        overflow-hidden pt-24 sm:pt-28 md:pt-28 pb-8 md:pb-0"
+                      overflow-hidden pt-24 sm:pt-28 md:pt-28 pb-8 md:pb-0"
     >
       <div
         className="w-full px-4 sm:px-6 md:px-8 lg:px-12 xl:px-20
-                      md:container md:mx-auto
-                      md:grid md:grid-cols-2 md:gap-6 lg:gap-12 md:items-center md:py-0"
+                    md:container md:mx-auto
+                    md:grid md:grid-cols-2 md:gap-6 lg:gap-12 md:items-center md:py-0"
       >
         {/* ── MOBILE (< md) — slick, tight, intentional ── */}
         <div className="flex flex-col mt-20 md:hidden items-center text-center">
-          {/* Headline — tightened type scale, less vertical waste */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -725,8 +703,8 @@ const HeroSection = () => {
           >
             <h1
               className="text-[42px] xs:text-[48px] sm:text-[56px]
-                           leading-[0.88] trialheader font-[400]
-                           text-[#5D2D2B] tracking-tight"
+                         leading-[0.88] trialheader font-[400]
+                         text-[#5D2D2B] tracking-tight"
             >
               Endless
               <br />
@@ -735,8 +713,8 @@ const HeroSection = () => {
 
             <div className="relative inline-block mt-1">
               <p
-                className="text-[22px] xs:text-[24px] sm:text-[28px]
-                            trial text-[#5D2D2B] italic leading-tight"
+                className="text-[40px] xs:text-[24px] sm:text-[28px]
+                          trial text-[#5D2D2B] italic leading-tight"
               >
                 In just A Biography.
               </p>
@@ -763,7 +741,6 @@ const HeroSection = () => {
             </div>
           </motion.div>
 
-          {/* Body — tighter line-height, shorter copy on mobile */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -774,7 +751,6 @@ const HeroSection = () => {
             A simple biography becomes your bridge to endless connections.
           </motion.p>
 
-          {/* Input + CTA — elegant stacked, full-width max */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -808,7 +784,6 @@ const HeroSection = () => {
             </motion.button>
           </motion.div>
 
-          {/* Card — breathing room, no clipping */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}

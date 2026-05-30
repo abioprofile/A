@@ -122,39 +122,67 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
 
   const renderButtonStack = (items: ProfileLink[]) =>
     items.map((link, index) => (
-      <a
+      <div
         key={link.id || index}
-        href={link.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="w-full flex items-center gap-3 font-semibold px-4 py-2 relative overflow-hidden transition-opacity active:scale-[0.98]"
+        // justify-center on the container keeps things centered while left/right elements are pinned absolutely
+        className="w-full flex items-center justify-center font-semibold py-3 relative overflow-hidden transition-opacity active:scale-[0.98]"
         style={{
           borderRadius: buttonStyle.borderRadius,
           border: `2px solid ${buttonStyle.borderColor}`,
           boxShadow: buttonStyle.boxShadow,
           textDecoration: "none",
-          minHeight: "30px",
         }}
       >
+        {/* Button Background */}
         <span
-          className="absolute inset-0"
+          className="absolute inset-0 z-0"
           style={{
             backgroundColor: buttonStyle.backgroundColor,
             opacity: buttonStyle.opacity,
           }}
         />
+
+        {/* Content Wrapper */}
         <span
-          className="relative flex items-center gap-3 text-sm font-semibold w-full"
+          className="relative z-10 flex items-center justify-center w-full px-12 text-sm font-semibold"
           style={createTextStyle(fontStyle.strokeWidth || 0)}
         >
-          <div style={{ color: fontStyle.fillColor }}>
-            {getPlatformIcon(link.platform)}
+          {/* Pinned Left Icon */}
+          <div
+            className="absolute left-4 flex items-center justify-center"
+            style={{ color: fontStyle.fillColor }}
+          >
+            {getPlatformIcon(link.platform, "w-5 h-5")}
           </div>
-          <span className="truncate break-words max-w-[calc(100%-2rem)]">
+
+          {/* Centered Text */}
+          <span className="truncate block max-w-full text-center">
             {link.title || link.platform}
           </span>
+
+          {/* Pinned Right Share Icon (Not Clickable Display) */}
+          <div
+            className="absolute right-4 flex items-center justify-center opacity-70"
+            style={{ color: fontStyle.fillColor }}
+            aria-hidden="true"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="5" r="1.5"></circle>
+              <circle cx="12" cy="12" r="1.5"></circle>
+              <circle cx="12" cy="19" r="1.5"></circle>
+            </svg>
+          </div>
         </span>
-      </a>
+      </div>
     ));
 
   return (
@@ -173,15 +201,15 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
             <div className="flex-1 min-w-0">
               <div className="flex gap-[.9px] items-center">
                 <h1 className="text-sm font-bold truncate" title={displayName}>
-                {displayName}
-              </h1>
-              <Image
-                src="/icons/verification.svg"
-                alt="Verified"
-                width={15}
-                height={15}
-                className="inline-block ml-1"
-              />
+                  {displayName}
+                </h1>
+                <Image
+                  src="/icons/verification.svg"
+                  alt="Verified"
+                  width={15}
+                  height={15}
+                  className="inline-block ml-1"
+                />
               </div>
               <p className="text-[10px] font-medium text-gray-600 truncate">
                 /{String(userName).toLowerCase().replace(/\s+/g, "")}
