@@ -21,7 +21,7 @@ import { useAppDispatch } from "@/stores/hooks";
 
 // Field order for auto-progression
 const FIELD_ORDER = ["email", "password"] as const;
-type FieldName = typeof FIELD_ORDER[number];
+type FieldName = (typeof FIELD_ORDER)[number];
 
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -53,67 +53,70 @@ const SignIn = () => {
     register("password");
 
   // Auto-advance to password field when email is valid (on blur only)
-  const advanceToNextField = useCallback(async (currentField: FieldName) => {
-    const currentIndex = FIELD_ORDER.indexOf(currentField);
-    const nextField = FIELD_ORDER[currentIndex + 1];
-    
-    if (!nextField) return;
-    
-    // Only validate and advance if field has value
-    const currentValue = getValues(currentField);
-    if (currentValue?.trim()) {
-      const isValid = await trigger(currentField);
-      if (isValid) {
-        setTimeout(() => {
-          fieldRefs.current[nextField]?.focus();
-        }, 50);
+  const advanceToNextField = useCallback(
+    async (currentField: FieldName) => {
+      const currentIndex = FIELD_ORDER.indexOf(currentField);
+      const nextField = FIELD_ORDER[currentIndex + 1];
+
+      if (!nextField) return;
+
+      // Only validate and advance if field has value
+      const currentValue = getValues(currentField);
+      if (currentValue?.trim()) {
+        const isValid = await trigger(currentField);
+        if (isValid) {
+          setTimeout(() => {
+            fieldRefs.current[nextField]?.focus();
+          }, 50);
+        }
       }
-    }
-  }, [trigger, getValues]);
+    },
+    [trigger, getValues],
+  );
 
   // Handle backspace on empty field to go to previous
-  const handleKeyDown = useCallback((
-    e: React.KeyboardEvent<HTMLInputElement>,
-    field: FieldName
-  ) => {
-    const currentValue = getValues(field);
-    
-    if (e.key === "Backspace" && !currentValue) {
-      const currentIndex = FIELD_ORDER.indexOf(field);
-      const prevField = FIELD_ORDER[currentIndex - 1];
-      
-      if (prevField) {
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>, field: FieldName) => {
+      const currentValue = getValues(field);
+
+      if (e.key === "Backspace" && !currentValue) {
+        const currentIndex = FIELD_ORDER.indexOf(field);
+        const prevField = FIELD_ORDER[currentIndex - 1];
+
+        if (prevField) {
+          e.preventDefault();
+          fieldRefs.current[prevField]?.focus();
+        }
+      }
+
+      if (e.key === "Enter") {
         e.preventDefault();
-        fieldRefs.current[prevField]?.focus();
+        const currentIndex = FIELD_ORDER.indexOf(field);
+        const nextField = FIELD_ORDER[currentIndex + 1];
+
+        if (nextField) {
+          fieldRefs.current[nextField]?.focus();
+        } else {
+          handleSubmit(onSubmit)();
+        }
       }
-    }
-    
-    if (e.key === "Enter") {
-      e.preventDefault();
-      const currentIndex = FIELD_ORDER.indexOf(field);
-      const nextField = FIELD_ORDER[currentIndex + 1];
-      
-      if (nextField) {
-        fieldRefs.current[nextField]?.focus();
-      } else {
-        handleSubmit(onSubmit)();
-      }
-    }
-  }, [getValues, handleSubmit]);
+    },
+    [getValues, handleSubmit],
+  );
 
   // Handle paste for email field
-  const handlePaste = useCallback((
-    e: React.ClipboardEvent<HTMLInputElement>,
-    field: FieldName
-  ) => {
-    if (field === "email") {
-      const pastedText = e.clipboardData.getData("text");
-      if (pastedText.includes("@")) {
-        setValue(field, pastedText);
-        e.preventDefault();
+  const handlePaste = useCallback(
+    (e: React.ClipboardEvent<HTMLInputElement>, field: FieldName) => {
+      if (field === "email") {
+        const pastedText = e.clipboardData.getData("text");
+        if (pastedText.includes("@")) {
+          setValue(field, pastedText);
+          e.preventDefault();
+        }
       }
-    }
-  }, [setValue]);
+    },
+    [setValue],
+  );
 
   const onSubmit = async (data: SignInFormData) => {
     signInMutation.mutate(data);
@@ -138,7 +141,7 @@ const SignIn = () => {
   const getFieldStatus = (field: FieldName) => {
     const value = getValues(field);
     const error = errors[field];
-    
+
     if (!value) return "default";
     if (error) return "error";
     return "success";
@@ -263,16 +266,16 @@ const SignIn = () => {
         variants={logoVariants}
         className="shrink-0 px-4 pt-4 pb-2 md:px-12 lg:px-20 md:pt-8 md:pb-3"
       >
-        <Link href="/" className="flex items-center gap-1.5 group w-fit">
+        <Link href="/" className="flex items-center gap-[1.5px] group">
           <Image
-            src="/icons/A.Bio.png"
+            src="/icons/A.bio.svg"
             alt="A.Bio Logo"
-            width={32}
-            height={32}
+            width={28}
+            height={28}
             priority
-            className="cursor-pointer select-none transition-all duration-300 group-hover:scale-105 group-hover:rotate-3"
+            className="transition-transform group-hover:scale-105"
           />
-          <span className="font-bold text-xl md:text-2xl text-[#331400] tracking-tight">
+          <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
             bio
           </span>
         </Link>
@@ -305,17 +308,17 @@ const SignIn = () => {
           >
             {/* Email Field */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <Label 
-                htmlFor="email" 
+              {/* <Label
+                htmlFor="email"
                 className="font-semibold text-sm text-[#331400]"
               >
                 Email Address
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="Enter your email address"
                   autoComplete="email"
                   enterKeyHint="next"
                   className={`h-12 text-base  border-1 transition-all duration-200
@@ -381,12 +384,12 @@ const SignIn = () => {
 
             {/* Password Field */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <Label 
-                htmlFor="password" 
+              {/* <Label
+                htmlFor="password"
                 className="font-semibold text-sm text-[#331400]"
               >
                 Password
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Input
                   id="password"
@@ -417,7 +420,9 @@ const SignIn = () => {
                   {...passwordRegisterRest}
                   disabled={isSubmitting || signInMutation.isPending}
                   aria-invalid={!!errors.password}
-                  aria-describedby={errors.password ? "password-error" : undefined}
+                  aria-describedby={
+                    errors.password ? "password-error" : undefined
+                  }
                 />
                 <button
                   type="button"
@@ -514,7 +519,10 @@ const SignIn = () => {
                 whileHover="hover"
                 whileTap={{ scale: 0.99 }}
               >
-                <a href="https://api.abio.site/api/v1/auth/google" className="block">
+                <a
+                  href="https://api.abio.site/api/v1/auth/google"
+                  className="block"
+                >
                   <Button
                     variant="outline"
                     className="h-11 text-sm font-medium flex items-center justify-center gap-3 w-full  border-1 border-[#E0D5C8] hover:border-[#FED45C] hover:bg-[#FED45C]/5 transition-all duration-200"

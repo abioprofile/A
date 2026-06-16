@@ -144,8 +144,8 @@ export const PLATFORMS: Platform[] = [
     { id: "whatsapp", name: "WhatsApp", icon: "/assets/icons/whatsapp.svg", type: "social" },
     { id: "telegram", name: "Telegram", icon: "/assets/icons/telegram.svg", type: "social" },
     { id: "linkedin", name: "LinkedIn", icon: "/assets/icons/linkedin.svg", type: "social" },
-    { id: "gmail", name: "Gmail", icon: Mail, type: "social", isReactIcon: true },
-      { id: "phone", name: "Phone Number", icon: Phone, type: "social", isReactIcon: true },
+    { id: "gmail", name: "Gmail", icon: "/assets/platform-icons/colored/Social=Gmail,Style=Original.svg", type: "social" },
+    { id: "phone", name: "Phone Number", icon: "/assets/platform-icons/colored/Social=Phone,Style=Original.svg", type: "social" },
 ]
 
 export const STREAMING_PLATFORMS: Platform[] = [

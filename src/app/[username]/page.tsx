@@ -29,7 +29,7 @@ import {
 import { QRCodeSVG } from "qrcode.react";
 import ShareModal, { LinkShareButton } from "@/components/ShareModal";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+//  Types 
 
 interface UserLink {
   id: string;
@@ -40,7 +40,7 @@ interface UserLink {
   isVisible: boolean;
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+//  Helpers 
 
 function applyOpacityToColor(color: string, opacity: number): string {
   const alpha = Math.max(0, Math.min(1, opacity));
@@ -97,7 +97,7 @@ const createTextStyle = (
   return base;
 };
 
-// ─── Global share button (top-right) ─────────────────────────────────────────
+//  Global share button (top-right) 
 
 function GlobalShareButton({ profileLink }: { profileLink: string }) {
   return (
@@ -109,7 +109,7 @@ function GlobalShareButton({ profileLink }: { profileLink: string }) {
         <motion.div
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.92 }}
-          className="w-9 h-9 bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors cursor-pointer"
+          className="w-8 h-8 bg-black/30 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 transition-colors cursor-pointer"
         >
           {/* Upload/share icon — matches Linktree's top-right icon exactly */}
           <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white">
@@ -127,7 +127,7 @@ function GlobalShareButton({ profileLink }: { profileLink: string }) {
   );
 }
 
-// ─── Main component
+//  Main component
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -180,7 +180,7 @@ export default function PublicProfilePage() {
     };
   }, [fontName]);
 
-  // ─── Early returns ────────────────────────────────────────────────────────
+  //  Early returns 
 
   if (profileLoading)
     return (
@@ -224,7 +224,7 @@ export default function PublicProfilePage() {
     );
   }
 
-  // ─── Data ─────────────────────────────────────────────────────────────────
+  //  Data 
   const profile = profileData.data;
   const links: UserLink[] = (profileData?.data?.links || []).map((l) => ({
     id: l.id,
@@ -288,7 +288,7 @@ export default function PublicProfilePage() {
       })()
     : undefined;
 
-  // ─── Background ───────────────────────────────────────────────────────────
+  //  Background 
 
   let backgroundStyle: React.CSSProperties = {};
   let backgroundImageSrc = "/themes/theme7.jpg";
@@ -364,7 +364,7 @@ export default function PublicProfilePage() {
           };
   }
 
-  // ─── Link button styles ───────────────────────────────────────────────────
+  //  Link button styles 
 
   const linkButtonStyle: React.CSSProperties = {
     borderRadius: buttonStyle?.borderRadius || "0px",
@@ -400,7 +400,7 @@ export default function PublicProfilePage() {
         href={link.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-3 px-4 py-2 font-semibold text-sm cursor-pointer flex-1"
+        className="flex items-center gap-3  px-4 py-4 font-semibold text-sm cursor-pointer flex-1"
         style={{
           textDecoration: "none",
           color: linkButtonStyle.color,
@@ -592,7 +592,7 @@ export default function PublicProfilePage() {
   const renderProfileCard = (isMobile: boolean, layoutId: string) => (
     <div>
       {/* Global share — absolute top-right */}
-      <div className="absolute top-4 right-4 z-30">
+      <div className="absolute top-6 right-4 z-30">
         {profileLink && <GlobalShareButton profileLink={profileLink} />}
       </div>
 
@@ -801,7 +801,7 @@ export default function PublicProfilePage() {
           </div>
         </motion.div>
 
-        {/* ── Avatar modal ─────────────────────────────────────────────────── */}
+        {/* ── Avatar modal  */}
         <AnimatePresence>
           {isAvatarModalOpen && (
             <motion.div
@@ -860,7 +860,7 @@ export default function PublicProfilePage() {
           )}
         </AnimatePresence>
 
-        {/* ── Join CTA ─────────────────────────────────────────────────────── */}
+        {/* ── Join CTA  */}
         <a
           href="/auth/sign-up"
           className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2 bg-white shadow-lg px-5 py-3 text-xs md:text-sm font-semibold text-black transition hover:bg-[#4a2207] hover:text-white"

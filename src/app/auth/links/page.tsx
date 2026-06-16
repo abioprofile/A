@@ -39,7 +39,6 @@ const AT_PLATFORMS = new Set(["x", "twitter", "snapchat", "tiktok", "instagram"]
 
 // ============================================================================
 // Utility Functions
-// ============================================================================
 
 const buildUrl = (platformId: string, value: string): string => {
   const trimmed = value.trim();
@@ -71,9 +70,7 @@ const getPlaceholder = (platformId: string, platformName: string): string => {
   return `${base}username`;
 };
 
-// ============================================================================
-// Components
-// ============================================================================
+
 
 const PlatformIcon: React.FC<{ platformId: string; platformName: string; size?: number }> = ({ 
   platformId, 
@@ -321,15 +318,14 @@ const CustomLinkItem: React.FC<{
         placeholder="add link"
         value={link.url}
         onChange={(e) => onUrlChange(e.target.value, index)}
-        className="h-10! text-[16px] placeholder:text-[16px]"
+        className="h-12! text-[16px] placeholder:text-[16px]"
       />
     </div>
   );
 };
 
-// ============================================================================
-// Main Component
-// ============================================================================
+
+// Main Component //
 
 const LinksScreen: React.FC = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -642,7 +638,7 @@ const LinksScreen: React.FC = () => {
           variants={itemVariants}
           className="w-full flex items-center md:hidden justify-between gap-2 pb-2 px-4 text-sm text-[#331400]"
         >
-          <p>© 2025 Abio</p>
+          <p>© 2026 Abio</p>
           <a href="/privacy-policy" className="hover:text-[#000000] transition">
             Privacy Policy
           </a>

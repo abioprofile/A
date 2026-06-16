@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useUserStore } from "@/stores/user.store";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { PLATFORMS, STREAMING_PLATFORMS } from "@/data"
+import { PLATFORMS, STREAMING_PLATFORMS } from "@/data";
 import { toast } from "sonner";
+import Link from "next/link";
+import React from "react";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { ArrowLeft, LucideIcon } from "lucide-react";
@@ -35,7 +37,10 @@ const Platforms = () => {
   };
 
   // Helper function to render platform icon
-  const renderPlatformIcon = (platform: (typeof PLATFORMS)[number], size: number = 35) => {
+  const renderPlatformIcon = (
+    platform: (typeof PLATFORMS)[number],
+    size: number = 30,
+  ) => {
     // Check if it's a Lucide icon component
     if (platform.isReactIcon && platform.icon) {
       const IconComponent = platform.icon as LucideIcon;
@@ -46,9 +51,16 @@ const Platforms = () => {
       } else if (platform.id === "phone") {
         color = "#34A853";
       }
-      return <IconComponent size={size} color={color} strokeWidth={1.5} className="mb-2" />;
+      return (
+        <IconComponent
+          size={size}
+          color={color}
+          strokeWidth={1.5}
+          className="mb-2"
+        />
+      );
     }
-    
+
     // For string paths (SVG files)
     if (typeof platform.icon === "string") {
       return (
@@ -61,7 +73,7 @@ const Platforms = () => {
         />
       );
     }
-    
+
     return null;
   };
 
@@ -158,7 +170,7 @@ const Platforms = () => {
   }
 
   return (
-    <>
+    <ProtectedRoute>
       <motion.main
         initial="hidden"
         animate="visible"
@@ -167,10 +179,26 @@ const Platforms = () => {
       >
         <OnboardingProgressWithSteps currentStep={3} totalSteps={5} />
         {/* Full-width top bar - Skip button hidden on mobile */}
-        <motion.div 
+        <motion.div
           variants={itemVariants}
           className="flex justify-end items-center px-4 md:px-16 py-8 absolute top-0 right-0"
         >
+          {/* <Link
+            href="/"
+            className="flex px-4  pt-4 items-center gap-[1.5px] group"
+          >
+            <Image
+              src="/icons/A.bio.svg"
+              alt="A.Bio Logo"
+              width={28}
+              height={28}
+              priority
+              className="transition-transform group-hover:scale-105"
+            />
+            <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
+              bio
+            </span>
+          </Link> */}
           <motion.div
             variants={backButtonVariants}
             whileHover="hover"
@@ -198,18 +226,15 @@ const Platforms = () => {
 
         {/* Centered main content */}
         <section className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
-          <motion.div 
-            variants={itemVariants}
-            className="text-center mb-8"
-          >
-            <motion.h1 
+          <motion.div variants={itemVariants} className="text-center mb-8">
+            <motion.h1
               className="text-xl md:text-2xl font-semibold my-2 text-[#331400]"
               whileHover={{ scale: 1.02 }}
               transition={{ duration: 0.2 }}
             >
               Select Platforms you are on!
             </motion.h1>
-            <motion.p 
+            <motion.p
               variants={itemVariants}
               className="text-[#666464] text-sm font-medium max-w-2xl"
             >
@@ -223,7 +248,9 @@ const Platforms = () => {
             className="flex flex-wrap justify-center gap-4 mb-6 max-w-2xl"
           >
             {PLATFORMS.map((platform, index) => {
-              const isSelected = selectedPlatforms.some((p) => p.id === platform.id);
+              const isSelected = selectedPlatforms.some(
+                (p) => p.id === platform.id,
+              );
 
               return (
                 <motion.button
@@ -250,14 +277,14 @@ const Platforms = () => {
 
           {/* Streaming Platforms */}
           <motion.div variants={itemVariants} className="w-full max-w-2xl mb-8">
-            <div className="flex items-center gap-3 mb-4">
+            {/* <div className="flex items-center gap-3 mb-4">
               <div className="h-px flex-1 bg-[#331400]/20" />
               <span className="text-[11px] font-semibold text-[#331400]/60 uppercase tracking-widest">
                 Streaming
               </span>
               <div className="h-px flex-1 bg-[#331400]/20" />
-            </div>
-            <div className="flex flex-wrap justify-center gap-4">
+            </div> */}
+            {/* <div className="flex flex-wrap justify-center gap-4">
               {STREAMING_PLATFORMS.map((platform, index) => {
                 const isSelected = selectedPlatforms.some((p) => p.id === platform.id);
 
@@ -288,10 +315,10 @@ const Platforms = () => {
                   </motion.button>
                 );
               })}
-            </div>
+            </div> */}
           </motion.div>
 
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             className="w-full max-w-xs space-y-4 mb-8"
           >
@@ -309,12 +336,9 @@ const Platforms = () => {
             </motion.div>
           </motion.div>
         </section>
-        
+
         {/* Back button below Continue button */}
-        <motion.div
-          variants={itemVariants}
-          className="flex justify-start"
-        >
+        <motion.div variants={itemVariants} className="flex justify-start">
           <motion.button
             variants={backButtonVariants}
             whileHover="hover"
@@ -328,15 +352,12 @@ const Platforms = () => {
         </motion.div>
 
         {/* Footer - Mobile only */}
-        <motion.footer 
+        <motion.footer
           variants={itemVariants}
           className="w-full flex items-center justify-between MD:px-4 md:hidden gap-2 py-4 text-sm text-[#331400] mt-8"
         >
-          <motion.p
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            © 2025 Abio
+          <motion.p whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            © 2026 Abio
           </motion.p>
           <motion.a
             href="/privacy-policy"
@@ -348,7 +369,7 @@ const Platforms = () => {
           </motion.a>
         </motion.footer>
       </motion.main>
-    </>
+    </ProtectedRoute>
   );
 };
 

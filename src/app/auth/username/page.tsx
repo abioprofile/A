@@ -13,6 +13,8 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 import { motion, AnimatePresence, type Variants } from "framer-motion";
 import { useAppSelector } from "@/stores/hooks";
 import { OnboardingProgressWithSteps } from "@/components/ProgressBar";
+import Link from "next/link";
+import Image from "next/image";
 
 const UsernamePage = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -31,9 +33,7 @@ const UsernamePage = () => {
   // 2. It's NOT their own username
   // 3. Username has actually changed from the debounced value
   const shouldCheckAvailability =
-    !!trimmedDebounced &&
-    !isOwnUsername &&
-    trimmedDebounced.length > 0;
+    !!trimmedDebounced && !isOwnUsername && trimmedDebounced.length > 0;
 
   // Only pass username to the hook if we should check availability
   // This prevents the query from being created/executed when it's their own username
@@ -51,7 +51,8 @@ const UsernamePage = () => {
   }, []);
 
   // Check if current username (not debounced) matches the user's existing username for submit
-  const isOwnUsernameForSubmit = username.trim().toLowerCase() === user?.profile?.username?.toLowerCase();
+  const isOwnUsernameForSubmit =
+    username.trim().toLowerCase() === user?.profile?.username?.toLowerCase();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -62,7 +63,8 @@ const UsernamePage = () => {
 
     // Check if it's their own username (shouldCheckAvailability is false)
     const trimmedUsername = username.trim();
-    const isOwnUsernameForSubmit = trimmedUsername.toLowerCase() === currentUsername;
+    const isOwnUsernameForSubmit =
+      trimmedUsername.toLowerCase() === currentUsername;
 
     // If it's their own username, just redirect without calling the API
     if (isOwnUsernameForSubmit) {
@@ -93,7 +95,7 @@ const UsernamePage = () => {
           onError: () => {
             toast.error("Failed to update username");
           },
-        }
+        },
       );
     } else {
       toast.error("Username is not available", {
@@ -156,8 +158,6 @@ const UsernamePage = () => {
       },
     },
   };
-
-
 
   const submitButtonVariants: Variants = {
     hover: {
@@ -228,6 +228,19 @@ const UsernamePage = () => {
         variants={containerVariants}
         className="flex min-h-screen flex-col overflow-x-hidden bg-[#FEF4EA]"
       >
+        <Link href="/" className="flex px-4  pt-4 items-center gap-[1.5px] group">
+          <Image
+            src="/icons/A.bio.svg"
+            alt="A.Bio Logo"
+            width={28}
+            height={28}
+            priority
+            className="transition-transform group-hover:scale-105"
+          />
+          <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
+            bio
+          </span>
+        </Link>
         {/* Main content */}
         <div className="flex flex-1 flex-col items-center justify-center lg:flex-row">
           <div className="flex w-full min-w-0 max-w-5xl flex-col items-center justify-center p-4 sm:p-5 lg:w-1/2">
@@ -235,10 +248,7 @@ const UsernamePage = () => {
               <OnboardingProgressWithSteps currentStep={1} totalSteps={5} />
             </div>
             {/* Header */}
-            <motion.div
-              variants={itemVariants}
-              className="mb-6 text-center"
-            >
+            <motion.div variants={itemVariants} className="mb-6 text-center">
               <motion.h1
                 className="text-xl font-bold text-[#331400] mb-1 md:hidden"
                 whileHover={{ scale: 1.02 }}
@@ -278,7 +288,7 @@ const UsernamePage = () => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value.toLowerCase())}
                   placeholder="Enter unique username"
-                  className="pl-[85px] pr-12 h-10 text-base md:text-sm placeholder:text-sm font-medium placeholder:font-medium placeholder:text-gray-500"
+                  className="pl-[85px] pr-12 h-12 text-base md:text-sm placeholder:text-sm font-medium placeholder:font-medium placeholder:text-gray-500"
                   aria-label="Username"
                   autoComplete="off"
                 />
@@ -374,17 +384,18 @@ const UsernamePage = () => {
                           animate="visible"
                           exit="exit"
                           variants={statusMessageVariants}
-                          className={`text-xs font-semibold overflow-hidden ${usernameData.data.isAvailable &&
-                              usernameData.data.isValid
+                          className={`text-xs font-semibold overflow-hidden ${
+                            usernameData.data.isAvailable &&
+                            usernameData.data.isValid
                               ? "text-green-600"
                               : "text-red-600"
-                            }`}
+                          }`}
                         >
                           {usernameData.data.isAvailable &&
-                            usernameData.data.isValid
+                          usernameData.data.isValid
                             ? "✓ Username is available"
                             : usernameData.message ||
-                            "Username is not available"}
+                              "Username is not available"}
                         </motion.p>
                       )}
                   </>
@@ -429,7 +440,6 @@ const UsernamePage = () => {
                   "Continue"
                 )}
               </motion.button>
-
             </motion.form>
           </div>
         </div>
@@ -439,11 +449,8 @@ const UsernamePage = () => {
           variants={itemVariants}
           className="w-full flex items-center justify-between px-4 md:hidden gap-3 py-4 text-sm text-[#331400] mt-auto"
         >
-          <motion.p
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.2 }}
-          >
-            © 2025 Abio
+          <motion.p whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
+            © 2026 Abio
           </motion.p>
           <motion.a
             href="/privacy-policy"
@@ -456,7 +463,7 @@ const UsernamePage = () => {
         </motion.footer>
       </motion.div>
     </ProtectedRoute>
-     );
+  );
 };
 
 export default UsernamePage;

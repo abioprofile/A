@@ -76,54 +76,54 @@ const PROFILES: Profile[] = [
       },
     ],
   },
-  {
-    name: "Amma",
-    handle: "ammamusicng",
-    bio: "Apple Music Up Next Nigeria ✦ Afrobeats",
-    avatar: "AMMA",
-    avatarImg: "/images/amma.jpg",
-    avatarBg: "linear-gradient(135deg,#7c3aed,#4c1d95)",
-    waveRGB: [124, 58, 237],
-    verified: true,
-    botBg: "linear-gradient(170deg,#1a0535 0%,#3b0764 50%,#6d28d9 100%)",
-    patternColor: "rgba(192,132,252,0.22)",
-    dotColor: "#7c3aed",
-    links: [
-      {
-        label: "Stream 'Closer'",
-        icon: "/assets/platform-icons/black/Social=Spotify,Style=Black.svg",
-        style: {
-          variant: "solid",
-          bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
-          color: "#fff",
-          shadow: "0 8px 24px rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
-          radius: "14px",
-        },
-      },
-      {
-        label: "Apple Music",
-        icon: "/assets/platform-icons/black/Social=Apple Music,Style=Black.svg",
-        style: {
-          variant: "solid",
-          bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
-          color: "#fff",
-          shadow: "0 8px 24px rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
-          radius: "14px",
-        },
-      },
-      {
-        label: "Book for shows",
-        icon: "/assets/platform-icons/black/Social=Calendar,Style=Black.svg",
-        style: {
-          variant: "solid",
-          bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
-          color: "#fff",
-          shadow: "4px 4px 0 rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
-          radius: "14px",
-        },
-      },
-    ],
-  },
+  // {
+  //   name: "Amma",
+  //   handle: "ammamusicng",
+  //   bio: "Apple Music Up Next Nigeria ✦ Afrobeats",
+  //   avatar: "AMMA",
+  //   avatarImg: "/images/amma.jpg",
+  //   avatarBg: "linear-gradient(135deg,#7c3aed,#4c1d95)",
+  //   waveRGB: [124, 58, 237],
+  //   verified: true,
+  //   botBg: "linear-gradient(170deg,#1a0535 0%,#3b0764 50%,#6d28d9 100%)",
+  //   patternColor: "rgba(192,132,252,0.22)",
+  //   dotColor: "#7c3aed",
+  //   links: [
+  //     {
+  //       label: "Stream 'Closer'",
+  //       icon: "/assets/platform-icons/black/Social=Spotify,Style=Black.svg",
+  //       style: {
+  //         variant: "solid",
+  //         bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
+  //         color: "#fff",
+  //         shadow: "0 8px 24px rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
+  //         radius: "14px",
+  //       },
+  //     },
+  //     {
+  //       label: "Apple Music",
+  //       icon: "/assets/platform-icons/black/Social=Apple Music,Style=Black.svg",
+  //       style: {
+  //         variant: "solid",
+  //         bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
+  //         color: "#fff",
+  //         shadow: "0 8px 24px rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
+  //         radius: "14px",
+  //       },
+  //     },
+  //     {
+  //       label: "Book for shows",
+  //       icon: "/assets/platform-icons/black/Social=Calendar,Style=Black.svg",
+  //       style: {
+  //         variant: "solid",
+  //         bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
+  //         color: "#fff",
+  //         shadow: "4px 4px 0 rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
+  //         radius: "14px",
+  //       },
+  //     },
+  //   ],
+  // },
   {
     name: "David Osh",
     handle: "Oshnova",
@@ -139,7 +139,7 @@ const PROFILES: Profile[] = [
     links: [
       {
         label: "Portfolio",
-        icon: "/assets/platform-icons/black/Social=Behance,Style=Black.svg",
+        icon: "/assets/platform-icons/Social=Behance,Style=Original.svg",
         style: {
           variant: "brutal",
           bg: "#5D2D2B",
@@ -150,7 +150,7 @@ const PROFILES: Profile[] = [
       },
       {
         label: "Telegram",
-        icon: "/assets/platform-icons/black/Social=Telegram,Style=Black.svg",
+        icon: "/assets/platform-icons/Social=Telegram,Style=Original.svg",
         style: {
           variant: "brutal",
           bg: "#5D2D2B",
@@ -161,7 +161,7 @@ const PROFILES: Profile[] = [
       },
       {
         label: "Snapchat",
-        icon: "/assets/platform-icons/black/Social=Snapchat,Style=Black.svg",
+        icon: "/assets/platform-icons/Social=Snapchat,Style=Original.svg",
         style: {
           variant: "brutal",
           bg: "#5D2D2B",
@@ -302,7 +302,7 @@ const DotPattern = ({ color }: { color: string }) => {
 const LinkButton = ({ link }: { link: Link }) => {
   const { style } = link;
   const isLightIcon = ["#fff", "#FED45C", "#e9d5ff"].includes(style.color);
-  const baseClass = style.variant === "tag" ? "px-2.5 py-1" : "px-3.5 py-1.5";
+  const baseClass = style.variant === "tag" ? "px-2.5 py-1" : "px-3.5 py-2";
 
   return (
     <div
@@ -607,7 +607,7 @@ const HeroSection = () => {
             </h1>
 
             <div className="relative inline-block mt-1">
-              <p className="text-[28px] trial text-[#5D2D2B] italic leading-tight">
+              <p className="text-[28px]  text-[#5D2D2B]  leading-tight">
                 In just A Biography.
               </p>
               <motion.div
@@ -706,7 +706,7 @@ const HeroSection = () => {
               transition={{ delay: 0.25, duration: 0.6 }}
               className="relative inline-block"
             >
-              <p className="text-2xl md:text-3xl lg:text-5xl trial text-[#5D2D2B] italic">
+              <p className="text-2xl md:text-3xl lg:text-5xl  text-[#5D2D2B] ">
                 In just A Biography.
               </p>
               <motion.div

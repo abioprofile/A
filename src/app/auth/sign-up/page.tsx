@@ -255,19 +255,19 @@ const SignUp = () => {
         variants={logoVariants}
         className="px-4 pt-4 md:px-12 lg:px-20 md:pt-8 md:pb-2"
       >
-        <Link href="/" className="flex items-center gap-1.5 group w-fit">
-          <Image
-            src="/icons/A.Bio.png"
-            alt="A.Bio Logo"
-            width={32}
-            height={32}
-            priority
-            className="cursor-pointer select-none transition-all duration-300 group-hover:scale-105 group-hover:rotate-3"
-          />
-          <span className="font-bold text-xl md:text-2xl text-[#331400] tracking-tight">
-            bio
-          </span>
-        </Link>
+        <Link href="/" className="flex items-center gap-[1.5px] group">
+              <Image
+                src="/icons/A.bio.svg"
+                alt="A.Bio Logo"
+                width={28}
+                height={28}
+                priority
+                className="transition-transform group-hover:scale-105"
+              />
+              <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
+                bio
+              </span>
+            </Link>
       </motion.div>
 
       {/* Centered Form Container */}
@@ -302,12 +302,12 @@ const SignUp = () => {
           >
             {/* Name Field */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <Label 
+              {/* <Label 
                 htmlFor="name" 
                 className="font-semibold text-sm text-[#331400]"
               >
                 Full Name
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Input
                   id="name"
@@ -376,17 +376,17 @@ const SignUp = () => {
 
             {/* Email Field */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <Label 
+              {/* <Label 
                 htmlFor="email" 
                 className="font-semibold text-sm text-[#331400]"
               >
                 Email Address
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
+                  placeholder="Enter your email address"
                   autoComplete="email"
                   enterKeyHint="next"
                   className={`h-12 text-base border-2 transition-all duration-200
@@ -451,12 +451,12 @@ const SignUp = () => {
 
             {/* Password Field */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <Label 
+              {/* <Label 
                 htmlFor="password" 
                 className="font-semibold text-sm text-[#331400]"
               >
                 Password
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Input
                   id="password"
@@ -549,12 +549,12 @@ const SignUp = () => {
 
             {/* Confirm Password Field */}
             <motion.div variants={itemVariants} className="space-y-1.5">
-              <Label 
+              {/* <Label 
                 htmlFor="passwordConfirm" 
                 className="font-semibold text-sm text-[#331400]"
               >
                 Confirm Password
-              </Label>
+              </Label> */}
               <div className="relative">
                 <Input
                   id="passwordConfirm"
@@ -659,7 +659,7 @@ const SignUp = () => {
             {/* OR Divider */}
             <motion.div
               variants={itemVariants}
-              className="flex items-center gap-3 my-6"
+              className="flex items-center gap-3 my-4"
             >
               <Separator className="flex-1 bg-[#E0D5C8]" />
               <motion.span
