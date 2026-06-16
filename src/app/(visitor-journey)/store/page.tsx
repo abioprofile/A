@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import { FiSearch, FiShoppingCart } from "react-icons/fi";
 import { products } from "@/lib/products";
 import { useCart } from "@/context/CartContext";
