@@ -424,115 +424,114 @@ export default function SideDashboard() {
     <>
       {/* MOBILE TOP BAR */}
       <div className="sticky top-0 z-40 mt-2 mb-4 w-full bg-[#Fff7de] md:hidden">
-        <div className="px-8 py-2 sm:px-6">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-1">
-
-            <p className="min-w-0 flex-1 truncate text-left text-xl font-extrabold text-black">
-              {userData?.name || userData?.profile?.username || "User"}
-            </p>
+  <div className="px-8 py-2 sm:px-6">
+    <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-1">
+        <p className="min-w-0 flex-1 truncate text-left text-xl font-extrabold text-black">
+          {userData?.name || userData?.profile?.username || "User"}
+        </p>
+        <Image
+          src="/icons/verification.svg"
+          alt="Verified"
+          width={18}
+          height={18}
+          className="inline-block mt-0.5" // Changed from ml-1 to mt-0.5 for vertical alignment
+        />
+      </div>
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
+          aria-label="QR Code"
+        >
+          <Image
+            src="/assets/icons/dashboard/qrcode.svg"
+            alt=""
+            width={40} // Changed from 40 to 20 for proper sizing
+            height={40} // Changed from 40 to 20 for proper sizing
+            className="text-[#331400]"
+          />
+        </button>
+        <button
+          onClick={() => setIsShareModalOpen(true)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
+          aria-label="Share"
+        >
+          <Image
+            src="/assets/icons/dashboard/share.svg"
+            alt=""
+            width={40} // Changed from 40 to 20 for proper sizing
+            height={40} // Changed from 40 to 20 for proper sizing
+            className="text-[#331400]"
+          />
+        </button>
+        <Link href="/dashboard/AccountSettings">
+          <button className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"> 
             <Image
-              src="/icons/verification.svg"
-              alt="Verified"
-              width={18}
-              height={18}
-              className="inline-block ml-1"
+              src="/assets/icons/dashboard/settings-1.svg"
+              alt=""
+              width={40} // Changed from 40 to 20 for proper sizing
+              height={40} // Changed from 40 to 20 for proper sizing
+              className="text-[#331400]"
             />
-            </div>
-            <div className="flex shrink-0 items-center gap-[0.5px] p-0">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
-                aria-label="QR Code"
-              >
-                <Image
-                  src="/assets/icons/dashboard/qrcode.svg"
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="h-9 w-9 text-[#331400]"
-                />
-              </button>
-              <button
-                onClick={() => setIsShareModalOpen(true)}
-                className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
-                aria-label="Share"
-              >
-                <Image
-                  src="/assets/icons/dashboard/share.svg"
-                  alt=""
-                  width={24}
-                  height={24}
-                  className="h-9 w-9 text-[#331400]"
-                />
-              </button>
-              <Link href="/dashboard/AccountSettings">
-                <button className="">
-                  <Image
-                    src="/assets/icons/dashboard/settings-1.svg"
-                    alt=""
-                    width={24}
-                    height={24}
-                    className="h-9 w-9 text-[#331400]"
-                  />
-                </button>
-              </Link>
+          </button>
+        </Link>
 
-              {/* More Button with Dropdown */}
-              <div className="relative">
-                <button
-                  className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
-                  onClick={() => setShowMenu(!showMenu)}
-                  aria-label="More options"
-                >
-                  <MoreHorizontalIcon size={20} color="#331400" />
-                </button>
-
-                {showMenu && (
-                  <>
-                    <div
-                      className="fixed inset-0 bg-transparent z-40"
-                      onClick={() => setShowMenu(false)}
-                    />
-                    <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 backdrop-blur shadow-xl z-50 overflow-hidden">
-                      <div className="p-2">
-                        {menuItems.map((item) => (
-                          <Link
-                            key={item.label}
-                            href={item.href || "#"}
-                            onClick={() => setShowMenu(false)}
-                            className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                          >
-                            <item.icon size={16} />
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                      <div className="border-t border-gray-100 p-2">
-                        <button
-                          onClick={handleLogout}
-                          className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition-colors"
-                        >
-                          <LogOut size={16} />
-                          Log Out
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          </div>
-          <a
-            href={profileLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-0.5 block truncate text-left text-xs font-semibold text-gray-600"
+        {/* More Button with Dropdown */}
+        <div className="relative">
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-lg p-0 hover:bg-[#f4f4f4]"
+            onClick={() => setShowMenu(!showMenu)}
+            aria-label="More options"
           >
-            {formatLink(profileLink)}
-          </a>
+            <MoreHorizontalIcon size={40} color="#331400" />
+          </button>
+
+          {showMenu && (
+            <>
+              <div
+                className="fixed inset-0 bg-transparent z-40"
+                onClick={() => setShowMenu(false)}
+              />
+              <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-gray-200 backdrop-blur shadow-xl z-50 overflow-hidden">
+                <div className="p-2">
+                  {menuItems.map((item) => (
+                    <Link
+                      key={item.label}
+                      href={item.href || "#"}
+                      onClick={() => setShowMenu(false)}
+                      className="flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      <item.icon size={16} />
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+                <div className="border-t border-gray-100 p-2">
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg w-full transition-colors"
+                  >
+                    <LogOut size={16} />
+                    Log Out
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
+    </div>
+    <a
+      href={profileLink}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="mt-0.5 block truncate text-left text-xs font-semibold text-gray-600"
+    >
+      {formatLink(profileLink)}
+    </a>
+  </div>
+</div>
 
       {/* DESKTOP QR SECTION */}
       <div className="hidden md:block p-4 sm:p-6 space-y-4 text-gray-800 max-w-[400px] mx-auto">

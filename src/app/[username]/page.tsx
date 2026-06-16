@@ -390,56 +390,45 @@ export default function PublicProfilePage() {
    * visually inside the button's border, separated by a subtle divider.
    */
   const renderLinkRow = (link: UserLink, index: number, isMobile: boolean) => (
-    <div key={link.id} className="group relative mb-3">
-      <div
-        className="w-full relative flex items-center overflow-hidden transition-all duration-150 "
-        style={linkButtonStyle}
+  <div key={link.id} className="group relative mb-3">
+    <div
+      className="w-full relative flex items-center justify-between overflow-hidden transition-all duration-150"
+      style={linkButtonStyle}
+    >
+      {/* Left section with icon and text */}
+      <a
+        href={link.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center gap-3 px-4 py-2 font-semibold text-sm cursor-pointer flex-1"
+        style={{
+          textDecoration: "none",
+          color: linkButtonStyle.color,
+          fontFamily: linkButtonStyle.fontFamily,
+          fontWeight: linkButtonStyle.fontWeight,
+          fontStyle: linkButtonStyle.fontStyle,
+          textShadow: linkButtonStyle.textShadow,
+        }}
+        aria-label={link.title}
       >
-        {/* Clickable link area */}
-        <a
-          href={link.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          // justify-center keeps text dead center. px-12 prevents long text from overlapping the icons
-          className="w-full flex items-center justify-center px-12 py-2 font-semibold text-sm cursor-pointer"
-          style={{
-            textDecoration: "none",
-            color: linkButtonStyle.color,
-            fontFamily: linkButtonStyle.fontFamily,
-            fontWeight: linkButtonStyle.fontWeight,
-            fontStyle: linkButtonStyle.fontStyle,
-            textShadow: linkButtonStyle.textShadow,
-          }}
-          aria-label={link.title}
-        >
-          {/* Icon - Pinned absolutely to the left */}
-          <motion.span
-            className="absolute left-4 flex items-center justify-center"
-            whileHover={{ rotate: 10 }}
-            transition={{ type: "spring", stiffness: 300 }}
-            style={{ color: dotColor }}
-            aria-hidden="true"
-          >
-            {/* Increased w-4 h-4 to w-6 h-6 to better match the size in your screenshot */}
-            {getPlatformIcon(link.platform, "w-6 h-6")} 
-          </motion.span>
+        <span className="flex items-center justify-center flex-shrink-0" style={{ color: dotColor }}>
+          {getPlatformIcon(link.platform, "w-4 h-4")}
+        </span>
+        <span className="truncate">{link.title}</span>
+      </a>
 
-          {/* Centered Text */}
-          <span className="truncate block max-w-full">{link.title}</span>
-        </a>
-
-        {/* ⋮ share — Pinned absolutely to the right */}
-        <div className="absolute right-1 top-0 bottom-0 flex items-center z-10">
-          <LinkShareButton
-            url={link.url}
-            title={link.title}
-            fontColor={dotColor}
-            isMobile={isMobile}
-          />
-        </div>
+      {/* More menu - extreme right */}
+      <div className="flex-shrink-0 pr-3">
+        <LinkShareButton
+          url={link.url}
+          title={link.title}
+          fontColor={dotColor}
+          isMobile={isMobile}
+        />
       </div>
     </div>
-  );
+  </div>
+);
 
   const renderStreamingRow = (
     link: UserLink,
@@ -880,7 +869,7 @@ export default function PublicProfilePage() {
           Join {userData?.username || username} on Abio
         </a>
 
-        {/* ── QR code ──────────────────────────────────────────────────────── */}
+        {/* ── QR code */}
         {profileShareUrl && (
           <a
             href={profileShareUrl}

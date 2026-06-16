@@ -1,25 +1,41 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { TemplateCardProps } from "@/interfaces/template.interface"
-import { LinkButton } from "./TemplateButton"
-import { MapPin } from "lucide-react"
-import Image from "next/image"
 import { motion, type Variants } from "framer-motion"
+import { themePreviewStyle } from "@/lib/helpers/appearance"
+
+// ─── Lightning bolt SVG badge ──────
+const LightningBadge = () => (
+  <span
+    className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center shadow-md z-10"
+    style={{ backgroundColor: "rgba(255,255,255,0.25)", backdropFilter: "blur(4px)" }}
+    aria-hidden
+  >
+    <svg width="11" height="14" viewBox="0 0 11 14" fill="none">
+      <path
+        d="M6.5 1L1 7.8H5.5L4.5 13L10 6.2H5.5L6.5 1Z"
+        fill="white"
+        stroke="white"
+        strokeWidth="0.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  </span>
+)
 
 export function TemplateCard({ template, onClick, isSelected }: TemplateCardProps) {
-    const { style, profile, links } = template
+    const { style, links, isPremium, corner_config, font_config, wallpaper_config } = template
     
     // Animation variants
     const cardVariants: Variants = {
         initial: {
             scale: 1,
-            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
         },
         hover: {
             scale: 1.02,
-            boxShadow: "0 10px 25px rgba(0, 0, 0, 0.15)",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.18)",
             transition: {
                 type: "spring",
                 stiffness: 300,
@@ -33,243 +49,143 @@ export function TemplateCard({ template, onClick, isSelected }: TemplateCardProp
                 stiffness: 400,
                 damping: 25
             }
-        },
-        selected: {
-            scale: 1.01,
-            boxShadow: "0 0 0 3px rgba(var(--primary), 0.3), 0 10px 30px rgba(0, 0, 0, 0.2)",
-            transition: {
-                type: "spring",
-                stiffness: 200,
-                damping: 15
-            }
         }
     }
 
-    const avatarVariants: Variants = {
-        initial: { scale: 1 },
-        hover: { 
-            scale: 1.05,
-            rotate: [0, -2, 2, -2, 0],
-            transition: {
-                rotate: {
-                    repeat: Infinity,
-                    duration: 2,
-                    ease: "easeInOut"
-                },
-                scale: {
-                    type: "spring",
-                    stiffness: 400,
-                    damping: 10
-                }
+    // Get wallpaper style from theme
+    const getWallpaperStyle = () => {
+        if (wallpaper_config) {
+            const preview = themePreviewStyle(wallpaper_config)
+            return {
+                backgroundImage: preview.backgroundImage,
+                backgroundColor: preview.backgroundColor,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
             }
+        }
+        return {
+            backgroundColor: style?.backgroundColor || "#c4b5d0",
         }
     }
 
-    const linkIconVariants: Variants = {
-        initial: { y: 0 },
-        hover: {
-            y: [0, -3, 0],
-            transition: {
-                duration: 1.5,
-                repeat: Infinity,
-                ease: "easeInOut"
+    // Get button bar style from theme
+    const getButtonBarStyle = () => {
+        const cc = corner_config
+        
+        if (!cc) {
+            return {
+                borderRadius: 8,
+                backgroundColor: "rgba(255,255,255,0.9)",
+                border: "1.5px solid rgba(255,255,255,0.5)",
             }
+        }
+
+        const borderRadius = 
+            cc.type === "sharp" ? 4 : 
+            cc.type === "round" ? 9999 : 10
+
+        const boxShadow = 
+            cc.shadowSize === "hard" && cc.shadowColor
+                ? `2px 2px 0px 0px ${cc.shadowColor}`
+                : cc.shadowColor
+                    ? `0 2px 6px ${cc.shadowColor}60`
+                    : "none"
+
+        return {
+            borderRadius,
+            boxShadow,
+            border: `1.5px solid ${cc.strokeColor ?? "rgba(255,255,255,0.5)"}`,
+            backgroundColor: cc.fillColor ?? "rgba(255,255,255,0.9)",
+            opacity: cc.opacity ?? 1,
         }
     }
 
-    const contentVariants: Variants = {
-        initial: { opacity: 1 },
-        hover: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.05
-            }
-        }
+    // Get font family
+    const getFontFamily = () => {
+        return font_config?.name 
+            ? `'${font_config.name}', sans-serif` 
+            : style?.fontFamily || "inherit"
     }
 
-    const itemVariants: Variants = {
-        initial: { y: 0, opacity: 1 },
-        hover: {
-            y: -2,
-            opacity: 1,
-            transition: {
-                type: "spring",
-                stiffness: 300,
-                damping: 15
-            }
-        }
-    }
-
-    const borderPulseVariants: Variants = {
-        initial: { opacity: 0 },
-        selected: {
-            opacity: [0.3, 0.6, 0.3],
-            transition: {
-                duration: 2,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
-        }
+    // Get text color
+    const getTextColor = () => {
+        return font_config?.fillColor || style?.textColor || "#333333"
     }
 
     return (
-        <motion.div
+        <motion.button
             className={cn(
-                "ring-1 ring-gray-500 md:ring-0 relative overflow-hidden cursor-pointer h-[20rem] md:h-[35rem] lg:h-fit w-full md:w-[70%] ",
-                isSelected && "ring-3 ring-primary"
+                "flex flex-col items-center gap-1.5 focus:outline-none group w-full",
+                "transition-all duration-200"
             )}
             onClick={onClick}
             variants={cardVariants}
             initial="initial"
             whileHover="hover"
             whileTap="tap"
-            animate={isSelected ? "selected" : "initial"}
-            layout
+            aria-label={`Select theme: ${template.name}`}
+            aria-pressed={isSelected}
         >
-            {/* Pulsing border effect when selected */}
-            {isSelected && (
-                <motion.div
-                    className="absolute inset-0 ring-4 ring-primary/30 rounded-lg pointer-events-none"
-                    variants={borderPulseVariants}
-                    initial="initial"
-                    animate="selected"
-                />
-            )}
-
-            {/* Smooth background transition */}
-            <motion.div 
-                className="flex flex-col h-full"
+            {/* Card */}
+            <motion.div
+                className="relative w-full overflow-hidden transition-all duration-200"
                 style={{
-                    backgroundColor: style.overlay ? "rgba(0,0,0,0.2)" : "transparent"
+                    aspectRatio: "4/4",
+                    ...getWallpaperStyle(),
+                    // Selection ring
+                    outline: isSelected
+                        ? "3px solid #000000"
+                        : "3px solid transparent",
+                    outlineOffset: "2px",
+                    boxShadow: isSelected
+                        ? "0 0 0 1px #00000020"
+                        : "0 2px 8px rgba(0,0,0,0.12)",
                 }}
-                transition={{ duration: 0.3 }}
             >
-                <motion.div 
-                    className="bg-white p-4 relative h-[9rem]"
-                    variants={contentVariants}
-                >
-                    {/* Animated link icon */}
-                    <motion.div 
-                        className="absolute -bottom-[2px] left-4 flex flex-col items-center "
-                        variants={linkIconVariants}
-                        initial="initial"
-                        whileHover="hover"
-                    >
-                        <span className="text-[11px] font-medium">Links</span>
-                        <motion.div 
-                            className="w-6 h-1 bg-red-500 shadow-[0_2px_2px_rgba(0,0,0,0.3)] rounded-sm"
-                            animate={{
-                                width: ["24px", "28px", "24px"]
-                            }}
-                            transition={{
-                                duration: 1.5,
-                                repeat: Infinity,
-                                ease: "easeInOut"
-                            }}
-                        />
-                    </motion.div>
-                    
-                    {/* Profile section with avatar animation */}
-                    <motion.div 
-                        className="flex items-center gap-3 "
-                        variants={itemVariants}
-                    >
-                        <motion.div
-                            variants={avatarVariants}
-                            initial="initial"
-                            whileHover="hover"
-                        >
-                            <Avatar className="size-12  ">
-                                <AvatarImage src={profile.avatar || ""} alt={profile.name} />
-                                <AvatarFallback>
-                                    <motion.span
-                                        initial={{ scale: 0 }}
-                                        animate={{ scale: 1 }}
-                                        transition={{ type: "spring", stiffness: 200 }}
-                                    >
-                                        {profile.name.charAt(0)}
-                                    </motion.span>
-                                </AvatarFallback>
-                            </Avatar>
-                        </motion.div>
-                        <motion.div variants={itemVariants}>
-                            <h3 className="font-bold text-sm" style={{ fontFamily: style.fontFamily }}>
-                                {profile.name}
-                            </h3>
-                            <motion.p 
-                                className="text-[6px] md:text-[10px] opacity-80"
-                                initial={{ opacity: 0.8 }}
-                                whileHover={{ opacity: 1 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                @{profile.username}
-                            </motion.p>
-                        </motion.div>
-                    </motion.div>
-                    
-                    <motion.p 
-                        className="text-[10px] mt-2 font-semibold" 
-                        style={{ fontFamily: style.fontFamily }}
-                        variants={itemVariants}
-                    >
-                        {profile.bio}
-                    </motion.p>
+                {/* Lightning badge - only for premium themes */}
+                {isPremium && <LightningBadge />}
 
-                    <motion.div 
-                        className="items-center p-[2px] border text-[10px] border-[#4e4e4e] gap-1 inline-flex mt-2 bg-white/70 mb-2"
-                        variants={itemVariants}
-                        whileHover={{ 
-                            scale: 1.05,
-                            backgroundColor: "rgba(0,0,0,0.05)"
+                {/* Aa font preview */}
+                <div className="absolute top-3 left-3 z-10">
+                    <span
+                        className="text-xl font-bold leading-none drop-shadow-sm"
+                        style={{
+                            fontFamily: getFontFamily(),
+                            color: "#ffffff",
+                            textShadow: "0 1px 3px rgba(0,0,0,0.3)",
                         }}
                     >
-                        <MapPin className="size-2" />
-                        <span style={{ fontFamily: style.fontFamily }} className="text-[6px] md:text-[9px] text-[#000] font-medium">
-                            {profile.location}
-                        </span>
-                    </motion.div>
-                </motion.div>
+                        Aa
+                    </span>
+                </div>
 
-                <motion.div 
-                    className="flex flex-col gap-3 h-full px-2 md:px-5 lg:px-10 py-7 lg:py-10 space-y-1"
-                    style={{
-                        backgroundColor: style.backgroundColor,
-                        backgroundImage: style.backgroundImage,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        color: style.textColor,
-                    }}
-                    initial={false}
-                    animate={{
-                        backgroundPosition: ["center", "center 1%", "center"],
-                    }}
-                    transition={{
-                        duration: 20,
-                        repeat: Infinity,
-                        ease: "linear"
-                    }}
-                >
-                    {links.map((link, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{
-                                delay: index * 0.05,
-                                type: "spring",
-                                stiffness: 200,
-                                damping: 15
-                            }}
-                            whileHover={{ 
-                                y: -3,
-                                transition: { type: "spring", stiffness: 400 }
+                {/* Button bar preview — pinned to bottom */}
+                <div className="absolute bottom-3 shadow-xl left-3 right-3 z-10">
+                    <div
+                        className="w-full h-8 flex items-center justify-center px-3"
+                        style={getButtonBarStyle()}
+                    >
+                        {/* Preview of links - show first link or placeholder */}
+                        <span 
+                            className="text-xs font-medium truncate opacity-70"
+                            style={{ 
+                                fontFamily: getFontFamily(),
+                                color: getTextColor()
                             }}
                         >
-                            <LinkButton text={link.text} style={style} />
-                        </motion.div>
-                    ))}
-                </motion.div>
+                            {links?.[0]?.text || "linktr.ee"}
+                        </span>
+                    </div>
+                </div>
             </motion.div>
-        </motion.div>
+
+            {/* Theme name */}
+            <p
+                className="text-sm font-bold text-center truncate w-full px-1"
+                style={{ color: "#6b7280" }}
+            >
+                {template.name || "Untitled Theme"}
+            </p>
+        </motion.button>
     )
 }

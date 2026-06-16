@@ -33,8 +33,27 @@ export interface TemplateConfig {
     style: ButtonStyle
 }
 
+
 export interface TemplateCardProps {
-    template: TemplateConfig
-    onClick?: () => void
+    template: TemplateConfig & {
+        corner_config?: {
+            type?: "sharp" | "round" | "rounded"
+            fillColor?: string
+            strokeColor?: string
+            shadowSize?: "hard" | "soft"
+            shadowColor?: string
+            opacity?: number
+        }
+        font_config?: {
+            name?: string
+            fillColor?: string
+        }
+        wallpaper_config?: {
+            // Your wallpaper config type
+        }
+        isPremium?: boolean
+        name?: string
+    }
+    onClick: () => void
     isSelected?: boolean
 }

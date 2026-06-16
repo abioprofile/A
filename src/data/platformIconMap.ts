@@ -1,7 +1,4 @@
-/**
- * Maps normalized platform IDs → exact SVG filenames in /public/assets/platform-icons/
- * The filenames are exactly as they appear on disk (spaces, commas, etc.)
- */
+
 export const PLATFORM_ICON_FILES: Record<string, { black: string; colored: string }> = {
   instagram:      { black: "Social=Instagram,Style=Black.svg",        colored: "Social=Instagram,Style=Original.svg" },
   tiktok:         { black: "Social=TikTok,Style=Black.svg",           colored: "Social=TikTok,Style=Original.svg" },
@@ -21,8 +18,9 @@ export const PLATFORM_ICON_FILES: Record<string, { black: string; colored: strin
   spotify:        { black: "Social=Spotify,Style=Black.svg",          colored: "Social=Spotify,Style=Original.svg" },
   "apple-music":  { black: "Social=Apple Music,Style=Black.svg",      colored: "Social=Apple Music,Style=Original.svg" },
   soundcloud:     { black: "Social=SoundCloud,Style=Black.svg",       colored: "Social=SoundCloud,Style=Original.svg" },
-  discord:        { black: "Social=Discord,Style=Black.svg",          colored: "Social=Discord,Style=Original.svg" },
   reddit:         { black: "Social=Reddit,Style=Black.svg",           colored: "Social=Reddit,Style=Original.svg" },
+  discord:        { black: "Social=Discord,Style=Black.svg",          colored: "Social=Discord,Style=Original.svg" },
+  linkedin:       { black: "Social=Linkedin,Style=Black.svg",         colored: "Social=Linkedin,Style=Original.svg" },
   threads:        { black: "Social=Threads,Style=Black.svg",          colored: "Social=Threads,Style=Original.svg" },
   twitch:         { black: "Social=Twitch,Style=Black.svg",           colored: "Social=Twitch,Style=Original.svg" },
   medium:         { black: "Social=Medium,Style=Black.svg",           colored: "Social=Medium,Style=Original.svg" },
@@ -84,6 +82,7 @@ export const PLATFORM_DISPLAY_NAMES: Record<string, string> = {
   google:          "Google",
   x:               "X (Twitter)",
   twitter:         "X (Twitter)",
+   linkedin:        "LinkedIn",
   spotify:         "Spotify",
   "apple-music":   "Apple Music",
   soundcloud:      "SoundCloud",

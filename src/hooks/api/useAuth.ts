@@ -439,16 +439,20 @@ export const useCurrentUser = () => {
 };
 
 // Hook to fetch user profile by username (public profile)
-export const useUserProfileByUsername = (username: string) => {
+export const useUserProfileByUsername = (
+  username: string,
+  options?: { refetchInterval?: number | false }
+) => {
   return useQuery({
     queryKey: ["user-profile", username],
     queryFn: async () => {
       return await getUserProfileByUsername(username);
     },
     enabled: !!username,
-    staleTime: 0, // Always refetch
-    refetchOnMount: true, // Refetch when component mounts
-    refetchOnWindowFocus: true, // Refetch when window regains focus
+    staleTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
+    refetchInterval: options?.refetchInterval,
   });
 };
 export const useUpdateProfileAvatar = () => {

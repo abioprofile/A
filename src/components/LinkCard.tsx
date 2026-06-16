@@ -46,6 +46,17 @@ type Props = {
   ) => void;
   dragHandleProps?: any;
   dragHandleId?: string;
+  isDraggingOverlay?: boolean;
+  // Inline editing props
+  isEditing?: boolean;
+  editingTitle?: string;
+  editingUrl?: string;
+  onEditingTitleChange?: (value: string) => void;
+  onEditingUrlChange?: (value: string) => void;
+  onSaveEdit?: () => void;
+  onCancelEdit?: () => void;
+  onKeyDown?: (e: React.KeyboardEvent) => void;
+  editInputRef?: React.RefObject<HTMLInputElement | null>;
 };
 
 // All platforms that have icons in our public icon pack
@@ -60,6 +71,16 @@ const LinkCard: FC<Props> = ({
   isVisible = true,
   dragHandleProps,
   dragHandleId,
+  isDraggingOverlay,
+  isEditing = false,
+  editingTitle = "",
+  editingUrl = "",
+  onEditingTitleChange,
+  onEditingUrlChange,
+  onSaveEdit,
+  onCancelEdit,
+  onKeyDown,
+  editInputRef,
 }) => {
   const [isActive, setIsActive] = useState(isVisible);
   const updateLinkIconMutation = useUpdateLinkWithIcon();
@@ -95,7 +116,7 @@ const LinkCard: FC<Props> = ({
     if (!showIconDropdown && iconButtonRef.current) {
       const rect = iconButtonRef.current.getBoundingClientRect();
       setDropdownPosition({
-        top: rect.bottom + window.scrollY + 8, // 8px margin (mt-2)
+        top: rect.bottom + window.scrollY + 8,
         left: rect.left + window.scrollX,
       });
     }
@@ -107,7 +128,6 @@ const LinkCard: FC<Props> = ({
     if (showIconDropdown) {
       const handleClickOutside = (e: globalThis.MouseEvent) => {
         const target = e.target as Node;
-        // Check if click is outside both the button and the dropdown
         const isOutsideButton =
           iconButtonRef.current && !iconButtonRef.current.contains(target);
         const isOutsideDropdown =
@@ -117,7 +137,6 @@ const LinkCard: FC<Props> = ({
           setShowIconDropdown(false);
         }
       };
-      // Use a small delay to allow button clicks to register first
       const timeoutId = setTimeout(() => {
         document.addEventListener("mousedown", handleClickOutside);
       }, 0);
@@ -155,11 +174,9 @@ const LinkCard: FC<Props> = ({
       );
     }
 
-    // Default icon
     return <FaLink className="w-6 h-6 md:w-8 md:h-8 text-gray-500" />;
   };
 
-  /** Fetches the colored SVG from the public icon pack and returns it as a File for upload */
   const fetchColoredIconFile = async (platformKey: string): Promise<File> => {
     const url = getPlatformIconUrl(platformKey, "colored");
     if (!url) throw new Error(`No colored icon for platform: ${platformKey}`);
@@ -254,36 +271,7 @@ const LinkCard: FC<Props> = ({
     }, "image/png");
   };
 
-  // Handler for platform name click
-  const handlePlatformNameClick = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onEdit) {
-      onEdit(e, item);
-    }
-  };
-
-  // Handler for URL click
-  const handleUrlClick = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onEdit) {
-      onEdit(e, item);
-    }
-  };
-
-  // Handler for toggle button
-  const handleToggleClick = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onToggleVisibility) {
-      onToggleVisibility(e);
-    } else {
-      setIsActive(!isActive);
-    }
-  };
-
-  // Handler for edit button
+  // Handler for edit button - now triggers inline editing
   const handleEditClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -298,6 +286,17 @@ const LinkCard: FC<Props> = ({
     e.stopPropagation();
     if (onDelete) {
       onDelete(item.id);
+    }
+  };
+
+  // Handler for toggle button
+  const handleToggleClick = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onToggleVisibility) {
+      onToggleVisibility(e);
+    } else {
+      setIsActive(!isActive);
     }
   };
 
@@ -325,18 +324,20 @@ const LinkCard: FC<Props> = ({
             {/* ================= TOP ROW ================= */}
             <div className="flex items-center gap-2 md:gap-3">
               {/* Drag dots (desktop only) - Only this area is draggable */}
-              <div
-                id={dragHandleId}
-                className="flex flex-col gap-1 cursor-grab"
-                {...(dragHandleProps || {})}
-              >
-                {[0, 1, 2].map((i) => (
-                  <div key={i} className="flex gap-1">
-                    <span className="w-1 h-1 bg-red-500 rounded-full" />
-                    <span className="w-1 h-1 bg-red-500 rounded-full" />
-                  </div>
-                ))}
-              </div>
+              {!isDraggingOverlay && (
+                <div
+                  id={dragHandleId}
+                  className="flex flex-col gap-1 cursor-grab"
+                  {...(dragHandleProps || {})}
+                >
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="flex gap-1">
+                      <span className="w-1 h-1 bg-red-500 rounded-full" />
+                      <span className="w-1 h-1 bg-red-500 rounded-full" />
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Icon with Dropdown */}
               <div className="relative">
@@ -402,7 +403,7 @@ const LinkCard: FC<Props> = ({
                                   e.preventDefault();
                                   handleIconSelect(e, key);
                                 }}
-                                className="flex flex-col items-center p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
+                                className="flex flex-col items-center p-2 hover:bg-gray-50  transition cursor-pointer"
                               >
                                 <div className="w-8 h-8 flex items-center justify-center mb-1">
                                   {coloredUrl ? (
@@ -437,10 +438,9 @@ const LinkCard: FC<Props> = ({
                           onClick={(e) => {
                             e.stopPropagation();
                             e.preventDefault();
-                            console.log("custom - button clicked");
                             handleIconSelect(e, "custom");
                           }}
-                          className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded-md transition cursor-pointer"
+                          className="w-full flex items-center gap-2 p-2 hover:bg-gray-50  transition cursor-pointer"
                         >
                           <CameraIcon className="h-5 w-5 text-gray-600" />
                           <span className="text-sm">Upload Image</span>
@@ -460,23 +460,51 @@ const LinkCard: FC<Props> = ({
                 className="hidden"
               />
 
-              {/* Text - REMOVED onClick from container, added to individual elements */}
+              {/* Text Content - With inline editing */}
               <div className="flex-1 min-w-0">
-                <button
-                  type="button"
-                  onClick={handlePlatformNameClick}
-                  className="block w-full text-left font-semibold text-sm lg:text-base truncate hover:text-gray-700 transition-colors leading-snug"
-                >
-                  {item.title}
-                </button>
+                {isEditing ? (
+                  <>
+                    <input
+                      ref={editInputRef}
+                      type="text"
+                      value={editingTitle}
+                      onChange={(e) => onEditingTitleChange?.(e.target.value)}
+                      onKeyDown={onKeyDown}
+                      onBlur={onCancelEdit}
+                      className="w-full text-sm lg:text-base font-semibold text-[#331400] bg-white border border-gray-300  px-2 py-1 focus:outline-none focus:ring-2 focus:ring-[#FED45C] focus:border-transparent"
+                      placeholder="Title"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <input
+                      type="text"
+                      value={editingUrl}
+                      onChange={(e) => onEditingUrlChange?.(e.target.value)}
+                      onKeyDown={onKeyDown}
+                      onBlur={onCancelEdit}
+                      className="w-full text-xs text-gray-500 bg-white border border-gray-300  px-2 py-1 mt-1 focus:outline-none focus:ring-2 focus:ring-[#FED45C] focus:border-transparent"
+                      placeholder="URL"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleEditClick}
+                      className="block w-full text-left font-semibold text-sm lg:text-base truncate hover:text-gray-700 transition-colors leading-snug"
+                    >
+                      {item.title}
+                    </button>
 
-                <button
-                  type="button"
-                  onClick={handleUrlClick}
-                  className="block w-full text-left text-xs text-gray-500 hover:text-gray-700 transition-colors mt-0.5"
-                >
-                  {truncateUrl(item.url)}
-                </button>
+                    <button
+                      type="button"
+                      onClick={handleEditClick}
+                      className="block w-full text-left text-xs text-gray-500 hover:text-gray-700 transition-colors mt-0.5"
+                    >
+                      {truncateUrl(item.url)}
+                    </button>
+                  </>
+                )}
               </div>
             </div>
 
@@ -527,14 +555,14 @@ const LinkCard: FC<Props> = ({
                           setShowCropModal(false);
                           setSelectedImage("");
                         }}
-                        className="px-4 py-2 text-sm border rounded-md hover:bg-gray-50"
+                        className="px-4 py-2 text-sm border  hover:bg-gray-50"
                       >
                         Cancel
                       </button>
                       <button
                         type="button"
                         onClick={handleSaveCroppedImage}
-                        className="px-4 py-2 text-sm bg-black text-white  hover:bg-gray-800"
+                        className="px-4 py-2 text-sm bg-black text-white hover:bg-gray-800"
                       >
                         Save
                       </button>
@@ -556,7 +584,7 @@ const LinkCard: FC<Props> = ({
                 <span className="text-[11px] md:text-xs">{item.clickCount} clicks</span>
               </button>
 
-              {/* Controls */}
+              {/* Controls - Hide edit button while editing since we have inline inputs */}
               <div className="flex items-center gap-3 md:gap-4">
                 {/* Toggle - Off (left) / On (right) */}
                 <button
@@ -583,22 +611,24 @@ const LinkCard: FC<Props> = ({
                   />
                 </button>
 
-                {/* Edit */}
-                <button
-                  type="button"
-                  onClick={handleEditClick}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onTouchStart={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  className="press-target hover:opacity-70 cursor-pointer"
-                >
-                  <PencilIcon className="h-4 w-4 md:h-4 md:w-4 lg:h-5 lg:w-5 text-gray-500" />
-                </button>
+                {/* Edit - Only show when not editing */}
+                {!isEditing && (
+                  <button
+                    type="button"
+                    onClick={handleEditClick}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    onTouchStart={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
+                    className="press-target hover:opacity-70 cursor-pointer"
+                  >
+                    <PencilIcon className="h-4 w-4 md:h-4 md:w-4 lg:h-5 lg:w-5 text-gray-500" />
+                  </button>
+                )}
 
                 {/* Delete */}
                 <button
@@ -621,7 +651,7 @@ const LinkCard: FC<Props> = ({
 
             {/* ================= ANALYTICS ================= */}
             {showAnalytics && (
-              <div className="mt-3 md:mt-4 p-2 md:p-3 bg-gray-50 border rounded-md text-[11px] md:text-sm">
+              <div className="mt-3 md:mt-4 p-2 md:p-3 bg-gray-50 border  text-[11px] md:text-sm">
                 <div className="flex justify-between text-gray-600">
                   <span>Last clicked: 2 days ago</span>
                   <span>Top location: US</span>

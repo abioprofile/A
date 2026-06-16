@@ -64,22 +64,22 @@ const NavBar = () => {
 
   return (
     <header className="fixed bg-[#FED45C] top-[30px] md:top-[40px] left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-[90%]">
-      <div className="shadow-sm transition-all duration-300">
+      <div className="shadow-sm transition-all duration-300 shadow-xl">
         
         {/* NAVBAR */}
-        <div className="container px-5 md:px-10 lg:px-6 mx-auto py-[16px] shadow-xl flex items-center justify-between">
+        <div className="container px-5 md:px-10 lg:px-6 mx-auto py-[16px]  flex items-center justify-between">
           <div className="flex items-center gap-14">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-1 group">
+            <Link href="/" className="flex items-center gap-[1.5px] group">
               <Image
-                src="/icons/A.Bio.png"
+                src="/icons/A.bio.svg"
                 alt="A.Bio Logo"
-                width={38}
-                height={38}
+                width={28}
+                height={28}
                 priority
                 className="transition-transform group-hover:scale-105"
               />
-              <span className="font-semibold hidden md:block text-3xl text-end text-black tracking-wide">
+              <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
                 bio
               </span>
             </Link>

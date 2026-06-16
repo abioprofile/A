@@ -488,16 +488,16 @@ const AppearancePage: React.FC = () => {
                 value={themeName}
                 onChange={(e) => setThemeName(e.target.value)}
                 placeholder="Theme name..."
-                className="w-40 h-8 text-sm"
+                className="w-10 h-6 text-sm"
               />
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleThemeUploadClick}
-                className="flex items-center gap-2 h-8 px-4 text-sm font-bold text-[#331400] border-[#331400] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#331400]/10 transition-colors"
+                className="flex items-center gap-2 w-20 h-10 px-6 text-sm font-bold text-[#331400] border-[#331400] shadow-[2px_2px_0px_0px_#000] cursor-pointer hover:bg-[#331400]/10 transition-colors"
               >
                 <Upload className="w-3 h-3" />
-                Upload Theme
+                Upload
               </Button>
             </>
           )}
@@ -514,66 +514,78 @@ const AppearancePage: React.FC = () => {
       </div>
 
       {/* Mobile: Header fixed at top (TikTok-style) — Save + Undo/Redo only when an edit has been made */}
-      <div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] px-2 pt-2 flex items-center justify-between">
-        <button
-          onClick={handleBackClick}
-          className="font-extrabold text-xl text-[#331400] flex items-center gap-1 hover:opacity-75 transition-opacity"
+      {/* Mobile Header */}
+<div className="md:hidden fixed top-0 left-0 right-0 z-20 bg-[#FFF7DE] border-b border-[#331400]/10 px-2 py-2">
+  {/* Top Row */}
+  <div className="flex items-center justify-between gap-2">
+    <button
+      onClick={handleBackClick}
+      className="font-extrabold text-lg text-[#331400] flex items-center gap-1 shrink-0"
+    >
+      <ChevronLeft className="inline w-5 h-5" />
+      Appearance
+    </button>
+
+    {hasEdits && (
+      <button
+        type="button"
+        onClick={handleSaveAll}
+        disabled={isSavingAll}
+        className="shrink-0 text-[#331400] text-xs shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {isSavingAll ? "Saving…" : "Save"}
+      </button>
+    )}
+  </div>
+
+  {/* Bottom Row */}
+  <div className="mt-2 flex items-center justify-between gap-2 flex-wrap">
+    {canUploadThemes && (
+      <div className="flex items-center gap-2 flex-1 min-w-0">
+        <Input
+          type="text"
+          value={themeName}
+          onChange={(e) => setThemeName(e.target.value)}
+          placeholder="Theme name"
+          className="flex-1 h-8 text-xs"
+        />
+
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={handleThemeUploadClick}
+          className="gap-1 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-xs shrink-0"
         >
-          <ChevronLeft className="inline" />
-          Appearance
-        </button>
-        <div className="flex items-center gap-2">
-          {canUploadThemes && (
-            <>
-              <Input
-                type="text"
-                value={themeName}
-                onChange={(e) => setThemeName(e.target.value)}
-                placeholder="Theme name"
-                className="w-24 h-7 text-xs"
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={handleThemeUploadClick}
-                className="gap-1.5 border-[#331400] text-[#331400] hover:bg-[#331400]/10 text-xs px-3 py-1.5"
-              >
-                <Upload className="w-3.5 h-3.5" />
-                Upload theme
-              </Button>
-            </>
-          )}
-          {hasEdits && (
-            <>
-              <button
-                onClick={undo}
-                disabled={historyIndex <= 0}
-                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-xs font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
-                title="Undo"
-              >
-                <RotateCcw size={18} />
-              </button>
-              <button
-                onClick={redo}
-                disabled={historyIndex >= history.length - 1}
-                className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] text-xs font-semibold bg-[#fed45c] p-2 hover:bg-[#fdd935] active:shadow-[2px_2px_0px_0px_#000000]"
-                title="Redo"
-              >
-                <RotateCw size={18} />
-              </button>
-              <button
-                type="button"
-                onClick={handleSaveAll}
-                disabled={isSavingAll}
-                className="text-[#331400] text-xs shadow-[2px_2px_0px_0px_#000000] font-semibold bg-[#fed45c] px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSavingAll ? "Saving…" : "Save"}
-              </button>
-            </>
-          )}
-        </div>
+          <Upload className="w-3 h-3" />
+          Upload
+        </Button>
       </div>
+    )}
+
+    {hasEdits && (
+      <div className="flex items-center gap-2 ml-auto">
+        <button
+          onClick={undo}
+          disabled={historyIndex <= 0}
+          className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] bg-[#fed45c] p-2 hover:bg-[#fdd935]"
+          title="Undo"
+        >
+          <RotateCcw size={16} />
+        </button>
+
+        <button
+          onClick={redo}
+          disabled={historyIndex >= history.length - 1}
+          className="disabled:opacity-50 disabled:cursor-not-allowed text-[#331400] bg-[#fed45c] p-2 hover:bg-[#fdd935]"
+          title="Redo"
+        >
+          <RotateCw size={16} />
+        </button>
+      </div>
+    )}
+  </div>
+</div>
       {/* Spacer so content below doesn't sit under fixed header on mobile */}
       <div className="md:hidden h-2 flex-shrink-0" aria-hidden />
 

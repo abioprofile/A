@@ -15,16 +15,16 @@ const Footer = () => {
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-10 mb-14">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-2 md:col-span-1">
-            <Link href="/" className="flex items-center gap-1 group w-fit mb-5">
+            <Link href="/" className="flex items-center gap-[1px] group w-fit mb-5">
               <Image
-                src="/icons/A.Bio.png"
-                alt="A.Bio Logo"
+                src="/icons/A.bio.svg"
+                alt="A.bio Logo"
                 width={28}
                 height={28}
                 priority
                 className="cursor-pointer select-none transition-transform group-hover:scale-105"
               />
-              <span className="font-bold text-xl text-white tracking-wide">bio</span>
+              <span className="font-medium tracking-[0em] text-3xl text-white tracking-wide">bio</span>
             </Link>
             <p className="text-xs text-white/60 leading-6 max-w-[200px]">
               One link. Endless connections.

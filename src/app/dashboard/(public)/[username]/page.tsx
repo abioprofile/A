@@ -1,12 +1,13 @@
 "use client";
 
-import { JSX } from "react";
+import { JSX, useCallback } from "react";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { FaInstagram, FaTiktok, FaPinterest, FaTwitter, FaCopy, FaWhatsapp, FaXTwitter, FaFacebook, FaSnapchat, FaYoutube } from "react-icons/fa6";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { useUserProfileByUsername } from "@/hooks/api/useAuth";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useLinkBroadcastSubscriber } from "@/hooks/useLinkBroadcast";
 
 interface UserLink {
   id: string;
@@ -45,13 +46,22 @@ export default function PublicProfilePage() {
   const params = useParams();
   const username = params?.username as string;
 
-  // Fetch user profile by username
-  const { 
-    data: profileData, 
-    isLoading: profileLoading, 
-    isError: profileError, 
-    error: profileErrorData 
-  } = useUserProfileByUsername(username);
+  // Fetch user profile — poll every 5 s as a background fallback for real-time sync
+  const {
+    data: profileData,
+    isLoading: profileLoading,
+    isError: profileError,
+    error: profileErrorData,
+    refetch: refetchProfile,
+  } = useUserProfileByUsername(username, { refetchInterval: 5000 });
+
+  // Instant sync: when the owner edits in the dashboard (same browser, other tab),
+  // a BroadcastChannel message triggers an immediate refetch here.
+  const handleBroadcast = useCallback(() => {
+    refetchProfile();
+  }, [refetchProfile]);
+
+  useLinkBroadcastSubscriber(handleBroadcast);
 
   // Get links from profile data (profileData already includes links)
   const profileLinks = profileData?.data?.links || [];

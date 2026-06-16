@@ -121,69 +121,66 @@ const PhoneDisplay: React.FC<PhoneDisplayProps> = ({
   }
 
   const renderButtonStack = (items: ProfileLink[]) =>
-    items.map((link, index) => (
-      <div
-        key={link.id || index}
-        // justify-center on the container keeps things centered while left/right elements are pinned absolutely
-        className="w-full flex items-center justify-center font-semibold py-3 relative overflow-hidden transition-opacity active:scale-[0.98]"
+  items.map((link, index) => (
+    <div
+      key={link.id || index}
+      className="w-full flex items-center justify-between relative overflow-hidden transition-opacity active:scale-[0.98]"
+      style={{
+        borderRadius: buttonStyle.borderRadius,
+        border: `2px solid ${buttonStyle.borderColor}`,
+        boxShadow: buttonStyle.boxShadow,
+        textDecoration: "none",
+      }}
+    >
+      {/* Button Background */}
+      <span
+        className="absolute inset-0 z-0"
         style={{
-          borderRadius: buttonStyle.borderRadius,
-          border: `2px solid ${buttonStyle.borderColor}`,
-          boxShadow: buttonStyle.boxShadow,
-          textDecoration: "none",
+          backgroundColor: buttonStyle.backgroundColor,
+          opacity: buttonStyle.opacity,
         }}
+      />
+
+      {/* Left section with icon and text */}
+      <a
+        href={link.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="relative z-10 flex items-center gap-3 px-4 py-3 text-sm font-semibold flex-1 cursor-pointer"
+        style={createTextStyle(fontStyle.strokeWidth || 0)}
       >
-        {/* Button Background */}
-        <span
-          className="absolute inset-0 z-0"
-          style={{
-            backgroundColor: buttonStyle.backgroundColor,
-            opacity: buttonStyle.opacity,
-          }}
-        />
-
-        {/* Content Wrapper */}
-        <span
-          className="relative z-10 flex items-center justify-center w-full px-12 text-sm font-semibold"
-          style={createTextStyle(fontStyle.strokeWidth || 0)}
-        >
-          {/* Pinned Left Icon */}
-          <div
-            className="absolute left-4 flex items-center justify-center"
-            style={{ color: fontStyle.fillColor }}
-          >
-            {getPlatformIcon(link.platform, "w-5 h-5")}
-          </div>
-
-          {/* Centered Text */}
-          <span className="truncate block max-w-full text-center">
-            {link.title || link.platform}
-          </span>
-
-          {/* Pinned Right Share Icon (Not Clickable Display) */}
-          <div
-            className="absolute right-4 flex items-center justify-center opacity-70"
-            style={{ color: fontStyle.fillColor }}
-            aria-hidden="true"
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="12" cy="5" r="1.5"></circle>
-              <circle cx="12" cy="12" r="1.5"></circle>
-              <circle cx="12" cy="19" r="1.5"></circle>
-            </svg>
-          </div>
+        {/* Icon */}
+        <span className="flex items-center justify-center flex-shrink-0" style={{ color: fontStyle.fillColor }}>
+          {getPlatformIcon(link.platform, "w-5 h-5")}
         </span>
+        
+        {/* Text */}
+        <span className="truncate">{link.title || link.platform}</span>
+      </a>
+
+      {/* Right section - Share Menu (extreme right) */}
+      <div
+        className="relative z-10 flex items-center justify-center pr-4 flex-shrink-0 opacity-70"
+        style={{ color: fontStyle.fillColor }}
+        aria-hidden="true"
+      >
+        <svg
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="5" r="1.5"></circle>
+          <circle cx="12" cy="12" r="1.5"></circle>
+          <circle cx="12" cy="19" r="1.5"></circle>
+        </svg>
       </div>
-    ));
+    </div>
+  ));
 
   return (
     <div className="relative w-full max-w-[285px] md:max-w-[300px] h-[67vh] md:h-[600px] mx-auto border-[2px] border-black overflow-hidden bg-white">

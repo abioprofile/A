@@ -21,11 +21,11 @@ import {
   verticalListSortingStrategy,
   useSortable,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 import { useQueryClient } from "@tanstack/react-query";
 import LinkCard from "./LinkCard";
 import DeleteModal from "./DeleteModal";
-import EditModal from "./EditModal";
 import { X, ChevronDown, Check, GripVertical } from "lucide-react";
 import { ProfileLink } from "@/types/auth.types";
 import {
@@ -47,6 +47,7 @@ import {
   slideInVariants,
   sortableItemVariants,
 } from "@/lib/animations";
+import { useLinkBroadcastPublisher } from "@/hooks/useLinkBroadcast";
 
 const SOCIAL_PLATFORMS = [
   "INSTAGRAM",
@@ -214,6 +215,11 @@ export default function LinkList({
   const { refetch: refetchLinks } = useGetAllLinks();
   const queryClient = useQueryClient();
   
+  // Track which link is being edited inline
+  const [editingLinkId, setEditingLinkId] = useState<string | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
+  const [editingUrl, setEditingUrl] = useState("");
+  const editInputRef = useRef<HTMLInputElement>(null);
 
   // Update linksData when prop changes
   useEffect(() => {
@@ -224,8 +230,16 @@ export default function LinkList({
     }
   }, [linksDataData]);
 
+  // Focus input when editing starts
+  useEffect(() => {
+    if (editingLinkId && editInputRef.current) {
+      editInputRef.current.focus();
+    }
+  }, [editingLinkId]);
+
+  const { broadcast } = useLinkBroadcastPublisher();
+
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [editItem, setEditItem] = useState<ProfileLink | null>(null);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   
   // Add link form state
@@ -280,10 +294,19 @@ export default function LinkList({
 
         if (oldIndex === -1 || newIndex === -1) return;
 
+        const previousOrder = linksData;
         const newOrder = arrayMove(linksData, oldIndex, newIndex);
+
+        // Optimistic UI: update local state immediately
         setLinksData(newOrder);
 
-        // Call API to reorder
+        // Optimistic cache update so PhoneDisplay reflects new order instantly
+        queryClient.setQueryData(["links"], (old: any) => {
+          if (!old) return old;
+          return { ...old, data: newOrder };
+        });
+
+        // Call API to persist reorder
         try {
           await reorderLinksMutation.mutateAsync({
             links: newOrder.map((link, index) => ({
@@ -291,14 +314,21 @@ export default function LinkList({
               displayOrder: index + 1,
             })),
           });
+          // Notify other tabs (public profile page) that links changed
+          broadcast();
         } catch (error) {
-          // Revert on error
-          setLinksData(linksData);
+          // Revert both local state and cache on error
+          setLinksData(previousOrder);
+          queryClient.setQueryData(["links"], (old: any) => {
+            if (!old) return old;
+            return { ...old, data: previousOrder };
+          });
+          toast.error("Failed to save order — reverted");
           console.error("Failed to reorder links:", error);
         }
       }
     },
-    [linksData, reorderLinksMutation]
+    [linksData, reorderLinksMutation, queryClient, broadcast]
   );
 
   // Handle drag cancel
@@ -314,17 +344,20 @@ export default function LinkList({
       setDeleteId(null);
       await refetchLinks();
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      broadcast();
     } catch (error) {
+      toast.error("Failed to delete link");
       console.error("Failed to delete link:", error);
     }
   },
-  [deleteLinkMutation, refetchLinks, queryClient]
+  [deleteLinkMutation, refetchLinks, queryClient, broadcast]
 );
 
   // Handle toggle visibility
    const handleToggleVisibility = useCallback(
   async (link: ProfileLink) => {
     const newVisibility = !link.isVisible;
+    // Optimistic update
     setLinksData((prev) =>
       prev.map((l) => (l.id === link.id ? { ...l, isVisible: newVisibility } : l))
     );
@@ -336,35 +369,65 @@ export default function LinkList({
       });
       await refetchLinks();
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      broadcast();
     } catch (error) {
+      // Revert on error
       setLinksData((prev) =>
         prev.map((l) => (l.id === link.id ? { ...l, isVisible: !newVisibility } : l))
       );
+      toast.error("Failed to update visibility — reverted");
       console.error("Failed to toggle visibility:", error);
     }
   },
-  [updateLinkMutation, refetchLinks, queryClient]
+  [updateLinkMutation, refetchLinks, queryClient, broadcast]
 );
   
-  // Handle edit
-  const handleEdit = useCallback(
-  async (link: ProfileLink, title: string, url: string) => {
+  // Handle inline edit - start editing
+  const handleStartEdit = useCallback((link: ProfileLink) => {
+    setEditingLinkId(link.id);
+    setEditingTitle(link.title);
+    setEditingUrl(link.url);
+  }, []);
+
+  // Handle inline edit - save on Enter
+  const handleSaveEdit = useCallback(async (linkId: string) => {
+    const link = linksData.find(l => l.id === linkId);
+    if (!link) return;
+    
+    if (!editingTitle.trim() || !editingUrl.trim()) {
+      toast.error("Title and URL cannot be empty");
+      return;
+    }
+    
     try {
       await updateLinkMutation.mutateAsync({
         linkId: link.id,
-        title,
-        url,
+        title: editingTitle,
+        url: editingUrl,
         platform: link.platform,
       });
-      setEditItem(null);
+      
+      // Update local state
+      setLinksData(prev => prev.map(l => 
+        l.id === linkId 
+          ? { ...l, title: editingTitle, url: editingUrl }
+          : l
+      ));
+      
+      setEditingLinkId(null);
       await refetchLinks();
       queryClient.invalidateQueries({ queryKey: ["user-profile"] });
+      broadcast();
     } catch (error) {
       console.error("Failed to update link:", error);
+      toast.error("Failed to save changes");
     }
-  },
-  [updateLinkMutation, refetchLinks, queryClient]
-);
+  }, [editingTitle, editingUrl, updateLinkMutation, refetchLinks, queryClient, linksData, broadcast]);
+
+  // Handle cancel edit (Escape key)
+  const handleCancelEdit = useCallback(() => {
+    setEditingLinkId(null);
+  }, []);
 
   const handleAddLink = useCallback(async () => {
     if (!newLink.title.trim() || !newLink.url.trim()) {
@@ -413,10 +476,11 @@ export default function LinkList({
 
       setNewLink({ title: "", url: "", platform: "", isVisible: true });
       setIsAddModalOpen(false);
+      broadcast();
     } catch (error) {
       console.error("Failed to add link:", error);
     }
-  }, [newLink, addLinksMutation, updateLinkMutation, refetchLinks, queryClient]);   
+  }, [newLink, addLinksMutation, updateLinkMutation, refetchLinks, queryClient, broadcast]);   
 
   const selectOptions = [
     { label: "Social", options: SOCIAL_PLATFORMS },
@@ -459,16 +523,24 @@ export default function LinkList({
               items={linksData.map((link: ProfileLink) => link.id)}
               strategy={verticalListSortingStrategy}
             >
-              <AnimatePresence mode="popLayout">
+              <AnimatePresence>
                 <div className="md:space-y-2 md:pr-2">
-                  {linksData.map((item: ProfileLink, index) => (
+                  {linksData.map((item: ProfileLink) => (
                     <SortableItem
                       key={item.id}
                       item={item}
                       onDelete={() => setDeleteId(item.id)}
-                      onEdit={(item: ProfileLink) => setEditItem(item)}
+                      onEdit={() => handleStartEdit(item)}
                       onToggleVisibility={() => handleToggleVisibility(item)}
                       isDragging={activeId === item.id}
+                      isEditing={editingLinkId === item.id}
+                      editingTitle={editingTitle}
+                      editingUrl={editingUrl}
+                      onEditingTitleChange={setEditingTitle}
+                      onEditingUrlChange={setEditingUrl}
+                      onSaveEdit={() => handleSaveEdit(item.id)}
+                      onCancelEdit={handleCancelEdit}
+                      editInputRef={editInputRef}
                     />
                   ))}
                 </div>
@@ -556,38 +628,6 @@ export default function LinkList({
                 }
               }}
             />
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* EDIT MODAL */}
-      <AnimatePresence>
-        {editItem !== null && (
-          <motion.div
-            variants={modalOverlayVariants}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center"
-          >
-            <motion.div
-              variants={modalContentVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <EditModal
-                isOpen={true}
-                onClose={() => setEditItem(null)}
-                onSave={(platform: string, url: string) => {
-                  if (editItem) {
-                    handleEdit(editItem, platform, url);
-                  }
-                }}
-                initialPlatform={editItem?.title || ""}
-                initialUrl={editItem?.url || ""}
-              />
-            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -891,55 +931,91 @@ function SortableItem({
   onEdit,
   onToggleVisibility,
   isDragging,
+  isEditing,
+  editingTitle,
+  editingUrl,
+  onEditingTitleChange,
+  onEditingUrlChange,
+  onSaveEdit,
+  onCancelEdit,
+  editInputRef,
 }: {
   item: ProfileLink;
   onDelete: () => void;
-  onEdit: (item: ProfileLink) => void;
+  onEdit: () => void;
   onToggleVisibility: () => void;
   isDragging: boolean;
+  isEditing: boolean;
+  editingTitle: string;
+  editingUrl: string;
+  onEditingTitleChange: (value: string) => void;
+  onEditingUrlChange: (value: string) => void;
+  onSaveEdit: () => void;
+  onCancelEdit: () => void;
+  editInputRef: React.RefObject<HTMLInputElement | null>;
 }) {
-  const { 
-    attributes, 
-    listeners, 
-    setNodeRef, 
-    transform, 
-    transition, 
-    isDragging: isSortableDragging 
-  } = useSortable({ 
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging
+  } = useSortable({
     id: item.id,
   });
 
-  const style = {
-    transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-      : undefined,
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
     transition,
-    zIndex: isSortableDragging ? 999 : 'auto',
+    zIndex: isSortableDragging ? 999 : undefined,
+    willChange: isSortableDragging ? "transform" : undefined,
+  };
+
+  // Handle Enter key
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      onSaveEdit();
+    } else if (e.key === 'Escape') {
+      e.preventDefault();
+      onCancelEdit();
+    }
   };
 
   return (
     <motion.div
       ref={setNodeRef}
       style={style}
+      layout
+      layoutId={item.id}
       {...attributes}
       animate={{
         scale: isSortableDragging ? 1.02 : 1,
-        opacity: isDragging ? 0.3 : 1,
-        transition: { type: "spring", stiffness: 500, damping: 30 }
+        opacity: isDragging ? 0.35 : 1,
+        boxShadow: isSortableDragging
+          ? "0 20px 40px rgba(0,0,0,0.15)"
+          : "0 1px 3px rgba(0,0,0,0.06)",
       }}
-      whileHover={{ scale: 1.01 }}
-      transition={{ duration: 0.2 }}
+      transition={{
+        layout: { type: "spring", stiffness: 500, damping: 35, mass: 0.6 },
+        scale: { type: "spring", stiffness: 500, damping: 30 },
+        opacity: { duration: 0.15 },
+        boxShadow: { duration: 0.2 },
+      }}
+      whileHover={!isSortableDragging ? { scale: 1.01 } : undefined}
       className="relative group"
     >
-      {/* Drag handle indicator - appears on hover like Notion/Trello */}
-      <div 
+      {/* Drag handle — visible on hover, positioned outside card like Notion */}
+      <div
         {...listeners}
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-8 opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-grab active:cursor-grabbing p-2 hover:bg-gray-100 rounded-lg"
-        style={{ touchAction: 'none' }}
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-7 opacity-0 group-hover:opacity-100 transition-opacity duration-150 cursor-grab active:cursor-grabbing p-1.5 hover:bg-gray-100 rounded"
+        style={{ touchAction: "none" }}
+        aria-label="Drag to reorder"
       >
         <GripVertical className="w-4 h-4 text-gray-400" />
       </div>
-      
+
       <LinkCard
         item={{
           id: item.id,
@@ -954,7 +1030,7 @@ function SortableItem({
         }}
         onEdit={(e, linkItem) => {
           if (linkItem) {
-            onEdit(item);
+            onEdit();
           }
         }}
         onToggleVisibility={(e) => {
@@ -968,6 +1044,15 @@ function SortableItem({
         onIconChange={() => {}}
         dragHandleProps={listeners}
         dragHandleId={`drag-handle-${item.id}`}
+        isEditing={isEditing}
+        editingTitle={editingTitle}
+        editingUrl={editingUrl}
+        onEditingTitleChange={onEditingTitleChange}
+        onEditingUrlChange={onEditingUrlChange}
+        onSaveEdit={onSaveEdit}
+        onCancelEdit={onCancelEdit}
+        onKeyDown={handleKeyDown}
+        editInputRef={editInputRef}
       />
     </motion.div>
   );

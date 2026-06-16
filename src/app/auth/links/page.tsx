@@ -20,25 +20,6 @@ import { IconType } from "react-icons";
 // Constants & Configuration
 // ============================================================================
 
-const COUNTRY_CODES = [
-  { code: "+1", country: "US", flag: "🇺🇸", name: "United States", dialCode: "1" },
-  { code: "+44", country: "UK", flag: "🇬🇧", name: "United Kingdom", dialCode: "44" },
-  { code: "+234", country: "NG", flag: "🇳🇬", name: "Nigeria", dialCode: "234" },
-  { code: "+91", country: "IN", flag: "🇮🇳", name: "India", dialCode: "91" },
-  { code: "+61", country: "AU", flag: "🇦🇺", name: "Australia", dialCode: "61" },
-  { code: "+1", country: "CA", flag: "🇨🇦", name: "Canada", dialCode: "1" },
-  { code: "+49", country: "DE", flag: "🇩🇪", name: "Germany", dialCode: "49" },
-  { code: "+33", country: "FR", flag: "🇫🇷", name: "France", dialCode: "33" },
-  { code: "+81", country: "JP", flag: "🇯🇵", name: "Japan", dialCode: "81" },
-  { code: "+86", country: "CN", flag: "🇨🇳", name: "China", dialCode: "86" },
-  { code: "+55", country: "BR", flag: "🇧🇷", name: "Brazil", dialCode: "55" },
-  { code: "+27", country: "ZA", flag: "🇿🇦", name: "South Africa", dialCode: "27" },
-  { code: "+82", country: "KR", flag: "🇰🇷", name: "South Korea", dialCode: "82" },
-  { code: "+52", country: "MX", flag: "🇲🇽", name: "Mexico", dialCode: "52" },
-  { code: "+39", country: "IT", flag: "🇮🇹", name: "Italy", dialCode: "39" },
-  { code: "+34", country: "ES", flag: "🇪🇸", name: "Spain", dialCode: "34" },
-] as const;
-
 const PLATFORM_BASE_URLS: Record<string, string> = {
   instagram: "instagram.com/",
   behance: "behance.net/",
@@ -52,7 +33,6 @@ const PLATFORM_BASE_URLS: Record<string, string> = {
   twitter: "x.com/",
   whatsapp: "wa.me/",
   gmail: "mailto:",
-  phone: "tel:",
 };
 
 const AT_PLATFORMS = new Set(["x", "twitter", "snapchat", "tiktok", "instagram"]);
@@ -60,18 +40,6 @@ const AT_PLATFORMS = new Set(["x", "twitter", "snapchat", "tiktok", "instagram"]
 // ============================================================================
 // Utility Functions
 // ============================================================================
-
-const formatPhoneDisplay = (digits: string): string => {
-  if (!digits) return "";
-  if (digits.length <= 4) return digits;
-  if (digits.length <= 7) return `${digits.slice(0, 4)} ${digits.slice(4)}`;
-  return `${digits.slice(0, 4)} ${digits.slice(4, 7)} ${digits.slice(7, 11)}`;
-};
-
-const getDigitsFromPhoneValue = (fullValue: string): string => {
-  const match = fullValue.match(/^\+\d+(\d*)$/);
-  return match ? match[1] : fullValue.replace(/\D/g, "");
-};
 
 const buildUrl = (platformId: string, value: string): string => {
   const trimmed = value.trim();
@@ -139,56 +107,21 @@ const PlatformIcon: React.FC<{ platformId: string; platformName: string; size?: 
   return <LinkIcon size={size} color="#331400" />;
 };
 
-// Fixed PhoneInput with proper cursor handling
-const PhoneInput: React.FC<{
+// Simple Numbers-Only Input (replaces PhoneInput)
+const NumbersOnlyInput: React.FC<{
   value: string;
   onChange: (val: string) => void;
   onFocus: () => void;
   onBlur: () => void;
   focused: boolean;
-}> = ({ value, onChange, onFocus, onBlur, focused }) => {
-  const [selectedCountry, setSelectedCountry] = useState(COUNTRY_CODES[2]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  placeholder?: string;
+}> = ({ value, onChange, onFocus, onBlur, focused, placeholder = "Enter numbers only" }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const lastDigitsRef = useRef<string>("");
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const digits = useMemo(() => getDigitsFromPhoneValue(value), [value]);
-  const formattedValue = useMemo(() => formatPhoneDisplay(digits), [digits]);
-
-  // Store digits in ref when they change
-  useEffect(() => {
-    lastDigitsRef.current = digits;
-  }, [digits]);
 
   const handleInput = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const cleanDigits = e.target.value.replace(/\D/g, "").slice(0, 11);
-      lastDigitsRef.current = cleanDigits;
-      onChange(`${selectedCountry.code}${cleanDigits}`);
-    },
-    [selectedCountry.code, onChange]
-  );
-
-  const handleCountrySelect = useCallback(
-    (country: typeof COUNTRY_CODES[0]) => {
-      setSelectedCountry(country);
-      onChange(`${country.code}${lastDigitsRef.current}`);
-      setShowDropdown(false);
-      requestAnimationFrame(() => {
-        inputRef.current?.focus();
-      });
+      const numbersOnly = e.target.value.replace(/\D/g, "").slice(0, 15);
+      onChange(numbersOnly);
     },
     [onChange]
   );
@@ -206,70 +139,17 @@ const PhoneInput: React.FC<{
       `}
       style={{ height: "48px" }}
     >
-      {/* Country Selector */}
-      <div className="relative flex-shrink-0 self-stretch" ref={dropdownRef}>
-        <button
-          type="button"
-          onClick={() => setShowDropdown((prev) => !prev)}
-          className="flex items-center gap-1.5 px-3 h-full border-r border-[#331400]/15 hover:bg-[#331400]/5 transition-colors"
-        >
-          <span className="text-lg leading-none">{selectedCountry.flag}</span>
-          <span className="text-sm font-semibold text-[#331400] tabular-nums">
-            {selectedCountry.code}
-          </span>
-          <ChevronDown
-            className={`w-3 h-3 text-[#331400]/40 transition-transform duration-200 ${
-              showDropdown ? "rotate-180" : ""
-            }`}
-          />
-        </button>
-
-        <AnimatePresence>
-          {showDropdown && (
-            <motion.div
-              initial={{ opacity: 0, y: -6, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -6, scale: 0.97 }}
-              transition={{ duration: 0.13, ease: "easeOut" }}
-              className="absolute top-full left-0 mt-1.5 bg-white border border-[#331400]/15 rounded-xl shadow-2xl z-50 max-h-56 overflow-y-auto min-w-[220px]"
-            >
-              {COUNTRY_CODES.map((country) => (
-                <button
-                  key={`${country.code}-${country.country}`}
-                  onClick={() => handleCountrySelect(country)}
-                  className={`
-                    w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors
-                    ${
-                      selectedCountry.country === country.country
-                        ? "bg-[#FEF4EA]"
-                        : "hover:bg-[#FEF4EA]/70"
-                    }
-                  `}
-                >
-                  <span className="text-lg leading-none">{country.flag}</span>
-                  <span className="text-sm font-semibold text-[#331400] w-10 tabular-nums">
-                    {country.code}
-                  </span>
-                  <span className="text-sm text-[#331400]/55 truncate">{country.name}</span>
-                </button>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-
-      {/* Phone Input */}
       <input
         ref={inputRef}
         type="tel"
         inputMode="numeric"
-        value={formattedValue}
+        value={value}
         onChange={handleInput}
         onFocus={onFocus}
         onBlur={onBlur}
-        placeholder="0000 000 0000"
+        placeholder={placeholder}
         className="
-          flex-1 h-full px-3 bg-transparent outline-none
+          flex-1 h-full px-4 bg-transparent outline-none
           text-[16px] font-medium text-[#331400]
           placeholder:text-[#331400]/25 placeholder:font-normal
         "
@@ -368,12 +248,13 @@ const SmartLinkInput: React.FC<{
 
   if (platformId === "phone") {
     return (
-      <PhoneInput
+      <NumbersOnlyInput
         value={value}
         onChange={onChange}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         focused={focused}
+        placeholder="Enter phone number (numbers only)"
       />
     );
   }

@@ -5,13 +5,13 @@ import { GripVertical, Trash2, BarChart2, Pencil } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const platforms = [
-  { name: "TikTok",    link: "https://www.tiktok.com/@danibush",     icon: "/assets/platform-icons/colored/Social=TikTok,Style=Original.svg",        active: false },
-  { name: "Snapchat",  link: "https://www.snapchat.com/add/danibush", icon: "/assets/platform-icons/colored/Social=Snapchat,Style=Original.svg",      active: true  },
-  { name: "Instagram", link: "https://www.instagram.com/danibush",    icon: "/assets/platform-icons/colored/Social=Instagram,Style=Original.svg",     active: true  },
-  { name: "WhatsApp",  link: "https://wa.me/2348163746282",           icon: "/assets/platform-icons/colored/Social=WhatsApp,Style=Original.svg",      active: false },
-  { name: "Pinterest", link: "https://pin.it/3oCPlWHLV",              icon: "/assets/platform-icons/colored/Social=Pinterest,Style=Original.svg",     active: true  },
-  { name: "YouTube",   link: "https://youtube.com/@danibush",         icon: "/assets/platform-icons/colored/Social=YouTube,Style=Original.svg",       active: true  },
-  { name: "Twitter",   link: "https://twitter.com/danibush",          icon: "/assets/platform-icons/colored/Social=X ex Twitter,Style=Original.svg", active: false },
+  { name: "TikTok",    link: "https://www.tiktok.com/@yourname",     icon: "/assets/platform-icons/colored/Social=TikTok,Style=Original.svg",        active: false },
+  { name: "Snapchat",  link: "https://www.snapchat.com/add/yourname", icon: "/assets/platform-icons/colored/Social=Snapchat,Style=Original.svg",      active: true  },
+  { name: "Instagram", link: "https://www.instagram.com/yourname",    icon: "/assets/platform-icons/colored/Social=Instagram,Style=Original.svg",     active: true  },
+  { name: "WhatsApp",  link: "https://wa.me/+1234567890",           icon: "/assets/platform-icons/colored/Social=WhatsApp,Style=Original.svg",      active: false },
+  { name: "Pinterest", link: "https://pin.it/yourname",              icon: "/assets/platform-icons/colored/Social=Pinterest,Style=Original.svg",     active: true  },
+  { name: "YouTube",   link: "https://youtube.com/@yourname",         icon: "/assets/platform-icons/colored/Social=YouTube,Style=Original.svg",       active: true  },
+  { name: "Twitter",   link: "https://twitter.com/yourname",          icon: "/assets/platform-icons/colored/Social=X ex Twitter,Style=Original.svg", active: false },
 ];
 
 const Toggle = ({ active }: { active: boolean }) => (

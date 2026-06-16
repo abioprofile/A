@@ -120,7 +120,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
   const fontName = (theme: AppearanceTheme) =>
     theme.font_config?.name || "inherit";
 
-  // ── Shared card renderer ────────────────────────────────────────────────────
+  // ── Shared card renderer 
   const renderCard = (theme: AppearanceTheme, index: number) => {
     const themeString = getThemeString(theme);
     const isSelected = themeString != null && selectedTheme === themeString;
@@ -188,7 +188,7 @@ const ThemeSelector: React.FC<ThemeSelectorProps> = ({
 
   return (
     <div className="flex flex-col">
-      {/* ── Content ─────────────────────────────   */}
+      {/*  Content */}
       {isLoading ? (
         <div className="grid grid-cols-3 gap-3 px-1">
           {Array.from({ length: 6 }).map((_, i) => (

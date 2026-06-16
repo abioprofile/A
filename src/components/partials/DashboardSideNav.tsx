@@ -44,7 +44,7 @@ const DashboardSideNav = ({
 
   const handleLogout = () => {
     dispatch(clearAuth());
-    queryClient.clear()
+    queryClient.clear();
     setShowMenu(false);
     toast.success("Logged out successfully");
     router.push("/auth/sign-in");
@@ -52,7 +52,11 @@ const DashboardSideNav = ({
 
   const menuItems = [
     { icon: CreditCard, label: "Billing", href: "/dashboard/Billing" },
-    { icon: Settings, label: "Account Settings", href: "/dashboard/AccountSettings" },
+    {
+      icon: Settings,
+      label: "Account Settings",
+      href: "/dashboard/AccountSettings",
+    },
     { icon: Moon, label: "Light Mode", action: "toggle-theme" },
   ];
 
@@ -64,14 +68,15 @@ const DashboardSideNav = ({
         className="h-full w-[8rem] bg-white flex flex-col items-center justify-between"
       >
         {/* Header */}
-        <SidebarHeader className="flex justify-center items-center mb-16">
+        <SidebarHeader className="flex  justify-center items-center mb-16">
           <Image
-            src='/icons/logo.png'
-            alt='A logo'
-            width={60}
-            height={60}
-            className='max-[380px]:size-10 size-9 md:size-10'
-            priority
+            src={
+              currentUser?.profile?.avatarUrl || "/icons/Profile Picture.png"
+            }
+            alt="Profile"
+            width={40}
+            height={40}
+            className="object-cover shadow-[2px_2px_0px_0px_#000000] w-10 h-10  "
           />
         </SidebarHeader>
 
@@ -82,8 +87,9 @@ const DashboardSideNav = ({
               {sidebarNav.map((item) => {
                 const isActive = pathname === item.url;
                 // Use activeIcon if it exists and is active, otherwise use default icon
-                const iconSrc = isActive && item.activeIcon ? item.activeIcon : item.icon;
-                
+                const iconSrc =
+                  isActive && item.activeIcon ? item.activeIcon : item.icon;
+
                 return (
                   <Link
                     key={item.title}
@@ -93,7 +99,13 @@ const DashboardSideNav = ({
                   >
                     <SidebarMenuItem>
                       <motion.div
-                        whileHover={{ scale: 1.1, transition: { duration: 0.16, ease: [0.25, 0.46, 0.45, 0.94] } }}
+                        whileHover={{
+                          scale: 1.1,
+                          transition: {
+                            duration: 0.16,
+                            ease: [0.25, 0.46, 0.45, 0.94],
+                          },
+                        }}
                         whileTap={{ scale: 0.9, transition: { duration: 0.1 } }}
                       >
                         <SidebarMenuButton
@@ -129,7 +141,11 @@ const DashboardSideNav = ({
             >
               <Settings
                 size={25}
-                color={pathname === "/dashboard/AccountSettings" ? "#FF0000" : "#331400"}
+                color={
+                  pathname === "/dashboard/AccountSettings"
+                    ? "#FF0000"
+                    : "#331400"
+                }
               />
             </motion.button>
           </Link>
@@ -173,7 +189,10 @@ const DashboardSideNav = ({
               <div className="flex items-center gap-3 p-4 border-b border-gray-100">
                 <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
                   <Image
-                    src={currentUser?.profile?.avatarUrl || "/icons/Profile Picture.png"}
+                    src={
+                      currentUser?.profile?.avatarUrl ||
+                      "/icons/Profile Picture.png"
+                    }
                     alt="User Avatar"
                     width={40}
                     height={40}
@@ -184,7 +203,9 @@ const DashboardSideNav = ({
                   <h3 className="font-semibold text-gray-900 text-sm">
                     {currentUser?.name}
                   </h3>
-                  <p className="text-xs text-gray-500">@{currentUser?.profile?.username}</p>
+                  <p className="text-xs text-gray-500">
+                    @{currentUser?.profile?.username}
+                  </p>
                 </div>
               </div>
 

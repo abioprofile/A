@@ -42,16 +42,17 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const getName = () => {
-      if (userData?.profile?.name) return userData.profile.name;
+      if ((userData?.profile as any)?.name) return (userData?.profile as any).name;
       if (userData?.name) return userData.name;
       if (user?.name) return user.name;
       return "User";
     };
-    const getUsername = () => {
-      if (userData?.profile?.username) return userData.profile.username;
-      if (user?.profile?.username)
-        return (user.profile as { username?: string })?.username;
-      return "User";
+    const getUsername = (): string => {
+      return (
+        userData?.profile?.username ??
+        (((user as any)?.profile as { username?: string })?.username) ??
+        "User"
+      );
     };
 
     setDisplayName(getName());
