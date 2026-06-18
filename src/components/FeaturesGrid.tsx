@@ -151,9 +151,9 @@ const ThemeCarousel = () => (
 
 export default function FeaturesGrid() {
   return (
-    <section className="w-full bg-[#FFDCE3] px-4 sm:px-8 md:px-12 lg:px-20 py-16 md:py-24 relative overflow-hidden">
+    <section className="w-full bg-[#FFDCE3] px-4 sm:px-8 md:px-12 lg:px-20 py-10 md:py-16 relative overflow-hidden">
       {/* Spinning stars */}
-      <motion.div
+      {/* <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         className="absolute top-5 left-5 sm:top-7 sm:left-7"
@@ -178,7 +178,7 @@ export default function FeaturesGrid() {
           width={32}
           className="w-7 h-7 sm:w-8 sm:h-8"
         />
-      </motion.div>
+      </motion.div> */}
 
       {/* Section Header */}
       <motion.div
@@ -186,16 +186,16 @@ export default function FeaturesGrid() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.6 }}
-        className="mb-10 md:mb-14"
+        className="mb-10 md:mb-14 text-center md:text-left"
       >
-        <p className="text-[12px] font-black tracking-[0.2em] text-[#5D2D2B]/40 uppercase mb-2">
+        {/* <p className="text-[12px] font-black tracking-[0.2em] text-[#5D2D2B]/40 uppercase mb-2">
           What you get
-        </p>
-        <h2 className="text-[40px] xl:text-[50px] trialheader font-[400] text-[#5D2D2B] leading-[1.2] tracking-tight">
-          Everything you need.
+        </p> */}
+        {/* <h2 className="text-[35px] xl:text-[50px] trialheader font-[400] text-[#5D2D2B] leading-[1.2] tracking-tight">
+          Everything <br /> you need.
           <br />
           <span className="text-[#FF854A]">Nothing you don't.</span>
-        </h2>
+        </h2> */}
       </motion.div>
 
       {/* Bento Grid — 2 cols mobile, 3 cols desktop */}

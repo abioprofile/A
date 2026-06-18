@@ -400,7 +400,7 @@ export default function PublicProfilePage() {
         href={link.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center gap-3  px-4 py-4 font-semibold text-sm cursor-pointer flex-1"
+        className="flex items-center gap-3  px-4 py-3 font-semibold text-sm cursor-pointer flex-1"
         style={{
           textDecoration: "none",
           color: linkButtonStyle.color,
@@ -652,7 +652,7 @@ export default function PublicProfilePage() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           transition={{ delay: 0.5 }}
-          className="mt-2 text-xs text-left font-semibold line-clamp-2"
+          className="mt-2 text-[10px] md:text-xs  text-left font-medium line-clamp-2"
         >
           {userData.bio}
         </motion.p>
@@ -690,10 +690,10 @@ export default function PublicProfilePage() {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="min-h-screen bg-[#FEF4EA] overflow-hidden"
+        className="h-screen bg-[#FEF4EA] overflow-hidden"
       >
         {/* ── Desktop */}
-        <div className="hidden lg:flex items-center justify-center min-h-screen">
+        <div className="hidden lg:flex items-center justify-center h-screen">
           <motion.div
             variants={blurSideVariants}
             initial="initial"
@@ -717,7 +717,7 @@ export default function PublicProfilePage() {
                   variants={profileCardVariants}
                   initial="initial"
                   animate="animate"
-                  className="relative z-20 bg-white/90 p-4 backdrop-blur-xl"
+                  className="relative z-20 bg-white/90 p-4 backdrop-blur-xl flex-shrink-0"
                   style={{
                     backgroundColor: fc?.cardBgColor ?? undefined,
                     opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
@@ -753,7 +753,7 @@ export default function PublicProfilePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.4 }}
-          className="lg:hidden w-full min-h-screen bg-[#FEF4EA]"
+          className="lg:hidden w-full h-screen bg-[#FEF4EA]"
         >
           {isOotnUser && (
             <motion.div
@@ -773,7 +773,7 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
-          <div className="relative z-10 w-full min-h-screen flex flex-col">
+          <div className="relative z-10 w-full h-full flex flex-col overflow-hidden">
             {/* Sticky header */}
             <motion.div
               initial={{ y: -20, opacity: 0 }}

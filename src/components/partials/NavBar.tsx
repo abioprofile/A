@@ -1,30 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { navLinks } from "@/data"
-import { usePathname } from "next/navigation"
-import { Sheet, SheetContent } from "../ui/sheet"
-import Image from "next/image"
-import { DialogTitle } from "@radix-ui/react-dialog"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { navLinks } from "@/data";
+import { usePathname } from "next/navigation";
+import { Sheet, SheetContent } from "../ui/sheet";
+import Image from "next/image";
+import { DialogTitle } from "@radix-ui/react-dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 const NavBar = () => {
-  const pathname = usePathname()
-  const [isOpen, setIsOpen] = useState(false)
+  const pathname = usePathname();
+  const [isOpen, setIsOpen] = useState(false);
 
   // Prevent body scroll when menu is open for better performance
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset'
-    }
-  }, [isOpen])
+      document.body.style.overflow = "unset";
+    };
+  }, [isOpen]);
 
   // Faster animation variants for snappy feel
   const sheetVariants = {
@@ -33,39 +33,38 @@ const NavBar = () => {
       transition: {
         type: "tween",
         duration: 0.25,
-        ease: [0.4, 0, 0.2, 1] // Custom cubic-bezier for smooth acceleration
-      }
+        ease: [0.4, 0, 0.2, 1], // Custom cubic-bezier for smooth acceleration
+      },
     },
     open: {
       x: 0,
       transition: {
         type: "tween",
         duration: 0.3,
-        ease: [0.4, 0, 0.2, 1]
-      }
-    }
-  }
+        ease: [0.4, 0, 0.2, 1],
+      },
+    },
+  };
 
   const itemVariants = {
-    closed: { 
-      opacity: 0, 
+    closed: {
+      opacity: 0,
       x: 15,
-      transition: { duration: 0.15 }
+      transition: { duration: 0.15 },
     },
-    open: { 
-      opacity: 1, 
+    open: {
+      opacity: 1,
       x: 0,
-      transition: { 
+      transition: {
         duration: 0.2,
-        ease: "easeOut"
-      }
-    }
-  }
+        ease: "easeOut",
+      },
+    },
+  };
 
   return (
     <header className="fixed bg-[#FED45C] top-[30px] md:top-[40px] left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-[90%]">
       <div className="shadow-sm transition-all duration-300 shadow-xl">
-        
         {/* NAVBAR */}
         <div className="container px-5 md:px-10 lg:px-6 mx-auto py-[16px]  flex items-center justify-between">
           <div className="flex items-center gap-14">
@@ -74,8 +73,8 @@ const NavBar = () => {
               <Image
                 src="/icons/A.bio.svg"
                 alt="A.Bio Logo"
-                width={28}
-                height={28}
+                width={24}
+                height={24}
                 priority
                 className="transition-transform group-hover:scale-105"
               />
@@ -105,7 +104,10 @@ const NavBar = () => {
             {/* Desktop Auth */}
             <div className="hidden lg:flex items-center space-x-2">
               <Link href={"/auth/sign-in"}>
-                <Button variant="ghost" className="text-base bg-[#ff0000]/10 hover:bg-[#ff0000]/20 font-semibold px-6 h-10">
+                <Button
+                  variant="ghost"
+                  className="text-base bg-[#ff0000]/10 hover:bg-[#ff0000]/20 font-semibold px-6 h-10"
+                >
                   Log In
                 </Button>
               </Link>
@@ -119,7 +121,10 @@ const NavBar = () => {
             {/* Mobile Auth (INLINE) */}
             <div className="flex items-center gap-2 lg:hidden">
               <Link href={"/auth/sign-in"}>
-                <Button variant="ghost" className="text-[14px] bg-[#ff0000]/10 font-bold h-10 px-4">
+                <Button
+                  variant="ghost"
+                  className="text-[14px] bg-[#ff0000]/10 font-bold h-10 px-4"
+                >
                   Log in
                 </Button>
               </Link>
@@ -133,7 +138,7 @@ const NavBar = () => {
             {/* Hamburger / Close button with better animation */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="relative p-2 rounded-lg hover:bg-black/5 transition-colors lg:hidden"
+              className="relative p-2  hover:bg-black/5 transition-colors lg:hidden"
             >
               <AnimatePresence mode="wait" initial={false}>
                 {isOpen ? (
@@ -143,7 +148,7 @@ const NavBar = () => {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: 90, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="text-xl flex items-center justify-center bg-[#ff0000] text-[#FED45C] w-9 h-9 rounded-md"
+                    className="text-xl flex items-center justify-center bg-[#ff0000] text-[#FED45C] w-9 h-9"
                   >
                     ✕
                   </motion.span>
@@ -154,13 +159,21 @@ const NavBar = () => {
                     animate={{ rotate: 0, opacity: 1 }}
                     exit={{ rotate: -90, opacity: 0 }}
                     transition={{ duration: 0.2 }}
+                    className="cursor-pointer p-1"
                   >
-                    <Image
-                      src="/icons/hamburger.svg"
-                      alt="Menu"
-                      width={26}
-                      height={26}
-                    />
+                    <svg
+                      className="w-6 h-6"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="3" y1="6" x2="21" y2="6" />
+                      <line x1="3" y1="12" x2="21" y2="12" />
+                      <line x1="3" y1="18" x2="21" y2="18" />
+                    </svg>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -216,7 +229,7 @@ const NavBar = () => {
         </Sheet>
       </div>
     </header>
-  )
-}
+  );
+};
 
-export default NavBar
+export default NavBar;

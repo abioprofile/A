@@ -79,86 +79,20 @@ const SmartCardStack = () => {
           timers.current.push(t3);
         }, 600);
         timers.current.push(t2);
-      }, 3500);
+      }, 2000);
       timers.current.push(t1);
     };
 
-    const init = setTimeout(run, 1200);
+    const init = setTimeout(run, 1000);
     timers.current.push(init);
     return () => timers.current.forEach(clearTimeout);
   }, []);
 
   return (
     <div
-      className="relative flex flex-col md:flex-row items-center justify-center gap-6 md:gap-0"
+      className="relative flex flex-col md:flex-row items-center justify-center gap-2 md:gap-0"
       style={{ width: "100%", maxWidth: 560, height: "auto", minHeight: 280 }}
     >
-      {/* ── Stack (Small cards) ── */}
-      <div
-        className="relative flex-shrink-0"
-        style={{ width: STACK_W + 20, height: STACK_H + 40, marginTop: 20 }}
-      >
-        {CARDS.map((card, i) => {
-          if (i === activeIdx) return null;
-          const isDone = doneIdxs.includes(i);
-          const stackRank = isDone
-            ? CARDS.length
-            : CARDS.length - 1 - i + doneIdxs.filter((d) => d < i).length;
-          const offset = stackRank * 4;
-          const Component = card.component;
-
-          return (
-            <motion.div
-              key={card.id}
-              animate={{
-                x: isDone ? offset + 2 : offset,
-                y: isDone ? -offset * 0.3 + 2 : -offset * 0.3,
-                rotate: isDone ? offset * 0.5 - 1 : offset * 0.5,
-                scale: 1 - stackRank * 0.018,
-                zIndex: isDone ? 0 : CARDS.length - stackRank,
-              }}
-              transition={{ type: "spring", stiffness: 180, damping: 26 }}
-              style={{
-                position: "absolute",
-                width: STACK_W,
-                height: STACK_H,
-                borderRadius: 12,
-                overflow: "hidden",
-                boxShadow: "none",
-                top: 20,
-                left: 0,
-                background: "transparent",
-              }}
-            >
-              <Component />
-            </motion.div>
-          );
-        })}
-      </div>
-
-      {/* ── Arrow indicator ── */}
-      <div className="flex-shrink-0 flex md:flex-col items-center gap-1.5 mx-3 my-4 md:my-0">
-        {[0, 1, 2].map((i) => (
-          <motion.div
-            key={i}
-            animate={{ opacity: [0.2, 0.9, 0.2], x: [0, 4, 0] }}
-            transition={{
-              duration: 1.4,
-              repeat: Infinity,
-              delay: i * 0.22,
-              ease: "easeInOut",
-            }}
-            style={{
-              width: 6,
-              height: 6,
-              borderTop: "2px solid #5D2D2B",
-              borderRight: "2px solid #5D2D2B",
-              transform: "rotate(45deg)",
-            }}
-          />
-        ))}
-      </div>
-
       {/* ── Preview slot (Big card) ── */}
       <div
         className="relative flex-shrink-0"
@@ -212,6 +146,48 @@ const SmartCardStack = () => {
             pointerEvents: "none",
           }}
         />
+      </div>
+      {/* ── Stack (Small cards) ── */}
+      <div
+        className="relative flex-shrink-0"
+        style={{ width: STACK_W + 20, height: STACK_H + 40, marginTop: 20 }}
+      >
+        {CARDS.map((card, i) => {
+          if (i === activeIdx) return null;
+          const isDone = doneIdxs.includes(i);
+          const stackRank = isDone
+            ? CARDS.length
+            : CARDS.length - 1 - i + doneIdxs.filter((d) => d < i).length;
+          const offset = stackRank * 4;
+          const Component = card.component;
+
+          return (
+            <motion.div
+              key={card.id}
+              animate={{
+                x: isDone ? offset + 2 : offset,
+                y: isDone ? -offset * 0.3 + 2 : -offset * 0.3,
+                rotate: isDone ? offset * 0.5 - 1 : offset * 0.5,
+                scale: 1 - stackRank * 0.018,
+                zIndex: isDone ? 0 : CARDS.length - stackRank,
+              }}
+              transition={{ type: "spring", stiffness: 180, damping: 26 }}
+              style={{
+                position: "absolute",
+                width: STACK_W,
+                height: STACK_H,
+                borderRadius: 12,
+                overflow: "hidden",
+                boxShadow: "none",
+                top: 20,
+                left: 0,
+                background: "transparent",
+              }}
+            >
+              <Component />
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
@@ -289,82 +265,83 @@ const CustomNfcCardSection = () => (
     />
 
     <div className="container mx-auto">
-      <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-40 items-center">
-        {/* Card Stack Column */}
-        <motion.div
-          initial={{ opacity: 0, x: -32 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="flex justify-center items-center order-1 md:order-1 relative overflow-visible w-full"
-        >
-          <div className="relative overflow-visible w-full flex justify-center">
-            <SmartCardStack />
-            {/* Floating badges */}
-            <FloatingBadge
-              label="Tap to share"
-              variant="accent"
-              delay={0}
-              className="-top-2 right-2 md:right-0"
-            />
-            <FloatingBadge
-              label="No app needed"
-              variant="dark"
-              delay={1}
-              className="bottom-2 right-2 md:right-0"
-            />
-            <FloatingBadge
-              label="Fully custom"
-              variant="light"
-              delay={0.5}
-              className="bottom-2 -left-2 md:-left-2"
-            />
-          </div>
-        </motion.div>
+      {/* Main content wrapper - flex column on mobile */}
+      <div className="flex flex-col gap-8 md:gap-12 lg:gap-40">
+        {/* Card Stack & Write-up row (reordered for mobile) */}
+        <div className="flex flex-col-reverse md:grid md:grid-cols-2 gap-8 md:gap-12 lg:gap-40 items-center">
+          {/* Card Stack Column */}
+          <motion.div
+            initial={{ opacity: 0, x: -32 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="flex justify-center items-center order-1 md:order-1 relative overflow-visible w-full"
+          >
+            <div className="relative overflow-visible w-full flex justify-center">
+              <SmartCardStack />
+              {/* Floating badges */}
+              <FloatingBadge
+                label="Tap to share"
+                variant="accent"
+                delay={0}
+                className="-top-2 right-2 md:right-0"
+              />
+              <FloatingBadge
+                label="No app needed"
+                variant="dark"
+                delay={1}
+                className="bottom-2 right-2 md:right-0"
+              />
+              <FloatingBadge
+                label="Fully custom"
+                variant="light"
+                delay={0.5}
+                className="bottom-2 -left-2 md:-left-2"
+              />
+            </div>
+          </motion.div>
 
-        {/* Write-up Column */}
-        <motion.div
-          initial={{ opacity: 0, x: 32 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="flex flex-col gap-4 sm:gap-5 md:text-center md:text-left order-2 md:order-2 w-full"
-        >
-          <div>
-            <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.1em] uppercase text-[#5D2D2B] mb-2 sm:mb-3">
-              You don&apos;t need a deck of cards.
+          {/* Write-up Column */}
+          <motion.div
+            initial={{ opacity: 0, x: 32 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.55, ease: [0.25, 0.46, 0.45, 0.94] }}
+            className="flex flex-col gap-4 sm:gap-5 text-center md:text-left order-2 md:order-2 w-full"
+          >
+            <div>
+              <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.1em] uppercase text-[#5D2D2B] mb-2 sm:mb-3">
+                You don&apos;t need a deck of cards.
+              </p>
+              <h2 className="text-[35px] sm:text-[40px] lg:text-[50px] trialheader leading-tight sm:leading-none font-[400] text-[#5D2D2B]">
+                Get Acard
+                <br />
+                Today!!!
+              </h2>
+            </div>
+
+            <p className="text-xs sm:text-sm text-left font-light leading-5 sm:leading-6 text-[#5D2D2B]/80 max-w-sm mx-auto md:mx-0 px-2 sm:px-0">
+              Personalize your NFC card with your name, logo, and brand style.
+              One tap shares your A.bio — no app needed.
             </p>
-            <h2 className="text-[32px] sm:text-[40px] lg:text-[50px] trialheader leading-tight sm:leading-none font-[400] text-[#5D2D2B]">
-              Get Acard
-              <br />
-              Today!!!
-            </h2>
-          </div>
+          </motion.div>
+        </div>
 
-          <p className="text-xs sm:text-sm font-light leading-5 sm:leading-6 text-[#5D2D2B]/80 max-w-sm mx-auto md:mx-0 px-2 sm:px-0">
-            Personalize your NFC card with your name, logo, and brand style. One
-            tap shares your A.bio — no app needed.
-          </p>
-
-          {/* <p className="text-sm sm:text-base lg:text-lg text-[#5D2D2B]/40 trial italic font-light">
-            One card. Endless connections...
-          </p> */}
-
-          <div className="flex justify-start">
-            <Link href="/store">
-              <motion.button
-                whileHover={{
-                  scale: 1.04,
-                  boxShadow: "4px 4px 0px 0px #000000",
-                }}
-                whileTap={{ scale: 0.97 }}
-                className="bg-[#FED45C] shadow-[3px_3px_0px_0px_#000000] text-[#5D2D2B] h-10 sm:h-12 px-6 sm:px-8 font-bold text-xs sm:text-sm transition-shadow duration-200 cursor-pointer"
-              >
-                Get yours Now!
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
+        {/* ─── Button row - MOBILE: centered, DESKTOP: left-aligned ─── */}
+        <div className="flex justify-center md:justify-start w-full md:mt-0">
+          <Link href="/store" className="md:w-auto">
+            <motion.button
+              whileHover={{
+                scale: 1.04,
+                boxShadow: "4px 4px 0px 0px #000000",
+              }}
+              whileTap={{ scale: 0.97 }}
+              className="bg-[#FED45C] shadow-[3px_3px_0px_0px_#000000] text-[#5D2D2B] h-10 sm:h-12 px-6 sm:px-8 font-bold text-xs sm:text-sm transition-shadow duration-200 cursor-pointer w-full md:w-auto"
+            >
+              Get yours Now!
+            </motion.button>
+          </Link>
+        </div>
       </div>
     </div>
   </section>

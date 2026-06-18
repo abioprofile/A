@@ -1,12 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { FaInstagram, FaTiktok, FaPinterest, FaTwitter } from "react-icons/fa";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { getPlatformIconUrl } from "@/data/platformIconMap"; 
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
+
+  // Define social links with platform identifiers
+  const socialLinks = [
+    { 
+      platform: "instagram", 
+      href: "https://www.instagram.com/abiosite?utm_source=qr",
+      label: "Instagram"
+    },
+    { 
+      platform: "tiktok", 
+      href: "https://www.tiktok.com/@abiosite",
+      label: "TikTok"
+    },
+    { 
+      platform: "pinterest", 
+      href: "https://pin.it/6Vnwtlyth",
+      label: "Pinterest"
+    },
+    { 
+      platform: "x", 
+      href: "https://x.com/abio_site?s=21",
+      label: "X (Twitter)"
+    },
+    { 
+      platform: "linkedin", 
+      href: "https://www.linkedin.com/company/abio",
+      label: "LinkedIn"
+    },
+  ];
 
   return (
     <footer className="bg-[#331400] text-white pt-14 pb-8">
@@ -19,8 +48,8 @@ const Footer = () => {
               <Image
                 src="/icons/A.bio.svg"
                 alt="A.bio Logo"
-                width={28}
-                height={28}
+                width={24}
+                height={24}
                 priority
                 className="cursor-pointer select-none transition-transform group-hover:scale-105"
               />
@@ -70,24 +99,42 @@ const Footer = () => {
           </p>
 
           <div className="flex space-x-3">
-            {[
-              { href: "https://www.instagram.com/abio.site?igsh=MXhjYmtvOWlvbXBpeg%3D%3D&utm_source=qr", icon: <FaInstagram /> },
-              { href: "https://www.tiktok.com/@abio.site?_t=ZS-90XaM2rHhp4&_r=1", icon: <FaTiktok /> },
-              { href: "https://pin.it/4rk3x7b28", icon: <FaPinterest /> },
-              { href: "https://x.com/abioprofile?s=21", icon: <FaTwitter /> },
-            ].map(({ href, icon }, i) => (
-              <motion.a
-                key={i}
-                href={href}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ scale: 1.15, y: -2 }}
-                whileTap={{ scale: 0.95 }}
-                className="border border-white/30 p-2 text-white/70 hover:text-white hover:border-white transition-colors duration-200"
-              >
-                {icon}
-              </motion.a>
-            ))}
+            {socialLinks.map(({ platform, href, label }) => {
+              // Get the BLACK icon URL
+              const iconUrl = getPlatformIconUrl(platform, "black");
+              
+              // Fallback to a generic icon if the platform doesn't have an icon
+              const fallbackIcon = (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" fill="none" />
+                </svg>
+              );
+
+              return (
+                <motion.a
+                  key={platform}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  whileHover={{ scale: 1.15, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="border border-white/30 p-2 hover:border-white transition-colors duration-200"
+                >
+                  {iconUrl ? (
+                    <Image
+                      src={iconUrl}
+                      alt={label}
+                      width={20}
+                      height={20}
+                      className="w-5 h-5 invert brightness-0 saturate-0" // Invert to make black icons white
+                    />
+                  ) : (
+                    fallbackIcon
+                  )}
+                </motion.a>
+              );
+            })}
           </div>
         </div>
       </div>

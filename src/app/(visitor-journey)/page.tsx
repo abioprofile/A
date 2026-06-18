@@ -16,10 +16,10 @@ export default function VisitorJourneyPage() {
     <main className="overflow-y-auto bg-[#FEF4EA] overflow-x-hidden scroll-smooth">
       <NavBar />
       <HeroSection />
+       <ManageYourLinks />
+      <CustomNfcCardSection />
       <FeaturesGrid />
       <IntegrateSocials />
-      <ManageYourLinks />
-      <CustomNfcCardSection />
       <DetailedAnalytics />
       <Testimonials />
       <Faq />

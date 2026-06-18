@@ -259,8 +259,8 @@ const SignUp = () => {
               <Image
                 src="/icons/A.bio.svg"
                 alt="A.Bio Logo"
-                width={28}
-                height={28}
+                width={24}
+                height={24}
                 priority
                 className="transition-transform group-hover:scale-105"
               />
