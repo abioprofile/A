@@ -804,7 +804,7 @@ const HeroSection = () => {
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => router.push("auth/sign-up")}
-              className="w-full h-11 bg-[#5D2D2B] text-[#FED45C] font-black
+              className="w-full h-11 bg-[#5D2D2B] max-w-[310px] text-[#FED45C] font-black
                          text-[13px] shadow-[3px_3px_0px_0px_#000000]
                          hover:shadow-[4px_4px_0px_0px_#000000]
                          transition-shadow duration-200"

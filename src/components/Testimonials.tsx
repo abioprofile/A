@@ -12,7 +12,7 @@ const influencers = [
     link: "https://www.abio.site/fabulous",
   },
   {
-    src: "/images/zuo.png",
+    src: "/images/zuo.PNG",
     alt: "Zuo",
     username: "zuo",
     link: "https://www.abio.site/zuo",
