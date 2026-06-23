@@ -5,6 +5,9 @@ import React, { useState, useEffect } from "react";
 import { Input } from "./ui/input";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import {
+  getPlatformIconUrl,
+} from "@/data/platformIconMap";
 
 // ─── TYPES
 type ButtonStyle = {
@@ -18,7 +21,7 @@ type ButtonStyle = {
 
 type Link = {
   label: string;
-  icon: string;
+  platform: string;
   style: ButtonStyle;
 };
 
@@ -37,6 +40,119 @@ type Profile = {
   verified?: boolean;
 };
 
+// ─── PLATFORM ICON COMPONENT - Now with color prop
+const PlatformIcon = ({
+  platform,
+  size = 16,
+  color = "currentColor",
+  className = "",
+}: {
+  platform: string;
+  size?: number;
+  color?: string;
+  className?: string;
+}) => {
+  const iconUrl = getPlatformIconUrl(platform, "black");
+
+  if (!iconUrl) {
+    // Fallback: use first letter with the specified color
+    return (
+      <div
+        className={`flex items-center justify-center rounded-full bg-gray-200 font-bold ${className}`}
+        style={{ 
+          width: size, 
+          height: size, 
+          fontSize: size * 0.5,
+          color: color
+        }}
+      >
+        {platform.charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={iconUrl}
+      alt={platform}
+      width={size}
+      height={size}
+      className={`flex-shrink-0 ${className}`}
+      style={{
+        filter: `brightness(0) saturate(100%) invert(0%)`,
+        // This makes the icon colorable using CSS
+      }}
+    />
+  );
+};
+
+// ─── ICON WITH CUSTOM COLOR - Helper component
+const ColoredPlatformIcon = ({
+  platform,
+  size = 16,
+  color,
+  className = "",
+}: {
+  platform: string;
+  size?: number;
+  color: string;
+  className?: string;
+}) => {
+  const iconUrl = getPlatformIconUrl(platform, "black");
+
+  if (!iconUrl) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded-full bg-gray-200 font-bold ${className}`}
+        style={{ 
+          width: size, 
+          height: size, 
+          fontSize: size * 0.5,
+          color: color
+        }}
+      >
+        {platform.charAt(0).toUpperCase()}
+      </div>
+    );
+  }
+
+  // Convert hex color to CSS filter
+  // For black text, we use brightness(0) invert(0) to keep it black
+  // For white text, we use brightness(0) invert(1) to make it white
+  // For colored text, we need to use a more complex filter
+  const getFilterForColor = (hexColor: string) => {
+    // If it's white, invert to make white
+    if (hexColor.toLowerCase() === '#ffffff' || hexColor.toLowerCase() === '#fff') {
+      return 'brightness(0) invert(1)';
+    }
+    // If it's black or dark, keep it black
+    if (hexColor.toLowerCase() === '#000000' || hexColor.toLowerCase() === '#000' || 
+        hexColor.toLowerCase() === '#0a0a0a' || hexColor.toLowerCase() === '#1f4015') {
+      return 'brightness(0) invert(0)';
+    }
+    // For other colors, we need to convert using SVG filter or use a different approach
+    // We'll use a simplified approach: make it black and then color it with a filter
+    return 'brightness(0) saturate(100%)';
+  };
+
+  return (
+    <Image
+      src={iconUrl}
+      alt={platform}
+      width={size}
+      height={size}
+      className={`flex-shrink-0 ${className}`}
+      style={{
+        // This is a simpler approach - we'll use CSS to color the icon
+        // For actual colored icons, you'd want to use the colored SVG files
+        filter: color.toLowerCase() === '#ffffff' || color.toLowerCase() === '#fff' 
+          ? 'brightness(0) invert(1)' 
+          : 'brightness(0) invert(0)'
+      }}
+    />
+  );
+};
+
 // ─── PROFILES
 const PROFILES: Profile[] = [
   {
@@ -53,7 +169,7 @@ const PROFILES: Profile[] = [
     links: [
       {
         label: "Twitter",
-        icon: "/assets/platform-icons/black/Social=X ex Twitter,Style=Black.svg",
+        platform: "twitter",
         style: {
           variant: "pill",
           bg: "transparent",
@@ -64,8 +180,32 @@ const PROFILES: Profile[] = [
         },
       },
       {
-        label: "Whatsapp",
-        icon: "/assets/platform-icons/black/Social=WhatsApp,Style=Black.svg",
+        label: "WhatsApp",
+        platform: "whatsapp",
+        style: {
+          variant: "pill",
+          bg: "transparent",
+          color: "#1f4015",
+          borderColor: "#1f4015",
+          shadow: "0 4px 14px rgba(31,64,21,0.3)",
+          radius: "0px",
+        },
+      },
+      {
+        label: "Telegram",
+        platform: "telegram",
+        style: {
+          variant: "pill",
+          bg: "transparent",
+          color: "#1f4015",
+          borderColor: "#1f4015",
+          shadow: "0 4px 14px rgba(31,64,21,0.3)",
+          radius: "0px",
+        },
+      },
+      {
+        label: "Snapchat",
+        platform: "snapchat",
         style: {
           variant: "pill",
           bg: "transparent",
@@ -77,54 +217,6 @@ const PROFILES: Profile[] = [
       },
     ],
   },
-  // {
-  //   name: "Amma",
-  //   handle: "ammamusicng",
-  //   bio: "Apple Music Up Next Nigeria ✦ Afrobeats",
-  //   avatar: "AMMA",
-  //   avatarImg: "/images/amma.jpg",
-  //   avatarBg: "linear-gradient(135deg,#7c3aed,#4c1d95)",
-  //   waveRGB: [124, 58, 237],
-  //   verified: true,
-  //   botBg: "linear-gradient(170deg,#1a0535 0%,#3b0764 50%,#6d28d9 100%)",
-  //   patternColor: "rgba(192,132,252,0.22)",
-  //   dotColor: "#7c3aed",
-  //   links: [
-  //     {
-  //       label: "Stream 'Closer'",
-  //       icon: "/assets/platform-icons/black/Social=Spotify,Style=Black.svg",
-  //       style: {
-  //         variant: "solid",
-  //         bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
-  //         color: "#fff",
-  //         shadow: "0 8px 24px rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
-  //         radius: "14px",
-  //       },
-  //     },
-  //     {
-  //       label: "Apple Music",
-  //       icon: "/assets/platform-icons/black/Social=Apple Music,Style=Black.svg",
-  //       style: {
-  //         variant: "solid",
-  //         bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
-  //         color: "#fff",
-  //         shadow: "0 8px 24px rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
-  //         radius: "14px",
-  //       },
-  //     },
-  //     {
-  //       label: "Book for shows",
-  //       icon: "/assets/platform-icons/black/Social=Calendar,Style=Black.svg",
-  //       style: {
-  //         variant: "solid",
-  //         bg: "linear-gradient(135deg,#a855f7,#7c3aed)",
-  //         color: "#fff",
-  //         shadow: "4px 4px 0 rgba(168,85,247,0.55), 0 0 32px rgba(168,85,247,0.3)",
-  //         radius: "14px",
-  //       },
-  //     },
-  //   ],
-  // },
   {
     name: "David Osh",
     handle: "Oshnova",
@@ -140,33 +232,44 @@ const PROFILES: Profile[] = [
     links: [
       {
         label: "Portfolio",
-        icon: "/assets/platform-icons/Social=Behance,Style=Original.svg",
+        platform: "behance",
         style: {
           variant: "brutal",
           bg: "#5D2D2B",
-          color: "#Fff",
+          color: "#fff",
           shadow: "4px 4px 0 #000",
           radius: "0px",
         },
       },
       {
         label: "Telegram",
-        icon: "/assets/platform-icons/Social=Telegram,Style=Original.svg",
+        platform: "telegram",
         style: {
           variant: "brutal",
           bg: "#5D2D2B",
-          color: "#Fff",
+          color: "#fff",
           shadow: "4px 4px 0 #000",
           radius: "0px",
         },
       },
       {
         label: "Snapchat",
-        icon: "/assets/platform-icons/Social=Snapchat,Style=Original.svg",
+        platform: "snapchat",
         style: {
           variant: "brutal",
           bg: "#5D2D2B",
-          color: "#Fff",
+          color: "#fff",
+          shadow: "4px 4px 0 #000",
+          radius: "0px",
+        },
+      },
+      {
+        label: "Whatsapp",
+        platform: "whatsapp",
+        style: {
+          variant: "brutal",
+          bg: "#5D2D2B",
+          color: "#fff",
           shadow: "4px 4px 0 #000",
           radius: "0px",
         },
@@ -188,7 +291,7 @@ const PROFILES: Profile[] = [
     links: [
       {
         label: "Follow on IG",
-        icon: "/assets/platform-icons/black/Social=Instagram,Style=Black.svg",
+        platform: "instagram",
         style: {
           variant: "solid",
           bg: "#db2777",
@@ -199,7 +302,7 @@ const PROFILES: Profile[] = [
       },
       {
         label: "Email me",
-        icon: "/assets/platform-icons/black/Social=Gmail,Style=Black.svg",
+        platform: "gmail",
         style: {
           variant: "solid",
           bg: "#db2777",
@@ -224,7 +327,7 @@ const BADGES = [
     dur: 3.5,
   },
   {
-    label: "43k views",
+    label: "10k views",
     bg: "#fff",
     color: "#333",
     left: -275,
@@ -234,8 +337,7 @@ const BADGES = [
   },
   {
     label: "Live",
-    icon: "🔴",
-    bg: "#FF0000",
+    bg: "#3EB489",
     color: "#fff",
     left: 200,
     top: 80,
@@ -243,7 +345,7 @@ const BADGES = [
     dur: 3.2,
   },
   {
-    label: "12.8k clicks",
+    label: "2.2k clicks",
     bg: "#fff",
     color: "#333",
     left: 188,
@@ -251,15 +353,15 @@ const BADGES = [
     delay: 0.9,
     dur: 4.8,
   },
-  {
-    label: "74% CTR",
-    bg: "#3EB489",
-    color: "#fff",
-    left: 200,
-    top: 440,
-    delay: 1.1,
-    dur: 3.8,
-  },
+  // {
+  //   label: "74% CTR",
+  //   bg: "#3EB489",
+  //   color: "#fff",
+  //   left: 200,
+  //   top: 440,
+  //   delay: 1.1,
+  //   dur: 3.8,
+  // },
 ] as const;
 
 // ─── RESPONSIVE SIZING
@@ -411,11 +513,16 @@ const DotPattern = ({ color }: { color: string }) => {
   );
 };
 
-// ─── LINK BUTTON
+// ─── LINK BUTTON - Now passes color to icon
 const LinkButton = ({ link }: { link: Link }) => {
-  const { style } = link;
-  const isLightIcon = ["#fff", "#FED45C", "#e9d5ff"].includes(style.color);
+  const { style, platform } = link;
   const baseClass = style.variant === "tag" ? "px-2.5 py-1" : "px-3.5 py-2";
+  const iconSize = style.variant === "tag" ? 12 : 16;
+
+  // Determine if the text color is white or light
+  const isWhiteText = style.color.toLowerCase() === '#ffffff' || style.color.toLowerCase() === '#fff';
+  const isBlackText = style.color.toLowerCase() === '#000000' || style.color.toLowerCase() === '#000' ||
+                      style.color.toLowerCase() === '#0a0a0a' || style.color.toLowerCase() === '#1f4015';
 
   return (
     <div
@@ -430,12 +537,17 @@ const LinkButton = ({ link }: { link: Link }) => {
       }}
     >
       <Image
-        src={link.icon}
-        alt=""
-        width={style.variant === "tag" ? 12 : 16}
-        height={style.variant === "tag" ? 12 : 16}
+        src={getPlatformIconUrl(platform, "black") || ""}
+        alt={platform}
+        width={iconSize}
+        height={iconSize}
         className="flex-shrink-0"
-        style={{ filter: isLightIcon ? "brightness(0) invert(1)" : "none" }}
+        style={{
+          // For white text, invert the black icon to white
+          // For black text, keep it black
+          // For other colors, keep it black (or you could use a filter to color it)
+          filter: isWhiteText ? 'brightness(0) invert(1)' : 'brightness(0) invert(0)'
+        }}
       />
       <span
         className={`font-bold ${style.variant === "tag" ? "text-[10px]" : "text-[11px]"}`}
@@ -524,7 +636,6 @@ const ProfileCard = ({ profile }: { profile: Profile }) => (
       className="flex-1 px-4 py-4 relative overflow-hidden flex flex-col gap-2"
       style={{ background: profile.botBg }}
     >
-      {/* <DotPattern color={profile.patternColor} /> */}
       {profile.links.map((link, i) => (
         <LinkButton key={`${link.label}-${i}`} link={link} />
       ))}
@@ -610,7 +721,7 @@ const TiltedCard = () => {
               delay: b.delay,
             }}
           >
-            {"icon" in b && <span>{b.icon}</span>}
+            {"icon" in b && <span>{b.icon as React.ReactNode}</span>}
             <span>{b.label}</span>
           </motion.div>
         ))}
@@ -643,7 +754,7 @@ const TiltedCard = () => {
                   boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
                 }}
               >
-                {"icon" in b && <span>{b.icon}</span>}
+                {"icon" in b && <span>{b.icon as React.ReactNode}</span>}
                 <span>{b.label}</span>
               </div>
             ))}
@@ -713,6 +824,7 @@ const TiltedCard = () => {
 // ─── HERO SECTION
 const HeroSection = () => {
   const router = useRouter();
+
   return (
     <section
       className="min-h-screen w-full bg-[#FEF4EA] flex items-center px-4 sm:px-8 md:px-12 lg:px-20
@@ -771,11 +883,7 @@ const HeroSection = () => {
             transition={{ delay: 0.35, duration: 0.6 }}
             className="text-left text-[14px] leading-[1.8] text-[#5D2D2B]/80 mt-5"
           >
-            With Abio, a simple biography becomes more than just words it
-            becomes your
-            
-            bridge to endless connections. Abio helps you showcase your  social
-            links all in a single link and  dynamic profile.
+            Share your music, links, shop, and profile with one tap on your NFC Acard. Works on any NFC enabled device, Iphone/Android. No app needed. All seen from a single link and dynamic profile.
           </motion.p>
 
           <motion.div
@@ -787,13 +895,13 @@ const HeroSection = () => {
             <div className="relative w-full max-w-[310px]">
               <span
                 className="absolute left-3.5 top-1/2  -translate-y-1/2 text-black
-                           font-semibold text-[15px] select-none z-10"
+                           font-semibold text-[16px] select-none z-10"
               >
                 abio.site/
               </span>
               <Input
                 placeholder=""
-                className="pl-[81px] border-0 font-medium text-[13px] h-11
+                className="pl-[87px] border-0 font-medium text-[16px] h-12
                            placeholder:font-semibold placeholder:text-[#8B4646]
                            w-full rounded-none focus-visible:ring-0
                            focus-visible:ring-offset-0 bg-[#FED45C]"
@@ -881,10 +989,7 @@ const HeroSection = () => {
             className="text-[13px] md:text-sm lg:text-base leading-[1.7]
                        md:max-w-xl lg:max-w-2xl text-[#5D2D2B]"
           >
-            With Abio, a simple biography becomes more than just words — it
-            becomes your bridge to endless connections. Abio helps you showcase
-            your essential details, achievements, and social links all in a
-            single link and dynamic profile.
+            Share your music, links, shop, and profile with one tap on your NFC Acard. Works on any NFC enabled device, Iphone/Android. No app needed. All seen from a single link and dynamic profile.
           </motion.p>
 
           <motion.div
@@ -896,7 +1001,7 @@ const HeroSection = () => {
             <div className="relative min-w-0 overflow-hidden">
               <span
                 className="absolute left-3 top-1/2 -translate-y-1/2 text-black
-                           font-semibold text-[15px] md:text-[16px] lg:text-[20px]
+                           font-semibold text-[16px] 
                            select-none z-10 whitespace-nowrap"
               >
                 abio.site/
@@ -904,7 +1009,7 @@ const HeroSection = () => {
               <Input
                 placeholder=""
                 className="pl-[70px] md:pl-[75px] lg:pl-[85px] w-full border-0
-                           font-medium text-[13px] md:text-[14px] h-11 md:h-12
+                           font-medium text-[16px] h-12
                            placeholder:font-semibold placeholder:text-[#8B4646]
                            rounded-none focus-visible:ring-0
                            focus-visible:ring-offset-0 bg-[#FED45C] min-w-0"

@@ -36,9 +36,9 @@ const DetailedAnalytics = () => {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, amount: 0.4 });
 
-  const views = useCountUp(1000, 1600, inView);
-  const clicks = useCountUp(1000, 1800, inView);
-  const rate = useCountUp(100, 1400, inView);
+  const views = useCountUp(1200, 1600, inView);
+  const clicks = useCountUp(1340, 1800, inView);
+  const rate = useCountUp(108, 1400, inView);
 
   const max = Math.max(...DAY_DATA);
 
@@ -46,7 +46,7 @@ const DetailedAnalytics = () => {
     <section className="w-full bg-[#FED45C] px-4 sm:px-8 md:px-12 lg:px-20 py-16 md:py-20">
      <div
   ref={ref}
-  className="grid md:grid-cols-2 gap-12 md:gap-20 items-center"
+  className="grid md:grid-cols-2 gap-12 md:gap-20 md:items-center"
 >
   {/* Left — headline + chart - NOW ON RIGHT ON DESKTOP */}
   <motion.div
@@ -61,23 +61,19 @@ const DetailedAnalytics = () => {
       Always watching. In a good way.
     </p> */}
 
-    <h2 className="text-[35px] sm:text-[48px] md:text-[52px] text-center md:text-left trialheader font-[400] text-[#5D2D2B] leading-[0.92] tracking-tight mb-5">
-      Your audience
+    <h2 className="text-[32px] sm:text-[48px] md:text-[52px] text-center md:text-left trialheader font-[400] text-[#5D2D2B] leading-[0.92] tracking-tight mb-5">
+            Your Audience, <br /> finally simplified.
       <br />
-      can&apos;t hide
-      <br />
-      <span className="text-[]">from you.</span>
+      {/* <span className="text-[]">from you.</span> */}
     </h2>
 
-    <p className="text-sm text-[#5D2D2B]/55 text-center md:text-left leading-[1.85] font-light max-w-sm mb-8">
-      See exactly who&apos;s clicking, where they&apos;re from, and
-      what&apos;s making them stay. No guesswork. Just data that actually
-      makes sense.
+    <p className="text-sm text-[#5D2D2B]/55 text-left leading-[1.85] font-light max-w-sm mb-8">
+      See exactly who's clicking, where they're from, and what's making them stay. No guesswork. Just data that actually makes sense. 
     </p>
 
     {/* Mini bar chart */}
     <div>
-      <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#5D2D2B]/30 mb-3">
+      <p className="text-[10px] font-bold tracking-[0.12em] uppercase text-[#5D2D2B]/90 mb-3">
         This week
       </p>
       <div className="flex items-end gap-2 h-[64px] mb-1.5">
@@ -174,7 +170,7 @@ const DetailedAnalytics = () => {
           </div>
           <p className="text-[12px] font-bold text-[#ff0000]">
             {label}{" "}
-            <span className="font-normal opacity-70">— {sub}</span>
+            <span className="font-normal opacity-70">| {sub}</span>
           </p>
         </div>
         <div className="flex flex-col items-end gap-1.5 flex-shrink-0">

@@ -36,6 +36,8 @@ import {
   wallpaperConfigFromBackend,
 } from "@/lib/helpers/appearance";
 import type { WallpaperConfig as BackendWallpaperConfig } from "@/types/appearance.types";
+import Link from "next/link";
+import Image from "next/image";
 
 // ── Default styles (same defaults as AppearancePage) ──────────────────────
 const DEFAULT_BUTTON_STYLE: ButtonStyle = {
@@ -247,7 +249,7 @@ export default function OnboardingCompletionPage() {
     router.push("/dashboard");
   };
 
-  // ── Animation variants ─────────────────────────────────────────────────
+  // ── Animation variants 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -323,7 +325,7 @@ export default function OnboardingCompletionPage() {
     tap: { scale: 0.98, transition: { duration: 0.1 } },
   };
 
-  // ── Profile data for PhoneDisplay ──────────────────────────────────────
+  //  Profile data for PhoneDisplay 
   const phoneProfile = {
     profileImage: userData.avatarUrl || "/icons/Profile Picture.png",
     displayName: userData.displayName || userData.name || "User",
@@ -332,7 +334,7 @@ export default function OnboardingCompletionPage() {
     location: userData.location || "",
   };
 
-  // ── ProfileLink shape expected by PhoneDisplay ─────────────────────────
+  //  ProfileLink shape expected by PhoneDisplay 
   const phoneLinks = links.map((l) => ({
     id: l.id,
     title: l.title,
@@ -345,7 +347,7 @@ export default function OnboardingCompletionPage() {
   // ── Loading 
   if (isLoading || linksLoading) {
     return (
-      <ProtectedRoute>
+      <>
         <main className="min-h-screen bg-[#FFF4E8] flex flex-col items-center justify-center px-6 py-10">
           <div className="text-center">
             <motion.div
@@ -363,7 +365,7 @@ export default function OnboardingCompletionPage() {
             </motion.p>
           </div>
         </main>
-      </ProtectedRoute>
+      </>
     );
   }
 
@@ -409,17 +411,30 @@ export default function OnboardingCompletionPage() {
 
   return (
   <>
-    <main className=" bg-[#FAFAFA]">
+    <main className=" bg-[#fef4ea]  pt-6 min-h-screen">
       {showConfetti && (
         <Confetti
           width={windowSize.width}
           height={windowSize.height}
           recycle={false}
-          numberOfPieces={800}
+          numberOfPieces={4000}
         />
       )}
-
-      <div className="max-w-7xl mx-auto px-6 pt-6">
+       {/* Logo */}
+                  <Link href="/" className="flex px-10 items-center gap-[1.5px] group">
+                    <Image
+                      src="/icons/A.bio.svg"
+                      alt="A.Bio Logo"
+                      width={24}
+                      height={24}
+                      priority
+                      className="transition-transform group-hover:scale-105"
+                    />
+                    <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
+                      bio
+                    </span>
+                  </Link>
+      <div className="max-w-7xl  mx-auto px-6 pt-6">
         {/* HERO */}
         {/* <motion.div
           variants={containerVariants}
@@ -467,7 +482,7 @@ export default function OnboardingCompletionPage() {
         </motion.div> */}
 
         {/* MAIN GRID */}
-        <div className="grid lg:grid-cols-[480px_1fr] gap-12 items-start">
+        <div className="grid lg:grid-cols-[480px_1fr] gap-12 items-center">
           {/* PHONE */}
           <motion.div
             variants={cardVariants}
@@ -489,7 +504,7 @@ export default function OnboardingCompletionPage() {
           {/* RIGHT SIDE */}
           <div className="space-y-8">
             {/* STATS */}
-            <div className="grid md:grid-cols-3 gap-4">
+            {/* <div className="grid md:grid-cols-3 gap-4">
               <div className="border bg-white p-6">
                 <p className="text-sm text-neutral-500">
                   Username
@@ -516,7 +531,7 @@ export default function OnboardingCompletionPage() {
                   {links.length}
                 </p>
               </div>
-            </div>
+            </div> */}
 
             {/* SHARE */}
             <div className=" border bg-white p-8">
@@ -599,7 +614,7 @@ export default function OnboardingCompletionPage() {
             </div>
 
             {/* TIP */}
-            <div className=" border bg-gradient-to-r from-[#FED45C]/20 to-yellow-50 p-6">
+            {/* <div className=" border bg-gradient-to-r from-[#FED45C]/20 to-yellow-50 p-6">
               <h3 className="font-semibold">
                 Next step
               </h3>
@@ -608,7 +623,7 @@ export default function OnboardingCompletionPage() {
                 Add more links, customize your appearance,
                 and start sharing your page everywhere.
               </p>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

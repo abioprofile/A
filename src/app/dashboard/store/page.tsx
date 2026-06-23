@@ -37,7 +37,7 @@ import type { IconType } from "react-icons";
 import { QRCodeSVG } from "qrcode.react";
 import { toPng } from "html-to-image";
 
-/* ─── Types ──────────────────────────────────────────────────── */
+/*  Types  */
 interface ProductColor {
   code: string;
   name: string;

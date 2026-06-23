@@ -64,7 +64,7 @@ const Footer = () => {
           <div>
             <h3 className="font-bold trial text-base mb-5 text-white">Product</h3>
             <div className="flex flex-col space-y-3 text-xs text-white/70">
-              <Link href="#" className="hover:text-white transition-colors duration-200">Templates</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Themes</Link>
               <Link href="#" className="hover:text-white transition-colors duration-200">Store</Link>
               <Link href="#" className="hover:text-white transition-colors duration-200">Contact Us</Link>
             </div>
@@ -76,7 +76,7 @@ const Footer = () => {
             <div className="flex flex-col space-y-3 text-xs text-white/70">
               <Link href="#" className="hover:text-white transition-colors duration-200">About</Link>
               <Link href="#" className="hover:text-white transition-colors duration-200">FAQ</Link>
-              <Link href="#" className="hover:text-white transition-colors duration-200">Careers</Link>
+              {/* <Link href="#" className="hover:text-white transition-colors duration-200">Careers</Link> */}
             </div>
           </div>
 
@@ -84,9 +84,9 @@ const Footer = () => {
           <div>
             <h3 className="font-bold trial text-base mb-5 text-white">Legal</h3>
             <div className="flex flex-col space-y-3 text-xs text-white/70">
-              <Link href="#" className="hover:text-white transition-colors duration-200">Terms of Service</Link>
+              <Link href="#" className="hover:text-white transition-colors duration-200">Terms and conditions</Link>
               <Link href="#" className="hover:text-white transition-colors duration-200">Privacy Policy</Link>
-              <Link href="#" className="hover:text-white transition-colors duration-200">Community Guidelines</Link>
+              {/* <Link href="#" className="hover:text-white transition-colors duration-200">Community Guidelines</Link> */}
               <Link href="#" className="hover:text-white transition-colors duration-200">Cookie Policy</Link>
             </div>
           </div>
@@ -95,7 +95,7 @@ const Footer = () => {
         {/* Bottom */}
         <div className="border-t border-[#FED45C]/30 pt-7 flex flex-col sm:flex-row justify-between items-center gap-5">
           <p className="text-white/60 text-xs">
-            © {currentYear} A.Bio — One Link Endless Connections
+            © {currentYear}
           </p>
 
           <div className="flex space-x-3">

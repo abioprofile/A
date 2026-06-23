@@ -369,27 +369,16 @@ export default function IntegrationsSection() {
             className="flex flex-col gap-6 text-center md:text-left items-center md:items-start"
           >
             <div>
-              {/* <p className="text-[10px] font-black tracking-[0.2em] text-[#5D2D2B]/40 uppercase mb-3">
-                Works with everything
-              </p> */}
-              <h2 className="text-[35px] sm:text-[44px] xl:text-[60px] trialheader font-[400] text-[#5D2D2B] leading-[0.9] tracking-tight">
-                50,000<br />
-                Platforms,<br />
-                <span> One link.</span>
+              
+              <h2 className="text-[32px] sm:text-[44px] xl:text-[50px] trialheader font-[400] text-[#5D2D2B] leading-[0.9] tracking-tight">
+                Connect all <br /> your Platforms.<br />From Spotify <br /> to Whatsapp.
+                
               </h2>
             </div>
-            <p className="text-[#5D2D2B]/55 text-left text-sm font-light leading-relaxed max-w-xs">
-              Connect all your platforms and manage every link from one
-              clean dashboard. New integrations added every week.
+            <p className="text-[#5D2D2B]/55 text-left text-sm -mt-2 md:mt-0 font-light leading-relaxed max-w-xs">
+              All your favourite platforms already on abio, manage every link from one clean dashboard with new features added every week. 
             </p>
-            {/* <motion.button
-              whileHover={{ scale: 1.04, boxShadow: "4px 4px 0px 0px #000" }}
-              whileTap={{ scale: 0.97 }}
-              className="bg-[#FED45C] text-[#5D2D2B] font-black text-sm h-12 px-8
-                         shadow-[3px_3px_0px_0px_#000] transition-shadow duration-200 w-fit"
-            >
-              See all integrations
-            </motion.button> */}
+            
           </motion.div>
 
           <div className="flex justify-center items-center w-full overflow-visible py-4">

@@ -81,11 +81,11 @@ const Testimonials = () => {
         transition={{ duration: 0.5 }}
         className="text-center mb-10 px-4"
       >
-        <h2 className="trialheader text-[#5D2D2B] text-[35px] xl:text-[50px] font-[400] leading-[0.9] ">
+        <h2 className="trialheader text-[#5D2D2B] text-[32px] xl:text-[50px] font-[400] leading-[0.9] ">
           Abio for all. Trusted by
         </h2>
         <div className="mt-1 h-12 flex items-center justify-center">
-          <span className="text-[35px] sm:text-3xl md:text-5xl trialheader font-[400] text-yellow-500 border-r-4 border-yellow-500 pr-1">
+          <span className="text-[32px] sm:text-3xl md:text-5xl trialheader font-[400] text-yellow-500 border-r-4 border-yellow-500 pr-1">
             {text}
           </span>
         </div>

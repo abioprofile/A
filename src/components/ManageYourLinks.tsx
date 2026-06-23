@@ -107,7 +107,7 @@ function SocialLinkCard({
       <div className="flex items-center gap-1 pt-1 xl:pt-1.5 border-t border-gray-100">
         <BarChart2 className="w-2 h-2 xl:w-3.5 xl:h-3.5 text-gray-300" />
         <span className="text-[7px] xl:text-[10px] text-gray-400 font-medium">
-          0 clicks
+          850 clicks
         </span>
       </div>
     </div>
@@ -156,8 +156,8 @@ const ManageYourLinks = () => {
             transition={{ duration: 0.45, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="space-y-5 max-w-md text-center md:text-left"
           >
-            <h2 className="text-[35px] xl:text-[50px] trialheader text-[#5D2D2B] font-[400] leading-tight">
-              Integrate <br /> and Manage <br /> your Links
+            <h2 className="text-[34px] xl:text-[50px] trialheader text-[#5D2D2B] font-[400] leading-[0.9] md:leading-tight">
+              Every Link connected, <br /> One place to manage it all
             </h2>
 
             <p className="text-xs sm:text-sm text-left font-light leading-6 text-[#5D2D2B]/80 max-w-xs mx-auto md:mx-0">

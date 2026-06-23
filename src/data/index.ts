@@ -32,7 +32,7 @@ export const sidebarNav = [
 
 export const navLinks = [
     { label: "Themes", href: "/template" },
-    // { label: "Store", href: "/store" },
+    { label: "Store", href: "/store" },
     // { label: "Pricing", href: "/pricing" },
     { label: "Contact Us", href: "/contact-us" },
 ];

@@ -151,7 +151,7 @@ const ThemeCarousel = () => (
 
 export default function FeaturesGrid() {
   return (
-    <section className="w-full bg-[#FFDCE3] px-4 sm:px-8 md:px-12 lg:px-20 py-10 md:py-16 relative overflow-hidden">
+    <section className="w-full bg-[#FFDCE3] px-4 sm:px-8 md:px-12 lg:px-20 py-6 md:py-16 relative overflow-hidden">
       {/* Spinning stars */}
       {/* <motion.div
         animate={{ rotate: 360 }}
@@ -181,22 +181,7 @@ export default function FeaturesGrid() {
       </motion.div> */}
 
       {/* Section Header */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="mb-10 md:mb-14 text-center md:text-left"
-      >
-        {/* <p className="text-[12px] font-black tracking-[0.2em] text-[#5D2D2B]/40 uppercase mb-2">
-          What you get
-        </p> */}
-        {/* <h2 className="text-[35px] xl:text-[50px] trialheader font-[400] text-[#5D2D2B] leading-[1.2] tracking-tight">
-          Everything <br /> you need.
-          <br />
-          <span className="text-[#FF854A]">Nothing you don't.</span>
-        </h2> */}
-      </motion.div>
+      
 
       {/* Bento Grid — 2 cols mobile, 3 cols desktop */}
       <motion.div
@@ -215,7 +200,7 @@ export default function FeaturesGrid() {
           <div className="absolute w-20 h-20 bg-[#4A2422] rounded-full -bottom-6 -right-6" />
           <div className="relative z-10">
             <span className="inline-block bg-[#FED45C] text-[#5D2D2B] text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase px-2 py-0.5 mb-2">
-              Abio Link
+             ABIO 
             </span>
             <h3 className="text-[16px] md:text-[26px] font-[400] text-[#FEF4EA] leading-tight trialheader">
               Your link.
@@ -269,12 +254,12 @@ export default function FeaturesGrid() {
               className="w-2 h-2 bg-white rounded-full"
             />
             <span className="text-[8px] md:text-[9px] font-black tracking-[0.15em] uppercase text-white/80">
-              Live
+              LIVE STATS 
             </span>
           </div>
           <div className="relative z-10">
             <h3 className="text-[18px] md:text-[26px] font-[400] text-white trialheader leading-tight">
-              Realtime
+              Stay up to date always 
               <br />
               Updates
             </h3>

@@ -311,18 +311,16 @@ const CustomNfcCardSection = () => (
           >
             <div>
               <p className="text-[10px] sm:text-[11px] font-bold tracking-[0.1em] uppercase text-[#5D2D2B] mb-2 sm:mb-3">
-                You don&apos;t need a deck of cards.
+                Your digital identity now in your pockets. 
               </p>
-              <h2 className="text-[35px] sm:text-[40px] lg:text-[50px] trialheader leading-tight sm:leading-none font-[400] text-[#5D2D2B]">
-                Get Acard
-                <br />
-                Today!!!
+              <h2 className="text-[35px] sm:text-[40px] lg:text-[50px] trialheader leading-[0.9] sm:leading-none font-[400] text-[#5D2D2B]">
+                Get the Acard
               </h2>
             </div>
 
-            <p className="text-xs sm:text-sm text-left font-light leading-5 sm:leading-6 text-[#5D2D2B]/80 max-w-sm mx-auto md:mx-0 px-2 sm:px-0">
-              Personalize your NFC card with your name, logo, and brand style.
-              One tap shares your A.bio — no app needed.
+            <p className="text-xs sm:text-sm text-left font-light leading-5 sm:leading-6 -mb-2 md:mb-0 text-[#5D2D2B]/80 max-w-sm mx-auto md:mx-0 px-2 sm:px-0">
+              Personalize your NFC Acard with your name, logo, and brand style.
+              One tap shares your Abio  no app needed.
             </p>
           </motion.div>
         </div>
@@ -338,7 +336,7 @@ const CustomNfcCardSection = () => (
               whileTap={{ scale: 0.97 }}
               className="bg-[#FED45C] shadow-[3px_3px_0px_0px_#000000] text-[#5D2D2B] h-10 sm:h-12 px-6 sm:px-8 font-bold text-xs sm:text-sm transition-shadow duration-200 cursor-pointer w-full md:w-auto"
             >
-              Get yours Now!
+              Order your Acard 
             </motion.button>
           </Link>
         </div>
