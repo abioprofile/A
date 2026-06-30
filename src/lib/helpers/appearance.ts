@@ -40,6 +40,8 @@ export function cornerConfigToButtonStyle(c: CornerConfig): ButtonStyle {
     c.shadowSize === "hard"
       ? `4px 4px 0px 0px ${c.shadowColor}`
       : `2px 2px 6px ${c.shadowColor}80`;
+  
+  
   return {
     borderRadius,
     backgroundColor: c.fillColor,

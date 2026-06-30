@@ -14,9 +14,9 @@ import type { ProfileLink } from "@/types/auth.types";
 
 const DEFAULT_BUTTON_STYLE: ButtonStyle = {
   borderRadius: "0px",
-  backgroundColor: "#ffffff",
-  borderColor: "#000000",
-  opacity: 1,
+  backgroundColor: "#fdfbfb",
+  borderColor: "#fff",
+  opacity: 100,
   boxShadow: "2px 2px 6px rgba(0,0,0,0.2)",
 };
 
@@ -31,7 +31,7 @@ const DEFAULT_FONT_STYLE: FontStyle = {
   textDecoration: "none",
 };
 
-const DEFAULT_THEME = "/themes/theme1.png";
+const DEFAULT_THEME = "fill:#F2F2F2";
 
 export interface PhoneDisplayProfile {
   profileImage: string;

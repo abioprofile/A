@@ -59,7 +59,7 @@ const DEFAULT_FONT_STYLE: FontStyle = {
   textDecoration: "none",
 };
 
-const DEFAULT_THEME = "/themes/theme1.png";
+const DEFAULT_THEME = "fill:#F2F2F2";
 
 // ── Helper: convert raw AppearanceTheme → PhoneDisplay props ──────────────
 function themeToDisplayProps(theme: AppearanceTheme): {

@@ -96,9 +96,9 @@ const AppearancePage: React.FC = () => {
 
   const [buttonStyle, setButtonStyle] = useState<ButtonStyle>({
     borderRadius: "0px",
-    backgroundColor: "transparent",
+    backgroundColor: "#FFFFFF",
     borderColor: "transparent",
-    opacity: 1,
+    opacity: 100,
     boxShadow: "2px 2px 6px rgba(0,0,0,0.2)",
   });
 
@@ -113,8 +113,7 @@ const AppearancePage: React.FC = () => {
     textDecoration: "none",
   });
 
-  const [selectedTheme, setSelectedTheme] =
-    useState<string>("/themes/theme1.png");
+  const [selectedTheme, setSelectedTheme] = useState<string>("fill:#F2F2F2"); 
 
   const [themeName, setThemeName] = useState<string | undefined>(undefined);
 
@@ -151,6 +150,9 @@ const AppearancePage: React.FC = () => {
     if (payload.selected_theme != null) {
       setSelectedTheme(payload.selected_theme);
     }
+//     if (payload.selected_theme != null && payload.selected_theme !== "/themes/theme1.png") {
+//   setSelectedTheme(payload.selected_theme);
+// }
     const wp = wallpaperConfigFromBackend(payload.wallpaper_config);
     if (wp) {
       setWallpaperConfig(wp);

@@ -291,13 +291,13 @@ export default function PublicProfilePage() {
   //  Background 
 
   let backgroundStyle: React.CSSProperties = {};
-  let backgroundImageSrc = "/themes/theme7.jpg";
   let contentBgStyle: React.CSSProperties = {};
 
   const isOotnUser = userData?.username === "ootn";
   const isDnaByGazaUser = userData?.username === "dnabygaza";
   const isClubSixSevenUser = userData?.username === "clubsix7even";
   const hasMenuTab = isDnaByGazaUser || isClubSixSevenUser;
+  let backgroundImageSrc = isDnaByGazaUser ? "/themes/theme7.jpg" : "";
 
   const bgColors =
     normalizeWallpaperBackgroundColor(
@@ -352,17 +352,19 @@ export default function PublicProfilePage() {
   }
 
   if (!isOotnUser) {
-    contentBgStyle =
-      Object.keys(backgroundStyle).length > 0
-        ? backgroundStyle
-        : {
+  contentBgStyle =
+    Object.keys(backgroundStyle).length > 0
+      ? backgroundStyle
+      : backgroundImageSrc
+        ? {
             backgroundImage: `url(${backgroundImageSrc})`,
             backgroundSize: "cover",
             backgroundPosition: "center",
             backgroundRepeat: "no-repeat",
             backgroundColor: "#000000",
-          };
-  }
+          }
+        : { backgroundColor: "#F2F2F2" }; 
+}
 
   //  Link button styles 
 
@@ -648,14 +650,14 @@ export default function PublicProfilePage() {
       </div>
 
       {userData.bio && (
-        <motion.p
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          transition={{ delay: 0.5 }}
-          className="mt-2 text-[10px] md:text-xs  text-left font-medium line-clamp-2"
-        >
-          {userData.bio}
-        </motion.p>
+       <motion.p
+  initial={{ opacity: 0 }}
+  animate={{ opacity: 1 }}
+  transition={{ delay: 0.5 }}
+  className="mt-2 text-[10px] md:text-xs text-left font-medium line-clamp-2 min-h-[2.4em]"
+>
+  {userData.bio || "\u00A0"}
+</motion.p>
       )}
 
       {userData.location && (
