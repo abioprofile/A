@@ -29,7 +29,7 @@ import {
 import { QRCodeSVG } from "qrcode.react";
 import ShareModal, { LinkShareButton } from "@/components/ShareModal";
 
-//  Types 
+//  Types
 
 interface UserLink {
   id: string;
@@ -40,7 +40,7 @@ interface UserLink {
   isVisible: boolean;
 }
 
-//  Helpers 
+//  Helpers
 
 function applyOpacityToColor(color: string, opacity: number): string {
   const alpha = Math.max(0, Math.min(1, opacity));
@@ -97,7 +97,7 @@ const createTextStyle = (
   return base;
 };
 
-//  Global share button (top-right) 
+//  Global share button (top-right)
 
 function GlobalShareButton({ profileLink }: { profileLink: string }) {
   return (
@@ -180,7 +180,7 @@ export default function PublicProfilePage() {
     };
   }, [fontName]);
 
-  //  Early returns 
+  //  Early returns
 
   if (profileLoading)
     return (
@@ -224,7 +224,7 @@ export default function PublicProfilePage() {
     );
   }
 
-  //  Data 
+  //  Data
   const profile = profileData.data;
   const links: UserLink[] = (profileData?.data?.links || []).map((l) => ({
     id: l.id,
@@ -288,7 +288,7 @@ export default function PublicProfilePage() {
       })()
     : undefined;
 
-  //  Background 
+  //  Background
 
   let backgroundStyle: React.CSSProperties = {};
   let contentBgStyle: React.CSSProperties = {};
@@ -352,21 +352,21 @@ export default function PublicProfilePage() {
   }
 
   if (!isOotnUser) {
-  contentBgStyle =
-    Object.keys(backgroundStyle).length > 0
-      ? backgroundStyle
-      : backgroundImageSrc
-        ? {
-            backgroundImage: `url(${backgroundImageSrc})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            backgroundColor: "#000000",
-          }
-        : { backgroundColor: "#F2F2F2" }; 
-}
+    contentBgStyle =
+      Object.keys(backgroundStyle).length > 0
+        ? backgroundStyle
+        : backgroundImageSrc
+          ? {
+              backgroundImage: `url(${backgroundImageSrc})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              backgroundRepeat: "no-repeat",
+              backgroundColor: "#000000",
+            }
+          : { backgroundColor: "#F2F2F2" };
+  }
 
-  //  Link button styles 
+  //  Link button styles
 
   const linkButtonStyle: React.CSSProperties = {
     borderRadius: buttonStyle?.borderRadius || "0px",
@@ -392,45 +392,48 @@ export default function PublicProfilePage() {
    * visually inside the button's border, separated by a subtle divider.
    */
   const renderLinkRow = (link: UserLink, index: number, isMobile: boolean) => (
-  <div key={link.id} className="group relative mb-3">
-    <div
-      className="w-full relative flex items-center justify-between overflow-hidden transition-all duration-150"
-      style={linkButtonStyle}
-    >
-      {/* Left section with icon and text */}
-      <a
-        href={link.url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-3  px-4 py-3 font-semibold text-sm cursor-pointer flex-1"
-        style={{
-          textDecoration: "none",
-          color: linkButtonStyle.color,
-          fontFamily: linkButtonStyle.fontFamily,
-          fontWeight: linkButtonStyle.fontWeight,
-          fontStyle: linkButtonStyle.fontStyle,
-          textShadow: linkButtonStyle.textShadow,
-        }}
-        aria-label={link.title}
+    <div key={link.id} className="group relative mb-3">
+      <div
+        className="w-full relative flex items-center justify-between overflow-hidden transition-all duration-150"
+        style={linkButtonStyle}
       >
-        <span className="flex items-center justify-center flex-shrink-0" style={{ color: dotColor }}>
-          {getPlatformIcon(link.platform, "w-4 h-4")}
-        </span>
-        <span className="truncate">{link.title}</span>
-      </a>
+        {/* Left section with icon and text */}
+        <a
+          href={link.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-3  px-4 py-3 font-semibold text-sm cursor-pointer flex-1"
+          style={{
+            textDecoration: "none",
+            color: linkButtonStyle.color,
+            fontFamily: linkButtonStyle.fontFamily,
+            fontWeight: linkButtonStyle.fontWeight,
+            fontStyle: linkButtonStyle.fontStyle,
+            textShadow: linkButtonStyle.textShadow,
+          }}
+          aria-label={link.title}
+        >
+          <span
+            className="flex items-center justify-center flex-shrink-0"
+            style={{ color: dotColor }}
+          >
+            {getPlatformIcon(link.platform, "w-4 h-4")}
+          </span>
+          <span className="truncate">{link.title}</span>
+        </a>
 
-      {/* More menu - extreme right */}
-      <div className="flex-shrink-0 pr-3">
-        <LinkShareButton
-          url={link.url}
-          title={link.title}
-          fontColor={dotColor}
-          isMobile={isMobile}
-        />
+        {/* More menu - extreme right */}
+        <div className="flex-shrink-0 pr-3">
+          <LinkShareButton
+            url={link.url}
+            title={link.title}
+            fontColor={dotColor}
+            isMobile={isMobile}
+          />
+        </div>
       </div>
     </div>
-  </div>
-);
+  );
 
   const renderStreamingRow = (
     link: UserLink,
@@ -650,14 +653,14 @@ export default function PublicProfilePage() {
       </div>
 
       {userData.bio && (
-       <motion.p
-  initial={{ opacity: 0 }}
-  animate={{ opacity: 1 }}
-  transition={{ delay: 0.5 }}
-  className="mt-2 text-[10px] md:text-xs text-left font-medium line-clamp-2 min-h-[2.4em]"
->
-  {userData.bio || "\u00A0"}
-</motion.p>
+        <motion.p
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          transition={{ delay: 0.5 }}
+          className="mt-2 text-[10px] md:text-xs  text-left font-medium line-clamp-2"
+        >
+          {userData.bio}
+        </motion.p>
       )}
 
       {userData.location && (
@@ -719,7 +722,7 @@ export default function PublicProfilePage() {
                   variants={profileCardVariants}
                   initial="initial"
                   animate="animate"
-                  className="relative z-20 bg-white/90 p-4 backdrop-blur-xl flex-shrink-0"
+                  className="relative z-20 bg-white/90 h-[140px] p-4 backdrop-blur-xl flex-shrink-0"
                   style={{
                     backgroundColor: fc?.cardBgColor ?? undefined,
                     opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
@@ -781,7 +784,7 @@ export default function PublicProfilePage() {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/90 p-4 backdrop-blur-xl relative sticky top-0 z-20"
+              className="bg-white/90 h-[140px] p-4 backdrop-blur-xl relative sticky top-0 z-20"
               style={{
                 backgroundColor: fc?.cardBgColor ?? undefined,
                 opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,

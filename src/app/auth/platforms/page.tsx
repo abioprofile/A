@@ -39,7 +39,7 @@ const Platforms = () => {
   // Helper function to render platform icon
   const renderPlatformIcon = (
     platform: (typeof PLATFORMS)[number],
-    size: number = 30,
+    size: number = 50,
   ) => {
     // Check if it's a Lucide icon component
     if (platform.isReactIcon && platform.icon) {
@@ -56,7 +56,6 @@ const Platforms = () => {
           size={size}
           color={color}
           strokeWidth={1.5}
-          className="mb-2"
         />
       );
     }
@@ -69,7 +68,7 @@ const Platforms = () => {
           alt={platform.name}
           width={size}
           height={size}
-          className="mb-2"
+          className="object-contain"
         />
       );
     }
@@ -104,12 +103,12 @@ const Platforms = () => {
   const platformVariants: Variants = {
     unselected: {
       scale: 1,
-      backgroundColor: "#F7F7F7",
+      backgroundColor: "transparent",
       borderColor: "transparent",
     },
     selected: {
-      scale: 1.05,
-      backgroundColor: "#F7F7F7",
+      scale: 1,
+      backgroundColor: "transparent",
       borderColor: "#331400",
       transition: {
         duration: 0.2,
@@ -117,15 +116,15 @@ const Platforms = () => {
       },
     },
     hover: {
-      scale: 1.03,
-      backgroundColor: "#f0f0f0",
+      scale: 1.05,
+      backgroundColor: "transparent",
       transition: {
         duration: 0.2,
         ease: [0.04, 0.62, 0.23, 0.98],
       },
     },
     tap: {
-      scale: 0.98,
+      scale: 0.95,
       transition: {
         duration: 0.1,
       },
@@ -183,22 +182,6 @@ const Platforms = () => {
           variants={itemVariants}
           className="flex justify-end items-center px-4 md:px-16 py-8 absolute top-0 right-0"
         >
-          {/* <Link
-            href="/"
-            className="flex px-4  pt-4 items-center gap-[1.5px] group"
-          >
-            <Image
-              src="/icons/A.bio.svg"
-              alt="A.Bio Logo"
-              width={28}
-              height={28}
-              priority
-              className="transition-transform group-hover:scale-105"
-            />
-            <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
-              bio
-            </span>
-          </Link> */}
           <motion.div
             variants={backButtonVariants}
             whileHover="hover"
@@ -242,10 +225,10 @@ const Platforms = () => {
             </motion.p>
           </motion.div>
 
-          {/* Social Platforms */}
+          {/* Social Platforms - Grid with tight spacing */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-wrap justify-center gap-4 mb-6 max-w-2xl"
+            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-6 w-full md:max-w-2xl"
           >
             {PLATFORMS.map((platform, index) => {
               const isSelected = selectedPlatforms.some(
@@ -261,15 +244,12 @@ const Platforms = () => {
                   animate={isSelected ? "selected" : "unselected"}
                   whileHover="hover"
                   whileTap="tap"
-                  className={`cursor-pointer flex flex-col w-20 h-20 md:h-24 md:w-24 items-center justify-center p-4 border-2 ${
+                  className={`cursor-pointer flex items-center justify-center p-1 border-2 transition-all ${
                     isSelected ? "border-[#331400]" : "border-transparent"
                   }`}
                   onClick={() => handlePlatformClick(platform)}
                 >
-                  {renderPlatformIcon(platform, 35)}
-                  <span className="text-xs md:text-sm text-center">
-                    {platform.name}
-                  </span>
+                  {renderPlatformIcon(platform, 65)}
                 </motion.button>
               );
             })}
@@ -277,14 +257,7 @@ const Platforms = () => {
 
           {/* Streaming Platforms */}
           <motion.div variants={itemVariants} className="w-full max-w-2xl mb-8">
-            {/* <div className="flex items-center gap-3 mb-4">
-              <div className="h-px flex-1 bg-[#331400]/20" />
-              <span className="text-[11px] font-semibold text-[#331400]/60 uppercase tracking-widest">
-                Streaming
-              </span>
-              <div className="h-px flex-1 bg-[#331400]/20" />
-            </div> */}
-            {/* <div className="flex flex-wrap justify-center gap-4">
+            {/* <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
               {STREAMING_PLATFORMS.map((platform, index) => {
                 const isSelected = selectedPlatforms.some((p) => p.id === platform.id);
 
@@ -297,21 +270,12 @@ const Platforms = () => {
                     animate={isSelected ? "selected" : "unselected"}
                     whileHover="hover"
                     whileTap="tap"
-                    className={`cursor-pointer flex flex-col w-20 h-20 md:h-24 md:w-24 items-center justify-center p-4 border-2 ${
+                    className={`cursor-pointer flex items-center justify-center p-1 border-2 transition-all ${
                       isSelected ? "border-[#331400]" : "border-transparent"
                     }`}
                     onClick={() => handlePlatformClick(platform)}
                   >
-                    <Image
-                      src={platform.icon as string}
-                      alt={platform.name}
-                      width={35}
-                      height={35}
-                      className="mb-2"
-                    />
-                    <span className="text-xs md:text-sm text-center">
-                      {platform.name}
-                    </span>
+                    {renderPlatformIcon(platform, 65)}
                   </motion.button>
                 );
               })}
@@ -329,7 +293,7 @@ const Platforms = () => {
             >
               <Button
                 onClick={() => router.push("/auth/links")}
-                className="w-full bg-[#FED45C] text-[#331400] py-2 h-10 text-sm font-semibold hover:bg-[#FED45C]/90"
+                className="w-full bg-[#FED45C] text-[#331400] py-2 h-12 text-sm font-semibold hover:bg-[#FED45C]/90"
               >
                 Continue
               </Button>

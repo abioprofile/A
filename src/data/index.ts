@@ -135,17 +135,17 @@ export const offers = [
 ];
 
 export const PLATFORMS: Platform[] = [
-    { id: "youtube", name: "YouTube", icon: "/assets/icons/youtube.svg", type: "social" },
-    { id: "tiktok", name: "Tiktok", icon: "/assets/icons/tiktok.svg", type: "social" },
-    { id: "instagram", name: "Instagram", icon: "/assets/icons/instagram.svg", type: "social" },
-    { id: "snapchat", name: "Snapchat", icon: "/assets/icons/snapchat.svg", type: "social" },
-    { id: "facebook", name: "Facebook", icon: "/assets/icons/facebook.svg", type: "social" },
-    { id: "pinterest", name: "Pinterest", icon: "/assets/icons/pinterest.svg", type: "social" },
-    { id: "whatsapp", name: "WhatsApp", icon: "/assets/icons/whatsapp.svg", type: "social" },
-    { id: "telegram", name: "Telegram", icon: "/assets/icons/telegram.svg", type: "social" },
-    { id: "linkedin", name: "LinkedIn", icon: "/assets/icons/linkedin.svg", type: "social" },
-    { id: "gmail", name: "Gmail", icon: "/assets/platform-icons/colored/Social=Gmail,Style=Original.svg", type: "social" },
-    { id: "phone", name: "Phone Number", icon: "/assets/platform-icons/colored/Social=Phone,Style=Original.svg", type: "social" },
+    { id: "whatsapp", name: "WhatsApp", icon: "/assets/Whatsapp.svg", type: "social" },
+    { id: "youtube", name: "YouTube", icon: "/assets/Youtube.svg", type: "social" },
+    { id: "X", name: "X", icon: "/assets/X.svg", type: "social" },
+    { id: "tiktok", name: "Tiktok", icon: "/assets/tiktok.svg", type: "social" },
+    { id: "snapchat", name: "Snapchat", icon: "/assets/snapchat.svg", type: "social" },
+    { id: "telegram", name: "Telegram", icon: "/assets/telegram.svg", type: "social" },
+    { id: "linkedin", name: "LinkedIn", icon: "/assets/Linkedln.svg", type: "social" },
+    { id: "instagram", name: "Instagram", icon: "/assets/Instagram.svg", type: "social" },
+    { id: "pinterest", name: "website", icon: "/assets/website.svg", type: "social" },
+    // { id: "gmail", name: "Gmail", icon: "/assets/platform-icons/colored/Social=Gmail,Style=Original.svg", type: "social" },
+    // { id: "phone", name: "Phone Number", icon: "/assets/platform-icons/colored/Social=Phone,Style=Original.svg", type: "social" },
 ]
 
 export const STREAMING_PLATFORMS: Platform[] = [
