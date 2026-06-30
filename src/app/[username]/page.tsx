@@ -722,7 +722,7 @@ export default function PublicProfilePage() {
                   variants={profileCardVariants}
                   initial="initial"
                   animate="animate"
-                  className="relative z-20 bg-white/90 h-[155px] p-4 backdrop-blur-xl flex-shrink-0"
+                  className="relative z-20 bg-white/90 h-[165px] p-4 backdrop-blur-xl flex-shrink-0"
                   style={{
                     backgroundColor: fc?.cardBgColor ?? undefined,
                     opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
@@ -784,7 +784,7 @@ export default function PublicProfilePage() {
               initial={{ y: -20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/90 h-[155px] p-4 backdrop-blur-xl relative sticky top-0 z-20"
+              className="bg-white/90 h-[165px] p-4 backdrop-blur-xl relative sticky top-0 z-20"
               style={{
                 backgroundColor: fc?.cardBgColor ?? undefined,
                 opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
