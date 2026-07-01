@@ -373,16 +373,16 @@ export default function PublicProfilePage() {
     border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
     boxShadow: buttonStyle?.boxShadow || "none",
     textDecoration: "none",
-    color: fontStyle?.color || "#fff",
+    color: fontStyle?.color || "#000",
     fontFamily: fontStyle?.fontFamily,
     fontWeight: fontStyle?.fontWeight,
     fontStyle: fontStyle?.fontStyle,
     textShadow: fontStyle?.textShadow,
-    backgroundColor: buttonStyle?.backgroundColor || "rgba(255,255,255,0.3)",
+    backgroundColor: buttonStyle?.backgroundColor || "rgb(255, 255, 255)",
   };
 
   // Font color to pass down to the ⋮ so it always matches
-  const dotColor = (fontStyle?.color as string) || "#ffffff";
+  const dotColor = (fontStyle?.color as string) || "#000";
 
   // ─── Renderers
 
