@@ -210,16 +210,16 @@ const SelectGoalPage = () => {
         <div className="w-full px-4 pt-4 md:px-6 md:pt-6 lg:px-8 lg:pt-4 flex flex-col gap-4">
           {/* Logo row */}
           <motion.div variants={logoVariants} className="flex justify-start">
-            <Link href="/" className="flex items-center gap-1 group">
+            <Link href="/" className="flex items-center gap-[1.5px] group">
               <Image
-                src="/icons/A.Bio.png"
+                src="/icons/A.bio.svg"
                 alt="A.Bio Logo"
-                width={28}
-                height={28}
+                width={24}
+                height={24}
                 priority
-                className="cursor-pointer select-none transition-transform group-hover:scale-105"
+                className="transition-transform group-hover:scale-105"
               />
-              <span className="font-bold text-xl md:text-2xl text-black tracking-wide">
+              <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
                 bio
               </span>
             </Link>

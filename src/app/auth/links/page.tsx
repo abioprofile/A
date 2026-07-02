@@ -16,14 +16,14 @@ import { OnboardingProgressWithSteps } from "@/components/ProgressBar";
 import { PLATFORMS } from "@/data";
 import { IconType } from "react-icons";
 
-// ============================================================================
+
 // Constants & Configuration
-// ============================================================================
+
 
 const PLATFORM_BASE_URLS: Record<string, string> = {
   instagram: "instagram.com/",
   behance: "behance.net/",
-  x: "x.com/",
+  X: "x.com/",
   snapchat: "snapchat.com/add/",
   tiktok: "tiktok.com/@",
   youtube: "youtube.com/@",
@@ -32,12 +32,14 @@ const PLATFORM_BASE_URLS: Record<string, string> = {
   pinterest: "pinterest.com/",
   twitter: "x.com/",
   whatsapp: "wa.me/",
+  telegram: "t.me/",
+  phone: "tel:",
   gmail: "mailto:",
 };
 
-const AT_PLATFORMS = new Set(["x", "twitter", "snapchat", "tiktok", "instagram"]);
+const AT_PLATFORMS = new Set(["X", "snapchat", "tiktok", "instagram"]);
 
-// ============================================================================
+
 // Utility Functions
 
 const buildUrl = (platformId: string, value: string): string => {
@@ -75,12 +77,13 @@ const getPlaceholder = (platformId: string, platformName: string): string => {
 const PlatformIcon: React.FC<{ platformId: string; platformName: string; size?: number }> = ({ 
   platformId, 
   platformName, 
-  size = 20 
+  size = 24 
 }) => {
   const platformData = PLATFORMS.find((p) => p.id === platformId);
   const iconColor = useMemo(() => {
     if (platformId === "gmail") return "#EA4335";
     if (platformId === "phone") return "#34A853";
+    if (platformId === "X") return "#000000";
     return "#331400";
   }, [platformId]);
 
@@ -342,7 +345,7 @@ const LinksScreen: React.FC = () => {
     selectedPlatforms.length > 0 ? selectedPlatforms : [
       { id: "instagram", name: "Instagram", icon: "/icons/instagram.svg" },
       { id: "behance", name: "Behance", icon: "/icons/behance.svg" },
-      { id: "x", name: "X", icon: "/icons/x.svg" },
+      { id: "X", name: "X", icon: "/assets/X.svg" },
       { id: "snapchat", name: "Snapchat", icon: "/icons/snapchat.svg" },
     ],
     [selectedPlatforms]
@@ -545,8 +548,8 @@ const LinksScreen: React.FC = () => {
                   transition={{ delay: index * 0.05 }}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-5 h-5 flex-shrink-0">
-                    <PlatformIcon platformId={platform.id} platformName={platform.name} size={20} />
+                  <div className="w-10 h-10 flex-shrink-0">
+                    <PlatformIcon platformId={platform.id} platformName={platform.name} size={40} />
                   </div>
                   <SmartLinkInput
                     platformId={platform.id}

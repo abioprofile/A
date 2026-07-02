@@ -103,13 +103,9 @@ const Platforms = () => {
   const platformVariants: Variants = {
     unselected: {
       scale: 1,
-      backgroundColor: "transparent",
-      borderColor: "transparent",
     },
     selected: {
       scale: 1,
-      backgroundColor: "transparent",
-      borderColor: "#331400",
       transition: {
         duration: 0.2,
         ease: [0.04, 0.62, 0.23, 0.98],
@@ -117,7 +113,6 @@ const Platforms = () => {
     },
     hover: {
       scale: 1.05,
-      backgroundColor: "transparent",
       transition: {
         duration: 0.2,
         ease: [0.04, 0.62, 0.23, 0.98],
@@ -174,14 +169,28 @@ const Platforms = () => {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="min-h-screen bg-[#FEF4EA] flex flex-col justify-center p-5"
+        className="min-h-screen bg-[#FEF4EA] flex flex-col justify-center p-4 md:p-5"
       >
         <OnboardingProgressWithSteps currentStep={3} totalSteps={5} />
+        
         {/* Full-width top bar - Skip button hidden on mobile */}
         <motion.div
           variants={itemVariants}
-          className="flex justify-end items-center px-4 md:px-16 py-8 absolute top-0 right-0"
+          className="flex justify-between items-center px-4 md:px-8 py-4 absolute top-0 left-0 right-0"
         >
+          <Link href="/" className="flex items-center gap-[1.5px] group">
+                        <Image
+                          src="/icons/A.bio.svg"
+                          alt="A.Bio Logo"
+                          width={24}
+                          height={24}
+                          priority
+                          className="transition-transform group-hover:scale-105"
+                        />
+                        <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
+                          bio
+                        </span>
+                      </Link>
           <motion.div
             variants={backButtonVariants}
             whileHover="hover"
@@ -208,8 +217,8 @@ const Platforms = () => {
         </motion.div>
 
         {/* Centered main content */}
-        <section className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto">
-          <motion.div variants={itemVariants} className="text-center mb-8">
+        <section className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto mt-8">
+          <motion.div variants={itemVariants} className="text-center mb-6 md:mb-8">
             <motion.h1
               className="text-xl md:text-2xl font-semibold my-2 text-[#331400]"
               whileHover={{ scale: 1.02 }}
@@ -219,16 +228,16 @@ const Platforms = () => {
             </motion.h1>
             <motion.p
               variants={itemVariants}
-              className="text-[#666464] text-sm font-medium max-w-2xl"
+              className="text-[#666464] text-sm font-medium max-w-2xl px-4"
             >
               Pick a maximum of 5 platforms to get started. You can update later
             </motion.p>
           </motion.div>
 
-          {/* Social Platforms - Grid with tight spacing */}
+          {/* Social Platforms - Reduced row spacing */}
           <motion.div
             variants={itemVariants}
-            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 mb-6 w-full md:max-w-2xl"
+            className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-0.5 gap-y-3 md:gap-x-1 md:gap-y-1 lg:gap-x-1.5 lg:gap-y-1.5 mb-4 w-full max-w-4xl px-4"
           >
             {PLATFORMS.map((platform, index) => {
               const isSelected = selectedPlatforms.some(
@@ -244,20 +253,28 @@ const Platforms = () => {
                   animate={isSelected ? "selected" : "unselected"}
                   whileHover="hover"
                   whileTap="tap"
-                  className={`cursor-pointer flex items-center justify-center p-1 border-2 transition-all ${
-                    isSelected ? "border-[#331400]" : "border-transparent"
-                  }`}
+                  className="cursor-pointer flex items-center justify-center"
                   onClick={() => handlePlatformClick(platform)}
                 >
-                  {renderPlatformIcon(platform, 65)}
+                  <div className={`relative transition-all duration-200 ${
+                    isSelected ? "border-2 border-[#331400]" : "border-2 border-transparent"
+                  }`}>
+                    {renderPlatformIcon(platform, 90)}
+                  </div>
                 </motion.button>
               );
             })}
           </motion.div>
 
-          {/* Streaming Platforms */}
-          <motion.div variants={itemVariants} className="w-full max-w-2xl mb-8">
-            {/* <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
+          {/* Streaming Platforms - Reduced row spacing */}
+          {/* <motion.div variants={itemVariants} className="w-full max-w-2xl mb-6 px-2">
+            <motion.h2
+              variants={itemVariants}
+              className="text-sm font-medium text-[#666464] mb-2 text-center"
+            >
+              Streaming Platforms
+            </motion.h2>
+            <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-0.5 gap-y-0.5 md:gap-x-1 md:gap-y-1 lg:gap-x-1.5 lg:gap-y-1.5">
               {STREAMING_PLATFORMS.map((platform, index) => {
                 const isSelected = selectedPlatforms.some((p) => p.id === platform.id);
 
@@ -270,21 +287,23 @@ const Platforms = () => {
                     animate={isSelected ? "selected" : "unselected"}
                     whileHover="hover"
                     whileTap="tap"
-                    className={`cursor-pointer flex items-center justify-center p-1 border-2 transition-all ${
-                      isSelected ? "border-[#331400]" : "border-transparent"
-                    }`}
+                    className="cursor-pointer flex items-center justify-center"
                     onClick={() => handlePlatformClick(platform)}
                   >
-                    {renderPlatformIcon(platform, 65)}
+                    <div className={`relative transition-all duration-200 ${
+                      isSelected ? "border-2 border-[#331400]" : "border-2 border-transparent"
+                    }`}>
+                      {renderPlatformIcon(platform, 70)}
+                    </div>
                   </motion.button>
                 );
               })}
-            </div> */}
-          </motion.div>
+            </div>
+          </motion.div> */}
 
           <motion.div
             variants={itemVariants}
-            className="w-full max-w-xs space-y-4 mb-8"
+            className="w-full max-w-xs space-y-4 mb-6 px-4"
           >
             <motion.div
               variants={buttonHoverVariants}
@@ -293,32 +312,32 @@ const Platforms = () => {
             >
               <Button
                 onClick={() => router.push("/auth/links")}
-                className="w-full bg-[#FED45C] text-[#331400] py-2 h-12 text-sm font-semibold hover:bg-[#FED45C]/90"
+                className="w-full bg-[#FED45C] text-[#331400] py-2 h-12 text-sm font-semibold hover:bg-[#FED45C]/90 "
               >
                 Continue
               </Button>
             </motion.div>
           </motion.div>
-        </section>
 
-        {/* Back button below Continue button */}
-        <motion.div variants={itemVariants} className="flex justify-start">
-          <motion.button
-            variants={backButtonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => router.back()}
-            className="flex items-center gap-2 md:hidden text-sm font-semibold cursor-pointer hover:bg-[#4a2c1a] transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            Back
-          </motion.button>
-        </motion.div>
+          {/* Back button below Continue button - Mobile only */}
+          <motion.div variants={itemVariants} className="w-full max-w-xs px-4">
+            <motion.button
+              variants={backButtonVariants}
+              whileHover="hover"
+              whileTap="tap"
+              onClick={() => router.back()}
+              className="flex items-center gap-2 md:hidden text-sm font-semibold cursor-pointer hover:bg-[#4a2c1a] transition-colors text-[#331400] w-full justify-center py-2"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Back
+            </motion.button>
+          </motion.div>
+        </section>
 
         {/* Footer - Mobile only */}
         <motion.footer
           variants={itemVariants}
-          className="w-full flex items-center justify-between MD:px-4 md:hidden gap-2 py-4 text-sm text-[#331400] mt-8"
+          className="w-full flex items-center justify-between px-4 md:hidden gap-2 py-4 text-sm text-[#331400] mt-4 border-t border-[#331400]/10"
         >
           <motion.p whileHover={{ scale: 1.05 }} transition={{ duration: 0.2 }}>
             © 2026 Abio
