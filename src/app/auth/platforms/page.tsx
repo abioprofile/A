@@ -176,7 +176,7 @@ const Platforms = () => {
         {/* Full-width top bar - Skip button hidden on mobile */}
         <motion.div
           variants={itemVariants}
-          className="flex justify-between items-center px-4 md:px-8 py-4 absolute top-0 left-0 right-0"
+          className="flex justify-between items-center mb-6 px-4 md:px-8 py-4 absolute top-0 left-0 right-0"
         >
           <Link href="/" className="flex items-center gap-[1.5px] group">
                         <Image
