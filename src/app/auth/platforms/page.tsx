@@ -51,13 +51,7 @@ const Platforms = () => {
       } else if (platform.id === "phone") {
         color = "#34A853";
       }
-      return (
-        <IconComponent
-          size={size}
-          color={color}
-          strokeWidth={1.5}
-        />
-      );
+      return <IconComponent size={size} color={color} strokeWidth={1.5} />;
     }
 
     // For string paths (SVG files)
@@ -171,26 +165,28 @@ const Platforms = () => {
         variants={containerVariants}
         className="min-h-screen bg-[#FEF4EA] flex flex-col justify-center p-4 md:p-5"
       >
-        <OnboardingProgressWithSteps currentStep={3} totalSteps={5} />
-        
+        <div className="mt-16 ">
+  <OnboardingProgressWithSteps currentStep={3} totalSteps={5} />
+</div>
+
         {/* Full-width top bar - Skip button hidden on mobile */}
         <motion.div
           variants={itemVariants}
           className="flex justify-between items-center mb-6 px-4 md:px-8 py-4 absolute top-0 left-0 right-0"
         >
           <Link href="/" className="flex items-center gap-[1.5px] group">
-                        <Image
-                          src="/icons/A.bio.svg"
-                          alt="A.Bio Logo"
-                          width={24}
-                          height={24}
-                          priority
-                          className="transition-transform group-hover:scale-105"
-                        />
-                        <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
-                          bio
-                        </span>
-                      </Link>
+            <Image
+              src="/icons/A.bio.svg"
+              alt="A.Bio Logo"
+              width={24}
+              height={24}
+              priority
+              className="transition-transform group-hover:scale-105"
+            />
+            <span className="font-medium tracking-[0em] text-3xl text-end text-black tracking-wide">
+              bio
+            </span>
+          </Link>
           <motion.div
             variants={backButtonVariants}
             whileHover="hover"
@@ -218,7 +214,10 @@ const Platforms = () => {
 
         {/* Centered main content */}
         <section className="flex flex-col items-center justify-center w-full max-w-4xl mx-auto mt-8">
-          <motion.div variants={itemVariants} className="text-center mb-6 md:mb-8">
+          <motion.div
+            variants={itemVariants}
+            className="text-center mb-6 md:mb-8"
+          >
             <motion.h1
               className="text-xl md:text-2xl font-semibold my-2 text-[#331400]"
               whileHover={{ scale: 1.02 }}
@@ -256,9 +255,13 @@ const Platforms = () => {
                   className="cursor-pointer flex items-center justify-center"
                   onClick={() => handlePlatformClick(platform)}
                 >
-                  <div className={`relative transition-all duration-200 ${
-                    isSelected ? "border-2 border-[#331400]" : "border-2 border-transparent"
-                  }`}>
+                  <div
+                    className={`relative transition-all duration-200 ${
+                      isSelected
+                        ? "border-2 border-[#331400]"
+                        : "border-2 border-transparent"
+                    }`}
+                  >
                     {renderPlatformIcon(platform, 90)}
                   </div>
                 </motion.button>
