@@ -35,6 +35,7 @@ const PLATFORM_BASE_URLS: Record<string, string> = {
   telegram: "t.me/",
   phone: "tel:",
   gmail: "mailto:",
+  Website: "https://",
 };
 
 const AT_PLATFORMS = new Set(["X", "snapchat", "tiktok", "instagram"]);

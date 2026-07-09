@@ -143,7 +143,7 @@ export const PLATFORMS: Platform[] = [
     { id: "telegram", name: "Telegram", icon: "/assets/telegram.svg", type: "social" },
     { id: "linkedin", name: "LinkedIn", icon: "/assets/Linkedln.svg", type: "social" },
     { id: "instagram", name: "Instagram", icon: "/assets/Instagram.svg", type: "social" },
-    { id: "pinterest", name: "website", icon: "/assets/website.svg", type: "social" },
+    { id: "Website", name: "website", icon: "/assets/website.svg", type: "social" },
     // { id: "gmail", name: "Gmail", icon: "/assets/platform-icons/colored/Social=Gmail,Style=Original.svg", type: "social" },
     // { id: "phone", name: "Phone Number", icon: "/assets/platform-icons/colored/Social=Phone,Style=Original.svg", type: "social" },
 ]
