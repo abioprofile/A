@@ -345,7 +345,23 @@ export default function WallpaperSelector({
                       className="object-cover"
                     />
                   ) : (
-                    <div className="flex flex-col items-center justify-center text-gray-500">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      className="flex flex-col items-center justify-center text-gray-500 cursor-pointer hover:text-gray-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleSelectType("image");
+                        fileInputRef.current?.click();
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                          e.preventDefault();
+                          handleSelectType("image");
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                    >
                       <Upload className="w-6 h-6 mb-1" />
                       <span className="text-xs">Upload</span>
                     </div>

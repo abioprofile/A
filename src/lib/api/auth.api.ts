@@ -375,10 +375,15 @@ export const updateAppearanceWallpaper = async (
 
 export const updateAppearanceImage = async (
   data: ImageWallpaperConfig,
-    signal?: AbortSignal
-) : Promise<AppearanceResponse> => {
+  signal?: AbortSignal
+): Promise<AppearanceResponse> => {
   const formData = new FormData();
-  formData.append('image', data.image);
-  const response = await apiClient.put<AppearanceResponse>('/user/preferences/background', formData, { signal });
-  return response.data
-}
+  formData.append("type", "image");
+  formData.append("image", data.image);
+  const response = await apiClient.put<AppearanceResponse>(
+    "/user/preferences/background",
+    formData,
+    { signal }
+  );
+  return response.data;
+};
