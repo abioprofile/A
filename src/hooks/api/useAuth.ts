@@ -449,9 +449,8 @@ export const useUserProfileByUsername = (
       return await getUserProfileByUsername(username);
     },
     enabled: !!username,
-    staleTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
     refetchInterval: options?.refetchInterval,
   });
 };

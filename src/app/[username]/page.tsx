@@ -9,6 +9,7 @@ import { useUserProfileByUsername } from "@/hooks/api/useAuth";
 import { normalizeWallpaperBackgroundColor } from "@/lib/helpers/appearance";
 import { getPlatformIcon } from "@/components/PlatformIcon";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import Logo from "@/components/shared/Logo";
 import { useAppSelector } from "@/stores/hooks";
 import { motion, AnimatePresence } from "framer-motion";
 import DnaFormV1 from "@/components/dnabygaza/form";
@@ -127,6 +128,51 @@ function GlobalShareButton({ profileLink }: { profileLink: string }) {
   );
 }
 
+//  Theme toggle (top-right, next to share)
+
+const PROFILE_THEME_KEY = "abio_profile_theme";
+
+function ThemeToggle({
+  isDark,
+  onToggle,
+}: {
+  isDark: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <motion.button
+      type="button"
+      whileHover={{ scale: 1.08 }}
+      whileTap={{ scale: 0.92 }}
+      onClick={onToggle}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      className="w-8 h-8 bg-black/30 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center hover:bg-black/50 dark:hover:bg-white/20 transition-colors cursor-pointer"
+    >
+      {isDark ? (
+        <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white">
+          <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="2" />
+          <path
+            d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+      ) : (
+        <svg viewBox="0 0 24 24" fill="none" className="w-4 h-4 text-white">
+          <path
+            d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      )}
+    </motion.button>
+  );
+}
+
 //  Main component
 
 export default function PublicProfilePage() {
@@ -138,6 +184,23 @@ export default function PublicProfilePage() {
   const [profileShareUrl, setProfileShareUrl] = useState("");
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
   const [profileLink, setProfileLink] = useState("");
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const stored = window.localStorage.getItem(PROFILE_THEME_KEY);
+    if (stored) setIsDark(stored === "dark");
+    else setIsDark(window.matchMedia("(prefers-color-scheme: dark)").matches);
+  }, []);
+
+  const toggleTheme = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      if (typeof window !== "undefined")
+        window.localStorage.setItem(PROFILE_THEME_KEY, next ? "dark" : "light");
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (typeof window === "undefined" || !username) return;
@@ -149,7 +212,6 @@ export default function PublicProfilePage() {
     data: profileData,
     isLoading: profileLoading,
     isError: profileError,
-    error: profileErrorData,
     refetch,
   } = useUserProfileByUsername(username);
 
@@ -189,38 +251,114 @@ export default function PublicProfilePage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        className={isDark ? "dark" : ""}
       >
         <SkeletonPublicProfile />
       </motion.div>
     );
 
   if (profileError || !profileData?.data) {
-    const msg =
-      profileErrorData instanceof Error
-        ? profileErrorData.message
-        : "Profile not found";
     return (
-      <motion.div
-        key="error"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="min-h-screen flex items-center justify-center bg-neutral-100"
-      >
-        <div className="text-center max-w-md px-4">
-          <motion.p
-            initial={{ y: -10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-red-600 mb-4"
+      <div className={isDark ? "dark" : ""}>
+        <motion.div
+          key="error"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="relative min-h-screen w-full overflow-hidden bg-[#FEF4EA] dark:bg-[#15100C] flex flex-col items-center justify-center px-6"
+        >
+          {/* Logo */}
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.5 }}
+            className="absolute top-6 left-6 sm:top-8 sm:left-8"
           >
-            {msg}
-          </motion.p>
-          <p className="text-gray-600 text-sm">
-            The profile you&apos;re looking for doesn&apos;t exist or is not
-            available.
-          </p>
-        </div>
-      </motion.div>
+            <Logo />
+          </motion.div>
+
+          {/* Theme toggle */}
+          <div className="absolute top-6 right-6 sm:top-8 sm:right-8 z-30">
+            <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+          </div>
+
+          {/* Decorative scribble */}
+          <motion.div
+            initial={{ scale: 0, rotate: -180, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 0.8 }}
+            transition={{
+              type: "spring",
+              stiffness: 200,
+              damping: 18,
+              delay: 0.35,
+            }}
+            className="pointer-events-none absolute top-16 right-6 sm:top-20 sm:right-16"
+          >
+            <Image
+              src="/images/scribble.svg"
+              alt=""
+              width={96}
+              height={96}
+              className="w-16 sm:w-24 dark:invert dark:opacity-60"
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{
+              delay: 0.15,
+              duration: 0.6,
+              ease: [0.25, 0.46, 0.45, 0.94],
+            }}
+            className="relative z-10 flex flex-col items-center text-center max-w-md"
+          >
+            <span className="trialheader text-[96px] sm:text-[130px] leading-none text-[#5D2D2B] dark:text-[#F5EEE4]">
+              404
+            </span>
+
+            <h1 className="mt-2 text-xl sm:text-2xl font-extrabold text-[#5D2D2B] dark:text-[#F5EEE4]">
+              This profile doesn&apos;t exist
+            </h1>
+
+            <p className="mt-3 text-sm text-[#5D2D2B]/70 dark:text-[#F5EEE4]/60 leading-relaxed">
+              {username ? (
+                <>
+                  We couldn&apos;t find anyone at{" "}
+                  <span className="font-semibold text-[#5D2D2B] dark:text-[#F5EEE4]">
+                    @{username}
+                  </span>
+                  . The link may be broken, or the profile may have moved.
+                </>
+              ) : (
+                "The profile you're looking for doesn't exist or is not available."
+              )}
+            </p>
+
+            <div className="mt-8 flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+              <motion.a
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.97 }}
+                href={
+                  username
+                    ? `/auth/sign-up?claim=${encodeURIComponent(username)}`
+                    : "/auth/sign-up"
+                }
+                className="w-full sm:w-auto h-11 px-6 inline-flex items-center justify-center bg-[#5D2D2B] dark:bg-[#FED45C] text-[#FED45C] dark:text-[#2A1B08] font-black text-[13px] shadow-[3px_3px_0px_0px_#000000] dark:shadow-[3px_3px_0px_0px_#000000] hover:shadow-[4px_4px_0px_0px_#000000] transition-shadow duration-200"
+              >
+                {username ? `Claim @${username} on Abio` : "Get Abio for free"}
+              </motion.a>
+
+              <a
+                href="/"
+                className="w-full sm:w-auto h-11 px-6 inline-flex items-center justify-center border-2 border-[#5D2D2B] dark:border-[#F5EEE4]/30 text-[#5D2D2B] dark:text-[#F5EEE4] font-bold text-[13px] hover:bg-[#5D2D2B] dark:hover:bg-[#F5EEE4]/10 hover:text-[#FED45C] dark:hover:text-[#F5EEE4] transition-colors duration-200"
+              >
+                Back to home
+              </a>
+            </div>
+          </motion.div>
+        </motion.div>
+      </div>
     );
   }
 
@@ -363,26 +501,29 @@ export default function PublicProfilePage() {
               backgroundRepeat: "no-repeat",
               backgroundColor: "#000000",
             }
-          : { backgroundColor: "#F2F2F2" };
+          : { backgroundColor: isDark ? "#1C1611" : "#F2F2F2" };
   }
 
   //  Link button styles
 
   const linkButtonStyle: React.CSSProperties = {
     borderRadius: buttonStyle?.borderRadius || "0px",
-    border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || "#000000"}`,
+    border: `2px solid ${buttonStyle?.borderColor || cc?.strokeColor || (isDark ? "#F5EEE4" : "#000000")}`,
     boxShadow: buttonStyle?.boxShadow || "none",
     textDecoration: "none",
-    color: fontStyle?.color || "#000",
+    color: fontStyle?.color || (isDark ? "#F5EEE4" : "#000"),
     fontFamily: fontStyle?.fontFamily,
     fontWeight: fontStyle?.fontWeight,
     fontStyle: fontStyle?.fontStyle,
     textShadow: fontStyle?.textShadow,
-    backgroundColor: buttonStyle?.backgroundColor || "rgb(255, 255, 255)",
+    backgroundColor:
+      buttonStyle?.backgroundColor ||
+      (isDark ? "rgb(28, 22, 17)" : "rgb(255, 255, 255)"),
   };
 
   // Font color to pass down to the ⋮ so it always matches
-  const dotColor = (fontStyle?.color as string) || "#000";
+  const dotColor =
+    (fontStyle?.color as string) || (isDark ? "#F5EEE4" : "#000");
 
   // ─── Renderers
 
@@ -504,7 +645,7 @@ export default function PublicProfilePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-xs text-gray-500 text-center py-4"
+          className="text-xs text-gray-500 dark:text-[#9C8F80] text-center py-4"
           style={fontStyle}
         >
           No links added yet.
@@ -521,7 +662,7 @@ export default function PublicProfilePage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="text-xs text-gray-500 text-center py-4"
+          className="text-xs text-gray-500 dark:text-[#9C8F80] text-center py-4"
           style={fontStyle}
         >
           No streaming links added yet.
@@ -579,7 +720,7 @@ export default function PublicProfilePage() {
           className="relative flex flex-col items-center pb-2"
         >
           <span
-            className={`text-[9px] -mb-1 font-medium transition-colors ${activeTab === tab ? "text-black" : "text-gray-400"}`}
+            className={`text-[9px] -mb-1 font-medium transition-colors ${activeTab === tab ? "text-black dark:text-[#F5EEE4]" : "text-gray-400 dark:text-[#6B5F51]"}`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
           </span>
@@ -596,8 +737,9 @@ export default function PublicProfilePage() {
 
   const renderProfileCard = (isMobile: boolean, layoutId: string) => (
     <div>
-      {/* Global share — absolute top-right */}
-      <div className="absolute top-6 right-4 z-30">
+      {/* Global share + theme toggle — absolute top-right */}
+      <div className="absolute top-6 right-4 z-30 flex items-center gap-2">
+        <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
         {profileLink && <GlobalShareButton profileLink={profileLink} />}
       </div>
 
@@ -633,7 +775,7 @@ export default function PublicProfilePage() {
           transition={{ delay: 0.4 }}
         >
           <div className="flex items-center">
-            <p className="font-bold text-sm">
+            <p className="font-bold text-sm text-black dark:text-[#F5EEE4]">
               {isOotnUser
                 ? "one of those nights"
                 : userData?.name || userData?.username || "User"}
@@ -646,7 +788,7 @@ export default function PublicProfilePage() {
               className="inline-block ml-1"
             />
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-[#9C8F80]">
             /{userData.username || "username"}
           </p>
         </motion.div>
@@ -657,7 +799,7 @@ export default function PublicProfilePage() {
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           transition={{ delay: 0.5 }}
-          className="mt-2 text-[10px] md:text-xs  text-left font-medium line-clamp-2"
+          className="mt-2 text-[10px] md:text-xs  text-left font-medium line-clamp-2 text-black dark:text-[#F5EEE4]"
         >
           {userData.bio}
         </motion.p>
@@ -668,7 +810,7 @@ export default function PublicProfilePage() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.6, type: "spring" }}
-          className="inline-flex items-center text-[9px] text-[#4e4e4e]  gap-1 mt-2 mb-4 border px-[2px] py-[2px] bg-white/80"
+          className="inline-flex items-center text-[9px] text-[#4e4e4e] dark:text-[#C9BDAE]  gap-1 mt-2 mb-4 border dark:border-[#3a2c20] px-[2px] py-[2px] bg-white/80 dark:bg-black/20"
         >
           <Image
             src="/icons/location1.png"
@@ -688,216 +830,222 @@ export default function PublicProfilePage() {
   // ─── Render
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key="profile"
-        variants={pageVariants}
-        initial="initial"
-        animate="animate"
-        exit="exit"
-        className="h-screen bg-[#FEF4EA] overflow-hidden"
-      >
-        {/* ── Desktop */}
-        <div className="hidden lg:flex items-center justify-center h-screen">
-          <motion.div
-            variants={blurSideVariants}
-            initial="initial"
-            animate="animate"
-            className="fixed left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
-          />
-
-          <motion.div
-            variants={phoneContainerVariants}
-            initial="initial"
-            animate="animate"
-            className="relative z-20 mx-auto w-[300px]"
-          >
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="relative w-full h-[600px] border-[2px] border-black overflow-hidden bg-white shadow-2xl"
-            >
-              <div className="w-full h-full bg-white overflow-hidden relative flex flex-col">
-                <motion.div
-                  variants={profileCardVariants}
-                  initial="initial"
-                  animate="animate"
-                  className="relative z-20 bg-white/90 h-[165px] p-4 backdrop-blur-xl flex-shrink-0"
-                  style={{
-                    backgroundColor: fc?.cardBgColor ?? undefined,
-                    opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
-                  }}
-                >
-                  {renderProfileCard(false, "activeTabDesktop")}
-                </motion.div>
-
-                <div
-                  className="relative z-20 px-6 pt-4 pb-6 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
-                  style={{
-                    ...contentBgStyle,
-                    scrollbarWidth: "none",
-                    msOverflowStyle: "none",
-                  }}
-                >
-                  {renderTabContent(false)}
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            variants={blurSideVariants}
-            initial="initial"
-            animate="animate"
-            className="fixed right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#FEF4EA]/70 to-transparent backdrop-blur-[2px] z-10"
-          />
-        </div>
-
-        {/* ── Mobile */}
+    <div className={isDark ? "dark" : ""}>
+      <AnimatePresence mode="wait">
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.4 }}
-          className="lg:hidden w-full h-screen bg-[#FEF4EA]"
+          key="profile"
+          variants={pageVariants}
+          initial="initial"
+          animate="animate"
+          exit="exit"
+          className="h-screen bg-[#FEF4EA] dark:bg-[#15100C] overflow-hidden"
         >
-          {isOotnUser && (
+          {/* ── Desktop */}
+          <div className="hidden lg:flex items-center justify-center h-screen">
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="fixed inset-0"
-            >
-              <Image
-                src="/themes/ootn.jpeg"
-                alt="background"
-                fill
-                className="object-cover"
-                priority
-              />
-              <div className="absolute inset-0 bg-black/65" />
-            </motion.div>
-          )}
+              variants={blurSideVariants}
+              initial="initial"
+              animate="animate"
+              className="fixed left-0 top-0 bottom-0 w-1/4 bg-gradient-to-r from-[#FEF4EA]/70 dark:from-[#15100C]/70 to-transparent backdrop-blur-[2px] z-10"
+            />
 
-          <div className="relative z-10 w-full h-full flex flex-col overflow-hidden">
-            {/* Sticky header */}
             <motion.div
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, type: "spring" }}
-              className="bg-white/90 h-[165px] p-4 backdrop-blur-xl relative sticky top-0 z-20"
-              style={{
-                backgroundColor: fc?.cardBgColor ?? undefined,
-                opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
-              }}
-            >
-              {renderProfileCard(true, "activeTabMobile")}
-            </motion.div>
-
-            <div
-              className="overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden px-6 pt-4 pb-6"
-              style={{
-                ...contentBgStyle,
-                scrollbarWidth: "none",
-                msOverflowStyle: "none",
-              }}
-            >
-              {renderTabContent(true)}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* ── Avatar modal  */}
-        <AnimatePresence>
-          {isAvatarModalOpen && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center cursor-pointer"
-              onClick={() => setIsAvatarModalOpen(false)}
+              variants={phoneContainerVariants}
+              initial="initial"
+              animate="animate"
+              className="relative z-20 mx-auto w-[300px]"
             >
               <motion.div
-                initial={{ scale: 0.8, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ type: "spring", damping: 20, stiffness: 300 }}
-                className="relative max-w-[90vw] max-h-[90vh]"
-                onClick={(e) => e.stopPropagation()}
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                className="relative w-full h-[600px] border-[2px] border-black dark:border-[#3a2c20] overflow-hidden bg-white dark:bg-[#1C1611] shadow-2xl dark:shadow-black/60"
               >
-                <img
-                  src={userData.avatarUrl || "/icons/Profile Picture.png"}
-                  alt={userData.name || userData.username || "Profile"}
-                  className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain"
-                />
-                <button
-                  onClick={() => setIsAvatarModalOpen(false)}
-                  className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
-                  aria-label="Close preview"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                <div className="w-full h-full bg-white dark:bg-[#1C1611] overflow-hidden relative flex flex-col">
+                  <motion.div
+                    variants={profileCardVariants}
+                    initial="initial"
+                    animate="animate"
+                    className="relative z-20 bg-white/90 dark:bg-[#1C1611]/90 h-[165px] p-4 backdrop-blur-xl flex-shrink-0"
+                    style={{
+                      backgroundColor: fc?.cardBgColor ?? undefined,
+                      opacity: fc?.cardOpacity
+                        ? fc.cardOpacity / 100
+                        : undefined,
+                    }}
                   >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-2xl">
-                  <p className="text-white font-semibold text-center">
-                    {isOotnUser
-                      ? "one of those nights"
-                      : userData?.name || userData?.username || "User"}
-                  </p>
-                  <p className="text-white/70 text-sm text-center">
-                    {userData.username || "username"}
-                  </p>
+                    {renderProfileCard(false, "activeTabDesktop")}
+                  </motion.div>
+
+                  <div
+                    className="relative z-20 px-6 pt-4 pb-6 overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden"
+                    style={{
+                      ...contentBgStyle,
+                      scrollbarWidth: "none",
+                      msOverflowStyle: "none",
+                    }}
+                  >
+                    {renderTabContent(false)}
+                  </div>
                 </div>
               </motion.div>
             </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* ── Join CTA  */}
-        <a
-          href="/auth/sign-up"
-          className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2 bg-white shadow-lg px-5 py-3 text-xs md:text-sm font-semibold text-black transition hover:bg-[#4a2207] hover:text-white"
-          aria-label={`Join ${userData?.username || username} on Abio`}
-        >
-          Join {userData?.username || username} on Abio
-        </a>
-
-        {/* ── QR code */}
-        {profileShareUrl && (
-          <a
-            href={profileShareUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="fixed bottom-4 right-4 z-[100] flex-col items-center gap-1 hidden md:flex border border-gray-200 bg-white p-2 shadow-lg transition-opacity hover:opacity-95"
-            title={`Open profile: ${profileShareUrl}`}
-            aria-label={`QR code linking to ${profileShareUrl}`}
-          >
-            <QRCodeSVG
-              value={profileShareUrl}
-              size={88}
-              level="M"
-              includeMargin={false}
-              bgColor="#ffffff"
-              fgColor="#000000"
+            <motion.div
+              variants={blurSideVariants}
+              initial="initial"
+              animate="animate"
+              className="fixed right-0 top-0 bottom-0 w-1/4 bg-gradient-to-l from-[#FEF4EA]/70 dark:from-[#15100C]/70 to-transparent backdrop-blur-[2px] z-10"
             />
-            <span className="max-w-[96px] truncate text-[9px] font-medium text-gray-600">
-              Scan to open
-            </span>
+          </div>
+
+          {/* ── Mobile */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4 }}
+            className="lg:hidden w-full h-screen bg-[#FEF4EA] dark:bg-[#15100C]"
+          >
+            {isOotnUser && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className="fixed inset-0"
+              >
+                <Image
+                  src="/themes/ootn.jpeg"
+                  alt="background"
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className="absolute inset-0 bg-black/65" />
+              </motion.div>
+            )}
+
+            <div className="relative z-10 w-full h-full flex flex-col overflow-hidden">
+              {/* Sticky header */}
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.2, type: "spring" }}
+                className="bg-white/90 dark:bg-[#1C1611]/90 h-[165px] p-4 backdrop-blur-xl relative sticky top-0 z-20"
+                style={{
+                  backgroundColor: fc?.cardBgColor ?? undefined,
+                  opacity: fc?.cardOpacity ? fc.cardOpacity / 100 : undefined,
+                }}
+              >
+                {renderProfileCard(true, "activeTabMobile")}
+              </motion.div>
+
+              <div
+                className="overflow-y-auto flex-1 min-h-0 [&::-webkit-scrollbar]:hidden px-6 pt-4 pb-6"
+                style={{
+                  ...contentBgStyle,
+                  scrollbarWidth: "none",
+                  msOverflowStyle: "none",
+                }}
+              >
+                {renderTabContent(true)}
+              </div>
+            </div>
+          </motion.div>
+
+          {/* ── Avatar modal  */}
+          <AnimatePresence>
+            {isAvatarModalOpen && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 z-[200] bg-black/90 flex items-center justify-center cursor-pointer"
+                onClick={() => setIsAvatarModalOpen(false)}
+              >
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.8, opacity: 0 }}
+                  transition={{ type: "spring", damping: 20, stiffness: 300 }}
+                  className="relative max-w-[90vw] max-h-[90vh]"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <img
+                    src={userData.avatarUrl || "/icons/Profile Picture.png"}
+                    alt={userData.name || userData.username || "Profile"}
+                    className="w-auto h-auto max-w-[90vw] max-h-[90vh] object-contain"
+                  />
+                  <button
+                    onClick={() => setIsAvatarModalOpen(false)}
+                    className="absolute top-4 right-4 text-white bg-black/50 rounded-full p-2 hover:bg-black/70 transition-colors"
+                    aria-label="Close preview"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                  </button>
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 rounded-b-2xl">
+                    <p className="text-white font-semibold text-center">
+                      {isOotnUser
+                        ? "one of those nights"
+                        : userData?.name || userData?.username || "User"}
+                    </p>
+                    <p className="text-white/70 text-sm text-center">
+                      {userData.username || "username"}
+                    </p>
+                  </div>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ── Join CTA  */}
+          <a
+            href="/auth/sign-up"
+            className="fixed bottom-4 left-1/2 z-[110] -translate-x-1/2 bg-white dark:bg-[#1C1611] shadow-lg px-5 py-3 text-xs md:text-sm font-semibold text-black dark:text-[#F5EEE4] transition hover:bg-[#4a2207] hover:text-white"
+            aria-label={`Join ${userData?.username || username} on Abio`}
+          >
+            Join {userData?.username || username} on Abio
           </a>
-        )}
-      </motion.div>
-    </AnimatePresence>
+
+          {/* ── QR code */}
+          {profileShareUrl && (
+            <a
+              href={profileShareUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="fixed bottom-4 right-4 z-[100] flex-col items-center gap-1 hidden md:flex border border-gray-200 dark:border-[#3a2c20] bg-white dark:bg-[#1C1611] p-2 shadow-lg transition-opacity hover:opacity-95"
+              title={`Open profile: ${profileShareUrl}`}
+              aria-label={`QR code linking to ${profileShareUrl}`}
+            >
+              <div className="bg-white p-1">
+                <QRCodeSVG
+                  value={profileShareUrl}
+                  size={88}
+                  level="M"
+                  includeMargin={false}
+                  bgColor="#ffffff"
+                  fgColor="#000000"
+                />
+              </div>
+              <span className="max-w-[96px] truncate text-[9px] font-medium text-gray-600 dark:text-[#9C8F80]">
+                Scan to open
+              </span>
+            </a>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    </div>
   );
 }
